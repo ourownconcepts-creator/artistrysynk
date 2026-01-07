@@ -6,7 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Send, ArrowLeft } from "lucide-react";
+import { Send, ArrowLeft, FolderPlus } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Message {
   id: string;
@@ -30,6 +40,10 @@ const Messages = () => {
   const [newMessage, setNewMessage] = useState("");
   const [otherUser, setOtherUser] = useState<OtherUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [projectTitle, setProjectTitle] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
+  const [showProjectDialog, setShowProjectDialog] = useState(false);
+  const [creatingProject, setCreatingProject] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -133,6 +147,55 @@ const Messages = () => {
     }
   };
 
+  const createProject = async () => {
+    if (!projectTitle.trim() || !currentUser || !otherUser) return;
+
+    setCreatingProject(true);
+
+    try {
+      // Create the project
+      const { data: project, error: projectError } = await supabase
+        .from('projects')
+        .insert({
+          title: projectTitle.trim(),
+          description: projectDescription.trim() || null,
+          created_by: currentUser,
+          status: 'active',
+        })
+        .select('id')
+        .single();
+
+      if (projectError) throw projectError;
+
+      // Add the other user as a project member
+      const { error: memberError } = await supabase
+        .from('project_members')
+        .insert({
+          project_id: project.id,
+          user_id: otherUser.id,
+          role: 'collaborator',
+        });
+
+      if (memberError) throw memberError;
+
+      toast.success("Project created!", {
+        description: "You can now collaborate together.",
+        action: {
+          label: "View Project",
+          onClick: () => navigate(`/projects/${project.id}`),
+        },
+      });
+
+      setShowProjectDialog(false);
+      setProjectTitle("");
+      setProjectDescription("");
+    } catch (error) {
+      toast.error("Failed to create project");
+    } finally {
+      setCreatingProject(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5">
@@ -159,17 +222,65 @@ const Messages = () => {
               </Button>
               
               {otherUser && (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-1">
                   <Avatar>
                     <AvatarImage src={otherUser.avatar_url} />
                     <AvatarFallback>
                       {otherUser.full_name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
+                  <div className="flex-1">
                     <CardTitle className="text-lg">{otherUser.full_name}</CardTitle>
                     <p className="text-sm text-muted-foreground">@{otherUser.username}</p>
                   </div>
+                  
+                  <Dialog open={showProjectDialog} onOpenChange={setShowProjectDialog}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <FolderPlus className="w-4 h-4 mr-2" />
+                        Start Collaboration
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Create a Project</DialogTitle>
+                        <DialogDescription>
+                          Start a collaboration project with {otherUser.full_name}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Project Title</label>
+                          <Input
+                            placeholder="e.g., New Music Video"
+                            value={projectTitle}
+                            onChange={(e) => setProjectTitle(e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Description (optional)</label>
+                          <Textarea
+                            placeholder="What's this project about?"
+                            value={projectDescription}
+                            onChange={(e) => setProjectDescription(e.target.value)}
+                            rows={3}
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowProjectDialog(false)}>
+                          Cancel
+                        </Button>
+                        <Button 
+                          variant="hero" 
+                          onClick={createProject}
+                          disabled={!projectTitle.trim() || creatingProject}
+                        >
+                          {creatingProject ? "Creating..." : "Create Project"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               )}
             </div>

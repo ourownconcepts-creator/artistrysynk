@@ -20,6 +20,7 @@ import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import AdminReports from "./pages/AdminReports";
 import Projects from "./pages/Projects";
 import CollaborationRoom from "./pages/CollaborationRoom";
+import WhoLikedYou from "./pages/WhoLikedYou";
 import Studio from "./pages/Studio";
 import AdminSettings from "./pages/AdminSettings";
 import EditProfile from "./pages/EditProfile";
@@ -56,6 +57,7 @@ const App = () => (
               <Route path="/setup-profile" element={<ProtectedRoute><Navbar /><SetupProfile /></ProtectedRoute>} />
               <Route path="/discover" element={<ProtectedRoute><Navbar /><Discover /></ProtectedRoute>} />
               <Route path="/matches" element={<ProtectedRoute><Navbar /><Matches /></ProtectedRoute>} />
+              <Route path="/who-liked-you" element={<ProtectedRoute><Navbar /><WhoLikedYou /></ProtectedRoute>} />
               <Route path="/messages/:conversationId" element={<ProtectedRoute><Navbar /><Messages /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Navbar /><Profile /></ProtectedRoute>} />
               <Route path="/edit-profile" element={<ProtectedRoute><Navbar /><EditProfile /></ProtectedRoute>} />

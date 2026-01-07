@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Heart, X, User, MapPin, Sparkles, Filter } from "lucide-react";
+import { Heart, X, User, MapPin, Sparkles, Filter, RotateCcw, Crown } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Constants } from "@/integrations/supabase/types";
 import { FeaturedCreatives } from "@/components/discover/FeaturedCreatives";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface Profile {
   id: string;
@@ -27,6 +28,7 @@ interface Profile {
 
 const Discover = () => {
   const navigate = useNavigate();
+  const { canRewindSwipes } = useSubscription();
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -35,6 +37,7 @@ const Discover = () => {
   const [genreFilter, setGenreFilter] = useState<string>("");
   const [locationFilter, setLocationFilter] = useState<string>("");
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [lastSwipe, setLastSwipe] = useState<{ id: string; swipedId: string } | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -108,19 +111,24 @@ const Discover = () => {
 
     setIsTransitioning(true);
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('swipes')
       .insert({
         swiper_id: currentUser,
         swiped_id: profiles[currentIndex].id,
         liked,
-      });
+      })
+      .select('id')
+      .single();
 
     if (error) {
       toast.error("Failed to swipe");
       setIsTransitioning(false);
       return;
     }
+
+    // Store last swipe for rewind
+    setLastSwipe({ id: data.id, swipedId: profiles[currentIndex].id });
 
     if (liked) {
       // Check if it's a match
@@ -142,6 +150,41 @@ const Discover = () => {
       setCurrentIndex(prev => prev + 1);
       setIsTransitioning(false);
     }, 300);
+  };
+
+  const handleRewind = async () => {
+    if (!lastSwipe || !canRewindSwipes) {
+      if (!canRewindSwipes) {
+        toast.error("Upgrade to Pro to use Rewind", {
+          action: {
+            label: "Upgrade",
+            onClick: () => navigate("/pricing"),
+          },
+        });
+      }
+      return;
+    }
+
+    // Delete the last swipe
+    const { error } = await supabase
+      .from('swipes')
+      .delete()
+      .eq('id', lastSwipe.id);
+
+    if (error) {
+      toast.error("Failed to rewind");
+      return;
+    }
+
+    // Record the rewind
+    await supabase.from('swipe_rewinds').insert({
+      user_id: currentUser,
+      swipe_id: lastSwipe.id,
+    });
+
+    toast.success("Swipe undone!");
+    setCurrentIndex(prev => Math.max(0, prev - 1));
+    setLastSwipe(null);
   };
 
   const currentProfile = profiles[currentIndex];
@@ -354,6 +397,16 @@ const Discover = () => {
                     disabled={isTransitioning}
                   >
                     <X className="w-6 h-6" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleRewind}
+                    disabled={!lastSwipe || isTransitioning}
+                    title={canRewindSwipes ? "Undo last swipe" : "Pro feature"}
+                  >
+                    <RotateCcw className="w-5 h-5" />
+                    {!canRewindSwipes && <Crown className="w-3 h-3 absolute -top-1 -right-1 text-yellow-500" />}
                   </Button>
                   <Button
                     variant="hero"
