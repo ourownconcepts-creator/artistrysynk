@@ -6,7 +6,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { MessageCircle, Users } from "lucide-react";
+import { MessageCircle, Users, Heart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface Match {
   id: string;
@@ -24,9 +26,11 @@ interface Match {
 
 const Matches = () => {
   const navigate = useNavigate();
+  const { canSeeWhoLikedYou } = useSubscription();
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
+  const [likesCount, setLikesCount] = useState(0);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -35,9 +39,29 @@ const Matches = () => {
       } else {
         setCurrentUser(user.id);
         loadMatches(user.id);
+        loadLikesCount(user.id);
       }
     });
   }, [navigate]);
+
+  const loadLikesCount = async (userId: string) => {
+    // Get users who liked you but you haven't swiped on
+    const { data: yourSwipes } = await supabase
+      .from("swipes")
+      .select("swiped_id")
+      .eq("swiper_id", userId);
+
+    const swipedIds = yourSwipes?.map((s) => s.swiped_id) || [];
+
+    const { count } = await supabase
+      .from("swipes")
+      .select("*", { count: "exact", head: true })
+      .eq("swiped_id", userId)
+      .eq("liked", true)
+      .not("swiper_id", "in", `(${[userId, ...swipedIds].join(",")})`);
+
+    setLikesCount(count || 0);
+  };
 
   const loadMatches = async (userId: string) => {
     setLoading(true);
@@ -117,6 +141,33 @@ const Matches = () => {
             Keep Discovering
           </Button>
         </div>
+        
+        {/* Who Liked You Card */}
+        <Card 
+          className="mb-6 cursor-pointer hover:shadow-lg transition-shadow border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5"
+          onClick={() => navigate("/who-liked-you")}
+        >
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                  <Heart className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">See Who Liked You</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {likesCount > 0 ? `${likesCount} people liked your profile` : "No new likes yet"}
+                  </p>
+                </div>
+              </div>
+              {!canSeeWhoLikedYou && (
+                <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-600">
+                  Pro Feature
+                </Badge>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {matches.length === 0 ? (
           <Card>
