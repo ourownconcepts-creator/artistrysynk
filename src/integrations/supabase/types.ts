@@ -605,6 +605,35 @@ export type Database = {
           },
         ]
       }
+      swipe_rewinds: {
+        Row: {
+          id: string
+          rewound_at: string
+          swipe_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          rewound_at?: string
+          swipe_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          rewound_at?: string
+          swipe_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "swipe_rewinds_swipe_id_fkey"
+            columns: ["swipe_id"]
+            isOneToOne: true
+            referencedRelation: "swipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       swipes: {
         Row: {
           created_at: string | null
@@ -792,6 +821,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          paystack_customer_id: string | null
+          paystack_subscription_code: string | null
+          status: string
+          tier: Database["public"]["Enums"]["subscription_tier"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          paystack_customer_id?: string | null
+          paystack_subscription_code?: string | null
+          status?: string
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          paystack_customer_id?: string | null
+          paystack_subscription_code?: string | null
+          status?: string
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_suspensions: {
         Row: {
           created_at: string | null
@@ -914,6 +985,7 @@ export type Database = {
         | "fuji"
         | "juju"
         | "other"
+      subscription_tier: "free" | "pro" | "studio"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1074,6 +1146,7 @@ export const Constants = {
         "juju",
         "other",
       ],
+      subscription_tier: ["free", "pro", "studio"],
     },
   },
 } as const
