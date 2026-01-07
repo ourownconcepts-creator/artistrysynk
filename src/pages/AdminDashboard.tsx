@@ -1,0 +1,352 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { Users, LogOut, UserX, BarChart3 } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SearchBar } from "@/components/admin/SearchBar";
+import { BulkActions } from "@/components/admin/BulkActions";
+import { ActivityLogsViewer } from "@/components/admin/ActivityLogsViewer";
+import { AdminNotifications } from "@/components/admin/AdminNotifications";
+import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
+import { DashboardWidgets } from "@/components/admin/DashboardWidgets";
+import { ExportData } from "@/components/admin/ExportData";
+import { UserSuspensionDialog } from "@/components/admin/UserSuspensionDialog";
+import { SessionManagement } from "@/components/admin/SessionManagement";
+import { VerificationRequests } from "@/components/admin/VerificationRequests";
+import { FeaturedCreativesManager } from "@/components/admin/FeaturedCreativesManager";
+
+interface UserWithRole {
+  id: string;
+  full_name: string;
+  username: string;
+  email?: string;
+  role: string;
+}
+
+const AdminDashboard = () => {
+  const navigate = useNavigate();
+  const [users, setUsers] = useState<UserWithRole[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
+
+  useEffect(() => {
+    checkAuth();
+    fetchUsers();
+  }, []);
+
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate('/admin-auth');
+      return;
+    }
+
+    const { data: roles } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', session.user.id);
+
+    if (!roles || !roles.some(r => r.role === 'admin')) {
+      toast.error('Access denied');
+      navigate('/admin-auth');
+    }
+  };
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    
+    // First get user roles
+    const { data: userRoles, error: rolesError } = await supabase
+      .from('user_roles')
+      .select('user_id, role')
+      .eq('role', 'user');
+
+    if (rolesError) {
+      toast.error('Failed to fetch users');
+      setLoading(false);
+      return;
+    }
+
+    if (!userRoles || userRoles.length === 0) {
+      setUsers([]);
+      setLoading(false);
+      return;
+    }
+
+    // Then get profiles for those users
+    const userIds = userRoles.map(ur => ur.user_id);
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, full_name, username')
+      .in('id', userIds);
+
+    if (profilesError) {
+      toast.error('Failed to fetch user profiles');
+      setLoading(false);
+      return;
+    }
+
+    // Combine the data
+    const formattedUsers = userRoles.map(ur => {
+      const profile = profiles?.find(p => p.id === ur.user_id);
+      return {
+        id: ur.user_id,
+        full_name: profile?.full_name || 'Unknown',
+        username: profile?.username || 'unknown',
+        role: ur.role,
+      };
+    });
+
+    setUsers(formattedUsers);
+    setLoading(false);
+  };
+
+  const logActivity = async (action: string, targetUserId?: string, targetUserName?: string, details?: any) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase.from('activity_logs').insert({
+      admin_id: user.id,
+      action_type: action,
+      target_user_id: targetUserId,
+      target_user_name: targetUserName,
+      details
+    });
+  };
+
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    const { error } = await supabase.auth.admin.deleteUser(userId);
+
+    if (error) {
+      toast.error('Failed to delete user');
+      return;
+    }
+
+    await logActivity('user_deleted', userId, userName);
+    toast.success(`User ${userName} deleted successfully`);
+    fetchUsers();
+  };
+
+  const handleBulkDelete = async () => {
+    const userIds = Array.from(selectedUsers);
+    for (const userId of userIds) {
+      const user = users.find(u => u.id === userId);
+      await supabase.auth.admin.deleteUser(userId);
+      if (user) await logActivity('bulk_user_deleted', userId, user.full_name);
+    }
+    setSelectedUsers(new Set());
+    toast.success(`Deleted ${userIds.length} users`);
+    fetchUsers();
+  };
+
+  const handleBulkRoleChange = async (newRole: string) => {
+    const userIds = Array.from(selectedUsers);
+    for (const userId of userIds) {
+      const user = users.find(u => u.id === userId);
+      await supabase.from('user_roles').update({ role: newRole as any }).eq('user_id', userId);
+      if (user) await logActivity('bulk_role_change', userId, user.full_name, { to_role: newRole });
+    }
+    setSelectedUsers(new Set());
+    toast.success(`Updated ${userIds.length} users to ${newRole}`);
+    fetchUsers();
+  };
+
+  const toggleUserSelection = (userId: string) => {
+    const newSelection = new Set(selectedUsers);
+    if (newSelection.has(userId)) {
+      newSelection.delete(userId);
+    } else {
+      newSelection.add(userId);
+    }
+    setSelectedUsers(newSelection);
+  };
+
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = user.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.username.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+    return matchesSearch && matchesRole;
+  });
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate('/admin-auth');
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Admin Dashboard
+            </h1>
+            <p className="text-muted-foreground mt-2">Manage regular users</p>
+          </div>
+          <div className="flex gap-2">
+            <AdminNotifications />
+            <Button variant="outline" onClick={handleSignOut}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
+        </div>
+
+        <DashboardWidgets />
+
+        <Tabs defaultValue="users" className="w-full mt-6">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="featured">Featured</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="logs">Logs</TabsTrigger>
+            <TabsTrigger value="sessions">Sessions</TabsTrigger>
+            <TabsTrigger value="verifications">Verifications</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="users" className="mt-6">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="w-5 h-5" />
+                      User Management
+                    </CardTitle>
+                    <CardDescription>View and manage regular users</CardDescription>
+                  </div>
+                  <ExportData dataType="users" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <SearchBar
+                  searchTerm={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  roleFilter={roleFilter}
+                  onRoleFilterChange={setRoleFilter}
+                />
+                <BulkActions
+                  selectedCount={selectedUsers.size}
+                  onBulkDelete={handleBulkDelete}
+                  onBulkRoleChange={handleBulkRoleChange}
+                />
+                {loading ? (
+                  <p className="text-muted-foreground">Loading users...</p>
+                ) : (
+                  <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={selectedUsers.size === filteredUsers.length && filteredUsers.length > 0}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedUsers(new Set(filteredUsers.map(u => u.id)));
+                            } else {
+                              setSelectedUsers(new Set());
+                            }
+                          }}
+                        />
+                      </TableHead>
+                      <TableHead>Full Name</TableHead>
+                      <TableHead>Username</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredUsers.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell>
+                          <Checkbox
+                            checked={selectedUsers.has(user.id)}
+                            onCheckedChange={() => toggleUserSelection(user.id)}
+                          />
+                        </TableCell>
+                        <TableCell className="font-medium">{user.full_name}</TableCell>
+                        <TableCell>@{user.username}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">{user.role}</Badge>
+                        </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <UserSuspensionDialog 
+                            userId={user.id}
+                            userName={user.full_name}
+                            onSuccess={fetchUsers}
+                          />
+                          <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button size="sm" variant="destructive">
+                              <UserX className="w-4 h-4 mr-2" />
+                              Delete
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete User</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete {user.full_name}? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDeleteUser(user.id, user.full_name)}>
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                        </div>
+                      </TableCell>
+                        </TableRow>
+                      ))}
+                    {filteredUsers.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center text-muted-foreground">
+                          No users found
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="featured">
+          <FeaturedCreativesManager />
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <AnalyticsDashboard />
+        </TabsContent>
+
+        <TabsContent value="logs">
+          <ActivityLogsViewer />
+        </TabsContent>
+
+        <TabsContent value="sessions">
+          <SessionManagement />
+        </TabsContent>
+
+        <TabsContent value="verifications">
+          <VerificationRequests />
+        </TabsContent>
+      </Tabs>
+      </div>
+    </div>
+  );
+};
+
+export default AdminDashboard;

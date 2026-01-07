@@ -1,0 +1,185 @@
+import { Mail, MessageCircle, MapPin, Phone } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Footer } from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { PageSEO, FAQSchema } from "@/components/seo";
+
+const Contact = () => {
+  const contactInfo = [
+    {
+      icon: Mail,
+      title: "Email Us",
+      info: "hello@artistry.ng",
+      description: "We'll respond within 24 hours"
+    },
+    {
+      icon: Phone,
+      title: "Call Us",
+      info: "+234 (0) 800 ARTIST",
+      description: "Mon-Fri, 9AM-6PM WAT"
+    },
+    {
+      icon: MapPin,
+      title: "Visit Us",
+      info: "Lagos, Nigeria",
+      description: "Schedule an appointment first"
+    },
+    {
+      icon: MessageCircle,
+      title: "Live Chat",
+      info: "Available in-app",
+      description: "Instant support for members"
+    }
+  ];
+
+  const contactFaqs = [
+    {
+      question: "How do I reset my Artistry.ng password?",
+      answer: "Click on 'Forgot Password' on the login page and follow the instructions sent to your email."
+    },
+    {
+      question: "How do I delete my Artistry.ng account?",
+      answer: "Go to Settings → Account → Delete Account. Note that this action is permanent and cannot be undone."
+    },
+    {
+      question: "Can I change my creative role on Artistry.ng?",
+      answer: "Yes! Go to your Profile settings and update your creative role and genres at any time."
+    },
+    {
+      question: "How does matching work on Artistry.ng?",
+      answer: "Our algorithm considers your role, location, genres, and preferences to show you compatible creatives. When you both like each other, it's a match!"
+    },
+    {
+      question: "Is Artistry.ng really free?",
+      answer: "Yes! Our core features including unlimited matches and messaging are completely free. We offer premium features for those who want advanced capabilities."
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      <PageSEO
+        title="Contact Us - Get In Touch | Artistry.ng"
+        description="Have questions about Artistry.ng? Contact us via email, phone, or live chat. We respond within 24 hours. Lagos, Nigeria based support team."
+        canonicalUrl="https://artistry.ng/contact"
+        keywords="contact Artistry.ng, creative platform support, Artistry.ng help, Lagos Nigeria contact"
+        breadcrumbs={[
+          { name: "Home", url: "https://artistry.ng" },
+          { name: "Contact", url: "https://artistry.ng/contact" }
+        ]}
+      />
+      <FAQSchema faqs={contactFaqs} />
+      
+      {/* Hero Section */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto max-w-6xl text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+            Get In Touch
+          </h1>
+          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+            Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+          </p>
+        </div>
+      </section>
+
+      {/* Contact Grid */}
+      <section className="py-12 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {contactInfo.map((item, index) => (
+              <Card key={index} className="text-center group hover:shadow-xl transition-all duration-300 border-border/50">
+                <CardContent className="pt-6">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <item.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="font-bold mb-2">{item.title}</h3>
+                  <p className="text-primary font-semibold mb-1">{item.info}</p>
+                  <p className="text-sm text-muted-foreground">{item.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Contact Form */}
+          <div className="grid md:grid-cols-2 gap-8">
+            <Card className="border-border/50">
+              <CardHeader>
+                <h2 className="text-2xl font-bold">Send Us a Message</h2>
+                <p className="text-muted-foreground">Fill out the form and we'll get back to you shortly</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Full Name</label>
+                  <Input placeholder="John Doe" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Email Address</label>
+                  <Input type="email" placeholder="john@example.com" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Subject</label>
+                  <Input placeholder="How can we help?" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Message</label>
+                  <Textarea 
+                    placeholder="Tell us more about your inquiry..."
+                    className="min-h-[150px]"
+                  />
+                </div>
+                <Button variant="hero" className="w-full">
+                  Send Message
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* FAQ */}
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
+              
+              <Card>
+                <CardContent className="pt-6">
+                  <h3 className="font-bold mb-2">How do I reset my password?</h3>
+                  <p className="text-muted-foreground text-sm">Click on "Forgot Password" on the login page and follow the instructions sent to your email.</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6">
+                  <h3 className="font-bold mb-2">How do I delete my account?</h3>
+                  <p className="text-muted-foreground text-sm">Go to Settings → Account → Delete Account. Note that this action is permanent and cannot be undone.</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6">
+                  <h3 className="font-bold mb-2">Can I change my creative role?</h3>
+                  <p className="text-muted-foreground text-sm">Yes! Go to your Profile settings and update your creative role and genres at any time.</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6">
+                  <h3 className="font-bold mb-2">How does matching work?</h3>
+                  <p className="text-muted-foreground text-sm">Our algorithm considers your role, location, genres, and preferences to show you compatible creatives. When you both like each other, it's a match!</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6">
+                  <h3 className="font-bold mb-2">Is Artistry.ng really free?</h3>
+                  <p className="text-muted-foreground text-sm">Yes! Our core features including unlimited matches and messaging are completely free. We offer premium features for those who want advanced capabilities.</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default Contact;

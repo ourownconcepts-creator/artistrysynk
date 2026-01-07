@@ -1,0 +1,36 @@
+# Artistry.ng Robots.txt
+# https://artistry.ng
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: *
+Allow: /
+Crawl-delay: 5
+
+# Sitemap location
+Sitemap: https://artistry.ng/sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /admin*
+Disallow: /profile
+Disallow: /edit-profile
+Disallow: /setup-profile
+Disallow: /messages
+Disallow: /matches
+Disallow: /projects
+Disallow: /studio

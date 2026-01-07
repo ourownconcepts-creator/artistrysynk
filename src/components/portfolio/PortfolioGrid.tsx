@@ -1,0 +1,171 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Music, Video, Image, FileText, Play, ExternalLink, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+
+interface PortfolioItem {
+  id: string;
+  title: string;
+  description: string;
+  media_type: string;
+  media_url: string;
+  created_at: string;
+}
+
+interface PortfolioGridProps {
+  userId: string;
+  editable?: boolean;
+  onItemClick?: (item: PortfolioItem) => void;
+}
+
+const getMediaIcon = (type: string) => {
+  switch (type) {
+    case "audio": return Music;
+    case "video": return Video;
+    case "image": return Image;
+    default: return FileText;
+  }
+};
+
+export const PortfolioGrid = ({ userId, editable = false, onItemClick }: PortfolioGridProps) => {
+  const [items, setItems] = useState<PortfolioItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadItems();
+  }, [userId]);
+
+  const loadItems = async () => {
+    const { data, error } = await supabase
+      .from("portfolio_items")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      toast.error("Failed to load portfolio");
+    } else {
+      setItems(data || []);
+    }
+    setLoading(false);
+  };
+
+  const deleteItem = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    const { error } = await supabase
+      .from("portfolio_items")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      toast.error("Failed to delete item");
+    } else {
+      toast.success("Item deleted");
+      loadItems();
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="animate-pulse">
+            <div className="aspect-square bg-muted" />
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="text-center py-12 text-muted-foreground">
+        <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+        <p>No portfolio items yet</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      {items.map((item) => {
+        const Icon = getMediaIcon(item.media_type);
+        
+        return (
+          <Card 
+            key={item.id} 
+            className="group cursor-pointer overflow-hidden hover:shadow-lg transition-shadow"
+            onClick={() => onItemClick?.(item)}
+          >
+            <div className="aspect-square relative bg-gradient-to-br from-primary/10 to-secondary/10">
+              {item.media_type === "image" ? (
+                <img 
+                  src={item.media_url} 
+                  alt={item.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : item.media_type === "video" ? (
+                <div className="relative w-full h-full">
+                  <video 
+                    src={item.media_url}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                    <Play className="w-12 h-12 text-white" />
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <Icon className="w-16 h-16 text-muted-foreground/50" />
+                </div>
+              )}
+              
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="secondary" className="text-xs">
+                      {item.media_type}
+                    </Badge>
+                    <div className="flex gap-1">
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        className="h-8 w-8 text-white hover:bg-white/20"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(item.media_url, "_blank");
+                        }}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </Button>
+                      {editable && (
+                        <Button 
+                          size="icon" 
+                          variant="ghost" 
+                          className="h-8 w-8 text-white hover:bg-destructive/80"
+                          onClick={(e) => deleteItem(item.id, e)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <CardContent className="p-3">
+              <h3 className="font-medium truncate">{item.title}</h3>
+              {item.description && (
+                <p className="text-xs text-muted-foreground truncate">{item.description}</p>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+};

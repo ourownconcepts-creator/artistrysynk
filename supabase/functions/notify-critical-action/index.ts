@@ -1,0 +1,113 @@
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.78.0';
+import { Resend } from "https://esm.sh/resend@2.0.0";
+
+const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    const { actionType, adminId, targetUserId, details } = await req.json();
+
+    // Fetch admin and target user details
+    const { data: { user: adminUser } } = await supabase.auth.admin.getUserById(adminId);
+    
+    const { data: targetProfile } = await supabase
+      .from('profiles')
+      .select('full_name, username')
+      .eq('id', targetUserId)
+      .single();
+
+    // Fetch super admins and master admins
+    const { data: higherAdmins } = await supabase
+      .from('user_roles')
+      .select('user_id')
+      .in('role', ['master_admin', 'super_admin'])
+      .neq('user_id', adminId);
+
+    if (!higherAdmins || higherAdmins.length === 0) {
+      console.log('No higher-level admins to notify');
+      return new Response(
+        JSON.stringify({ message: 'No higher-level admins to notify' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
+    const criticalActions = ['delete_user', 'suspend_user', 'change_role', 'ban_user'];
+    const isCritical = criticalActions.includes(actionType);
+
+    if (!isCritical) {
+      return new Response(
+        JSON.stringify({ message: 'Action is not critical' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
+    // Send notification to higher-level admins
+    for (const admin of higherAdmins) {
+      const { data: { user } } = await supabase.auth.admin.getUserById(admin.user_id);
+      
+      if (user?.email) {
+        await resend.emails.send({
+          from: 'Admin Notifications <onboarding@resend.dev>',
+          to: [user.email],
+          subject: `Critical Admin Action: ${actionType}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h1 style="color: #dc2626;">Critical Admin Action Alert</h1>
+              <p>A critical action was performed that requires your attention:</p>
+              <div style="background-color: #fef2f2; padding: 15px; border-left: 4px solid #dc2626; margin: 20px 0;">
+                <p><strong>Admin:</strong> ${adminUser?.email}</p>
+                <p><strong>Action:</strong> ${actionType}</p>
+                <p><strong>Target User:</strong> ${targetProfile?.full_name} (@${targetProfile?.username})</p>
+                ${details ? `<p><strong>Details:</strong> ${details}</p>` : ''}
+                <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+              </div>
+              <p>Please review this action in your admin dashboard.</p>
+            </div>
+          `,
+        });
+
+        // Create in-app notification
+        await supabase
+          .from('admin_notifications')
+          .insert({
+            recipient_admin_id: admin.user_id,
+            sender_admin_id: adminId,
+            notification_type: 'critical_action',
+            title: `Critical Action: ${actionType}`,
+            message: `${adminUser?.email} performed ${actionType} on ${targetProfile?.full_name}`,
+            action_data: { 
+              action_type: actionType,
+              target_user_id: targetUserId,
+              details 
+            },
+          });
+      }
+    }
+
+    return new Response(
+      JSON.stringify({ message: 'Critical action notifications sent successfully' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+    );
+  } catch (error: any) {
+    console.error('Error sending critical action notification:', error);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+    );
+  }
+});

@@ -1,0 +1,377 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { Heart, X, User, MapPin, Sparkles, Filter } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Constants } from "@/integrations/supabase/types";
+import { FeaturedCreatives } from "@/components/discover/FeaturedCreatives";
+
+interface Profile {
+  id: string;
+  full_name: string;
+  username: string;
+  bio: string;
+  location: string;
+  avatar_url: string;
+  user_creative_roles: { role: string }[];
+  user_genres: { genre: string }[];
+}
+
+const Discover = () => {
+  const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [roleFilter, setRoleFilter] = useState<string>("");
+  const [genreFilter, setGenreFilter] = useState<string>("");
+  const [locationFilter, setLocationFilter] = useState<string>("");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) {
+        navigate("/auth");
+      } else {
+        setCurrentUser(user.id);
+        loadProfiles(user.id);
+      }
+    });
+  }, [navigate]);
+
+  const loadProfiles = async (userId: string) => {
+    setLoading(true);
+    
+    const { data: swipedIds } = await supabase
+      .from('swipes')
+      .select('swiped_id')
+      .eq('swiper_id', userId);
+
+    const excludeIds = [userId, ...(swipedIds?.map(s => s.swiped_id) || [])];
+
+    let query = supabase
+      .from('profiles')
+      .select(`
+        *,
+        user_creative_roles(role),
+        user_genres(genre)
+      `)
+      .not('id', 'in', `(${excludeIds.join(',')})`)
+      .limit(20);
+
+    if (locationFilter) {
+      query = query.ilike('location', `%${locationFilter}%`);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      toast.error("Failed to load profiles");
+    } else {
+      let filteredData = data || [];
+      
+      if (roleFilter) {
+        filteredData = filteredData.filter(p => 
+          p.user_creative_roles.some((r: any) => r.role === roleFilter)
+        );
+      }
+      
+      if (genreFilter) {
+        filteredData = filteredData.filter(p => 
+          p.user_genres.some((g: any) => g.genre === genreFilter)
+        );
+      }
+      
+      setProfiles(filteredData);
+      setCurrentIndex(0);
+    }
+    
+    setLoading(false);
+  };
+
+  const applyFilters = () => {
+    if (currentUser) {
+      loadProfiles(currentUser);
+    }
+  };
+
+  const handleSwipe = async (liked: boolean) => {
+    if (!currentUser || !profiles[currentIndex] || isTransitioning) return;
+
+    setIsTransitioning(true);
+
+    const { error } = await supabase
+      .from('swipes')
+      .insert({
+        swiper_id: currentUser,
+        swiped_id: profiles[currentIndex].id,
+        liked,
+      });
+
+    if (error) {
+      toast.error("Failed to swipe");
+      setIsTransitioning(false);
+      return;
+    }
+
+    if (liked) {
+      // Check if it's a match
+      const { data: matchData } = await supabase
+        .from('matches')
+        .select('*')
+        .or(`user_id_1.eq.${currentUser},user_id_2.eq.${currentUser}`)
+        .or(`user_id_1.eq.${profiles[currentIndex].id},user_id_2.eq.${profiles[currentIndex].id}`);
+
+      if (matchData && matchData.length > 0) {
+        toast.success("🎉 It's a match!", {
+          description: `You matched with ${profiles[currentIndex].full_name}!`,
+        });
+      }
+    }
+
+    // Delay to show skeleton transition
+    setTimeout(() => {
+      setCurrentIndex(prev => prev + 1);
+      setIsTransitioning(false);
+    }, 300);
+  };
+
+  const currentProfile = profiles[currentIndex];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+        <div className="text-center space-y-3">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-muted-foreground">Finding amazing creatives...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentProfile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <CardContent className="pt-6 text-center space-y-4">
+            <Sparkles className="w-12 h-12 mx-auto text-secondary" />
+            <h2 className="text-2xl font-bold">You've seen everyone!</h2>
+            <p className="text-muted-foreground">Check back later for more creatives</p>
+            <div className="flex gap-3">
+              <Button variant="hero" onClick={() => navigate("/matches")}>
+                View Your Matches
+              </Button>
+              <Button variant="outline" onClick={() => loadProfiles(currentUser!)}>
+                Refresh
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
+      <div className="max-w-md mx-auto py-8">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+            Discover
+          </h1>
+          <p className="text-muted-foreground">Find your creative collaborators</p>
+          
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="sm" className="mt-4">
+                <Filter className="w-4 h-4 mr-2" />
+                Filters
+                {(roleFilter || genreFilter || locationFilter) && (
+                  <Badge variant="secondary" className="ml-2">Active</Badge>
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Filter Creatives</SheetTitle>
+              </SheetHeader>
+              <div className="space-y-4 mt-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Role</label>
+                  <Select value={roleFilter} onValueChange={setRoleFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="All roles" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All roles</SelectItem>
+                      {Constants.public.Enums.creative_role.map((role) => (
+                        <SelectItem key={role} value={role}>{role}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Genre</label>
+                  <Select value={genreFilter} onValueChange={setGenreFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="All genres" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All genres</SelectItem>
+                      {Constants.public.Enums.genre.map((genre) => (
+                        <SelectItem key={genre} value={genre}>{genre}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Location</label>
+                  <Input
+                    placeholder="Enter location"
+                    value={locationFilter}
+                    onChange={(e) => setLocationFilter(e.target.value)}
+                  />
+                </div>
+                <Button onClick={applyFilters} className="w-full">
+                  Apply Filters
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    setRoleFilter("");
+                    setGenreFilter("");
+                    setLocationFilter("");
+                    if (currentUser) loadProfiles(currentUser);
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        <FeaturedCreatives />
+
+        <Card className="overflow-hidden">
+          {isTransitioning ? (
+            <>
+              <div className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 relative">
+                <Skeleton className="w-full h-full animate-pulse" />
+              </div>
+              <CardContent className="p-6 space-y-4">
+                <div className="space-y-2">
+                  <Skeleton className="h-8 w-48" />
+                  <Skeleton className="h-4 w-32" />
+                </div>
+                <Skeleton className="h-4 w-40" />
+                <div className="flex gap-2">
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                  <Skeleton className="h-6 w-24 rounded-full" />
+                </div>
+                <div className="flex gap-2">
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                </div>
+                <Skeleton className="h-16 w-full" />
+                <div className="flex gap-4 pt-4">
+                  <Skeleton className="h-12 flex-1 rounded-md" />
+                  <Skeleton className="h-12 flex-1 rounded-md" />
+                </div>
+              </CardContent>
+            </>
+          ) : (
+            <>
+              <div className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 relative animate-fade-in">
+                {currentProfile.avatar_url ? (
+                  <img
+                    src={currentProfile.avatar_url}
+                    alt={currentProfile.full_name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Avatar className="w-32 h-32">
+                      <AvatarFallback className="text-4xl">
+                        {currentProfile.full_name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                )}
+              </div>
+
+              <CardContent className="p-6 space-y-4 animate-fade-in">
+                <div>
+                  <h2 className="text-2xl font-bold">{currentProfile.full_name}</h2>
+                  <p className="text-muted-foreground">@{currentProfile.username}</p>
+                </div>
+
+                {currentProfile.location && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <MapPin className="w-4 h-4" />
+                    {currentProfile.location}
+                  </div>
+                )}
+
+                {currentProfile.user_creative_roles.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {currentProfile.user_creative_roles.map((r, i) => (
+                      <Badge key={i} variant="secondary">
+                        {r.role}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+
+                {currentProfile.user_genres.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {currentProfile.user_genres.map((g, i) => (
+                      <Badge key={i} variant="outline">
+                        {g.genre}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+
+                {currentProfile.bio && (
+                  <p className="text-sm">{currentProfile.bio}</p>
+                )}
+
+                <div className="flex gap-4 pt-4">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="flex-1"
+                    onClick={() => handleSwipe(false)}
+                    disabled={isTransitioning}
+                  >
+                    <X className="w-6 h-6" />
+                  </Button>
+                  <Button
+                    variant="hero"
+                    size="lg"
+                    className="flex-1"
+                    onClick={() => handleSwipe(true)}
+                    disabled={isTransitioning}
+                  >
+                    <Heart className="w-6 h-6" />
+                  </Button>
+                </div>
+              </CardContent>
+            </>
+          )}
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default Discover;
