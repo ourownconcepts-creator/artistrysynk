@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { MessageCircle, Users, Heart } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useSubscription } from "@/hooks/useSubscription";
 
 interface Match {
