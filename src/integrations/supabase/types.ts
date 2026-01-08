@@ -136,6 +136,47 @@ export type Database = {
           },
         ]
       }
+      external_file_links: {
+        Row: {
+          added_by: string
+          created_at: string
+          file_name: string
+          file_type: string | null
+          file_url: string
+          id: string
+          project_id: string
+          provider: string
+        }
+        Insert: {
+          added_by: string
+          created_at?: string
+          file_name: string
+          file_type?: string | null
+          file_url: string
+          id?: string
+          project_id: string
+          provider: string
+        }
+        Update: {
+          added_by?: string
+          created_at?: string
+          file_name?: string
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          project_id?: string
+          provider?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_file_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       featured_creatives: {
         Row: {
           created_at: string | null
@@ -333,6 +374,44 @@ export type Database = {
         }
         Relationships: []
       }
+      project_applications: {
+        Row: {
+          applicant_id: string
+          created_at: string
+          id: string
+          message: string | null
+          project_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          applicant_id: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          project_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          applicant_id?: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          project_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_applications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_files: {
         Row: {
           created_at: string | null
@@ -465,28 +544,37 @@ export type Database = {
       }
       projects: {
         Row: {
+          budget: string | null
           created_at: string | null
           created_by: string
           description: string | null
           id: string
+          is_public: boolean | null
+          looking_for: string[] | null
           status: Database["public"]["Enums"]["collaboration_status"] | null
           title: string
           updated_at: string | null
         }
         Insert: {
+          budget?: string | null
           created_at?: string | null
           created_by: string
           description?: string | null
           id?: string
+          is_public?: boolean | null
+          looking_for?: string[] | null
           status?: Database["public"]["Enums"]["collaboration_status"] | null
           title: string
           updated_at?: string | null
         }
         Update: {
+          budget?: string | null
           created_at?: string | null
           created_by?: string
           description?: string | null
           id?: string
+          is_public?: boolean | null
+          looking_for?: string[] | null
           status?: Database["public"]["Enums"]["collaboration_status"] | null
           title?: string
           updated_at?: string | null
@@ -567,6 +655,95 @@ export type Database = {
           next_scheduled?: string | null
           recipients?: Json
           report_type?: string
+        }
+        Relationships: []
+      }
+      service_orders: {
+        Row: {
+          amount: number
+          buyer_id: string
+          created_at: string
+          delivery_date: string | null
+          id: string
+          requirements: string | null
+          seller_id: string
+          service_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          buyer_id: string
+          created_at?: string
+          delivery_date?: string | null
+          id?: string
+          requirements?: string | null
+          seller_id: string
+          service_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          buyer_id?: string
+          created_at?: string
+          delivery_date?: string | null
+          id?: string
+          requirements?: string | null
+          seller_id?: string
+          service_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_orders_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          category: string
+          created_at: string
+          currency: string | null
+          delivery_days: number | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          price: number
+          seller_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          currency?: string | null
+          delivery_days?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          price: number
+          seller_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          currency?: string | null
+          delivery_days?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          price?: number
+          seller_id?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -672,6 +849,68 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      team_members: {
+        Row: {
+          created_at: string
+          id: string
+          role: string | null
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: string | null
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string | null
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       user_creative_roles: {
         Row: {

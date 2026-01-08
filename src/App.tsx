@@ -25,6 +25,9 @@ import Studio from "./pages/Studio";
 import AdminSettings from "./pages/AdminSettings";
 import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
+import OpenProjects from "./pages/OpenProjects";
+import Marketplace from "./pages/Marketplace";
+import TeamManagement from "./pages/TeamManagement";
 import FeaturesPage from "./pages/Features";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import Pricing from "./pages/Pricing";
@@ -70,6 +73,9 @@ const App = () => (
               <Route path="/projects" element={<ProtectedRoute><Navbar /><Projects /></ProtectedRoute>} />
               <Route path="/projects/:projectId" element={<ProtectedRoute><Navbar /><CollaborationRoom /></ProtectedRoute>} />
               <Route path="/studio/:itemId" element={<ProtectedRoute><Navbar /><Studio /></ProtectedRoute>} />
+              <Route path="/open-projects" element={<ProtectedRoute><Navbar /><OpenProjects /></ProtectedRoute>} />
+              <Route path="/marketplace" element={<ProtectedRoute><Navbar /><Marketplace /></ProtectedRoute>} />
+              <Route path="/teams" element={<ProtectedRoute><Navbar /><TeamManagement /></ProtectedRoute>} />
               <Route path="/features" element={<FeaturesPage />} />
               <Route path="/how-it-works" element={<HowItWorksPage />} />
               <Route path="/pricing" element={<Pricing />} />
