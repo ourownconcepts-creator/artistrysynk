@@ -1,11 +1,35 @@
-import { Briefcase, MapPin, Clock } from "lucide-react";
+import { useState } from "react";
+import { Briefcase, MapPin, Clock, Send, Upload } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { PageSEO } from "@/components/seo";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { toast } from "sonner";
+
+interface Job {
+  title: string;
+  department: string;
+  location: string;
+  type: string;
+  description: string;
+}
 
 const Careers = () => {
-  const openings = [
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    portfolio: "",
+    coverLetter: ""
+  });
+
+  const openings: Job[] = [
     {
       title: "Senior Frontend Developer",
       department: "Engineering",
@@ -46,6 +70,49 @@ const Careers = () => {
     "Latest tech equipment",
     "Stock options"
   ];
+
+  const handleApply = (job: Job) => {
+    setSelectedJob(job);
+    setIsOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.coverLetter) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    // Simulate submission
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    toast.success("Application submitted!", {
+      description: `Thanks for applying for ${selectedJob?.title}. We'll review your application and get back to you soon.`
+    });
+    
+    setFormData({ name: "", email: "", phone: "", portfolio: "", coverLetter: "" });
+    setIsOpen(false);
+    setIsSubmitting(false);
+  };
+
+  const handleGeneralApply = () => {
+    setSelectedJob({ 
+      title: "General Application", 
+      department: "Various", 
+      location: "Remote", 
+      type: "Full-time",
+      description: "Open application for future opportunities"
+    });
+    setIsOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
@@ -109,7 +176,7 @@ const Careers = () => {
                       <h3 className="text-2xl font-bold mb-2">{job.title}</h3>
                       <p className="text-primary font-semibold">{job.department}</p>
                     </div>
-                    <Button variant="hero">
+                    <Button variant="hero" onClick={() => handleApply(job)}>
                       Apply Now
                     </Button>
                   </div>
@@ -148,13 +215,78 @@ const Careers = () => {
               <p className="text-muted-foreground mb-6 text-lg">
                 We're always looking for exceptional talent. Send us your resume and tell us why you'd be a great fit for Artistry.ng.
               </p>
-              <Button variant="outline" size="lg">
+              <Button variant="outline" size="lg" onClick={handleGeneralApply}>
+                <Upload className="w-4 h-4 mr-2" />
                 Send Resume
               </Button>
             </CardContent>
           </Card>
         </div>
       </section>
+
+      {/* Application Modal */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Apply for {selectedJob?.title}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Full Name *</label>
+              <Input 
+                placeholder="John Doe"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Email Address *</label>
+              <Input 
+                type="email" 
+                placeholder="john@example.com"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Phone Number</label>
+              <Input 
+                type="tel" 
+                placeholder="+234 800 000 0000"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Portfolio/LinkedIn URL</label>
+              <Input 
+                placeholder="https://your-portfolio.com"
+                value={formData.portfolio}
+                onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Why should we hire you? *</label>
+              <Textarea 
+                placeholder="Tell us about your experience and why you'd be a great fit..."
+                className="min-h-[120px]"
+                value={formData.coverLetter}
+                onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
+              />
+            </div>
+            <Button variant="hero" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>Submitting...</>
+              ) : (
+                <>
+                  <Send className="w-4 h-4 mr-2" />
+                  Submit Application
+                </>
+              )}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>

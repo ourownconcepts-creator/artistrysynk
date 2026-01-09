@@ -1,12 +1,22 @@
-import { Mail, MessageCircle, MapPin, Phone } from "lucide-react";
+import { useState } from "react";
+import { Mail, MessageCircle, MapPin, Phone, Send } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { PageSEO, FAQSchema } from "@/components/seo";
+import { toast } from "sonner";
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const contactInfo = [
     {
       icon: Mail,
@@ -56,6 +66,32 @@ const Contact = () => {
       answer: "Yes! Our core features including unlimited matches and messaging are completely free. We offer premium features for those who want advanced capabilities."
     }
   ];
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    // Simulate submission (in production, this would call an edge function)
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    toast.success("Message sent successfully!", {
+      description: "We'll get back to you within 24 hours."
+    });
+    
+    setFormData({ name: "", email: "", subject: "", message: "" });
+    setIsSubmitting(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
@@ -108,29 +144,53 @@ const Contact = () => {
                 <h2 className="text-2xl font-bold">Send Us a Message</h2>
                 <p className="text-muted-foreground">Fill out the form and we'll get back to you shortly</p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Full Name</label>
-                  <Input placeholder="John Doe" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Email Address</label>
-                  <Input type="email" placeholder="john@example.com" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Subject</label>
-                  <Input placeholder="How can we help?" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Message</label>
-                  <Textarea 
-                    placeholder="Tell us more about your inquiry..."
-                    className="min-h-[150px]"
-                  />
-                </div>
-                <Button variant="hero" className="w-full">
-                  Send Message
-                </Button>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Full Name</label>
+                    <Input 
+                      placeholder="John Doe"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Email Address</label>
+                    <Input 
+                      type="email" 
+                      placeholder="john@example.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Subject</label>
+                    <Input 
+                      placeholder="How can we help?"
+                      value={formData.subject}
+                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Message</label>
+                    <Textarea 
+                      placeholder="Tell us more about your inquiry..."
+                      className="min-h-[150px]"
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    />
+                  </div>
+                  <Button variant="hero" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>Sending...</>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" />
+                        Send Message
+                      </>
+                    )}
+                  </Button>
+                </form>
               </CardContent>
             </Card>
 
@@ -138,40 +198,14 @@ const Contact = () => {
             <div className="space-y-6">
               <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
               
-              <Card>
-                <CardContent className="pt-6">
-                  <h3 className="font-bold mb-2">How do I reset my password?</h3>
-                  <p className="text-muted-foreground text-sm">Click on "Forgot Password" on the login page and follow the instructions sent to your email.</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-6">
-                  <h3 className="font-bold mb-2">How do I delete my account?</h3>
-                  <p className="text-muted-foreground text-sm">Go to Settings → Account → Delete Account. Note that this action is permanent and cannot be undone.</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-6">
-                  <h3 className="font-bold mb-2">Can I change my creative role?</h3>
-                  <p className="text-muted-foreground text-sm">Yes! Go to your Profile settings and update your creative role and genres at any time.</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-6">
-                  <h3 className="font-bold mb-2">How does matching work?</h3>
-                  <p className="text-muted-foreground text-sm">Our algorithm considers your role, location, genres, and preferences to show you compatible creatives. When you both like each other, it's a match!</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-6">
-                  <h3 className="font-bold mb-2">Is Artistry.ng really free?</h3>
-                  <p className="text-muted-foreground text-sm">Yes! Our core features including unlimited matches and messaging are completely free. We offer premium features for those who want advanced capabilities.</p>
-                </CardContent>
-              </Card>
+              {contactFaqs.map((faq, index) => (
+                <Card key={index}>
+                  <CardContent className="pt-6">
+                    <h3 className="font-bold mb-2">{faq.question}</h3>
+                    <p className="text-muted-foreground text-sm">{faq.answer}</p>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </div>
