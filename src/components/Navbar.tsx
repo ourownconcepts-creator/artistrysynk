@@ -3,21 +3,24 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sparkles, Compass, MessageCircle, User, LogOut } from "lucide-react";
+import { Sparkles, Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen } from "lucide-react";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { useSubscription } from "@/hooks/useSubscription";
 
 export const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const { isStudio } = useSubscription();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -109,6 +112,26 @@ export const Navbar = () => {
                   <User className="w-4 h-4 mr-2" />
                   Profile
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/projects")}>
+                  <FolderOpen className="w-4 h-4 mr-2" />
+                  My Projects
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/open-projects")}>
+                  <Briefcase className="w-4 h-4 mr-2" />
+                  Open Projects
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/marketplace")}>
+                  <Store className="w-4 h-4 mr-2" />
+                  Marketplace
+                </DropdownMenuItem>
+                {isStudio && (
+                  <DropdownMenuItem onClick={() => navigate("/teams")}>
+                    <Users className="w-4 h-4 mr-2" />
+                    Teams
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="w-4 h-4 mr-2" />
                   Sign Out

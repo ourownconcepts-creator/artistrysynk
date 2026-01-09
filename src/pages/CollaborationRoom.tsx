@@ -13,9 +13,10 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { 
   ArrowLeft, Plus, CheckCircle2, Circle, Clock, Upload, 
-  FileText, Users, Calendar, MoreVertical 
+  FileText, Users, Calendar, MoreVertical, Link as LinkIcon 
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { ExternalFileLinks } from "@/components/projects/ExternalFileLinks";
 
 interface Project {
   id: string;
@@ -416,6 +417,8 @@ const CollaborationRoom = () => {
                 )}
               </CardContent>
             </Card>
+
+            {currentUser && <ExternalFileLinks projectId={projectId!} currentUserId={currentUser} />}
           </div>
 
           <div className="space-y-6">
