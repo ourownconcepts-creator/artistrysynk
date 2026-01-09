@@ -1,9 +1,16 @@
-import { Calendar, User, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { Calendar, User, ArrowRight, Mail } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 const Blog = () => {
+  const [email, setEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("All");
+
   const posts = [
     {
       title: "5 Tips for Finding the Perfect Creative Collaborator",
@@ -57,6 +64,36 @@ const Blog = () => {
 
   const categories = ["All", "Tips & Tricks", "Success Stories", "Industry Insights"];
 
+  const filteredPosts = activeCategory === "All" 
+    ? posts 
+    : posts.filter(post => post.category === activeCategory);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email) {
+      toast.error("Please enter your email address");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    setIsSubscribing(true);
+    
+    // Simulate subscription (in production, this would call an edge function)
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    toast.success("Successfully subscribed!", {
+      description: "You'll receive our latest updates in your inbox."
+    });
+    
+    setEmail("");
+    setIsSubscribing(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       {/* Hero Section */}
@@ -78,8 +115,9 @@ const Blog = () => {
             {categories.map((category, index) => (
               <Button
                 key={index}
-                variant={index === 0 ? "hero" : "outline"}
+                variant={activeCategory === category ? "hero" : "outline"}
                 className="rounded-full"
+                onClick={() => setActiveCategory(category)}
               >
                 {category}
               </Button>
@@ -92,10 +130,10 @@ const Blog = () => {
       <section className="py-12 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post, index) => (
+            {filteredPosts.map((post, index) => (
               <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-border/50 flex flex-col">
                 <CardHeader>
-                  <div className="inline-block bg-gradient-to-r from-primary/10 to-secondary/10 px-3 py-1 rounded-full text-sm font-semibold text-primary mb-3">
+                  <div className="inline-block bg-gradient-to-r from-primary/10 to-secondary/10 px-3 py-1 rounded-full text-sm font-semibold text-primary mb-3 w-fit">
                     {post.category}
                   </div>
                   <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
@@ -137,22 +175,25 @@ const Blog = () => {
         <div className="container mx-auto max-w-4xl text-center">
           <Card className="border-primary/20 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
             <CardContent className="pt-8 pb-8">
+              <Mail className="w-12 h-12 mx-auto mb-4 text-primary" />
               <h2 className="text-3xl font-bold mb-4">
                 Subscribe to Our Newsletter
               </h2>
               <p className="text-muted-foreground mb-6 text-lg">
                 Get the latest insights, tips, and success stories delivered to your inbox
               </p>
-              <div className="flex gap-3 max-w-md mx-auto">
-                <input
+              <form onSubmit={handleSubscribe} className="flex gap-3 max-w-md mx-auto">
+                <Input
                   type="email"
                   placeholder="Enter your email"
-                  className="flex-1 px-4 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="flex-1"
                 />
-                <Button variant="hero">
-                  Subscribe
+                <Button variant="hero" disabled={isSubscribing}>
+                  {isSubscribing ? "Subscribing..." : "Subscribe"}
                 </Button>
-              </div>
+              </form>
             </CardContent>
           </Card>
         </div>
