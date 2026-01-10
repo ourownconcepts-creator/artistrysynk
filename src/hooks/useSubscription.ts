@@ -65,23 +65,42 @@ export const useSubscription = () => {
   const isPro = subscription?.tier === "pro" || subscription?.tier === "studio";
   const isStudio = subscription?.tier === "studio";
 
+  // Pro features
   const canSeeWhoLikedYou = isPro;
   const canRewindSwipes = isPro;
   const hasVerifiedBadge = isPro;
   const hasPriorityVisibility = isPro;
+  const hasAdvancedMatching = isPro;
+  const hasPortfolioAnalytics = isPro;
+  const hasNoAds = isPro;
+  
+  // Studio features
   const hasAdvancedAnalytics = isStudio;
   const hasTeamAccounts = isStudio;
+  const hasApiAccess = isStudio;
+  const canPostPublicProjects = isStudio;
+  const hasFeaturedListings = isStudio;
+  const hasPrioritySupport = isStudio;
 
   return {
     subscription,
     loading,
     isPro,
     isStudio,
+    // Pro features
     canSeeWhoLikedYou,
     canRewindSwipes,
     hasVerifiedBadge,
     hasPriorityVisibility,
+    hasAdvancedMatching,
+    hasPortfolioAnalytics,
+    hasNoAds,
+    // Studio features
     hasAdvancedAnalytics,
     hasTeamAccounts,
+    hasApiAccess,
+    canPostPublicProjects,
+    hasFeaturedListings,
+    hasPrioritySupport,
   };
 };

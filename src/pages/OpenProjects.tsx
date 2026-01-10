@@ -8,9 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Search, Users, Calendar, Send, Briefcase, CheckCircle } from "lucide-react";
+import { Search, Users, Calendar, Send, Briefcase, CheckCircle, Plus, Crown } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { useSubscription } from "@/hooks/useSubscription";
+import { Constants } from "@/integrations/supabase/types";
 
 interface OpenProject {
   id: string;
@@ -30,12 +33,22 @@ interface OpenProject {
 
 const OpenProjects = () => {
   const navigate = useNavigate();
+  const { canPostPublicProjects, isStudio } = useSubscription();
   const [projects, setProjects] = useState<OpenProject[]>([]);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [applyingTo, setApplyingTo] = useState<string | null>(null);
   const [applicationMessage, setApplicationMessage] = useState("");
+  
+  // New project creation state
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [newProject, setNewProject] = useState({
+    title: "",
+    description: "",
+    budget: "",
+    looking_for: [] as string[],
+  });
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -108,6 +121,42 @@ const OpenProjects = () => {
     loadProjects(currentUser);
   };
 
+  const createPublicProject = async () => {
+    if (!currentUser || !newProject.title.trim()) {
+      toast.error("Project title is required");
+      return;
+    }
+
+    const { data, error } = await supabase.from("projects").insert({
+      title: newProject.title,
+      description: newProject.description,
+      budget: newProject.budget,
+      looking_for: newProject.looking_for,
+      created_by: currentUser,
+      is_public: true,
+      status: "active",
+    }).select().single();
+
+    if (error) {
+      toast.error("Failed to create project");
+      return;
+    }
+
+    toast.success("Project posted successfully!");
+    setShowCreateDialog(false);
+    setNewProject({ title: "", description: "", budget: "", looking_for: [] });
+    navigate(`/projects/${data.id}`);
+  };
+
+  const toggleRole = (role: string) => {
+    setNewProject(prev => ({
+      ...prev,
+      looking_for: prev.looking_for.includes(role)
+        ? prev.looking_for.filter(r => r !== role)
+        : [...prev.looking_for, role]
+    }));
+  };
+
   const filteredProjects = projects.filter(
     (p) =>
       p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -126,11 +175,81 @@ const OpenProjects = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
       <div className="max-w-6xl mx-auto py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Open Projects
-          </h1>
-          <p className="text-muted-foreground">Discover collaboration opportunities and apply to join</p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Open Projects
+            </h1>
+            <p className="text-muted-foreground">Discover collaboration opportunities and apply to join</p>
+          </div>
+          
+          {/* Direct Project Posting for Studio users */}
+          {canPostPublicProjects ? (
+            <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+              <DialogTrigger asChild>
+                <Button variant="hero">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Post a Project
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>Post a Public Project</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Project Title</Label>
+                    <Input
+                      value={newProject.title}
+                      onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
+                      placeholder="Enter project title"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Description</Label>
+                    <Textarea
+                      value={newProject.description}
+                      onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                      placeholder="Describe your project and what you're looking for..."
+                      rows={3}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Budget (optional)</Label>
+                    <Input
+                      value={newProject.budget}
+                      onChange={(e) => setNewProject({ ...newProject, budget: e.target.value })}
+                      placeholder="e.g., ₦50,000 - ₦100,000"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Looking for (select roles)</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {Constants.public.Enums.creative_role.map((role) => (
+                        <Badge
+                          key={role}
+                          variant={newProject.looking_for.includes(role) ? "default" : "outline"}
+                          className="cursor-pointer"
+                          onClick={() => toggleRole(role)}
+                        >
+                          {role.replace('_', ' ')}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <Button onClick={createPublicProject} className="w-full">
+                    <Send className="w-4 h-4 mr-2" />
+                    Post Project
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          ) : (
+            <Button variant="outline" onClick={() => navigate("/pricing")}>
+              <Crown className="w-4 h-4 mr-2 text-yellow-500" />
+              Upgrade to Post
+            </Button>
+          )}
         </div>
 
         <div className="relative mb-6">

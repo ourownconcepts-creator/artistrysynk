@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Constants } from "@/integrations/supabase/types";
 import { FeaturedCreatives } from "@/components/discover/FeaturedCreatives";
+import { TrendingCollaborations } from "@/components/discover/TrendingCollaborations";
 import { useSubscription } from "@/hooks/useSubscription";
 
 interface Profile {
@@ -303,6 +304,7 @@ const Discover = () => {
         </div>
 
         <FeaturedCreatives />
+        <TrendingCollaborations />
 
         <Card className="overflow-hidden">
           {isTransitioning ? (
