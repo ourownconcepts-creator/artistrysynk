@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sparkles, Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen } from "lucide-react";
+import { Sparkles, Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code } from "lucide-react";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import {
   DropdownMenu,
@@ -126,10 +126,16 @@ export const Navbar = () => {
                   Marketplace
                 </DropdownMenuItem>
                 {isStudio && (
-                  <DropdownMenuItem onClick={() => navigate("/teams")}>
-                    <Users className="w-4 h-4 mr-2" />
-                    Teams
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuItem onClick={() => navigate("/teams")}>
+                      <Users className="w-4 h-4 mr-2" />
+                      Teams
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/api-access")}>
+                      <Code className="w-4 h-4 mr-2" />
+                      API Access
+                    </DropdownMenuItem>
+                  </>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>

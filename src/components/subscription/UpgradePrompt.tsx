@@ -6,10 +6,16 @@ import { useNavigate } from "react-router-dom";
 interface UpgradePromptProps {
   feature: string;
   description?: string;
+  requiredTier?: "pro" | "studio";
 }
 
-export const UpgradePrompt = ({ feature, description }: UpgradePromptProps) => {
+export const UpgradePrompt = ({ feature, description, requiredTier = "pro" }: UpgradePromptProps) => {
   const navigate = useNavigate();
+
+  const tierLabel = requiredTier === "studio" ? "Studio" : "Pro";
+  const defaultDescription = requiredTier === "studio"
+    ? "This feature is available for Studio members only."
+    : "This feature is available for Pro members only.";
 
   return (
     <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5">
@@ -19,11 +25,11 @@ export const UpgradePrompt = ({ feature, description }: UpgradePromptProps) => {
         </div>
         <h3 className="text-lg font-semibold mb-2">{feature}</h3>
         <p className="text-muted-foreground text-sm mb-4">
-          {description || "This feature is available for Pro members only."}
+          {description || defaultDescription}
         </p>
         <Button variant="hero" onClick={() => navigate("/pricing")}>
           <Crown className="w-4 h-4 mr-2" />
-          Upgrade to Pro
+          Upgrade to {tierLabel}
         </Button>
       </CardContent>
     </Card>
