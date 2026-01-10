@@ -5,14 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Heart, X, User, MapPin, Sparkles, Filter, RotateCcw, Crown } from "lucide-react";
+import { Heart, X, User, MapPin, Sparkles, Filter, RotateCcw, Crown, Zap } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Constants } from "@/integrations/supabase/types";
 import { FeaturedCreatives } from "@/components/discover/FeaturedCreatives";
+import { FeaturedProfiles } from "@/components/discover/FeaturedProfiles";
 import { TrendingCollaborations } from "@/components/discover/TrendingCollaborations";
 import { useSubscription } from "@/hooks/useSubscription";
 
@@ -25,6 +28,9 @@ interface Profile {
   avatar_url: string;
   user_creative_roles: { role: string }[];
   user_genres: { genre: string }[];
+  user_skill_tags?: { skill: string }[];
+  synergyScore?: number;
+  matchReason?: string;
 }
 
 const Discover = () => {
@@ -303,6 +309,7 @@ const Discover = () => {
           </Sheet>
         </div>
 
+        <FeaturedProfiles />
         <FeaturedCreatives />
         <TrendingCollaborations />
 

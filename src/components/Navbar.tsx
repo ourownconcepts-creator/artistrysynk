@@ -94,6 +94,17 @@ export const Navbar = () => {
               </Button>
             </Link>
 
+            <Link to="/jobs">
+              <Button
+                variant={isActive("/jobs") ? "default" : "ghost"}
+                size="sm"
+                className="gap-2"
+              >
+                <Briefcase className="w-4 h-4" />
+                Jobs
+              </Button>
+            </Link>
+
             {user && <NotificationBell userId={user.id} />}
 
             <DropdownMenu>

@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { Camera, Upload, Link, Instagram, Twitter, Youtube, Music, Mic, Users, Film, Palette } from "lucide-react";
+import { SkillTagsInput } from "@/components/profile/SkillTagsInput";
 
 const creativeRoles = [
   { value: 'musician', label: 'Musician', icon: Music },
@@ -374,6 +375,14 @@ const EditProfile = () => {
                   ))}
                 </div>
               </div>
+
+              {/* Custom Skill Tags */}
+              {userId && (
+                <div className="space-y-2">
+                  <Label>Custom Skills</Label>
+                  <SkillTagsInput userId={userId} />
+                </div>
+              )}
 
               {/* Social Links */}
               <div className="space-y-4">
