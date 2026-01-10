@@ -210,6 +210,54 @@ export type Database = {
         }
         Relationships: []
       }
+      job_postings: {
+        Row: {
+          budget_range: string | null
+          created_at: string
+          description: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          job_type: string
+          location: string | null
+          required_roles: string[] | null
+          required_skills: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          budget_range?: string | null
+          created_at?: string
+          description: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          job_type?: string
+          location?: string | null
+          required_roles?: string[] | null
+          required_skills?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          budget_range?: string | null
+          created_at?: string
+          description?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          job_type?: string
+          location?: string | null
+          required_roles?: string[] | null
+          required_skills?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       matches: {
         Row: {
           id: string
@@ -338,11 +386,14 @@ export type Database = {
           bio: string | null
           cover_image_url: string | null
           created_at: string | null
+          featured_until: string | null
           full_name: string
           id: string
+          is_featured: boolean | null
           is_verified: boolean | null
           location: string | null
           social_links: Json | null
+          synergy_boost_score: number | null
           updated_at: string | null
           username: string
         }
@@ -351,11 +402,14 @@ export type Database = {
           bio?: string | null
           cover_image_url?: string | null
           created_at?: string | null
+          featured_until?: string | null
           full_name: string
           id: string
+          is_featured?: boolean | null
           is_verified?: boolean | null
           location?: string | null
           social_links?: Json | null
+          synergy_boost_score?: number | null
           updated_at?: string | null
           username: string
         }
@@ -364,11 +418,14 @@ export type Database = {
           bio?: string | null
           cover_image_url?: string | null
           created_at?: string | null
+          featured_until?: string | null
           full_name?: string
           id?: string
+          is_featured?: boolean | null
           is_verified?: boolean | null
           location?: string | null
           social_links?: Json | null
+          synergy_boost_score?: number | null
           updated_at?: string | null
           username?: string
         }
@@ -1056,6 +1113,27 @@ export type Database = {
           last_active?: string | null
           session_id?: string
           user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_skill_tags: {
+        Row: {
+          created_at: string
+          id: string
+          skill: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          skill: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          skill?: string
           user_id?: string
         }
         Relationships: []

@@ -29,6 +29,7 @@ import OpenProjects from "./pages/OpenProjects";
 import Marketplace from "./pages/Marketplace";
 import TeamManagement from "./pages/TeamManagement";
 import ApiAccess from "./pages/ApiAccess";
+import Jobs from "./pages/Jobs";
 import FeaturesPage from "./pages/Features";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import Pricing from "./pages/Pricing";
@@ -78,6 +79,7 @@ const App = () => (
               <Route path="/marketplace" element={<ProtectedRoute><Navbar /><Marketplace /></ProtectedRoute>} />
               <Route path="/teams" element={<ProtectedRoute><Navbar /><TeamManagement /></ProtectedRoute>} />
               <Route path="/api-access" element={<ProtectedRoute><Navbar /><ApiAccess /></ProtectedRoute>} />
+              <Route path="/jobs" element={<ProtectedRoute><Navbar /><Jobs /></ProtectedRoute>} />
               <Route path="/features" element={<FeaturesPage />} />
               <Route path="/how-it-works" element={<HowItWorksPage />} />
               <Route path="/pricing" element={<Pricing />} />
