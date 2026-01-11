@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ExternalFileLinks } from "@/components/projects/ExternalFileLinks";
+import { ActivityFeed } from "@/components/projects/ActivityFeed";
 
 interface Project {
   id: string;
@@ -447,19 +448,7 @@ const CollaborationRoom = () => {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5" />
-                  Activity
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  Recent activity will appear here
-                </p>
-              </CardContent>
-            </Card>
+            <ActivityFeed projectId={projectId!} />
           </div>
         </div>
       </div>

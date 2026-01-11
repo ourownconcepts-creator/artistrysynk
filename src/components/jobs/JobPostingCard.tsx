@@ -29,6 +29,7 @@ interface JobPostingCardProps {
   isOwner?: boolean;
   onEdit?: (jobId: string) => void;
   onDelete?: (jobId: string) => void;
+  onViewApplications?: (jobId: string) => void;
 }
 
 export const JobPostingCard = ({ 
@@ -36,7 +37,8 @@ export const JobPostingCard = ({
   onApply, 
   isOwner = false,
   onEdit,
-  onDelete 
+  onDelete,
+  onViewApplications,
 }: JobPostingCardProps) => {
   const jobTypeLabels: Record<string, string> = {
     contract: "Contract",
@@ -106,7 +108,7 @@ export const JobPostingCard = ({
           </div>
         )}
 
-        <div className="flex gap-2 pt-2">
+        <div className="flex gap-2 pt-2 flex-wrap">
           {isOwner ? (
             <>
               <Button size="sm" variant="outline" onClick={() => onEdit?.(job.id)}>
@@ -114,6 +116,9 @@ export const JobPostingCard = ({
               </Button>
               <Button size="sm" variant="destructive" onClick={() => onDelete?.(job.id)}>
                 Delete
+              </Button>
+              <Button size="sm" variant="secondary" onClick={() => onViewApplications?.(job.id)}>
+                View Applications
               </Button>
             </>
           ) : (
