@@ -35,11 +35,13 @@ interface Profile {
 
 const Discover = () => {
   const navigate = useNavigate();
-  const { canRewindSwipes } = useSubscription();
+  const { canRewindSwipes, hasAdvancedMatching } = useSubscription();
   const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [currentUserProfile, setCurrentUserProfile] = useState<any>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [aiMatchingEnabled, setAiMatchingEnabled] = useState(false);
   const [roleFilter, setRoleFilter] = useState<string>("");
   const [genreFilter, setGenreFilter] = useState<string>("");
   const [locationFilter, setLocationFilter] = useState<string>("");
@@ -52,10 +54,40 @@ const Discover = () => {
         navigate("/auth");
       } else {
         setCurrentUser(user.id);
+        loadCurrentUserProfile(user.id);
         loadProfiles(user.id);
       }
     });
   }, [navigate]);
+
+  const loadCurrentUserProfile = async (userId: string) => {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select(`
+        *,
+        user_creative_roles(role),
+        user_genres(genre)
+      `)
+      .eq('id', userId)
+      .single();
+
+    const { data: skills } = await supabase
+      .from('user_skill_tags')
+      .select('skill')
+      .eq('user_id', userId);
+
+    if (profile) {
+      setCurrentUserProfile({
+        id: profile.id,
+        full_name: profile.full_name,
+        location: profile.location,
+        bio: profile.bio,
+        roles: profile.user_creative_roles?.map((r: any) => r.role) || [],
+        genres: profile.user_genres?.map((g: any) => g.genre) || [],
+        skills: skills?.map((s: any) => s.skill) || [],
+      });
+    }
+  };
 
   const loadProfiles = async (userId: string) => {
     setLoading(true);
@@ -98,6 +130,38 @@ const Discover = () => {
         filteredData = filteredData.filter(p => 
           p.user_genres.some((g: any) => g.genre === genreFilter)
         );
+      }
+      
+      // Apply AI matching if enabled and user has advanced matching
+      if (aiMatchingEnabled && hasAdvancedMatching && currentUserProfile && filteredData.length > 0) {
+        try {
+          const candidates = filteredData.map(p => ({
+            id: p.id,
+            full_name: p.full_name,
+            location: p.location,
+            bio: p.bio,
+            roles: p.user_creative_roles?.map((r: any) => r.role) || [],
+            genres: p.user_genres?.map((g: any) => g.genre) || [],
+            skills: [],
+          }));
+
+          const response = await supabase.functions.invoke('ai-match-scoring', {
+            body: { currentUser: currentUserProfile, candidates }
+          });
+
+          if (response.data?.scoredProfiles) {
+            // Map scored profiles back to original data with scores
+            const scoredMap = new Map(response.data.scoredProfiles.map((p: any) => [p.id, p]));
+            filteredData = filteredData.map(p => ({
+              ...p,
+              synergyScore: (scoredMap.get(p.id) as any)?.synergyScore || 50,
+              matchReason: (scoredMap.get(p.id) as any)?.matchReason || undefined,
+            })).sort((a, b) => (b.synergyScore || 0) - (a.synergyScore || 0));
+          }
+        } catch (err) {
+          console.error("AI matching failed:", err);
+          // Continue without AI scoring
+        }
       }
       
       setProfiles(filteredData);

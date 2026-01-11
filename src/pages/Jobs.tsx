@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JobPostingCard } from "@/components/jobs/JobPostingCard";
 import { JobPostingForm } from "@/components/jobs/JobPostingForm";
+import { JobApplicationDialog } from "@/components/jobs/JobApplicationDialog";
+import { JobApplicationsList } from "@/components/jobs/JobApplicationsList";
 import { UpgradePrompt } from "@/components/subscription/UpgradePrompt";
 import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
@@ -45,6 +47,8 @@ const Jobs = () => {
   const [jobTypeFilter, setJobTypeFilter] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [editJob, setEditJob] = useState<JobPosting | null>(null);
+  const [applyingJob, setApplyingJob] = useState<JobPosting | null>(null);
+  const [selectedJobForApplications, setSelectedJobForApplications] = useState<string | null>(null);
 
   const canPostJobs = isPro || isStudio;
 
@@ -105,10 +109,12 @@ const Jobs = () => {
   const handleApply = (jobId: string) => {
     const job = jobs.find(j => j.id === jobId);
     if (job) {
-      toast.success("Application feature coming soon!", {
-        description: `Contact @${job.profiles?.username} to apply`,
-      });
+      setApplyingJob(job);
     }
+  };
+
+  const handleViewApplications = (jobId: string) => {
+    setSelectedJobForApplications(selectedJobForApplications === jobId ? null : jobId);
   };
 
   const handleEdit = (jobId: string) => {
@@ -279,15 +285,22 @@ const Jobs = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-4">
                 {myJobs.map((job) => (
-                  <JobPostingCard
-                    key={job.id}
-                    job={job}
-                    isOwner
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                  />
+                  <div key={job.id} className="space-y-4">
+                    <JobPostingCard
+                      job={job}
+                      isOwner
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                      onViewApplications={handleViewApplications}
+                    />
+                    {selectedJobForApplications === job.id && (
+                      <div className="ml-4 border-l-2 border-primary/20 pl-4">
+                        <JobApplicationsList jobId={job.id} isOwner={true} />
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             )}
@@ -306,6 +319,13 @@ const Jobs = () => {
             editJob={editJob}
           />
         )}
+
+        <JobApplicationDialog
+          job={applyingJob}
+          open={!!applyingJob}
+          onOpenChange={(open) => !open && setApplyingJob(null)}
+          currentUserId={currentUser || ""}
+        />
       </div>
     </div>
   );

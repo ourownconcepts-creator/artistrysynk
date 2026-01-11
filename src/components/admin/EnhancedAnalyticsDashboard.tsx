@@ -103,8 +103,27 @@ export const EnhancedAnalyticsDashboard = () => {
       totalMatches: matches.data?.length || 0,
       totalMessages: messages.data?.length || 0,
       retentionRate: Math.min(retentionRate, 100),
-      avgSessionDuration: 24 // Mock - would need actual session tracking
+      avgSessionDuration: await calculateAvgSessionDuration()
     });
+  };
+
+  const calculateAvgSessionDuration = async (): Promise<number> => {
+    const { data: sessions } = await supabase
+      .from('user_sessions')
+      .select('created_at, last_active')
+      .eq('is_active', false)
+      .limit(100);
+
+    if (!sessions || sessions.length === 0) return 0;
+
+    const durations = sessions.map(s => {
+      const start = new Date(s.created_at).getTime();
+      const end = new Date(s.last_active).getTime();
+      return (end - start) / 1000 / 60; // Convert to minutes
+    }).filter(d => d > 0 && d < 480); // Filter out invalid durations (more than 8 hours)
+
+    if (durations.length === 0) return 0;
+    return Math.round(durations.reduce((a, b) => a + b, 0) / durations.length);
   };
 
   const fetchUserGrowth = async () => {
@@ -232,11 +251,28 @@ export const EnhancedAnalyticsDashboard = () => {
   const fetchHourlyActivity = async () => {
     const { data: sessions } = await supabase
       .from('user_sessions')
-      .select('last_active');
+      .select('last_active')
+      .gte('last_active', subDays(new Date(), 7).toISOString());
+
+    if (!sessions || sessions.length === 0) {
+      // Fallback if no session data
+      setHourlyActivity(Array.from({ length: 24 }, (_, i) => ({
+        hour: `${i.toString().padStart(2, '0')}:00`,
+        sessions: 0
+      })));
+      return;
+    }
+
+    // Count sessions by hour
+    const hourCounts: Record<number, number> = {};
+    sessions.forEach(s => {
+      const hour = new Date(s.last_active).getHours();
+      hourCounts[hour] = (hourCounts[hour] || 0) + 1;
+    });
 
     const hours = Array.from({ length: 24 }, (_, i) => ({
       hour: `${i.toString().padStart(2, '0')}:00`,
-      sessions: Math.floor(Math.random() * 50) + 10 // Mock data - would need actual session tracking
+      sessions: hourCounts[i] || 0
     }));
 
     setHourlyActivity(hours);
