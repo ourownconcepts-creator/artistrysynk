@@ -100,16 +100,45 @@ const HowItWorksPage = () => {
           <p className="text-muted-foreground mb-8 text-lg">
             Watch how creatives are finding their perfect collaborators
           </p>
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden shadow-2xl border-2 border-primary/20">
             <CardContent className="p-0">
-              <div className="aspect-video bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 flex items-center justify-center">
-                <div className="text-center">
-                  <Rocket className="w-20 h-20 mx-auto mb-4 text-primary" />
-                  <p className="text-xl font-semibold">Demo video coming soon</p>
-                </div>
+              <div className="relative aspect-video bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+                {/* Embedded YouTube Tutorial Video */}
+                <iframe
+                  className="absolute inset-0 w-full h-full"
+                  src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1"
+                  title="Artistry.ng Platform Tutorial"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
               </div>
             </CardContent>
           </Card>
+          
+          {/* Video Features Highlights */}
+          <div className="grid md:grid-cols-3 gap-6 mt-12">
+            <div className="p-6 rounded-xl bg-card border border-border">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4">
+                <UserPlus className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold mb-2">Quick Setup</h3>
+              <p className="text-sm text-muted-foreground">Create your profile in under 2 minutes</p>
+            </div>
+            <div className="p-6 rounded-xl bg-card border border-border">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center mx-auto mb-4">
+                <Users className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold mb-2">Smart Matching</h3>
+              <p className="text-sm text-muted-foreground">AI-powered creative synergy scoring</p>
+            </div>
+            <div className="p-6 rounded-xl bg-card border border-border">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent to-secondary flex items-center justify-center mx-auto mb-4">
+                <Rocket className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold mb-2">Collaborate</h3>
+              <p className="text-sm text-muted-foreground">Built-in project rooms & file sharing</p>
+            </div>
+          </div>
         </div>
       </section>
 
