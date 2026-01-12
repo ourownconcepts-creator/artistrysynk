@@ -838,8 +838,60 @@ export type Database = {
           },
         ]
       }
+      service_reviews: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          rating: number
+          review_text: string | null
+          reviewer_id: string
+          seller_id: string
+          service_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          rating: number
+          review_text?: string | null
+          reviewer_id: string
+          seller_id: string
+          service_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          rating?: number
+          review_text?: string | null
+          reviewer_id?: string
+          seller_id?: string
+          service_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "service_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_reviews_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       services: {
         Row: {
+          average_rating: number | null
           category: string
           created_at: string
           currency: string | null
@@ -850,9 +902,11 @@ export type Database = {
           price: number
           seller_id: string
           title: string
+          total_reviews: number | null
           updated_at: string
         }
         Insert: {
+          average_rating?: number | null
           category: string
           created_at?: string
           currency?: string | null
@@ -863,9 +917,11 @@ export type Database = {
           price: number
           seller_id: string
           title: string
+          total_reviews?: number | null
           updated_at?: string
         }
         Update: {
+          average_rating?: number | null
           category?: string
           created_at?: string
           currency?: string | null
@@ -876,6 +932,7 @@ export type Database = {
           price?: number
           seller_id?: string
           title?: string
+          total_reviews?: number | null
           updated_at?: string
         }
         Relationships: []

@@ -20,7 +20,7 @@ export const Hero = () => {
           <div className="flex items-center justify-center gap-2 mb-6">
             <Sparkles className="w-8 h-8 text-secondary animate-pulse" />
             <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              Artistry.ng
+              Artistry
             </h1>
             <Sparkles className="w-8 h-8 text-accent animate-pulse" />
           </div>

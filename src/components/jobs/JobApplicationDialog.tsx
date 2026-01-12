@@ -18,6 +18,7 @@ interface JobPosting {
   budget_range: string | null;
   required_roles: string[];
   required_skills: string[];
+  user_id: string;
   profiles?: {
     full_name: string;
     username: string;
@@ -49,29 +50,64 @@ export const JobApplicationDialog = ({
 
     setSubmitting(true);
     
-    const { error } = await supabase.from("job_applications").insert({
-      job_id: job.id,
-      applicant_id: currentUserId,
-      cover_letter: coverLetter.trim() || null,
-    });
+    try {
+      // First get the applicant's profile
+      const { data: applicantProfile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", currentUserId)
+        .single();
 
-    if (error) {
-      if (error.code === "23505") {
-        toast.error("You've already applied to this job");
-      } else {
-        toast.error("Failed to submit application");
-        console.error(error);
+      // Insert the application
+      const { data: application, error } = await supabase.from("job_applications").insert({
+        job_id: job.id,
+        applicant_id: currentUserId,
+        cover_letter: coverLetter.trim() || null,
+      }).select().single();
+
+      if (error) {
+        if (error.code === "23505") {
+          toast.error("You've already applied to this job");
+        } else {
+          toast.error("Failed to submit application");
+          console.error(error);
+        }
+        return;
       }
-    } else {
+
+      // Get job poster's email from auth
+      const { data: posterData } = await supabase.auth.admin?.getUserById?.(job.user_id) || {};
+      
+      // Send email notification via edge function
+      try {
+        const { error: emailError } = await supabase.functions.invoke("notify-job-application", {
+          body: {
+            jobTitle: job.title,
+            jobPosterEmail: posterData?.user?.email || "unknown@example.com",
+            jobPosterName: job.profiles?.full_name || "Creative",
+            applicantName: applicantProfile?.full_name || "A creative",
+            coverLetter: coverLetter.trim() || undefined,
+            applicationId: application.id,
+          },
+        });
+
+        if (emailError) {
+          console.log("Email notification failed (non-blocking):", emailError);
+        }
+      } catch (emailErr) {
+        // Non-blocking - application was still submitted
+        console.log("Email notification error (non-blocking):", emailErr);
+      }
+
       toast.success("Application submitted!", {
         description: "The job poster will review your application.",
       });
       setCoverLetter("");
       onOpenChange(false);
       onSuccess?.();
+    } finally {
+      setSubmitting(false);
     }
-
-    setSubmitting(false);
   };
 
   if (!job) return null;

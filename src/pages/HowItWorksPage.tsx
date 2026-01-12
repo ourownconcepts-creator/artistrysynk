@@ -1,4 +1,5 @@
-import { UserPlus, Users, MessageCircle, Rocket } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { UserPlus, Users, MessageCircle, Rocket, Play, Pause } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,30 @@ import { PageSEO } from "@/components/seo";
 
 const HowItWorksPage = () => {
   const navigate = useNavigate();
+  const videoRef = useRef<HTMLDivElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
+
+  // Intersection Observer for scroll-triggered autoplay
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasAutoPlayed) {
+            setIsPlaying(true);
+            setHasAutoPlayed(true);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    if (videoRef.current) {
+      observer.observe(videoRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasAutoPlayed]);
 
   const steps = [
     {
@@ -35,16 +60,20 @@ const HowItWorksPage = () => {
     }
   ];
 
+  const togglePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <PageSEO
-        title="How It Works - Find Your Creative Match | Artistry.ng"
+        title="How It Works - Find Your Creative Match | Artistry"
         description="Four simple steps to finding your perfect creative collaborator: Create profile, discover creatives, match & connect, and create together."
-        canonicalUrl="https://artistry.ng/how-it-works"
+        canonicalUrl="https://artistry.com/how-it-works"
         keywords="how to find collaborators, creative matching process, artist networking, music collaboration steps, find producers"
         breadcrumbs={[
-          { name: "Home", url: "https://artistry.ng" },
-          { name: "How It Works", url: "https://artistry.ng/how-it-works" }
+          { name: "Home", url: "https://artistry.com" },
+          { name: "How It Works", url: "https://artistry.com/how-it-works" }
         ]}
       />
       
@@ -52,7 +81,7 @@ const HowItWorksPage = () => {
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-            How Artistry.ng Works
+            How Artistry Works
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
             Four simple steps to finding your perfect creative collaborator
@@ -100,20 +129,35 @@ const HowItWorksPage = () => {
           <p className="text-muted-foreground mb-8 text-lg">
             Watch how creatives are finding their perfect collaborators
           </p>
-          <Card className="overflow-hidden shadow-2xl border-2 border-primary/20">
-            <CardContent className="p-0">
-              <div className="relative aspect-video bg-gradient-to-br from-background via-primary/5 to-secondary/5">
-                {/* Embedded YouTube Tutorial Video */}
-                <iframe
-                  className="absolute inset-0 w-full h-full"
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1"
-                  title="Artistry.ng Platform Tutorial"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <div ref={videoRef}>
+            <Card className="overflow-hidden shadow-2xl border-2 border-primary/20 relative group">
+              <CardContent className="p-0">
+                <div className="relative aspect-video bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+                  {/* Embedded YouTube Tutorial Video with autoplay control */}
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src={`https://www.youtube.com/embed/CwP9wdwKkBQ?rel=0&modestbranding=1&autoplay=${isPlaying ? 1 : 0}&mute=1&enablejsapi=1`}
+                    title="Artistry Platform Tutorial"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                  
+                  {/* Play/Pause Overlay Button */}
+                  <button
+                    onClick={togglePlayPause}
+                    className="absolute bottom-4 right-4 z-10 p-3 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label={isPlaying ? "Pause video" : "Play video"}
+                  >
+                    {isPlaying ? (
+                      <Pause className="w-5 h-5 text-foreground" />
+                    ) : (
+                      <Play className="w-5 h-5 text-foreground" />
+                    )}
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
           
           {/* Video Features Highlights */}
           <div className="grid md:grid-cols-3 gap-6 mt-12">
@@ -149,7 +193,7 @@ const HowItWorksPage = () => {
             Ready to Get Started?
           </h2>
           <p className="text-muted-foreground mb-8 text-lg">
-            Join Artistry.ng today and start your creative journey
+            Join Artistry today and start your creative journey
           </p>
           <Button variant="hero" size="lg" onClick={() => navigate("/auth")}>
             Create Your Free Account

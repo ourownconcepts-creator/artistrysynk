@@ -11,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Search, Plus, ShoppingCart, Clock, DollarSign, Star, Package } from "lucide-react";
+import { Search, Plus, ShoppingCart, Clock, DollarSign, Star, Package, MessageSquare } from "lucide-react";
+import { ServiceReviewDialog } from "@/components/marketplace/ServiceReviewDialog";
 
 interface Service {
   id: string;
@@ -85,6 +86,9 @@ const Marketplace = () => {
   // Order form
   const [orderingService, setOrderingService] = useState<Service | null>(null);
   const [orderRequirements, setOrderRequirements] = useState("");
+  
+  // Review state
+  const [reviewingOrder, setReviewingOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -495,6 +499,12 @@ const Marketplace = () => {
                         <Badge variant={getStatusColor(order.status) as any}>
                           {order.status}
                         </Badge>
+                        {order.status === "completed" && (
+                          <Button size="sm" variant="outline" onClick={() => setReviewingOrder(order)}>
+                            <MessageSquare className="w-3 h-3 mr-1" />
+                            Review
+                          </Button>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -547,6 +557,22 @@ const Marketplace = () => {
             )}
           </TabsContent>
         </Tabs>
+        
+        {/* Review Dialog */}
+        {reviewingOrder && (
+          <ServiceReviewDialog
+            open={!!reviewingOrder}
+            onOpenChange={(open) => !open && setReviewingOrder(null)}
+            orderId={reviewingOrder.id}
+            serviceId={reviewingOrder.service_id}
+            sellerId={(reviewingOrder as any).seller_id}
+            serviceName={reviewingOrder.services?.title || "Service"}
+            onReviewSubmitted={() => {
+              setReviewingOrder(null);
+              loadMyOrders(currentUser!);
+            }}
+          />
+        )}
       </div>
     </div>
   );
