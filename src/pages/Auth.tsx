@@ -131,7 +131,7 @@ const Auth = () => {
           <div className="flex items-center justify-center gap-2 mb-4">
             <Sparkles className="w-8 h-8 text-secondary" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent">
-              Artistry.ng
+              Artistry
             </h1>
           </div>
           <p className="text-muted-foreground">Create • Connect • Collaborate</p>

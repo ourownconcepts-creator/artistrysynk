@@ -15,13 +15,13 @@ export const PageSEO = ({
   title,
   description,
   canonicalUrl,
-  ogImage = "https://artistry.ng/og-image.png",
+  ogImage = "https://artistry.com/og-image.png",
   ogType = "website",
   keywords,
   noIndex = false,
   breadcrumbs
 }: PageSEOProps) => {
-  const fullTitle = title.includes("Artistry.ng") ? title : `${title} | Artistry.ng`;
+  const fullTitle = title.includes("Artistry") ? title : `${title} | Artistry`;
   
   const breadcrumbSchema = breadcrumbs ? {
     "@context": "https://schema.org",
@@ -57,20 +57,20 @@ export const PageSEO = ({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
-      <meta property="og:site_name" content="Artistry.ng" />
+      <meta property="og:site_name" content="Artistry" />
       <meta property="og:locale" content="en_NG" />
       {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
       
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content="@artistryng" />
-      <meta name="twitter:creator" content="@artistryng" />
+      <meta name="twitter:site" content="@artistry" />
+      <meta name="twitter:creator" content="@artistry" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
       
       {/* Additional SEO */}
-      <meta name="author" content="Artistry.ng" />
+      <meta name="author" content="Artistry" />
       <meta name="geo.region" content="NG" />
       <meta name="geo.placename" content="Nigeria" />
       

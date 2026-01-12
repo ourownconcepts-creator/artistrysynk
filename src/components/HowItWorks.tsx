@@ -36,7 +36,7 @@ export const HowItWorks = () => {
           <h2 className="text-4xl md:text-5xl font-bold">
             How{" "}
             <span className="bg-gradient-to-r from-accent via-secondary to-primary bg-clip-text text-transparent">
-              Artistry.ng
+              Artistry
             </span>
             {" "}Works
           </h2>
