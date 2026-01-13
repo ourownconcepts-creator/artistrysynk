@@ -1,16 +1,44 @@
 import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/hero-creative.jpg";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, Music, Palette, Camera, Film } from "lucide-react";
 
 export const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image with Overlay */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background/95" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
+      {/* Animated Gradient Background */}
+      <div className="absolute inset-0">
+        {/* Base gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-accent/20" />
+        
+        {/* Animated gradient orbs */}
+        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-primary/30 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-secondary/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+        
+        {/* Floating creative icons */}
+        <div className="absolute top-20 left-[15%] text-primary/20 animate-bounce" style={{ animationDuration: '3s' }}>
+          <Music className="w-12 h-12" />
+        </div>
+        <div className="absolute top-32 right-[20%] text-secondary/20 animate-bounce" style={{ animationDuration: '4s', animationDelay: '0.5s' }}>
+          <Palette className="w-16 h-16" />
+        </div>
+        <div className="absolute bottom-32 left-[25%] text-accent/20 animate-bounce" style={{ animationDuration: '3.5s', animationDelay: '1s' }}>
+          <Camera className="w-14 h-14" />
+        </div>
+        <div className="absolute bottom-40 right-[15%] text-primary/20 animate-bounce" style={{ animationDuration: '4.5s', animationDelay: '1.5s' }}>
+          <Film className="w-10 h-10" />
+        </div>
+        
+        {/* Grid pattern overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px'
+          }}
+        />
+        
+        {/* Radial vignette */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background))_70%)]" />
       </div>
 
       {/* Content */}
@@ -70,7 +98,7 @@ export const Hero = () => {
         </div>
       </div>
 
-      {/* Animated gradient overlay at bottom */}
+      {/* Bottom gradient fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
     </section>
   );
