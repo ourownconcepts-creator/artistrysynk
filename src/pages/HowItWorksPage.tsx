@@ -1,15 +1,18 @@
 import { useState, useRef, useEffect } from "react";
-import { UserPlus, Users, MessageCircle, Rocket, Play, Pause } from "lucide-react";
+import { UserPlus, Users, MessageCircle, Rocket, Play, Pause, Volume2, VolumeX } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { PageSEO } from "@/components/seo";
+import artistryTutorialVideo from "@/assets/artistry-tutorial.mp4";
 
 const HowItWorksPage = () => {
   const navigate = useNavigate();
-  const videoRef = useRef<HTMLDivElement>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
 
   // Intersection Observer for scroll-triggered autoplay
@@ -17,7 +20,8 @@ const HowItWorksPage = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && !hasAutoPlayed) {
+          if (entry.isIntersecting && !hasAutoPlayed && videoRef.current) {
+            videoRef.current.play();
             setIsPlaying(true);
             setHasAutoPlayed(true);
           }
@@ -26,8 +30,8 @@ const HowItWorksPage = () => {
       { threshold: 0.5 }
     );
 
-    if (videoRef.current) {
-      observer.observe(videoRef.current);
+    if (videoContainerRef.current) {
+      observer.observe(videoContainerRef.current);
     }
 
     return () => observer.disconnect();
@@ -61,7 +65,21 @@ const HowItWorksPage = () => {
   ];
 
   const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
   };
 
   return (
@@ -129,31 +147,60 @@ const HowItWorksPage = () => {
           <p className="text-muted-foreground mb-8 text-lg">
             Watch how creatives are finding their perfect collaborators
           </p>
-          <div ref={videoRef}>
+          <div ref={videoContainerRef}>
             <Card className="overflow-hidden shadow-2xl border-2 border-primary/20 relative group">
               <CardContent className="p-0">
                 <div className="relative aspect-video bg-gradient-to-br from-background via-primary/5 to-secondary/5">
-                  {/* Embedded YouTube Tutorial Video with autoplay control */}
-                  <iframe
-                    className="absolute inset-0 w-full h-full"
-                    src={`https://www.youtube.com/embed/CwP9wdwKkBQ?rel=0&modestbranding=1&autoplay=${isPlaying ? 1 : 0}&mute=1&enablejsapi=1`}
-                    title="Artistry Platform Tutorial"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
+                  {/* Custom Artistry Tutorial Video */}
+                  <video
+                    ref={videoRef}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    src={artistryTutorialVideo}
+                    muted={isMuted}
+                    loop
+                    playsInline
+                    onPlay={() => setIsPlaying(true)}
+                    onPause={() => setIsPlaying(false)}
                   />
                   
-                  {/* Play/Pause Overlay Button */}
-                  <button
-                    onClick={togglePlayPause}
-                    className="absolute bottom-4 right-4 z-10 p-3 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                    aria-label={isPlaying ? "Pause video" : "Play video"}
-                  >
-                    {isPlaying ? (
-                      <Pause className="w-5 h-5 text-foreground" />
-                    ) : (
-                      <Play className="w-5 h-5 text-foreground" />
-                    )}
-                  </button>
+                  {/* Video Controls Overlay */}
+                  <div className="absolute bottom-4 right-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={toggleMute}
+                      className="p-3 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-lg"
+                      aria-label={isMuted ? "Unmute video" : "Mute video"}
+                    >
+                      {isMuted ? (
+                        <VolumeX className="w-5 h-5 text-foreground" />
+                      ) : (
+                        <Volume2 className="w-5 h-5 text-foreground" />
+                      )}
+                    </button>
+                    <button
+                      onClick={togglePlayPause}
+                      className="p-3 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-lg"
+                      aria-label={isPlaying ? "Pause video" : "Play video"}
+                    >
+                      {isPlaying ? (
+                        <Pause className="w-5 h-5 text-foreground" />
+                      ) : (
+                        <Play className="w-5 h-5 text-foreground" />
+                      )}
+                    </button>
+                  </div>
+                  
+                  {/* Play button overlay when paused */}
+                  {!isPlaying && (
+                    <button
+                      onClick={togglePlayPause}
+                      className="absolute inset-0 flex items-center justify-center bg-black/30 transition-opacity"
+                      aria-label="Play video"
+                    >
+                      <div className="w-20 h-20 rounded-full bg-primary/90 flex items-center justify-center shadow-2xl">
+                        <Play className="w-10 h-10 text-primary-foreground ml-1" />
+                      </div>
+                    </button>
+                  )}
                 </div>
               </CardContent>
             </Card>
