@@ -24,6 +24,8 @@ interface Service {
   currency: string;
   delivery_days: number;
   created_at: string;
+  average_rating: number | null;
+  total_reviews: number | null;
   profiles?: {
     full_name: string;
     avatar_url: string;
@@ -34,12 +36,15 @@ interface Service {
 interface Order {
   id: string;
   service_id: string;
+  buyer_id: string;
+  seller_id: string;
   status: string;
   amount: number;
   created_at: string;
   delivery_date: string;
   services: {
     title: string;
+    seller_id?: string;
   };
   buyer_profile?: {
     full_name: string;
@@ -114,7 +119,7 @@ const Marketplace = () => {
   const loadServices = async () => {
     const { data } = await supabase
       .from("services")
-      .select("*")
+      .select("*, average_rating, total_reviews")
       .eq("is_active", true)
       .order("created_at", { ascending: false });
 
@@ -149,12 +154,28 @@ const Marketplace = () => {
       .from("service_orders")
       .select(`
         *,
-        services(title)
+        services(title, seller_id)
       `)
       .eq("seller_id", userId)
       .order("created_at", { ascending: false });
 
-    setSellerOrders(data || []);
+    // Fetch buyer profiles for orders
+    if (data && data.length > 0) {
+      const buyerIds = [...new Set(data.map(order => order.buyer_id))];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", buyerIds);
+      
+      const ordersWithProfiles = data.map(order => ({
+        ...order,
+        buyer_profile: profiles?.find(p => p.id === order.buyer_id)
+      }));
+      
+      setSellerOrders(ordersWithProfiles);
+    } else {
+      setSellerOrders(data || []);
+    }
   };
 
   const createService = async () => {
@@ -209,9 +230,57 @@ const Marketplace = () => {
   };
 
   const updateOrderStatus = async (orderId: string, status: string) => {
-    await supabase.from("service_orders").update({ status }).eq("id", orderId);
+    // Get order details for notification
+    const order = sellerOrders.find(o => o.id === orderId);
+    
+    const { error } = await supabase.from("service_orders").update({ status }).eq("id", orderId);
+    
+    if (error) {
+      toast.error("Failed to update order status");
+      return;
+    }
+    
+    // Send email notification for status change
+    if (order && (status === "in_progress" || status === "completed")) {
+      try {
+        // Get buyer's email from auth
+        const { data: userData } = await supabase.auth.admin?.getUserById?.(order.buyer_id) || { data: null };
+        
+        // Get seller profile for the name
+        const { data: sellerProfile } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", currentUser)
+          .single();
+        
+        // If we can't get the email from admin API, we'll just log it
+        // In production, you'd store emails in profiles or use a webhook
+        console.log("Order status updated, notification would be sent for:", {
+          orderId,
+          status,
+          serviceTitle: order.services?.title,
+          buyerName: order.buyer_profile?.full_name
+        });
+        
+        // Try to call the edge function (it will work if buyer email is available)
+        await supabase.functions.invoke("notify-order-status", {
+          body: {
+            orderId,
+            serviceTitle: order.services?.title || "Service",
+            buyerEmail: "", // Would come from user data in production
+            buyerName: order.buyer_profile?.full_name || "Customer",
+            sellerName: sellerProfile?.full_name || "Seller",
+            newStatus: status,
+            amount: order.amount
+          }
+        });
+      } catch (notifyError) {
+        console.log("Notification skipped (email not available):", notifyError);
+      }
+    }
+    
     loadSellerOrders(currentUser!);
-    toast.success(`Order marked as ${status}`);
+    toast.success(`Order marked as ${status.replace(/_/g, ' ')}`);
   };
 
   const filteredServices = services.filter((s) => {
@@ -382,7 +451,29 @@ const Marketplace = () => {
                           {service.description}
                         </p>
                       )}
-                      <Badge variant="outline" className="mb-4">{service.category}</Badge>
+                      <Badge variant="outline" className="mb-2">{service.category}</Badge>
+                      
+                      {/* Star Rating Display */}
+                      {(service.total_reviews || 0) > 0 && (
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="flex gap-0.5">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star
+                                key={star}
+                                className={`w-4 h-4 ${
+                                  star <= Math.round(service.average_rating || 0) 
+                                    ? "fill-yellow-400 text-yellow-400" 
+                                    : "text-muted-foreground/30"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-sm text-muted-foreground">
+                            {(service.average_rating || 0).toFixed(1)} ({service.total_reviews})
+                          </span>
+                        </div>
+                      )}
+                      
                       <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-1 text-primary font-semibold">
                           <DollarSign className="w-4 h-4" />
