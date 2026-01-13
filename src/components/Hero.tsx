@@ -1,45 +1,78 @@
+import { lazy, Suspense } from 'react';
 import { Button } from "@/components/ui/button";
-import { Sparkles, ArrowRight, Music, Palette, Camera, Film } from "lucide-react";
+import { Sparkles, ArrowRight, Music, Palette, Camera, Film, Mic, Play } from "lucide-react";
+import { MorphingBlobs } from './hero/MorphingBlobs';
+import { ParallaxLayer, FloatingIcon } from './hero/ParallaxLayer';
+
+const ParticleField = lazy(() => import('./hero/ParticleField').then(m => ({ default: m.ParticleField })));
 
 export const Hero = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
-      {/* Animated Gradient Background */}
-      <div className="absolute inset-0">
-        {/* Base gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-accent/20" />
-        
-        {/* Animated gradient orbs */}
-        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-primary/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-secondary/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-        
-        {/* Floating creative icons */}
-        <div className="absolute top-20 left-[15%] text-primary/20 animate-bounce" style={{ animationDuration: '3s' }}>
-          <Music className="w-12 h-12" />
-        </div>
-        <div className="absolute top-32 right-[20%] text-secondary/20 animate-bounce" style={{ animationDuration: '4s', animationDelay: '0.5s' }}>
-          <Palette className="w-16 h-16" />
-        </div>
-        <div className="absolute bottom-32 left-[25%] text-accent/20 animate-bounce" style={{ animationDuration: '3.5s', animationDelay: '1s' }}>
-          <Camera className="w-14 h-14" />
-        </div>
-        <div className="absolute bottom-40 right-[15%] text-primary/20 animate-bounce" style={{ animationDuration: '4.5s', animationDelay: '1.5s' }}>
-          <Film className="w-10 h-10" />
-        </div>
-        
-        {/* Grid pattern overlay */}
-        <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px'
-          }}
+      {/* Morphing Blobs Background */}
+      <MorphingBlobs />
+      
+      {/* Particle Field with Stars */}
+      <Suspense fallback={null}>
+        <ParticleField />
+      </Suspense>
+      
+      {/* Parallax Floating Icons Layer */}
+      <ParallaxLayer speed={0.1} className="absolute inset-0 pointer-events-none">
+        <FloatingIcon 
+          icon={<Music className="w-10 h-10 text-primary/25" />}
+          className="top-[15%] left-[10%]"
+          animationDuration="4s"
         />
-        
-        {/* Radial vignette */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background))_70%)]" />
-      </div>
+        <FloatingIcon 
+          icon={<Palette className="w-14 h-14 text-secondary/20" />}
+          className="top-[20%] right-[15%]"
+          animationDuration="5s"
+          animationDelay="0.5s"
+        />
+      </ParallaxLayer>
+      
+      <ParallaxLayer speed={0.2} className="absolute inset-0 pointer-events-none">
+        <FloatingIcon 
+          icon={<Camera className="w-12 h-12 text-accent/20" />}
+          className="bottom-[25%] left-[20%]"
+          animationDuration="4.5s"
+          animationDelay="1s"
+        />
+        <FloatingIcon 
+          icon={<Film className="w-10 h-10 text-primary/20" />}
+          className="bottom-[30%] right-[10%]"
+          animationDuration="5.5s"
+          animationDelay="1.5s"
+        />
+      </ParallaxLayer>
+      
+      <ParallaxLayer speed={0.3} className="absolute inset-0 pointer-events-none">
+        <FloatingIcon 
+          icon={<Mic className="w-8 h-8 text-secondary/15" />}
+          className="top-[40%] left-[5%]"
+          animationDuration="6s"
+          animationDelay="2s"
+        />
+        <FloatingIcon 
+          icon={<Play className="w-9 h-9 text-accent/15" />}
+          className="top-[35%] right-[8%]"
+          animationDuration="4s"
+          animationDelay="2.5s"
+        />
+      </ParallaxLayer>
+
+      {/* Grid pattern overlay */}
+      <div 
+        className="absolute inset-0 opacity-[0.02] pointer-events-none"
+        style={{
+          backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
+          backgroundSize: '80px 80px'
+        }}
+      />
+      
+      {/* Radial vignette */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background))_70%)] pointer-events-none" />
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-20 text-center">
@@ -99,7 +132,7 @@ export const Hero = () => {
       </div>
 
       {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent pointer-events-none" />
     </section>
   );
 };
