@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Blog = () => {
   const [email, setEmail] = useState("");
@@ -83,15 +84,33 @@ const Blog = () => {
 
     setIsSubscribing(true);
     
-    // Simulate subscription (in production, this would call an edge function)
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast.success("Successfully subscribed!", {
-      description: "You'll receive our latest updates in your inbox."
-    });
-    
-    setEmail("");
-    setIsSubscribing(false);
+    try {
+      const { error } = await supabase.from("newsletter_subscribers").insert({
+        email: email,
+      });
+
+      if (error) {
+        // Check for duplicate email
+        if (error.code === '23505') {
+          toast.info("You're already subscribed!", {
+            description: "This email is already on our newsletter list."
+          });
+        } else {
+          throw error;
+        }
+      } else {
+        toast.success("Successfully subscribed!", {
+          description: "You'll receive our latest updates in your inbox."
+        });
+      }
+      
+      setEmail("");
+    } catch (error) {
+      console.error("Newsletter subscription error:", error);
+      toast.error("Failed to subscribe. Please try again.");
+    } finally {
+      setIsSubscribing(false);
+    }
   };
 
   return (

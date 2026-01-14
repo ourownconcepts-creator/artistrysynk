@@ -105,7 +105,7 @@ export const usePushNotifications = () => {
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(
-          // This is a placeholder VAPID key - in production, you'd generate real keys
+          // VAPID public key - in production, generate real keys via web-push library
           'BLBz-YrPJCnzNmM_XxbJHxjJUMsQ7wpG0RVKaVT1Hf5LNMCZPHB3dPb0lQPLJRc9yFNV0h1X3aVLQMzYZiGdY8k'
         )
       });
@@ -113,8 +113,20 @@ export const usePushNotifications = () => {
       // Save subscription to database
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        // Store subscription for later use (you'd typically send this to your server)
-        localStorage.setItem('pushSubscription', JSON.stringify(subscription));
+        const subscriptionJSON = subscription.toJSON();
+        const keys = subscriptionJSON.keys as { p256dh: string; auth: string } | undefined;
+        
+        if (keys) {
+          await supabase.from("push_subscriptions").upsert({
+            user_id: user.id,
+            endpoint: subscription.endpoint,
+            p256dh: keys.p256dh,
+            auth: keys.auth,
+            is_active: true,
+          }, {
+            onConflict: "user_id,endpoint"
+          });
+        }
       }
 
       setState(prev => ({ ...prev, isSubscribed: true }));
@@ -138,11 +150,19 @@ export const usePushNotifications = () => {
       if (registration) {
         const subscription = await registration.pushManager.getSubscription();
         if (subscription) {
+          // Remove from database
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            await supabase.from("push_subscriptions")
+              .delete()
+              .eq("user_id", user.id)
+              .eq("endpoint", subscription.endpoint);
+          }
+          
           await subscription.unsubscribe();
         }
       }
 
-      localStorage.removeItem('pushSubscription');
       setState(prev => ({ ...prev, isSubscribed: false }));
       toast.success('Push notifications disabled');
     } catch (error) {

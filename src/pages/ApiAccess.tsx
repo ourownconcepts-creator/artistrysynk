@@ -30,10 +30,16 @@ const ApiAccess = () => {
   }, [navigate]);
 
   const loadApiKey = async (userId: string) => {
-    // For demo, we simulate API key storage
-    // In production, this would fetch from a secure api_keys table
-    const storedKey = localStorage.getItem(`artistry_api_key_${userId}`);
-    setApiKey(storedKey);
+    const { data, error } = await supabase
+      .from("api_keys")
+      .select("api_key")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (!error && data) {
+      setApiKey(data.api_key);
+    }
     setLoading(false);
   };
 
@@ -41,17 +47,35 @@ const ApiAccess = () => {
     setRegenerating(true);
     
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      setRegenerating(false);
+      return;
+    }
 
     // Generate a secure API key
     const key = `art_${crypto.randomUUID().replace(/-/g, '')}`;
     
-    // Store locally (in production, this would be stored securely in the database)
-    localStorage.setItem(`artistry_api_key_${user.id}`, key);
-    setApiKey(key);
-    
-    toast.success("API key generated successfully!");
-    setRegenerating(false);
+    try {
+      // Upsert the API key (insert or update if exists)
+      const { error } = await supabase.from("api_keys").upsert({
+        user_id: user.id,
+        api_key: key,
+        name: "Default Key",
+        is_active: true,
+      }, {
+        onConflict: "user_id"
+      });
+
+      if (error) throw error;
+      
+      setApiKey(key);
+      toast.success("API key generated successfully!");
+    } catch (error) {
+      console.error("Failed to generate API key:", error);
+      toast.error("Failed to generate API key. Please try again.");
+    } finally {
+      setRegenerating(false);
+    }
   };
 
   const copyToClipboard = (text: string) => {
