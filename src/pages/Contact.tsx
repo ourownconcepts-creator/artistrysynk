@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { PageSEO, FAQSchema } from "@/components/seo";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -82,15 +83,27 @@ const Contact = () => {
 
     setIsSubmitting(true);
     
-    // Simulate submission (in production, this would call an edge function)
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast.success("Message sent successfully!", {
-      description: "We'll get back to you within 24 hours."
-    });
-    
-    setFormData({ name: "", email: "", subject: "", message: "" });
-    setIsSubmitting(false);
+    try {
+      const { error } = await supabase.from("contact_submissions").insert({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+      });
+
+      if (error) throw error;
+      
+      toast.success("Message sent successfully!", {
+        description: "We'll get back to you within 24 hours."
+      });
+      
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      console.error("Contact submission error:", error);
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
