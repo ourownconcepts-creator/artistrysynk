@@ -40,6 +40,18 @@ export const AnalyticsDashboard = () => {
       .select('created_at')
       .order('created_at', { ascending: false });
 
+    // Fetch active sessions from today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const { data: activeSessions } = await supabase
+      .from('user_sessions')
+      .select('user_id')
+      .eq('is_active', true)
+      .gte('last_active', today.toISOString());
+
+    // Count unique active users today
+    const uniqueActiveUsers = new Set(activeSessions?.map(s => s.user_id) || []).size;
+
     if (profiles) {
       // Calculate stats
       const now = new Date();
@@ -49,7 +61,7 @@ export const AnalyticsDashboard = () => {
       setStats({
         totalUsers: profiles.length,
         newThisMonth,
-        activeToday: Math.floor(profiles.length * 0.3), // Mock data
+        activeToday: uniqueActiveUsers,
         growthRate: profiles.length > 0 ? Math.round((newThisMonth / profiles.length) * 100) : 0
       });
 

@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { PageSEO } from "@/components/seo";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Job {
   title: string;
@@ -91,16 +92,31 @@ const Careers = () => {
 
     setIsSubmitting(true);
     
-    // Simulate submission
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    toast.success("Application submitted!", {
-      description: `Thanks for applying for ${selectedJob?.title}. We'll review your application and get back to you soon.`
-    });
-    
-    setFormData({ name: "", email: "", phone: "", portfolio: "", coverLetter: "" });
-    setIsOpen(false);
-    setIsSubmitting(false);
+    try {
+      const { error } = await supabase.from("career_applications").insert({
+        job_title: selectedJob?.title || "General Application",
+        department: selectedJob?.department || "Various",
+        full_name: formData.name,
+        email: formData.email,
+        phone: formData.phone || null,
+        portfolio_url: formData.portfolio || null,
+        cover_letter: formData.coverLetter,
+      });
+
+      if (error) throw error;
+      
+      toast.success("Application submitted!", {
+        description: `Thanks for applying for ${selectedJob?.title}. We'll review your application and get back to you soon.`
+      });
+      
+      setFormData({ name: "", email: "", phone: "", portfolio: "", coverLetter: "" });
+      setIsOpen(false);
+    } catch (error) {
+      console.error("Application error:", error);
+      toast.error("Failed to submit application. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleGeneralApply = () => {
