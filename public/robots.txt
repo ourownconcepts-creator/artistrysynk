@@ -1,5 +1,5 @@
-# Artistry.ng Robots.txt
-# https://artistry.ng
+# Artistry Robots.txt
+# Creative Collaboration Platform
 
 User-agent: Googlebot
 Allow: /
@@ -23,7 +23,7 @@ Allow: /
 Crawl-delay: 5
 
 # Sitemap location
-Sitemap: https://artistry.ng/sitemap.xml
+Sitemap: https://artistryng.lovable.app/sitemap.xml
 
 # Disallow admin and private areas
 Disallow: /admin*
