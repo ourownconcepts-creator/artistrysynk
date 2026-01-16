@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { Session, User } from "@supabase/supabase-js";
 
 interface AdminProtectedRouteProps {
   children: React.ReactNode;
@@ -12,21 +13,37 @@ export const AdminProtectedRoute = ({ children, allowedRoles }: AdminProtectedRo
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
       
-      if (!user) {
+      if (!currentSession) {
+        navigate("/admin-auth");
+      }
+    });
+
+    // THEN check for existing session and verify roles
+    const checkAuth = async () => {
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      
+      if (!currentSession) {
         navigate("/admin-auth");
         return;
       }
+
+      setSession(currentSession);
+      setUser(currentSession.user);
 
       // Check user roles
       const { data: rolesData, error } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", user.id);
+        .eq("user_id", currentSession.user.id);
 
       if (error || !rolesData) {
         navigate("/admin-auth");
@@ -46,12 +63,6 @@ export const AdminProtectedRoute = ({ children, allowedRoles }: AdminProtectedRo
     };
 
     checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) {
-        navigate("/admin-auth");
-      }
-    });
 
     return () => subscription.unsubscribe();
   }, [navigate, allowedRoles]);
