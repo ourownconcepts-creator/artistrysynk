@@ -550,6 +550,7 @@ export type Database = {
           bio: string | null
           cover_image_url: string | null
           created_at: string | null
+          email: string | null
           featured_until: string | null
           full_name: string
           id: string
@@ -566,6 +567,7 @@ export type Database = {
           bio?: string | null
           cover_image_url?: string | null
           created_at?: string | null
+          email?: string | null
           featured_until?: string | null
           full_name: string
           id: string
@@ -582,6 +584,7 @@ export type Database = {
           bio?: string | null
           cover_image_url?: string | null
           created_at?: string | null
+          email?: string | null
           featured_until?: string | null
           full_name?: string
           id?: string

@@ -241,10 +241,14 @@ const Marketplace = () => {
     }
     
     // Send email notification for status change
-    if (order && (status === "in_progress" || status === "completed")) {
+    if (order && (status === "in_progress" || status === "completed" || status === "cancelled")) {
       try {
-        // Get buyer's email from auth
-        const { data: userData } = await supabase.auth.admin?.getUserById?.(order.buyer_id) || { data: null };
+        // Get buyer's email from profiles table
+        const { data: buyerProfile } = await supabase
+          .from("profiles")
+          .select("full_name, email")
+          .eq("id", order.buyer_id)
+          .single();
         
         // Get seller profile for the name
         const { data: sellerProfile } = await supabase
@@ -253,29 +257,27 @@ const Marketplace = () => {
           .eq("id", currentUser)
           .single();
         
-        // If we can't get the email from admin API, we'll just log it
-        // In production, you'd store emails in profiles or use a webhook
-        console.log("Order status updated, notification would be sent for:", {
-          orderId,
-          status,
-          serviceTitle: order.services?.title,
-          buyerName: order.buyer_profile?.full_name
-        });
+        const buyerEmail = buyerProfile?.email;
         
-        // Try to call the edge function (it will work if buyer email is available)
-        await supabase.functions.invoke("notify-order-status", {
-          body: {
-            orderId,
-            serviceTitle: order.services?.title || "Service",
-            buyerEmail: "", // Would come from user data in production
-            buyerName: order.buyer_profile?.full_name || "Customer",
-            sellerName: sellerProfile?.full_name || "Seller",
-            newStatus: status,
-            amount: order.amount
-          }
-        });
+        if (buyerEmail) {
+          // Call the edge function with buyer email
+          await supabase.functions.invoke("notify-order-status", {
+            body: {
+              orderId,
+              serviceTitle: order.services?.title || "Service",
+              buyerEmail: buyerEmail,
+              buyerName: buyerProfile?.full_name || order.buyer_profile?.full_name || "Customer",
+              sellerName: sellerProfile?.full_name || "Seller",
+              newStatus: status,
+              amount: order.amount
+            }
+          });
+          console.log("Order status notification sent to:", buyerEmail);
+        } else {
+          console.log("Order status updated, but no email found for buyer:", order.buyer_id);
+        }
       } catch (notifyError) {
-        console.log("Notification skipped (email not available):", notifyError);
+        console.log("Notification skipped:", notifyError);
       }
     }
     

@@ -8,6 +8,9 @@ interface PushNotificationState {
   permission: NotificationPermission;
 }
 
+// Default VAPID public key - can be overridden by environment variable or edge function
+const DEFAULT_VAPID_PUBLIC_KEY = 'BLBz-YrPJCnzNmM_XxbJHxjJUMsQ7wpG0RVKaVT1Hf5LNMCZPHB3dPb0lQPLJRc9yFNV0h1X3aVLQMzYZiGdY8k';
+
 export const usePushNotifications = () => {
   const [state, setState] = useState<PushNotificationState>({
     isSupported: false,
@@ -15,10 +18,28 @@ export const usePushNotifications = () => {
     permission: 'default'
   });
   const [loading, setLoading] = useState(false);
+  const [vapidPublicKey, setVapidPublicKey] = useState<string>(DEFAULT_VAPID_PUBLIC_KEY);
 
   useEffect(() => {
     checkSupport();
+    fetchVapidKey();
   }, []);
+
+  const fetchVapidKey = async () => {
+    try {
+      // Try to get VAPID key from edge function (which checks if keys exist)
+      const { data, error } = await supabase.functions.invoke('generate-vapid-keys', {
+        method: 'POST'
+      });
+      
+      if (!error && data?.publicKey) {
+        setVapidPublicKey(data.publicKey);
+        console.log('Using VAPID public key from server');
+      }
+    } catch (err) {
+      console.log('Using default VAPID key');
+    }
+  };
 
   const checkSupport = async () => {
     const isSupported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
@@ -101,13 +122,10 @@ export const usePushNotifications = () => {
       // Register service worker
       const registration = await registerServiceWorker();
 
-      // Subscribe to push
+      // Subscribe to push with the fetched or default VAPID key
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          // VAPID public key - in production, generate real keys via web-push library
-          'BLBz-YrPJCnzNmM_XxbJHxjJUMsQ7wpG0RVKaVT1Hf5LNMCZPHB3dPb0lQPLJRc9yFNV0h1X3aVLQMzYZiGdY8k'
-        )
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
       });
 
       // Save subscription to database

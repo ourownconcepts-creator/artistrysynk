@@ -53,6 +53,7 @@ const EditProfile = () => {
   
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -87,6 +88,7 @@ const EditProfile = () => {
     if (profile) {
       setFullName(profile.full_name || "");
       setUsername(profile.username || "");
+      setEmail((profile as any).email || "");
       setBio(profile.bio || "");
       setLocation(profile.location || "");
       setAvatarUrl(profile.avatar_url || "");
@@ -186,12 +188,13 @@ const EditProfile = () => {
         .update({
           full_name: fullName,
           username,
+          email,
           bio,
           location,
           avatar_url: avatarUrl,
           cover_image_url: coverImageUrl,
           social_links: socialLinks,
-        })
+        } as any)
         .eq('id', userId);
 
       if (profileError) throw profileError;
@@ -315,6 +318,20 @@ const EditProfile = () => {
                     required
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email (for notifications)</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Used for order updates and important notifications
+                </p>
               </div>
 
               <div className="space-y-2">
