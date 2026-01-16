@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Crown, Users, LogOut, Shield, UserCog, BarChart3 } from "lucide-react";
+import { Crown, Users, LogOut, Shield, UserCog, BarChart3, Settings } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -23,6 +23,13 @@ import { SessionManagement } from "@/components/admin/SessionManagement";
 import { VerificationRequests } from "@/components/admin/VerificationRequests";
 import { MatchManagement } from "@/components/admin/MatchManagement";
 import { PortfolioModeration } from "@/components/admin/PortfolioModeration";
+import { JobPostingsManager } from "@/components/admin/JobPostingsManager";
+import { MarketplaceManager } from "@/components/admin/MarketplaceManager";
+import { SubscriptionManager } from "@/components/admin/SubscriptionManager";
+import { ProjectsManager } from "@/components/admin/ProjectsManager";
+import { CareerApplicationsManager } from "@/components/admin/CareerApplicationsManager";
+import { SwipeAnalytics } from "@/components/admin/SwipeAnalytics";
+import { RevenueAnalytics } from "@/components/admin/RevenueAnalytics";
 
 interface UserWithRole {
   id: string;
@@ -379,12 +386,17 @@ const SuperAdminDashboard = () => {
         <DashboardWidgets />
 
         <Tabs defaultValue="management" className="w-full mt-8">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="flex flex-wrap gap-1">
             <TabsTrigger value="management">Users</TabsTrigger>
             <TabsTrigger value="matches">Matches</TabsTrigger>
+            <TabsTrigger value="jobs">Jobs</TabsTrigger>
+            <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
+            <TabsTrigger value="projects">Projects</TabsTrigger>
+            <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
-            <TabsTrigger value="sessions">Sessions</TabsTrigger>
+            <TabsTrigger value="careers">Careers</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="sessions">Sessions</TabsTrigger>
             <TabsTrigger value="logs">Logs</TabsTrigger>
           </TabsList>
 
@@ -399,7 +411,13 @@ const SuperAdminDashboard = () => {
                     </CardTitle>
                     <CardDescription>Manage all users, admins, master admins, and super admins</CardDescription>
                   </div>
-                  <ExportData dataType="users" />
+                  <div className="flex gap-2">
+                    <ExportData dataType="users" />
+                    <Button variant="outline" onClick={() => navigate("/admin-settings")}>
+                      <Settings className="w-4 h-4 mr-2" />
+                      Settings
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -455,8 +473,36 @@ const SuperAdminDashboard = () => {
             <MatchManagement />
           </TabsContent>
 
+          <TabsContent value="jobs" className="mt-6">
+            <JobPostingsManager />
+          </TabsContent>
+
+          <TabsContent value="marketplace" className="mt-6">
+            <MarketplaceManager />
+          </TabsContent>
+
+          <TabsContent value="projects" className="mt-6">
+            <ProjectsManager />
+          </TabsContent>
+
+          <TabsContent value="subscriptions" className="mt-6">
+            <SubscriptionManager />
+          </TabsContent>
+
           <TabsContent value="portfolio" className="mt-6">
             <PortfolioModeration />
+          </TabsContent>
+
+          <TabsContent value="careers" className="mt-6">
+            <CareerApplicationsManager />
+          </TabsContent>
+
+          <TabsContent value="analytics" className="mt-6">
+            <div className="space-y-6">
+              <SwipeAnalytics />
+              <RevenueAnalytics />
+              <AnalyticsDashboard />
+            </div>
           </TabsContent>
 
           <TabsContent value="sessions" className="mt-6">
@@ -464,10 +510,6 @@ const SuperAdminDashboard = () => {
               <SessionManagement />
               <VerificationRequests />
             </div>
-          </TabsContent>
-
-          <TabsContent value="analytics" className="mt-6">
-            <AnalyticsDashboard />
           </TabsContent>
 
           <TabsContent value="logs" className="mt-6">
