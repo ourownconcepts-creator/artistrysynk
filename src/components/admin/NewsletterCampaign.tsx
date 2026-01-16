@@ -1,0 +1,181 @@
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Send, Mail, Users, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+
+export const NewsletterCampaign = () => {
+  const [subject, setSubject] = useState("");
+  const [content, setContent] = useState("");
+  const [previewText, setPreviewText] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [lastResult, setLastResult] = useState<{
+    sent: number;
+    failed: number;
+    total: number;
+  } | null>(null);
+
+  const sendCampaign = async () => {
+    if (!subject.trim() || !content.trim()) {
+      toast.error("Please enter both subject and content");
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("send-newsletter-campaign", {
+        body: {
+          subject: subject.trim(),
+          content: content.trim(),
+          previewText: previewText.trim() || undefined,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.error) {
+        toast.error(data.error);
+        return;
+      }
+
+      setLastResult({
+        sent: data.sent,
+        failed: data.failed,
+        total: data.totalSubscribers,
+      });
+
+      toast.success(`Newsletter sent to ${data.sent} subscribers!`, {
+        description: data.failed > 0 ? `${data.failed} failed to send` : undefined,
+      });
+
+      // Clear form on success
+      setSubject("");
+      setContent("");
+      setPreviewText("");
+    } catch (error: any) {
+      console.error("Newsletter campaign error:", error);
+      toast.error("Failed to send newsletter campaign");
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Mail className="w-5 h-5" />
+          Send Newsletter Campaign
+        </CardTitle>
+        <CardDescription>
+          Compose and send emails to all active newsletter subscribers
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {lastResult && (
+          <div className="bg-muted/50 rounded-lg p-4 flex items-center gap-4">
+            <Users className="w-8 h-8 text-primary" />
+            <div>
+              <p className="font-medium">Last Campaign Results</p>
+              <p className="text-sm text-muted-foreground">
+                Sent: {lastResult.sent} | Failed: {lastResult.failed} | Total: {lastResult.total}
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="subject">Email Subject *</Label>
+            <Input
+              id="subject"
+              placeholder="Your newsletter subject line..."
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              disabled={isSending}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="previewText">Preview Text (optional)</Label>
+            <Input
+              id="previewText"
+              placeholder="Text shown in email client preview..."
+              value={previewText}
+              onChange={(e) => setPreviewText(e.target.value)}
+              disabled={isSending}
+            />
+            <p className="text-xs text-muted-foreground">
+              This appears in email clients next to the subject line
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="content">Email Content (HTML) *</Label>
+            <Textarea
+              id="content"
+              placeholder="<h2>Hello Creatives!</h2><p>We have exciting news...</p>"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="min-h-[200px] font-mono text-sm"
+              disabled={isSending}
+            />
+            <p className="text-xs text-muted-foreground">
+              Enter HTML content for the email body. Will be wrapped in our branded template.
+            </p>
+          </div>
+
+          {content && (
+            <div className="space-y-2">
+              <Label>Preview</Label>
+              <div
+                className="border rounded-lg p-4 bg-background prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{ __html: content }}
+              />
+            </div>
+          )}
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                className="w-full"
+                disabled={isSending || !subject.trim() || !content.trim()}
+              >
+                {isSending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Sending Campaign...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 mr-2" />
+                    Send Newsletter
+                  </>
+                )}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Send Newsletter Campaign?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will send the newsletter to all active subscribers. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={sendCampaign}>
+                  Send to All Subscribers
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};

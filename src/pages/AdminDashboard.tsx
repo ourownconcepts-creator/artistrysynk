@@ -23,6 +23,7 @@ import { VerificationRequests } from "@/components/admin/VerificationRequests";
 import { FeaturedCreativesManager } from "@/components/admin/FeaturedCreativesManager";
 import { ContactSubmissionsManager } from "@/components/admin/ContactSubmissionsManager";
 import { NewsletterSubscribersManager } from "@/components/admin/NewsletterSubscribersManager";
+import { NewsletterCampaign } from "@/components/admin/NewsletterCampaign";
 
 interface UserWithRole {
   id: string;
@@ -332,7 +333,8 @@ const AdminDashboard = () => {
           <ContactSubmissionsManager />
         </TabsContent>
 
-        <TabsContent value="newsletter">
+        <TabsContent value="newsletter" className="space-y-6">
+          <NewsletterCampaign />
           <NewsletterSubscribersManager />
         </TabsContent>
 
