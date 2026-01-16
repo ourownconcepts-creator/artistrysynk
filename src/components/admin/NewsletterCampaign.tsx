@@ -5,14 +5,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Send, Mail, Users, Loader2 } from "lucide-react";
+import { Send, Mail, Users, Loader2, Palette } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { newsletterTemplates, getTemplateById, type NewsletterTemplate } from "@/lib/newsletterTemplates";
+import { cn } from "@/lib/utils";
 
 export const NewsletterCampaign = () => {
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
   const [previewText, setPreviewText] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("gradient-header");
   const [isSending, setIsSending] = useState(false);
   const [lastResult, setLastResult] = useState<{
     sent: number;
@@ -28,11 +31,18 @@ export const NewsletterCampaign = () => {
 
     setIsSending(true);
     try {
+      // Get the template and generate HTML
+      const template = getTemplateById(selectedTemplate);
+      const htmlContent = template 
+        ? template.generateHtml(content.trim(), subject.trim())
+        : content.trim();
+
       const { data, error } = await supabase.functions.invoke("send-newsletter-campaign", {
         body: {
           subject: subject.trim(),
-          content: content.trim(),
+          content: htmlContent,
           previewText: previewText.trim() || undefined,
+          useRawHtml: true, // Signal to use content directly
         },
       });
 
@@ -65,117 +75,162 @@ export const NewsletterCampaign = () => {
     }
   };
 
+  const currentTemplate = getTemplateById(selectedTemplate);
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Mail className="w-5 h-5" />
-          Send Newsletter Campaign
-        </CardTitle>
-        <CardDescription>
-          Compose and send emails to all active newsletter subscribers
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {lastResult && (
-          <div className="bg-muted/50 rounded-lg p-4 flex items-center gap-4">
-            <Users className="w-8 h-8 text-primary" />
-            <div>
-              <p className="font-medium">Last Campaign Results</p>
-              <p className="text-sm text-muted-foreground">
-                Sent: {lastResult.sent} | Failed: {lastResult.failed} | Total: {lastResult.total}
-              </p>
-            </div>
+    <div className="space-y-6">
+      {/* Template Selection */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Palette className="w-5 h-5" />
+            Choose Template
+          </CardTitle>
+          <CardDescription>
+            Select a pre-designed template for your newsletter
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {newsletterTemplates.map((template) => (
+              <button
+                key={template.id}
+                onClick={() => setSelectedTemplate(template.id)}
+                className={cn(
+                  "p-4 rounded-lg border-2 text-left transition-all hover:border-primary/50",
+                  selectedTemplate === template.id
+                    ? "border-primary bg-primary/5"
+                    : "border-muted bg-muted/30"
+                )}
+              >
+                <span className="text-2xl mb-2 block">{template.thumbnail}</span>
+                <p className="font-medium text-sm">{template.name}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {template.description}
+                </p>
+              </button>
+            ))}
           </div>
-        )}
+        </CardContent>
+      </Card>
 
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="subject">Email Subject *</Label>
-            <Input
-              id="subject"
-              placeholder="Your newsletter subject line..."
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              disabled={isSending}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="previewText">Preview Text (optional)</Label>
-            <Input
-              id="previewText"
-              placeholder="Text shown in email client preview..."
-              value={previewText}
-              onChange={(e) => setPreviewText(e.target.value)}
-              disabled={isSending}
-            />
-            <p className="text-xs text-muted-foreground">
-              This appears in email clients next to the subject line
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="content">Email Content (HTML) *</Label>
-            <Textarea
-              id="content"
-              placeholder="<h2>Hello Creatives!</h2><p>We have exciting news...</p>"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="min-h-[200px] font-mono text-sm"
-              disabled={isSending}
-            />
-            <p className="text-xs text-muted-foreground">
-              Enter HTML content for the email body. Will be wrapped in our branded template.
-            </p>
-          </div>
-
-          {content && (
-            <div className="space-y-2">
-              <Label>Preview</Label>
-              <div
-                className="border rounded-lg p-4 bg-background prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: content }}
-              />
+      {/* Compose Email */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Mail className="w-5 h-5" />
+            Compose Newsletter
+          </CardTitle>
+          <CardDescription>
+            Write your newsletter content. It will be styled with the selected template.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {lastResult && (
+            <div className="bg-muted/50 rounded-lg p-4 flex items-center gap-4">
+              <Users className="w-8 h-8 text-primary" />
+              <div>
+                <p className="font-medium">Last Campaign Results</p>
+                <p className="text-sm text-muted-foreground">
+                  Sent: {lastResult.sent} | Failed: {lastResult.failed} | Total: {lastResult.total}
+                </p>
+              </div>
             </div>
           )}
 
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                className="w-full"
-                disabled={isSending || !subject.trim() || !content.trim()}
-              >
-                {isSending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Sending Campaign...
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-4 h-4 mr-2" />
-                    Send Newsletter
-                  </>
-                )}
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Send Newsletter Campaign?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will send the newsletter to all active subscribers. This action cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={sendCampaign}>
-                  Send to All Subscribers
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      </CardContent>
-    </Card>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="subject">Email Subject *</Label>
+              <Input
+                id="subject"
+                placeholder="Your newsletter subject line..."
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                disabled={isSending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="previewText">Preview Text (optional)</Label>
+              <Input
+                id="previewText"
+                placeholder="Text shown in email client preview..."
+                value={previewText}
+                onChange={(e) => setPreviewText(e.target.value)}
+                disabled={isSending}
+              />
+              <p className="text-xs text-muted-foreground">
+                This appears in email clients next to the subject line
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="content">Email Content (HTML supported) *</Label>
+              <Textarea
+                id="content"
+                placeholder="<h2>Hello Creatives!</h2><p>We have exciting news...</p>"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="min-h-[200px] font-mono text-sm"
+                disabled={isSending}
+              />
+              <p className="text-xs text-muted-foreground">
+                Your content will be wrapped in the selected template design.
+              </p>
+            </div>
+
+            {content && currentTemplate && (
+              <div className="space-y-2">
+                <Label>Preview ({currentTemplate.name} Template)</Label>
+                <div className="border rounded-lg overflow-hidden bg-background">
+                  <div
+                    className="prose prose-sm max-w-none"
+                    style={{ backgroundColor: selectedTemplate === 'dark-mode' || selectedTemplate === 'creative-spotlight' ? '#0a0a0b' : '#f4f4f5' }}
+                    dangerouslySetInnerHTML={{ 
+                      __html: currentTemplate.generateHtml(content, subject || 'Newsletter Subject') 
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  className="w-full"
+                  disabled={isSending || !subject.trim() || !content.trim()}
+                >
+                  {isSending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending Campaign...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" />
+                      Send Newsletter
+                    </>
+                  )}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Send Newsletter Campaign?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will send the newsletter using the "{currentTemplate?.name}" template to all active subscribers. This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={sendCampaign}>
+                    Send to All Subscribers
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };

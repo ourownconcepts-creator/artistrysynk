@@ -72,6 +72,20 @@ const Auth = () => {
     if (error) {
       toast.error(error.message);
     } else {
+      // Send welcome email
+      try {
+        await supabase.functions.invoke("send-welcome-email", {
+          body: {
+            email,
+            fullName,
+            username,
+          },
+        });
+      } catch (emailError) {
+        console.error("Failed to send welcome email:", emailError);
+        // Don't block signup if email fails
+      }
+
       toast.success("Account created! Complete your profile to get started.");
       navigate("/setup-profile");
     }
