@@ -22,6 +22,12 @@ import { SessionManagement } from "@/components/admin/SessionManagement";
 import { VerificationRequests } from "@/components/admin/VerificationRequests";
 import { MatchManagement } from "@/components/admin/MatchManagement";
 import { PortfolioModeration } from "@/components/admin/PortfolioModeration";
+import { JobPostingsManager } from "@/components/admin/JobPostingsManager";
+import { MarketplaceManager } from "@/components/admin/MarketplaceManager";
+import { ProjectsManager } from "@/components/admin/ProjectsManager";
+import { CareerApplicationsManager } from "@/components/admin/CareerApplicationsManager";
+import { MessagesModeration } from "@/components/admin/MessagesModeration";
+import { SwipeAnalytics } from "@/components/admin/SwipeAnalytics";
 
 interface UserWithRole {
   id: string;
@@ -342,10 +348,14 @@ const MasterAdminDashboard = () => {
         <DashboardWidgets />
 
         <Tabs defaultValue="management" className="w-full mt-8">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-10">
             <TabsTrigger value="management">Users</TabsTrigger>
             <TabsTrigger value="matches">Matches</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
+            <TabsTrigger value="jobs">Jobs</TabsTrigger>
+            <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
+            <TabsTrigger value="projects">Projects</TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
             <TabsTrigger value="sessions">Sessions</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="logs">Logs</TabsTrigger>
@@ -398,6 +408,22 @@ const MasterAdminDashboard = () => {
             <PortfolioModeration />
           </TabsContent>
 
+          <TabsContent value="jobs" className="mt-6">
+            <JobPostingsManager />
+          </TabsContent>
+
+          <TabsContent value="marketplace" className="mt-6">
+            <MarketplaceManager />
+          </TabsContent>
+
+          <TabsContent value="projects" className="mt-6">
+            <ProjectsManager />
+          </TabsContent>
+
+          <TabsContent value="messages" className="mt-6">
+            <MessagesModeration />
+          </TabsContent>
+
           <TabsContent value="sessions" className="mt-6">
             <div className="space-y-6">
               <SessionManagement />
@@ -406,7 +432,10 @@ const MasterAdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="analytics" className="mt-6">
-            <AnalyticsDashboard />
+            <div className="space-y-6">
+              <AnalyticsDashboard />
+              <SwipeAnalytics />
+            </div>
           </TabsContent>
 
           <TabsContent value="logs" className="mt-6">

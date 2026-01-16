@@ -24,6 +24,9 @@ import { FeaturedCreativesManager } from "@/components/admin/FeaturedCreativesMa
 import { ContactSubmissionsManager } from "@/components/admin/ContactSubmissionsManager";
 import { NewsletterSubscribersManager } from "@/components/admin/NewsletterSubscribersManager";
 import { NewsletterCampaign } from "@/components/admin/NewsletterCampaign";
+import { JobPostingsManager } from "@/components/admin/JobPostingsManager";
+import { CareerApplicationsManager } from "@/components/admin/CareerApplicationsManager";
+import { MessagesModeration } from "@/components/admin/MessagesModeration";
 
 interface UserWithRole {
   id: string;
@@ -207,11 +210,14 @@ const AdminDashboard = () => {
         <DashboardWidgets />
 
         <Tabs defaultValue="users" className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-11">
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="leads">Leads</TabsTrigger>
             <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
             <TabsTrigger value="featured">Featured</TabsTrigger>
+            <TabsTrigger value="jobs">Jobs</TabsTrigger>
+            <TabsTrigger value="careers">Careers</TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="logs">Logs</TabsTrigger>
             <TabsTrigger value="sessions">Sessions</TabsTrigger>
@@ -340,6 +346,18 @@ const AdminDashboard = () => {
 
         <TabsContent value="featured">
           <FeaturedCreativesManager />
+        </TabsContent>
+
+        <TabsContent value="jobs">
+          <JobPostingsManager />
+        </TabsContent>
+
+        <TabsContent value="careers">
+          <CareerApplicationsManager />
+        </TabsContent>
+
+        <TabsContent value="messages">
+          <MessagesModeration />
         </TabsContent>
 
         <TabsContent value="analytics">
