@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Users, LogOut, UserX, BarChart3 } from "lucide-react";
+import { Users, LogOut, UserX, BarChart3, Flag } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -27,7 +27,8 @@ import { NewsletterCampaign } from "@/components/admin/NewsletterCampaign";
 import { JobPostingsManager } from "@/components/admin/JobPostingsManager";
 import { CareerApplicationsManager } from "@/components/admin/CareerApplicationsManager";
 import { MessagesModeration } from "@/components/admin/MessagesModeration";
-
+import { ContentFlagsManager } from "@/components/admin/ContentFlagsManager";
+import { useAdminRealtimeNotifications } from "@/hooks/useAdminRealtimeNotifications";
 interface UserWithRole {
   id: string;
   full_name: string;
@@ -43,6 +44,9 @@ const AdminDashboard = () => {
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  
+  // Enable realtime notifications for admin
+  useAdminRealtimeNotifications();
 
   useEffect(() => {
     checkAuth();
@@ -210,8 +214,12 @@ const AdminDashboard = () => {
         <DashboardWidgets />
 
         <Tabs defaultValue="users" className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-11">
+          <TabsList className="grid w-full grid-cols-12">
             <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="flags" className="flex items-center gap-1">
+              <Flag className="h-3 w-3" />
+              Flags
+            </TabsTrigger>
             <TabsTrigger value="leads">Leads</TabsTrigger>
             <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
             <TabsTrigger value="featured">Featured</TabsTrigger>
@@ -221,7 +229,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="logs">Logs</TabsTrigger>
             <TabsTrigger value="sessions">Sessions</TabsTrigger>
-            <TabsTrigger value="verifications">Verifications</TabsTrigger>
+            <TabsTrigger value="verifications">Verify</TabsTrigger>
           </TabsList>
 
           <TabsContent value="users" className="mt-6">
@@ -333,6 +341,10 @@ const AdminDashboard = () => {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="flags">
+          <ContentFlagsManager />
         </TabsContent>
 
         <TabsContent value="leads">
