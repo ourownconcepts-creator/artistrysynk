@@ -84,6 +84,7 @@ const Contact = () => {
     setIsSubmitting(true);
     
     try {
+      // Save to database
       const { error } = await supabase.from("contact_submissions").insert({
         name: formData.name,
         email: formData.email,
@@ -93,8 +94,23 @@ const Contact = () => {
 
       if (error) throw error;
       
+      // Send confirmation email
+      try {
+        await supabase.functions.invoke("send-contact-confirmation", {
+          body: {
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject,
+          },
+        });
+        console.log("Confirmation email sent");
+      } catch (emailError) {
+        console.error("Failed to send confirmation email:", emailError);
+        // Don't fail the submission if email fails
+      }
+      
       toast.success("Message sent successfully!", {
-        description: "We'll get back to you within 24 hours."
+        description: "We've sent you a confirmation email. We'll get back to you within 24 hours."
       });
       
       setFormData({ name: "", email: "", subject: "", message: "" });

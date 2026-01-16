@@ -27,17 +27,17 @@ export const usePushNotifications = () => {
 
   const fetchVapidKey = async () => {
     try {
-      // Try to get VAPID key from edge function (which checks if keys exist)
+      // Try to get VAPID key from edge function (which checks for stored keys)
       const { data, error } = await supabase.functions.invoke('generate-vapid-keys', {
         method: 'POST'
       });
       
       if (!error && data?.publicKey) {
         setVapidPublicKey(data.publicKey);
-        console.log('Using VAPID public key from server');
+        console.log('Using VAPID public key from server:', data.alreadyExists ? 'existing' : 'newly generated');
       }
     } catch (err) {
-      console.log('Using default VAPID key');
+      console.log('Using default VAPID key, fetch error:', err);
     }
   };
 
