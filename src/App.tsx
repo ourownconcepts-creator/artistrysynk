@@ -8,6 +8,7 @@ import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import AdminAuth from "./pages/AdminAuth";
+import ResetPassword from "./pages/ResetPassword";
 import SetupProfile from "./pages/SetupProfile";
 import Discover from "./pages/Discover";
 import Matches from "./pages/Matches";
@@ -58,6 +59,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/admin-auth" element={<AdminAuth />} />
               <Route path="/setup-profile" element={<ProtectedRoute><Navbar /><SetupProfile /></ProtectedRoute>} />
               <Route path="/discover" element={<ProtectedRoute><Navbar /><Discover /></ProtectedRoute>} />
