@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Shield, Users, LogOut, UserX, UserCog, BarChart3 } from "lucide-react";
+import { Shield, Users, LogOut, UserX, UserCog, BarChart3, Flag } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -28,7 +28,8 @@ import { ProjectsManager } from "@/components/admin/ProjectsManager";
 import { CareerApplicationsManager } from "@/components/admin/CareerApplicationsManager";
 import { MessagesModeration } from "@/components/admin/MessagesModeration";
 import { SwipeAnalytics } from "@/components/admin/SwipeAnalytics";
-
+import { ContentFlagsManager } from "@/components/admin/ContentFlagsManager";
+import { useAdminRealtimeNotifications } from "@/hooks/useAdminRealtimeNotifications";
 interface UserWithRole {
   id: string;
   full_name: string;
@@ -45,6 +46,9 @@ const MasterAdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string | string[]>("all");
   const [dateRange, setDateRange] = useState<any>({ from: undefined, to: undefined });
+  
+  // Enable realtime notifications for admin
+  useAdminRealtimeNotifications();
 
   useEffect(() => {
     checkAuth();
@@ -348,9 +352,13 @@ const MasterAdminDashboard = () => {
         <DashboardWidgets />
 
         <Tabs defaultValue="management" className="w-full mt-8">
-          <TabsList className="grid w-full grid-cols-10">
+          <TabsList className="grid w-full grid-cols-11">
             <TabsTrigger value="management">Users</TabsTrigger>
             <TabsTrigger value="matches">Matches</TabsTrigger>
+            <TabsTrigger value="flags" className="flex items-center gap-1">
+              <Flag className="h-3 w-3" />
+              Flags
+            </TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
             <TabsTrigger value="jobs">Jobs</TabsTrigger>
             <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
@@ -402,6 +410,10 @@ const MasterAdminDashboard = () => {
 
           <TabsContent value="matches" className="mt-6">
             <MatchManagement />
+          </TabsContent>
+
+          <TabsContent value="flags" className="mt-6">
+            <ContentFlagsManager />
           </TabsContent>
 
           <TabsContent value="portfolio" className="mt-6">

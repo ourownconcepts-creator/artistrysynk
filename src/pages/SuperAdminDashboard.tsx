@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Crown, Users, LogOut, Shield, UserCog, BarChart3, Settings } from "lucide-react";
+import { Crown, Users, LogOut, Shield, UserCog, BarChart3, Settings, Flag } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -30,7 +30,8 @@ import { ProjectsManager } from "@/components/admin/ProjectsManager";
 import { CareerApplicationsManager } from "@/components/admin/CareerApplicationsManager";
 import { SwipeAnalytics } from "@/components/admin/SwipeAnalytics";
 import { RevenueAnalytics } from "@/components/admin/RevenueAnalytics";
-
+import { ContentFlagsManager } from "@/components/admin/ContentFlagsManager";
+import { useAdminRealtimeNotifications } from "@/hooks/useAdminRealtimeNotifications";
 interface UserWithRole {
   id: string;
   full_name: string;
@@ -46,6 +47,9 @@ const SuperAdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string | string[]>("all");
   const [dateRange, setDateRange] = useState<any>({ from: undefined, to: undefined });
+  
+  // Enable realtime notifications for admin
+  useAdminRealtimeNotifications();
 
   useEffect(() => {
     checkAuth();
@@ -389,6 +393,10 @@ const SuperAdminDashboard = () => {
           <TabsList className="flex flex-wrap gap-1">
             <TabsTrigger value="management">Users</TabsTrigger>
             <TabsTrigger value="matches">Matches</TabsTrigger>
+            <TabsTrigger value="flags" className="flex items-center gap-1">
+              <Flag className="h-3 w-3" />
+              Flags
+            </TabsTrigger>
             <TabsTrigger value="jobs">Jobs</TabsTrigger>
             <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
             <TabsTrigger value="projects">Projects</TabsTrigger>
@@ -471,6 +479,10 @@ const SuperAdminDashboard = () => {
 
           <TabsContent value="matches" className="mt-6">
             <MatchManagement />
+          </TabsContent>
+
+          <TabsContent value="flags" className="mt-6">
+            <ContentFlagsManager />
           </TabsContent>
 
           <TabsContent value="jobs" className="mt-6">
