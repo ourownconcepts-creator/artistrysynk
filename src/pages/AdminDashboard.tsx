@@ -21,6 +21,8 @@ import { UserSuspensionDialog } from "@/components/admin/UserSuspensionDialog";
 import { SessionManagement } from "@/components/admin/SessionManagement";
 import { VerificationRequests } from "@/components/admin/VerificationRequests";
 import { FeaturedCreativesManager } from "@/components/admin/FeaturedCreativesManager";
+import { ContactSubmissionsManager } from "@/components/admin/ContactSubmissionsManager";
+import { NewsletterSubscribersManager } from "@/components/admin/NewsletterSubscribersManager";
 
 interface UserWithRole {
   id: string;
@@ -204,8 +206,10 @@ const AdminDashboard = () => {
         <DashboardWidgets />
 
         <Tabs defaultValue="users" className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="leads">Leads</TabsTrigger>
+            <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
             <TabsTrigger value="featured">Featured</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="logs">Logs</TabsTrigger>
@@ -322,6 +326,14 @@ const AdminDashboard = () => {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="leads">
+          <ContactSubmissionsManager />
+        </TabsContent>
+
+        <TabsContent value="newsletter">
+          <NewsletterSubscribersManager />
         </TabsContent>
 
         <TabsContent value="featured">
