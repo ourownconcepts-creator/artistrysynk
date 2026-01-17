@@ -6,7 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Send, ArrowLeft, FolderPlus } from "lucide-react";
+import { Send, ArrowLeft, FolderPlus, Flag, MoreVertical } from "lucide-react";
+import { FlagContentDialog } from "@/components/FlagContentDialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -294,24 +301,47 @@ const Messages = () => {
                   message.sender_id === currentUser ? 'justify-end' : 'justify-start'
                 }`}
               >
-                <div
-                  className={`max-w-[70%] rounded-lg p-3 ${
-                    message.sender_id === currentUser
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted'
-                  }`}
-                >
-                  <p className="text-sm">{message.content}</p>
-                  <p className={`text-xs mt-1 ${
-                    message.sender_id === currentUser
-                      ? 'text-primary-foreground/70'
-                      : 'text-muted-foreground'
-                  }`}>
-                    {new Date(message.created_at).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
+                <div className={`flex items-start gap-1 max-w-[70%] ${message.sender_id === currentUser ? 'flex-row-reverse' : ''}`}>
+                  <div
+                    className={`rounded-lg p-3 ${
+                      message.sender_id === currentUser
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted'
+                    }`}
+                  >
+                    <p className="text-sm">{message.content}</p>
+                    <p className={`text-xs mt-1 ${
+                      message.sender_id === currentUser
+                        ? 'text-primary-foreground/70'
+                        : 'text-muted-foreground'
+                    }`}>
+                      {new Date(message.created_at).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
+                  {message.sender_id !== currentUser && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 hover:opacity-100">
+                          <MoreVertical className="h-3 w-3" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <FlagContentDialog
+                          contentType="message"
+                          contentId={message.id}
+                          trigger={
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                              <Flag className="h-4 w-4 mr-2 text-destructive" />
+                              Report Message
+                            </DropdownMenuItem>
+                          }
+                        />
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </div>
               </div>
             ))}

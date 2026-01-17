@@ -485,6 +485,7 @@ export type Database = {
           conversation_id: string
           created_at: string | null
           id: string
+          is_hidden: boolean | null
           read: boolean | null
           sender_id: string
         }
@@ -493,6 +494,7 @@ export type Database = {
           conversation_id: string
           created_at?: string | null
           id?: string
+          is_hidden?: boolean | null
           read?: boolean | null
           sender_id: string
         }
@@ -501,6 +503,7 @@ export type Database = {
           conversation_id?: string
           created_at?: string | null
           id?: string
+          is_hidden?: boolean | null
           read?: boolean | null
           sender_id?: string
         }
@@ -550,6 +553,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           id: string
+          is_hidden: boolean | null
           media_type: string
           media_url: string
           thumbnail_url: string | null
@@ -561,6 +565,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          is_hidden?: boolean | null
           media_type: string
           media_url: string
           thumbnail_url?: string | null
@@ -572,6 +577,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          is_hidden?: boolean | null
           media_type?: string
           media_url?: string
           thumbnail_url?: string | null
@@ -600,6 +606,7 @@ export type Database = {
           full_name: string
           id: string
           is_featured: boolean | null
+          is_hidden: boolean | null
           is_verified: boolean | null
           location: string | null
           social_links: Json | null
@@ -617,6 +624,7 @@ export type Database = {
           full_name: string
           id: string
           is_featured?: boolean | null
+          is_hidden?: boolean | null
           is_verified?: boolean | null
           location?: string | null
           social_links?: Json | null
@@ -634,6 +642,7 @@ export type Database = {
           full_name?: string
           id?: string
           is_featured?: boolean | null
+          is_hidden?: boolean | null
           is_verified?: boolean | null
           location?: string | null
           social_links?: Json | null
@@ -856,6 +865,7 @@ export type Database = {
           created_by: string
           description: string | null
           id: string
+          is_hidden: boolean | null
           is_public: boolean | null
           looking_for: string[] | null
           status: Database["public"]["Enums"]["collaboration_status"] | null
@@ -868,6 +878,7 @@ export type Database = {
           created_by: string
           description?: string | null
           id?: string
+          is_hidden?: boolean | null
           is_public?: boolean | null
           looking_for?: string[] | null
           status?: Database["public"]["Enums"]["collaboration_status"] | null
@@ -880,6 +891,7 @@ export type Database = {
           created_by?: string
           description?: string | null
           id?: string
+          is_hidden?: boolean | null
           is_public?: boolean | null
           looking_for?: string[] | null
           status?: Database["public"]["Enums"]["collaboration_status"] | null
@@ -1106,6 +1118,7 @@ export type Database = {
           description: string | null
           id: string
           is_active: boolean | null
+          is_hidden: boolean | null
           price: number
           seller_id: string
           title: string
@@ -1121,6 +1134,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean | null
+          is_hidden?: boolean | null
           price: number
           seller_id: string
           title: string
@@ -1136,6 +1150,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean | null
+          is_hidden?: boolean | null
           price?: number
           seller_id?: string
           title?: string

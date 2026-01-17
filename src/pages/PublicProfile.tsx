@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, ArrowLeft, Verified, Heart } from "lucide-react";
+import { MapPin, Calendar, ArrowLeft, Verified, Heart, Flag } from "lucide-react";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { toast } from "sonner";
 import { ProfileSchema, PageSEO } from "@/components/seo";
+import { FlagContentDialog } from "@/components/FlagContentDialog";
 
 const PublicProfile = () => {
   const { userId } = useParams();
@@ -212,11 +213,20 @@ const PublicProfile = () => {
             </div>
 
             {currentUserId && currentUserId !== userId && (
-              <div className="flex justify-center pt-4">
+              <div className="flex justify-center gap-3 pt-4">
                 <Button onClick={handleLike} className="gap-2">
                   <Heart className="w-5 h-5" />
                   Like Profile
                 </Button>
+                <FlagContentDialog
+                  contentType="profile"
+                  contentId={userId!}
+                  trigger={
+                    <Button variant="outline" size="icon" className="text-muted-foreground hover:text-destructive">
+                      <Flag className="w-5 h-5" />
+                    </Button>
+                  }
+                />
               </div>
             )}
           </CardContent>
@@ -228,7 +238,7 @@ const PublicProfile = () => {
             <CardTitle>Portfolio</CardTitle>
           </CardHeader>
           <CardContent>
-            <PortfolioGrid userId={userId!} />
+            <PortfolioGrid userId={userId!} showReportButton={currentUserId !== null && currentUserId !== userId} />
           </CardContent>
         </Card>
       </div>

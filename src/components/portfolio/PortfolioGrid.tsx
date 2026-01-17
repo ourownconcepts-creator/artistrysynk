@@ -3,8 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Music, Video, Image, FileText, Play, ExternalLink, Trash2 } from "lucide-react";
+import { Music, Video, Image, FileText, Play, ExternalLink, Trash2, Flag } from "lucide-react";
 import { toast } from "sonner";
+import { FlagContentDialog } from "@/components/FlagContentDialog";
 
 interface PortfolioItem {
   id: string;
@@ -19,6 +20,7 @@ interface PortfolioGridProps {
   userId: string;
   editable?: boolean;
   onItemClick?: (item: PortfolioItem) => void;
+  showReportButton?: boolean;
 }
 
 const getMediaIcon = (type: string) => {
@@ -30,7 +32,7 @@ const getMediaIcon = (type: string) => {
   }
 };
 
-export const PortfolioGrid = ({ userId, editable = false, onItemClick }: PortfolioGridProps) => {
+export const PortfolioGrid = ({ userId, editable = false, onItemClick, showReportButton = false }: PortfolioGridProps) => {
   const [items, setItems] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -151,6 +153,22 @@ export const PortfolioGrid = ({ userId, editable = false, onItemClick }: Portfol
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
+                      )}
+                      {showReportButton && (
+                        <FlagContentDialog
+                          contentType="portfolio"
+                          contentId={item.id}
+                          trigger={
+                            <Button 
+                              size="icon" 
+                              variant="ghost" 
+                              className="h-8 w-8 text-white hover:bg-destructive/80"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Flag className="w-4 h-4" />
+                            </Button>
+                          }
+                        />
                       )}
                     </div>
                   </div>
