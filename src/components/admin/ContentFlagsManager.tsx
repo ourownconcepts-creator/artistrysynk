@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Flag, Search, Eye, CheckCircle, XCircle, AlertTriangle, RefreshCw, Bell } from 'lucide-react';
+import { Flag, Search, Eye, CheckCircle, XCircle, AlertTriangle, RefreshCw, Bell, Undo2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -118,9 +118,71 @@ export const ContentFlagsManager = () => {
     }
   };
 
-  const handleUpdateStatus = async (flagId: string, newStatus: string) => {
+  const handleUpdateStatus = async (flagId: string, newStatus: string, shouldUnhide: boolean = false) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      const flag = selectedFlag;
+
+      // If dismissing and should unhide, restore the content
+      if (shouldUnhide && flag) {
+        await unhideContent(flag.content_type, flag.content_id);
+        
+        // Send notification to user
+        try {
+          const { data: flagData } = await supabase
+            .from('content_flags')
+            .select('content_id, content_type')
+            .eq('id', flagId)
+            .single();
+
+          if (flagData) {
+            // Get the content owner
+            let ownerId: string | null = null;
+            switch (flagData.content_type) {
+              case 'portfolio':
+                const { data: portfolio } = await supabase
+                  .from('portfolio_items')
+                  .select('user_id')
+                  .eq('id', flagData.content_id)
+                  .single();
+                ownerId = portfolio?.user_id || null;
+                break;
+              case 'profile':
+                ownerId = flagData.content_id;
+                break;
+              case 'service':
+                const { data: service } = await supabase
+                  .from('services')
+                  .select('seller_id')
+                  .eq('id', flagData.content_id)
+                  .single();
+                ownerId = service?.seller_id || null;
+                break;
+              case 'project':
+                const { data: project } = await supabase
+                  .from('projects')
+                  .select('created_by')
+                  .eq('id', flagData.content_id)
+                  .single();
+                ownerId = project?.created_by || null;
+                break;
+            }
+
+            if (ownerId) {
+              await supabase.functions.invoke('notify-content-status', {
+                body: {
+                  userId: ownerId,
+                  contentType: flagData.content_type,
+                  action: 'restored',
+                  adminResponse: adminNotes,
+                },
+              });
+            }
+          }
+        } catch (emailError) {
+          console.error('Failed to send email notification:', emailError);
+        }
+      }
       
       const { error } = await supabase
         .from('content_flags')
@@ -134,13 +196,39 @@ export const ContentFlagsManager = () => {
 
       if (error) throw error;
 
-      toast.success(`Flag marked as ${newStatus}`);
+      toast.success(`Flag marked as ${newStatus}${shouldUnhide ? ' and content restored' : ''}`);
       setSelectedFlag(null);
       setAdminNotes('');
       fetchFlags();
     } catch (error: any) {
       console.error('Error updating flag:', error);
       toast.error('Failed to update flag status');
+    }
+  };
+
+  const unhideContent = async (contentType: string, contentId: string) => {
+    try {
+      let error;
+      switch (contentType) {
+        case 'message':
+          ({ error } = await supabase.from('messages').update({ is_hidden: false }).eq('id', contentId));
+          break;
+        case 'portfolio':
+          ({ error } = await supabase.from('portfolio_items').update({ is_hidden: false }).eq('id', contentId));
+          break;
+        case 'profile':
+          ({ error } = await supabase.from('profiles').update({ is_hidden: false }).eq('id', contentId));
+          break;
+        case 'service':
+          ({ error } = await supabase.from('services').update({ is_hidden: false }).eq('id', contentId));
+          break;
+        case 'project':
+          ({ error } = await supabase.from('projects').update({ is_hidden: false }).eq('id', contentId));
+          break;
+      }
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error unhiding content:', error);
     }
   };
 
@@ -332,23 +420,31 @@ export const ContentFlagsManager = () => {
               </div>
             )}
 
-            <DialogFooter className="flex gap-2">
+            <DialogFooter className="flex flex-wrap gap-2">
               <Button
                 variant="outline"
-                onClick={() => selectedFlag && handleUpdateStatus(selectedFlag.id, 'dismissed')}
+                onClick={() => selectedFlag && handleUpdateStatus(selectedFlag.id, 'dismissed', true)}
+                className="gap-1"
+              >
+                <Undo2 className="h-4 w-4" />
+                Dismiss & Restore Content
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => selectedFlag && handleUpdateStatus(selectedFlag.id, 'dismissed', false)}
               >
                 <XCircle className="h-4 w-4 mr-1" />
-                Dismiss
+                Dismiss (Keep Hidden)
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => selectedFlag && handleUpdateStatus(selectedFlag.id, 'reviewed')}
+                onClick={() => selectedFlag && handleUpdateStatus(selectedFlag.id, 'reviewed', false)}
               >
                 <Eye className="h-4 w-4 mr-1" />
                 Mark Reviewed
               </Button>
               <Button
-                onClick={() => selectedFlag && handleUpdateStatus(selectedFlag.id, 'resolved')}
+                onClick={() => selectedFlag && handleUpdateStatus(selectedFlag.id, 'resolved', false)}
               >
                 <CheckCircle className="h-4 w-4 mr-1" />
                 Resolve

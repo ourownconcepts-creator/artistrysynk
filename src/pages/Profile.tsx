@@ -13,6 +13,7 @@ import { VerificationRequestButton } from "@/components/profile/VerificationRequ
 import { UserSessions } from "@/components/profile/UserSessions";
 import { ProfileAnalytics } from "@/components/profile/ProfileAnalytics";
 import { useSessionTracking } from "@/hooks/useSessionTracking";
+import { MyAppeals } from "@/components/content/MyAppeals";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -343,7 +344,8 @@ const Profile = () => {
               <UserSessions userId={userId} />
             </TabsContent>
 
-            <TabsContent value="settings" className="mt-6">
+            <TabsContent value="settings" className="mt-6 space-y-6">
+              <MyAppeals />
               <Card>
                 <CardHeader>
                   <CardTitle>Account Settings</CardTitle>

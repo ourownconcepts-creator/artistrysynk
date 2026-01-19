@@ -29,6 +29,7 @@ import { CareerApplicationsManager } from "@/components/admin/CareerApplications
 import { MessagesModeration } from "@/components/admin/MessagesModeration";
 import { SwipeAnalytics } from "@/components/admin/SwipeAnalytics";
 import { ContentFlagsManager } from "@/components/admin/ContentFlagsManager";
+import { ContentAppealsManager } from "@/components/admin/ContentAppealsManager";
 import { useAdminRealtimeNotifications } from "@/hooks/useAdminRealtimeNotifications";
 interface UserWithRole {
   id: string;
@@ -412,8 +413,9 @@ const MasterAdminDashboard = () => {
             <MatchManagement />
           </TabsContent>
 
-          <TabsContent value="flags" className="mt-6">
+          <TabsContent value="flags" className="mt-6 space-y-6">
             <ContentFlagsManager />
+            <ContentAppealsManager />
           </TabsContent>
 
           <TabsContent value="portfolio" className="mt-6">

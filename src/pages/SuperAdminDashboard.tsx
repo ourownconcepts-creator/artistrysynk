@@ -31,6 +31,7 @@ import { CareerApplicationsManager } from "@/components/admin/CareerApplications
 import { SwipeAnalytics } from "@/components/admin/SwipeAnalytics";
 import { RevenueAnalytics } from "@/components/admin/RevenueAnalytics";
 import { ContentFlagsManager } from "@/components/admin/ContentFlagsManager";
+import { ContentAppealsManager } from "@/components/admin/ContentAppealsManager";
 import { useAdminRealtimeNotifications } from "@/hooks/useAdminRealtimeNotifications";
 interface UserWithRole {
   id: string;
@@ -481,8 +482,9 @@ const SuperAdminDashboard = () => {
             <MatchManagement />
           </TabsContent>
 
-          <TabsContent value="flags" className="mt-6">
+          <TabsContent value="flags" className="mt-6 space-y-6">
             <ContentFlagsManager />
+            <ContentAppealsManager />
           </TabsContent>
 
           <TabsContent value="jobs" className="mt-6">

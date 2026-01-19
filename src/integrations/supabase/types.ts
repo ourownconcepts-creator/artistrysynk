@@ -209,6 +209,48 @@ export type Database = {
         }
         Relationships: []
       }
+      content_appeals: {
+        Row: {
+          admin_response: string | null
+          appeal_reason: string
+          content_id: string
+          content_type: string
+          created_at: string
+          id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_response?: string | null
+          appeal_reason: string
+          content_id: string
+          content_type: string
+          created_at?: string
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_response?: string | null
+          appeal_reason?: string
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       content_flags: {
         Row: {
           admin_notes: string | null

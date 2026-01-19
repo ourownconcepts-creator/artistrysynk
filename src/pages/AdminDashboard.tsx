@@ -28,6 +28,7 @@ import { JobPostingsManager } from "@/components/admin/JobPostingsManager";
 import { CareerApplicationsManager } from "@/components/admin/CareerApplicationsManager";
 import { MessagesModeration } from "@/components/admin/MessagesModeration";
 import { ContentFlagsManager } from "@/components/admin/ContentFlagsManager";
+import { ContentAppealsManager } from "@/components/admin/ContentAppealsManager";
 import { useAdminRealtimeNotifications } from "@/hooks/useAdminRealtimeNotifications";
 interface UserWithRole {
   id: string;
@@ -343,8 +344,9 @@ const AdminDashboard = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="flags">
+        <TabsContent value="flags" className="space-y-6">
           <ContentFlagsManager />
+          <ContentAppealsManager />
         </TabsContent>
 
         <TabsContent value="leads">
