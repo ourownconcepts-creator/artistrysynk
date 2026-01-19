@@ -24,6 +24,8 @@ interface AppSettings {
   require_email_verification: boolean;
   max_portfolio_items: number;
   featured_duration_days: number;
+  auto_hide_threshold: number;
+  enable_auto_hide: boolean;
 }
 
 const defaultSettings: AppSettings = {
@@ -38,6 +40,8 @@ const defaultSettings: AppSettings = {
   require_email_verification: false,
   max_portfolio_items: 50,
   featured_duration_days: 7,
+  auto_hide_threshold: 3,
+  enable_auto_hide: true,
 };
 
 const AdminSettings = () => {
@@ -313,6 +317,41 @@ const AdminSettings = () => {
                   <Switch
                     checked={settings.require_email_verification}
                     onCheckedChange={(v) => updateSetting("require_email_verification", v)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Content Moderation</CardTitle>
+                <CardDescription>Configure automatic content moderation settings</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Enable Auto-Hide</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Automatically hide content that receives multiple flags
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.enable_auto_hide}
+                    onCheckedChange={(v) => updateSetting("enable_auto_hide", v)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Auto-Hide Threshold</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Number of flags before content is automatically hidden
+                  </p>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={20}
+                    value={settings.auto_hide_threshold}
+                    onChange={(e) => updateSetting("auto_hide_threshold", parseInt(e.target.value) || 3)}
+                    disabled={!settings.enable_auto_hide}
                   />
                 </div>
               </CardContent>
