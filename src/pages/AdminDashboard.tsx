@@ -30,6 +30,8 @@ import { MessagesModeration } from "@/components/admin/MessagesModeration";
 import { ContentFlagsManager } from "@/components/admin/ContentFlagsManager";
 import { ContentAppealsManager } from "@/components/admin/ContentAppealsManager";
 import { useAdminRealtimeNotifications } from "@/hooks/useAdminRealtimeNotifications";
+import { PortfolioModeration } from "@/components/admin/PortfolioModeration";
+import { MatchManagement } from "@/components/admin/MatchManagement";
 interface UserWithRole {
   id: string;
   full_name: string;
@@ -215,22 +217,24 @@ const AdminDashboard = () => {
         <DashboardWidgets />
 
         <Tabs defaultValue="users" className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-12">
+          <TabsList className="flex flex-wrap gap-1">
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="flags" className="flex items-center gap-1">
               <Flag className="h-3 w-3" />
               Flags
             </TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="matches">Matches</TabsTrigger>
+            <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
             <TabsTrigger value="leads">Leads</TabsTrigger>
             <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
             <TabsTrigger value="featured">Featured</TabsTrigger>
             <TabsTrigger value="jobs">Jobs</TabsTrigger>
             <TabsTrigger value="careers">Careers</TabsTrigger>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="verifications">Verify</TabsTrigger>
+            <TabsTrigger value="sessions">Sessions</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="logs">Logs</TabsTrigger>
-            <TabsTrigger value="sessions">Sessions</TabsTrigger>
-            <TabsTrigger value="verifications">Verify</TabsTrigger>
           </TabsList>
 
           <TabsContent value="users" className="mt-6">
@@ -349,6 +353,18 @@ const AdminDashboard = () => {
           <ContentAppealsManager />
         </TabsContent>
 
+        <TabsContent value="messages">
+          <MessagesModeration />
+        </TabsContent>
+
+        <TabsContent value="matches">
+          <MatchManagement />
+        </TabsContent>
+
+        <TabsContent value="portfolio">
+          <PortfolioModeration />
+        </TabsContent>
+
         <TabsContent value="leads">
           <ContactSubmissionsManager />
         </TabsContent>
@@ -370,8 +386,12 @@ const AdminDashboard = () => {
           <CareerApplicationsManager />
         </TabsContent>
 
-        <TabsContent value="messages">
-          <MessagesModeration />
+        <TabsContent value="verifications">
+          <VerificationRequests />
+        </TabsContent>
+
+        <TabsContent value="sessions">
+          <SessionManagement />
         </TabsContent>
 
         <TabsContent value="analytics">
@@ -380,14 +400,6 @@ const AdminDashboard = () => {
 
         <TabsContent value="logs">
           <ActivityLogsViewer />
-        </TabsContent>
-
-        <TabsContent value="sessions">
-          <SessionManagement />
-        </TabsContent>
-
-        <TabsContent value="verifications">
-          <VerificationRequests />
         </TabsContent>
       </Tabs>
       </div>

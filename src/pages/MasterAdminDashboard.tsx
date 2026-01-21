@@ -31,6 +31,12 @@ import { SwipeAnalytics } from "@/components/admin/SwipeAnalytics";
 import { ContentFlagsManager } from "@/components/admin/ContentFlagsManager";
 import { ContentAppealsManager } from "@/components/admin/ContentAppealsManager";
 import { useAdminRealtimeNotifications } from "@/hooks/useAdminRealtimeNotifications";
+import { ContactSubmissionsManager } from "@/components/admin/ContactSubmissionsManager";
+import { NewsletterSubscribersManager } from "@/components/admin/NewsletterSubscribersManager";
+import { NewsletterCampaign } from "@/components/admin/NewsletterCampaign";
+import { FeaturedCreativesManager } from "@/components/admin/FeaturedCreativesManager";
+import { SubscriptionManager } from "@/components/admin/SubscriptionManager";
+import { EnhancedAnalyticsDashboard } from "@/components/admin/EnhancedAnalyticsDashboard";
 interface UserWithRole {
   id: string;
   full_name: string;
@@ -353,18 +359,24 @@ const MasterAdminDashboard = () => {
         <DashboardWidgets />
 
         <Tabs defaultValue="management" className="w-full mt-8">
-          <TabsList className="grid w-full grid-cols-11">
+          <TabsList className="flex flex-wrap gap-1">
             <TabsTrigger value="management">Users</TabsTrigger>
             <TabsTrigger value="matches">Matches</TabsTrigger>
             <TabsTrigger value="flags" className="flex items-center gap-1">
               <Flag className="h-3 w-3" />
               Flags
             </TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
             <TabsTrigger value="jobs">Jobs</TabsTrigger>
             <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
             <TabsTrigger value="projects">Projects</TabsTrigger>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
+            <TabsTrigger value="featured">Featured</TabsTrigger>
+            <TabsTrigger value="leads">Leads</TabsTrigger>
+            <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
+            <TabsTrigger value="careers">Careers</TabsTrigger>
+            <TabsTrigger value="verifications">Verify</TabsTrigger>
             <TabsTrigger value="sessions">Sessions</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="logs">Logs</TabsTrigger>
@@ -418,6 +430,10 @@ const MasterAdminDashboard = () => {
             <ContentAppealsManager />
           </TabsContent>
 
+          <TabsContent value="messages" className="mt-6">
+            <MessagesModeration />
+          </TabsContent>
+
           <TabsContent value="portfolio" className="mt-6">
             <PortfolioModeration />
           </TabsContent>
@@ -434,19 +450,38 @@ const MasterAdminDashboard = () => {
             <ProjectsManager />
           </TabsContent>
 
-          <TabsContent value="messages" className="mt-6">
-            <MessagesModeration />
+          <TabsContent value="subscriptions" className="mt-6">
+            <SubscriptionManager />
+          </TabsContent>
+
+          <TabsContent value="featured" className="mt-6">
+            <FeaturedCreativesManager />
+          </TabsContent>
+
+          <TabsContent value="leads" className="mt-6">
+            <ContactSubmissionsManager />
+          </TabsContent>
+
+          <TabsContent value="newsletter" className="mt-6 space-y-6">
+            <NewsletterCampaign />
+            <NewsletterSubscribersManager />
+          </TabsContent>
+
+          <TabsContent value="careers" className="mt-6">
+            <CareerApplicationsManager />
+          </TabsContent>
+
+          <TabsContent value="verifications" className="mt-6">
+            <VerificationRequests />
           </TabsContent>
 
           <TabsContent value="sessions" className="mt-6">
-            <div className="space-y-6">
-              <SessionManagement />
-              <VerificationRequests />
-            </div>
+            <SessionManagement />
           </TabsContent>
 
           <TabsContent value="analytics" className="mt-6">
             <div className="space-y-6">
+              <EnhancedAnalyticsDashboard />
               <AnalyticsDashboard />
               <SwipeAnalytics />
             </div>
