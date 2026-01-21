@@ -42,6 +42,7 @@ import Contact from "./pages/Contact";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Cookies from "./pages/Cookies";
+import Settings from "./pages/Settings";
 import { Navbar } from "./components/Navbar";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AdminProtectedRoute } from "./components/AdminProtectedRoute";
@@ -82,6 +83,7 @@ const App = () => (
               <Route path="/teams" element={<ProtectedRoute><Navbar /><TeamManagement /></ProtectedRoute>} />
               <Route path="/api-access" element={<ProtectedRoute><Navbar /><ApiAccess /></ProtectedRoute>} />
               <Route path="/jobs" element={<ProtectedRoute><Navbar /><Jobs /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><Navbar /><Settings /></ProtectedRoute>} />
               <Route path="/features" element={<FeaturesPage />} />
               <Route path="/how-it-works" element={<HowItWorksPage />} />
               <Route path="/pricing" element={<Pricing />} />

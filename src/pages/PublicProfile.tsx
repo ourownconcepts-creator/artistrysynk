@@ -10,6 +10,7 @@ import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { toast } from "sonner";
 import { ProfileSchema, PageSEO } from "@/components/seo";
 import { FlagContentDialog } from "@/components/FlagContentDialog";
+import { BlockUserButton } from "@/components/settings/BlockUserButton";
 
 const PublicProfile = () => {
   const { userId } = useParams();
@@ -226,6 +227,12 @@ const PublicProfile = () => {
                       <Flag className="w-5 h-5" />
                     </Button>
                   }
+                />
+                <BlockUserButton
+                  userId={currentUserId}
+                  targetUserId={userId!}
+                  targetUserName={profile.full_name}
+                  onBlocked={() => navigate("/discover")}
                 />
               </div>
             )}

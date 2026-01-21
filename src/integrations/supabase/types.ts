@@ -137,6 +137,30 @@ export type Database = {
         }
         Relationships: []
       }
+      blocked_users: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
       career_applications: {
         Row: {
           cover_letter: string
@@ -1510,6 +1534,60 @@ export type Database = {
           last_active?: string | null
           session_id?: string
           user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          allow_messages_from: string | null
+          created_at: string
+          email_notifications: boolean | null
+          id: string
+          marketing_emails: boolean | null
+          match_notifications: boolean | null
+          message_notifications: boolean | null
+          onboarding_completed: boolean | null
+          profile_visibility: string | null
+          project_notifications: boolean | null
+          push_notifications: boolean | null
+          show_online_status: boolean | null
+          theme_preference: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allow_messages_from?: string | null
+          created_at?: string
+          email_notifications?: boolean | null
+          id?: string
+          marketing_emails?: boolean | null
+          match_notifications?: boolean | null
+          message_notifications?: boolean | null
+          onboarding_completed?: boolean | null
+          profile_visibility?: string | null
+          project_notifications?: boolean | null
+          push_notifications?: boolean | null
+          show_online_status?: boolean | null
+          theme_preference?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allow_messages_from?: string | null
+          created_at?: string
+          email_notifications?: boolean | null
+          id?: string
+          marketing_emails?: boolean | null
+          match_notifications?: boolean | null
+          message_notifications?: boolean | null
+          onboarding_completed?: boolean | null
+          profile_visibility?: string | null
+          project_notifications?: boolean | null
+          push_notifications?: boolean | null
+          show_online_status?: boolean | null
+          theme_preference?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

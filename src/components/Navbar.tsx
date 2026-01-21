@@ -3,8 +3,11 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sparkles, Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code } from "lucide-react";
+import { Sparkles, Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code, Settings } from "lucide-react";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { ThemeToggle } from "@/components/navbar/ThemeToggle";
+import { GlobalSearch } from "@/components/navbar/GlobalSearch";
+import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -105,7 +108,11 @@ export const Navbar = () => {
               </Button>
             </Link>
 
+            <GlobalSearch />
+            
             {user && <NotificationBell userId={user.id} />}
+            
+            <ThemeToggle />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -149,6 +156,10 @@ export const Navbar = () => {
                   </>
                 )}
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/settings")}>
+                  <Settings className="w-4 h-4 mr-2" />
+                  Settings
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="w-4 h-4 mr-2" />
                   Sign Out
@@ -158,6 +169,8 @@ export const Navbar = () => {
           </div>
         </div>
       </div>
+      
+      {user && <OnboardingTour userId={user.id} />}
     </nav>
   );
 };
