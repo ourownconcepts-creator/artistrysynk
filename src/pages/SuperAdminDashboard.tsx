@@ -40,6 +40,9 @@ import { NewsletterCampaign } from "@/components/admin/NewsletterCampaign";
 import { FeaturedCreativesManager } from "@/components/admin/FeaturedCreativesManager";
 import { EnhancedAnalyticsDashboard } from "@/components/admin/EnhancedAnalyticsDashboard";
 import { CreativeRoleAnalytics } from "@/components/admin/CreativeRoleAnalytics";
+import { QuickActionsWidget } from "@/components/admin/QuickActionsWidget";
+import { PendingBadge } from "@/components/admin/PendingBadge";
+import { useAdminPendingCounts } from "@/hooks/useAdminPendingCounts";
 interface UserWithRole {
   id: string;
   full_name: string;
@@ -55,9 +58,13 @@ const SuperAdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string | string[]>("all");
   const [dateRange, setDateRange] = useState<any>({ from: undefined, to: undefined });
+  const [activeTab, setActiveTab] = useState("management");
   
   // Enable realtime notifications for admin
   useAdminRealtimeNotifications();
+  
+  // Get pending counts for badges
+  const { counts } = useAdminPendingCounts();
 
   useEffect(() => {
     checkAuth();
@@ -397,30 +404,51 @@ const SuperAdminDashboard = () => {
 
         <DashboardWidgets />
 
-        <Tabs defaultValue="management" className="w-full mt-8">
+        <QuickActionsWidget onTabChange={setActiveTab} />
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-8">
           <TabsList className="flex flex-wrap gap-1">
             <TabsTrigger value="management">Users</TabsTrigger>
             <TabsTrigger value="matches">Matches</TabsTrigger>
-            <TabsTrigger value="flags" className="flex items-center gap-1">
-              <Flag className="h-3 w-3" />
+            <TabsTrigger value="flags" className="flex items-center">
+              <Flag className="h-3 w-3 mr-1" />
               Flags
+              <PendingBadge count={counts.flags + counts.appeals} />
             </TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="jobs">Jobs</TabsTrigger>
-            <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
-            <TabsTrigger value="projects">Projects</TabsTrigger>
+            <TabsTrigger value="jobs" className="flex items-center">
+              Jobs
+              <PendingBadge count={counts.jobApplications} />
+            </TabsTrigger>
+            <TabsTrigger value="marketplace" className="flex items-center">
+              Marketplace
+              <PendingBadge count={counts.serviceOrders} />
+            </TabsTrigger>
+            <TabsTrigger value="projects" className="flex items-center">
+              Projects
+              <PendingBadge count={counts.projectApplications} />
+            </TabsTrigger>
             <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
             <TabsTrigger value="featured">Featured</TabsTrigger>
-            <TabsTrigger value="leads">Leads</TabsTrigger>
+            <TabsTrigger value="leads" className="flex items-center">
+              Leads
+              <PendingBadge count={counts.leads} />
+            </TabsTrigger>
             <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
-            <TabsTrigger value="careers">Careers</TabsTrigger>
-            <TabsTrigger value="verifications">Verify</TabsTrigger>
+            <TabsTrigger value="careers" className="flex items-center">
+              Careers
+              <PendingBadge count={counts.careers} />
+            </TabsTrigger>
+            <TabsTrigger value="verifications" className="flex items-center">
+              Verify
+              <PendingBadge count={counts.verifications} />
+            </TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="sessions">Sessions</TabsTrigger>
             <TabsTrigger value="logs">Logs</TabsTrigger>
-            <TabsTrigger value="reports" className="flex items-center gap-1">
-              <FileText className="h-3 w-3" />
+            <TabsTrigger value="reports" className="flex items-center">
+              <FileText className="h-3 w-3 mr-1" />
               Reports
             </TabsTrigger>
           </TabsList>

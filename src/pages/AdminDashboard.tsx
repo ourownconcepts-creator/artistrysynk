@@ -32,6 +32,9 @@ import { ContentAppealsManager } from "@/components/admin/ContentAppealsManager"
 import { useAdminRealtimeNotifications } from "@/hooks/useAdminRealtimeNotifications";
 import { PortfolioModeration } from "@/components/admin/PortfolioModeration";
 import { MatchManagement } from "@/components/admin/MatchManagement";
+import { QuickActionsWidget } from "@/components/admin/QuickActionsWidget";
+import { PendingBadge } from "@/components/admin/PendingBadge";
+import { useAdminPendingCounts } from "@/hooks/useAdminPendingCounts";
 interface UserWithRole {
   id: string;
   full_name: string;
@@ -47,9 +50,13 @@ const AdminDashboard = () => {
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("users");
   
   // Enable realtime notifications for admin
   useAdminRealtimeNotifications();
+  
+  // Get pending counts for badges
+  const { counts } = useAdminPendingCounts();
 
   useEffect(() => {
     checkAuth();
@@ -216,22 +223,37 @@ const AdminDashboard = () => {
 
         <DashboardWidgets />
 
-        <Tabs defaultValue="users" className="w-full mt-6">
+        <QuickActionsWidget onTabChange={setActiveTab} />
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
           <TabsList className="flex flex-wrap gap-1">
             <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="flags" className="flex items-center gap-1">
-              <Flag className="h-3 w-3" />
+            <TabsTrigger value="flags" className="flex items-center">
+              <Flag className="h-3 w-3 mr-1" />
               Flags
+              <PendingBadge count={counts.flags + counts.appeals} />
             </TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
             <TabsTrigger value="matches">Matches</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
-            <TabsTrigger value="leads">Leads</TabsTrigger>
+            <TabsTrigger value="leads" className="flex items-center">
+              Leads
+              <PendingBadge count={counts.leads} />
+            </TabsTrigger>
             <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
             <TabsTrigger value="featured">Featured</TabsTrigger>
-            <TabsTrigger value="jobs">Jobs</TabsTrigger>
-            <TabsTrigger value="careers">Careers</TabsTrigger>
-            <TabsTrigger value="verifications">Verify</TabsTrigger>
+            <TabsTrigger value="jobs" className="flex items-center">
+              Jobs
+              <PendingBadge count={counts.jobApplications} />
+            </TabsTrigger>
+            <TabsTrigger value="careers" className="flex items-center">
+              Careers
+              <PendingBadge count={counts.careers} />
+            </TabsTrigger>
+            <TabsTrigger value="verifications" className="flex items-center">
+              Verify
+              <PendingBadge count={counts.verifications} />
+            </TabsTrigger>
             <TabsTrigger value="sessions">Sessions</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="logs">Logs</TabsTrigger>
