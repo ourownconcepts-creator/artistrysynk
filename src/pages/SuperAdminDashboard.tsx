@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Crown, Users, LogOut, Shield, UserCog, BarChart3, Settings, Flag } from "lucide-react";
+import { Crown, Users, LogOut, Shield, UserCog, BarChart3, Settings, Flag, FileText } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -33,6 +33,13 @@ import { RevenueAnalytics } from "@/components/admin/RevenueAnalytics";
 import { ContentFlagsManager } from "@/components/admin/ContentFlagsManager";
 import { ContentAppealsManager } from "@/components/admin/ContentAppealsManager";
 import { useAdminRealtimeNotifications } from "@/hooks/useAdminRealtimeNotifications";
+import { MessagesModeration } from "@/components/admin/MessagesModeration";
+import { ContactSubmissionsManager } from "@/components/admin/ContactSubmissionsManager";
+import { NewsletterSubscribersManager } from "@/components/admin/NewsletterSubscribersManager";
+import { NewsletterCampaign } from "@/components/admin/NewsletterCampaign";
+import { FeaturedCreativesManager } from "@/components/admin/FeaturedCreativesManager";
+import { EnhancedAnalyticsDashboard } from "@/components/admin/EnhancedAnalyticsDashboard";
+import { CreativeRoleAnalytics } from "@/components/admin/CreativeRoleAnalytics";
 interface UserWithRole {
   id: string;
   full_name: string;
@@ -398,15 +405,24 @@ const SuperAdminDashboard = () => {
               <Flag className="h-3 w-3" />
               Flags
             </TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
             <TabsTrigger value="jobs">Jobs</TabsTrigger>
             <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
+            <TabsTrigger value="featured">Featured</TabsTrigger>
+            <TabsTrigger value="leads">Leads</TabsTrigger>
+            <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
             <TabsTrigger value="careers">Careers</TabsTrigger>
+            <TabsTrigger value="verifications">Verify</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="sessions">Sessions</TabsTrigger>
             <TabsTrigger value="logs">Logs</TabsTrigger>
+            <TabsTrigger value="reports" className="flex items-center gap-1">
+              <FileText className="h-3 w-3" />
+              Reports
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="management" className="mt-6">
@@ -487,6 +503,10 @@ const SuperAdminDashboard = () => {
             <ContentAppealsManager />
           </TabsContent>
 
+          <TabsContent value="messages" className="mt-6">
+            <MessagesModeration />
+          </TabsContent>
+
           <TabsContent value="jobs" className="mt-6">
             <JobPostingsManager />
           </TabsContent>
@@ -507,12 +527,31 @@ const SuperAdminDashboard = () => {
             <PortfolioModeration />
           </TabsContent>
 
+          <TabsContent value="featured" className="mt-6">
+            <FeaturedCreativesManager />
+          </TabsContent>
+
+          <TabsContent value="leads" className="mt-6">
+            <ContactSubmissionsManager />
+          </TabsContent>
+
+          <TabsContent value="newsletter" className="mt-6 space-y-6">
+            <NewsletterCampaign />
+            <NewsletterSubscribersManager />
+          </TabsContent>
+
           <TabsContent value="careers" className="mt-6">
             <CareerApplicationsManager />
           </TabsContent>
 
+          <TabsContent value="verifications" className="mt-6">
+            <VerificationRequests />
+          </TabsContent>
+
           <TabsContent value="analytics" className="mt-6">
             <div className="space-y-6">
+              <EnhancedAnalyticsDashboard />
+              <CreativeRoleAnalytics />
               <SwipeAnalytics />
               <RevenueAnalytics />
               <AnalyticsDashboard />
@@ -520,14 +559,29 @@ const SuperAdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="sessions" className="mt-6">
-            <div className="space-y-6">
-              <SessionManagement />
-              <VerificationRequests />
-            </div>
+            <SessionManagement />
           </TabsContent>
 
           <TabsContent value="logs" className="mt-6">
             <ActivityLogsViewer />
+          </TabsContent>
+
+          <TabsContent value="reports" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="w-5 h-5" />
+                  Advanced Reports
+                </CardTitle>
+                <CardDescription>Access comprehensive reporting and scheduled reports</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button onClick={() => navigate("/admin-reports")}>
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Open Full Reports Dashboard
+                </Button>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
