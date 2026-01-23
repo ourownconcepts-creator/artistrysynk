@@ -10,7 +10,7 @@ export const Footer = () => {
             <div className="flex items-center gap-2">
               <Music className="w-6 h-6 text-primary" />
               <span className="text-xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                Artistry
+                ArtistrySynk
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -55,7 +55,7 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © 2025 Artistry. All rights reserved.
+            © 2025 ArtistrySynk. All rights reserved.
           </p>
           
           {/* Social Links */}

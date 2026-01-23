@@ -70,7 +70,7 @@ export const Navbar = () => {
           <Link to="/discover" className="flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-secondary" />
             <span className="font-bold text-xl bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent">
-              Artistry
+              ArtistrySynk
             </span>
           </Link>
 

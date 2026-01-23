@@ -10,9 +10,9 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <PageSEO
-        title="Artistry.ng - Create • Connect • Collaborate | Africa's Creative Network"
+        title="ArtistrySynk - Create • Connect • Collaborate | Africa's Creative Network"
         description="The ultimate platform connecting musicians, producers, dancers, actors, and creative professionals across Africa. Create, connect, and collaborate with talented creatives."
-        canonicalUrl="https://artistry.ng/"
+        canonicalUrl="https://artistrysynk.com/"
         keywords="creative collaboration, African artists, musicians, producers, dancers, actors, Afrobeats, Nigerian music, creative professionals, talent network"
       />
       <OrganizationSchema />

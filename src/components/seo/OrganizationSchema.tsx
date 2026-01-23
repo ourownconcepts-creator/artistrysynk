@@ -9,23 +9,23 @@ interface OrganizationSchemaProps {
 }
 
 export const OrganizationSchema = ({
-  name = "Artistry",
-  url = "https://artistry.com",
-  logo = "https://artistry.com/logo.png",
+  name = "ArtistrySynk",
+  url = "https://artistrysynk.com",
+  logo = "https://artistrysynk.com/logo.png",
   description = "The ultimate platform connecting musicians, producers, dancers, actors, and creative professionals across Africa. Create, connect, and collaborate with talented creatives.",
   sameAs = [
-    "https://instagram.com/artistry",
-    "https://twitter.com/artistry",
-    "https://facebook.com/artistry",
-    "https://linkedin.com/company/artistry",
-    "https://youtube.com/@artistry"
+    "https://instagram.com/artistrysynk",
+    "https://twitter.com/artistrysynk",
+    "https://facebook.com/artistrysynk",
+    "https://linkedin.com/company/artistrysynk",
+    "https://youtube.com/@artistrysynk"
   ]
 }: OrganizationSchemaProps) => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": name,
-    "alternateName": "Artistry Africa",
+    "alternateName": "ArtistrySynk Africa",
     "url": url,
     "logo": logo,
     "description": description,
@@ -34,7 +34,7 @@ export const OrganizationSchema = ({
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "customer service",
-      "email": "hello@artistry.com",
+      "email": "hello@artistrysynk.com",
       "availableLanguage": ["English"]
     },
     "address": {

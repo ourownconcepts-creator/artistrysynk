@@ -7,8 +7,8 @@ interface WebsiteSchemaProps {
 }
 
 export const WebsiteSchema = ({
-  name = "Artistry",
-  url = "https://artistry.com",
+  name = "ArtistrySynk",
+  url = "https://artistrysynk.com",
   description = "Connect with musicians, producers, dancers, actors, and creative professionals across Africa. Match, collaborate, and bring your creative vision to life."
 }: WebsiteSchemaProps) => {
   const websiteSchema = {

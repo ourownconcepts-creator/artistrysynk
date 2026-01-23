@@ -33,16 +33,16 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Sending welcome email to ${email}`);
 
     const emailResponse = await resend.emails.send({
-      from: "Artistry.ng <onboarding@resend.dev>",
+      from: "ArtistrySynk <onboarding@resend.dev>",
       to: [email],
-      subject: `Welcome to Artistry, ${fullName}! 🎨`,
+      subject: `Welcome to ArtistrySynk, ${fullName}! 🎨`,
       html: `
         <!DOCTYPE html>
         <html>
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Welcome to Artistry</title>
+          <title>Welcome to ArtistrySynk</title>
         </head>
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #0a0a0b;">
           <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0b; padding: 40px 20px;">
@@ -53,7 +53,7 @@ const handler = async (req: Request): Promise<Response> => {
                   <tr>
                     <td style="background: linear-gradient(135deg, #c026d3 0%, #7c3aed 50%, #f97316 100%); padding: 40px; border-radius: 16px 16px 0 0; text-align: center;">
                       <h1 style="color: #ffffff; margin: 0; font-size: 36px; font-weight: bold;">
-                        ✨ Artistry
+                        ✨ ArtistrySynk
                       </h1>
                       <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">
                         Create • Connect • Collaborate
@@ -69,7 +69,7 @@ const handler = async (req: Request): Promise<Response> => {
                       </h2>
                       
                       <p style="color: #a1a1aa; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
-                        You've just joined Nigeria's premier creative community. Whether you're a musician, producer, designer, videographer, or any creative professional – you're in the right place.
+                        You've just joined Africa's premier creative community. Whether you're a musician, producer, designer, videographer, or any creative professional – you're in the right place.
                       </p>
 
                       <div style="background-color: #27272a; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
@@ -96,7 +96,7 @@ const handler = async (req: Request): Promise<Response> => {
                       <table width="100%" cellpadding="0" cellspacing="0">
                         <tr>
                           <td align="center">
-                            <a href="https://artistryng.lovable.app/setup-profile" style="display: inline-block; background: linear-gradient(135deg, #c026d3 0%, #7c3aed 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                            <a href="https://artistrysynk.lovable.app/setup-profile" style="display: inline-block; background: linear-gradient(135deg, #c026d3 0%, #7c3aed 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: bold; font-size: 16px;">
                               Complete Your Profile
                             </a>
                           </td>
@@ -113,11 +113,11 @@ const handler = async (req: Request): Promise<Response> => {
                   <tr>
                     <td style="padding: 24px; text-align: center;">
                       <p style="color: #52525b; font-size: 12px; margin: 0 0 8px 0;">
-                        © ${new Date().getFullYear()} Artistry.ng – Nigeria's Creative Network
+                        © ${new Date().getFullYear()} ArtistrySynk – Africa's Creative Network
                       </p>
                       <p style="color: #52525b; font-size: 12px; margin: 0;">
-                        <a href="https://artistryng.lovable.app" style="color: #c026d3; text-decoration: none;">Visit Website</a> •
-                        <a href="https://artistryng.lovable.app/discover" style="color: #c026d3; text-decoration: none;">Discover Creatives</a>
+                        <a href="https://artistrysynk.lovable.app" style="color: #c026d3; text-decoration: none;">Visit Website</a> •
+                        <a href="https://artistrysynk.lovable.app/discover" style="color: #c026d3; text-decoration: none;">Discover Creatives</a>
                       </p>
                     </td>
                   </tr>

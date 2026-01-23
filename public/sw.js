@@ -1,5 +1,5 @@
 // Service Worker for Push Notifications
-const CACHE_NAME = 'artistry-cache-v1';
+const CACHE_NAME = 'artistrysynk-cache-v1';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -10,36 +10,43 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('push', (event) => {
-  if (!event.data) return;
-  
+  if (!event.data) {
+    console.log('Push event received but no data');
+    return;
+  }
+
   try {
     const data = event.data.json();
     
     const options = {
       body: data.body || 'You have a new notification',
-      icon: '/favicon.ico',
+      icon: data.icon || '/favicon.ico',
       badge: '/favicon.ico',
       vibrate: [100, 50, 100],
       data: {
         dateOfArrival: Date.now(),
         url: data.url || '/',
-        ...data
+        ...data.data
       },
-      actions: data.actions || [
-        { action: 'open', title: 'Open' },
-        { action: 'close', title: 'Dismiss' }
-      ]
+      actions: data.actions || [],
+      tag: data.tag || 'default',
+      renotify: data.renotify || false,
+      requireInteraction: data.requireInteraction || false
     };
 
     event.waitUntil(
-      self.registration.showNotification(data.title || 'Artistry', options)
+      self.registration.showNotification(
+        data.title || 'ArtistrySynk',
+        options
+      )
     );
   } catch (error) {
-    // Fallback for non-JSON push data
-    const text = event.data.text();
+    console.error('Error processing push event:', error);
+    
+    // Fallback notification
     event.waitUntil(
-      self.registration.showNotification('Artistry', {
-        body: text,
+      self.registration.showNotification('ArtistrySynk', {
+        body: event.data.text() || 'You have a new notification',
         icon: '/favicon.ico'
       })
     );
@@ -49,28 +56,31 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  if (event.action === 'close') return;
-
-  const urlToOpen = event.notification.data?.url || '/';
-
+  const url = event.notification.data?.url || '/';
+  
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      // Check if there's already a window open
-      for (const client of windowClients) {
-        if (client.url.includes(self.location.origin) && 'focus' in client) {
-          client.focus();
-          if (urlToOpen !== '/') {
-            client.navigate(urlToOpen);
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // If a window is already open, focus it
+        for (const client of clientList) {
+          if (client.url.includes(self.location.origin) && 'focus' in client) {
+            return client.focus().then(() => {
+              if ('navigate' in client) {
+                return client.navigate(url);
+              }
+            });
           }
-          return;
         }
-      }
-      // If no window is open, open a new one
-      if (clients.openWindow) {
-        return clients.openWindow(urlToOpen);
-      }
-    })
+        // Otherwise, open a new window
+        if (clients.openWindow) {
+          return clients.openWindow(url);
+        }
+      })
   );
+});
+
+self.addEventListener('notificationclose', (event) => {
+  console.log('Notification closed:', event.notification.tag);
 });
 
 // Handle background sync for offline actions
@@ -81,30 +91,20 @@ self.addEventListener('sync', (event) => {
 });
 
 async function syncNotifications() {
-  // Sync any pending notification reads when back online
-  try {
-    const cache = await caches.open(CACHE_NAME);
-    const requests = await cache.keys();
-    // Process cached notification acknowledgments
-    for (const request of requests) {
-      if (request.url.includes('/api/notifications/ack')) {
-        await fetch(request);
-        await cache.delete(request);
-      }
-    }
-  } catch (error) {
-    // Silent fail - will retry on next sync
-  }
+  // Placeholder for syncing pending notifications when back online
+  console.log('Syncing notifications...');
 }
 
-// Periodic background sync for checking new notifications
-self.addEventListener('periodicsync', (event) => {
-  if (event.tag === 'check-notifications') {
-    event.waitUntil(checkForNewNotifications());
+// Fetch event for caching strategies (optional)
+self.addEventListener('fetch', (event) => {
+  // Only cache same-origin requests
+  if (event.request.url.startsWith(self.location.origin)) {
+    // Network-first strategy for API calls
+    if (event.request.url.includes('/api/') || event.request.url.includes('/functions/')) {
+      event.respondWith(
+        fetch(event.request)
+          .catch(() => caches.match(event.request))
+      );
+    }
   }
 });
-
-async function checkForNewNotifications() {
-  // This would check for new notifications in a real implementation
-  // For now, this is a placeholder for future functionality
-}

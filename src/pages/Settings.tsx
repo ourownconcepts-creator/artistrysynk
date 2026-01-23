@@ -293,7 +293,7 @@ const Settings = () => {
           <Card>
             <CardHeader>
               <CardTitle>Theme</CardTitle>
-              <CardDescription>Customize how Artistry looks</CardDescription>
+              <CardDescription>Customize how ArtistrySynk looks</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-3 gap-4">

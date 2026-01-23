@@ -130,7 +130,7 @@ const ResetPassword = () => {
             <div className="flex items-center justify-center gap-2 mb-4">
               <Sparkles className="w-8 h-8 text-secondary" />
               <h1 className="text-4xl font-bold bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent">
-                Artistry
+                ArtistrySynk
               </h1>
             </div>
           </div>
@@ -160,12 +160,12 @@ const ResetPassword = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Sparkles className="w-8 h-8 text-secondary" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent">
-              Artistry
-            </h1>
-          </div>
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Sparkles className="w-8 h-8 text-secondary" />
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent">
+                ArtistrySynk
+              </h1>
+            </div>
           <p className="text-muted-foreground">Create your new password</p>
         </div>
 
