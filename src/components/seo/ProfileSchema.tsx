@@ -37,8 +37,8 @@ export const ProfileSchema = ({
     "sameAs": sameAs.length > 0 ? sameAs : undefined,
     "memberOf": {
       "@type": "Organization",
-      "name": "Artistry",
-      "url": "https://artistry.com"
+      "name": "ArtistrySynk",
+      "url": "https://artistrysynk.com"
     }
   };
 

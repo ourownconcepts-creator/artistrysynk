@@ -12,6 +12,7 @@ import { PortfolioUpload } from "@/components/portfolio/PortfolioUpload";
 import { VerificationRequestButton } from "@/components/profile/VerificationRequestButton";
 import { UserSessions } from "@/components/profile/UserSessions";
 import { ProfileAnalytics } from "@/components/profile/ProfileAnalytics";
+import { ProfileCompletionProgress } from "@/components/profile/ProfileCompletionProgress";
 import { useSessionTracking } from "@/hooks/useSessionTracking";
 import { MyAppeals } from "@/components/content/MyAppeals";
 
@@ -308,6 +309,13 @@ const Profile = () => {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Profile Completion */}
+        {userId && (
+          <div className="mt-8">
+            <ProfileCompletionProgress userId={userId} />
+          </div>
+        )}
 
         {/* Tabbed Content */}
         {userId && (

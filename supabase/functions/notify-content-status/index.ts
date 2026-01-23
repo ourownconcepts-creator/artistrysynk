@@ -29,6 +29,21 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Check user notification preferences
+    const { data: settings } = await supabase
+      .from('user_settings')
+      .select('email_notifications')
+      .eq('user_id', userId)
+      .single();
+
+    if (settings && !settings.email_notifications) {
+      console.log('User has disabled email notifications:', userId);
+      return new Response(JSON.stringify({ success: true, skipped: true, reason: 'Email notifications disabled' }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
     const { data: profile } = await supabase
       .from('profiles')
       .select('full_name, email')
@@ -59,7 +74,7 @@ const handler = async (req: Request): Promise<Response> => {
             <li>Submit an appeal if you believe this was done in error</li>
           </ul>
           <p>To submit an appeal, please visit your profile page and click on "Appeal Hiding" for the affected content.</p>
-          <p>Best regards,<br>The Artistry Team</p>
+          <p>Best regards,<br>The ArtistrySynk Team</p>
         `;
         break;
 
@@ -71,7 +86,7 @@ const handler = async (req: Request): Promise<Response> => {
           <p>Great news! Your ${contentType} has been reviewed by our moderation team and has been restored.</p>
           ${adminResponse ? `<p><strong>Admin Note:</strong> ${adminResponse}</p>` : ''}
           <p>Thank you for your patience.</p>
-          <p>Best regards,<br>The Artistry Team</p>
+          <p>Best regards,<br>The ArtistrySynk Team</p>
         `;
         break;
 
@@ -83,13 +98,13 @@ const handler = async (req: Request): Promise<Response> => {
           <p>We have reviewed your appeal regarding your ${contentType}. After careful consideration, we have determined that the content does not comply with our community guidelines and will remain hidden.</p>
           ${adminResponse ? `<p><strong>Admin Note:</strong> ${adminResponse}</p>` : ''}
           <p>If you believe this decision was made in error, please contact our support team.</p>
-          <p>Best regards,<br>The Artistry Team</p>
+          <p>Best regards,<br>The ArtistrySynk Team</p>
         `;
         break;
     }
 
     const emailResponse = await resend.emails.send({
-      from: "Artistry <onboarding@resend.dev>",
+      from: "ArtistrySynk <onboarding@resend.dev>",
       to: [profile.email],
       subject: subject,
       html: htmlContent,

@@ -107,7 +107,7 @@ const handler = async (req: Request): Promise<Response> => {
       for (const email of batch) {
         try {
           const emailResponse = await resend.emails.send({
-            from: "Artistry.ng <onboarding@resend.dev>",
+            from: "ArtistrySynk <onboarding@resend.dev>",
             to: [email],
             subject: subject,
             html: `
@@ -122,7 +122,7 @@ const handler = async (req: Request): Promise<Response> => {
                 ${previewText ? `<div style="display: none; max-height: 0; overflow: hidden;">${previewText}</div>` : ""}
                 <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
                   <div style="background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%); padding: 40px; border-radius: 16px 16px 0 0; text-align: center;">
-                    <h1 style="color: white; margin: 0; font-size: 28px;">Artistry.ng</h1>
+                    <h1 style="color: white; margin: 0; font-size: 28px;">ArtistrySynk</h1>
                     <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Connect. Create. Collaborate.</p>
                   </div>
                   
@@ -132,14 +132,14 @@ const handler = async (req: Request): Promise<Response> => {
                     <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 30px;">
                       <p style="color: #6b7280; font-size: 14px; margin: 0;">
                         You're receiving this email because you subscribed to our newsletter.<br>
-                        <a href="https://artistryng.lovable.app" style="color: #8B5CF6;">Unsubscribe</a>
+                        <a href="https://artistrysynk.lovable.app" style="color: #8B5CF6;">Unsubscribe</a>
                       </p>
                     </div>
                   </div>
                   
                   <div style="text-align: center; padding: 20px;">
                     <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-                      © ${new Date().getFullYear()} Artistry.ng. All rights reserved.<br>
+                      © ${new Date().getFullYear()} ArtistrySynk. All rights reserved.<br>
                       Lagos, Nigeria
                     </p>
                   </div>

@@ -23,7 +23,7 @@ interface TourStep {
 
 const tourSteps: TourStep[] = [
   {
-    title: "Welcome to Artistry! 🎨",
+    title: "Welcome to ArtistrySynk! 🎨",
     description: "We're excited to have you join our creative community. Let's take a quick tour to help you get started and make the most of your experience.",
     icon: <Sparkles className="w-12 h-12 text-secondary" />,
   },
