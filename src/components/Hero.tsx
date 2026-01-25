@@ -117,7 +117,7 @@ export const Hero = () => {
       
       <FloatingBadge className="bottom-[25%] left-[12%] hidden lg:flex items-center gap-2" delay={2.5}>
         <Users className="w-4 h-4 text-accent" />
-        <span className="text-sm font-medium text-foreground">African Creatives</span>
+        <span className="text-sm font-medium text-foreground">Global Creatives</span>
       </FloatingBadge>
 
       {/* Main content */}
@@ -148,7 +148,7 @@ export const Hero = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <span className="block text-foreground">
-                <AnimatedText delay={0.3}>Where African</AnimatedText>
+                <AnimatedText delay={0.3}>ArtistrySynk</AnimatedText>
               </span>
               <span className="block">
                 <GlowText className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
@@ -247,7 +247,7 @@ export const Hero = () => {
             </span>
             <span className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-secondary" />
-              Pan-African network
+              Global network
             </span>
           </motion.div>
         </div>
