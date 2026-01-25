@@ -5,6 +5,7 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { CTA } from "@/components/CTA";
 import { Footer } from "@/components/Footer";
 import { PortfolioShowcase } from "@/components/home/PortfolioShowcase";
+import { Testimonials } from "@/components/home/Testimonials";
 import { OrganizationSchema, WebsiteSchema, PageSEO } from "@/components/seo";
 
 const Index = () => {
@@ -22,6 +23,7 @@ const Index = () => {
       <PortfolioShowcase />
       <Features />
       <Roles />
+      <Testimonials />
       <HowItWorks />
       <CTA />
       <Footer />
