@@ -8,6 +8,7 @@ import { PortfolioShowcase } from "@/components/home/PortfolioShowcase";
 import { Testimonials } from "@/components/home/Testimonials";
 import { PartnersCarousel } from "@/components/home/PartnersCarousel";
 import { NewsletterSignup } from "@/components/home/NewsletterSignup";
+import { StatsCounter } from "@/components/home/StatsCounter";
 import { OrganizationSchema, WebsiteSchema, PageSEO } from "@/components/seo";
 
 const Index = () => {
@@ -23,6 +24,7 @@ const Index = () => {
       <WebsiteSchema />
       <Hero />
       <PartnersCarousel />
+      <StatsCounter />
       <PortfolioShowcase />
       <Features />
       <Roles />
