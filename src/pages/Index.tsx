@@ -6,6 +6,8 @@ import { CTA } from "@/components/CTA";
 import { Footer } from "@/components/Footer";
 import { PortfolioShowcase } from "@/components/home/PortfolioShowcase";
 import { Testimonials } from "@/components/home/Testimonials";
+import { PartnersCarousel } from "@/components/home/PartnersCarousel";
+import { NewsletterSignup } from "@/components/home/NewsletterSignup";
 import { OrganizationSchema, WebsiteSchema, PageSEO } from "@/components/seo";
 
 const Index = () => {
@@ -20,11 +22,13 @@ const Index = () => {
       <OrganizationSchema />
       <WebsiteSchema />
       <Hero />
+      <PartnersCarousel />
       <PortfolioShowcase />
       <Features />
       <Roles />
       <Testimonials />
       <HowItWorks />
+      <NewsletterSignup />
       <CTA />
       <Footer />
     </div>
