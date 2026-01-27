@@ -193,51 +193,30 @@ export const ConnectionWeb = () => {
           const isActive = activeNode === conn.from || activeNode === conn.to;
           
           return (
-            <g key={i}>
-              {/* Animated path */}
-              <motion.path
-                d={`M ${fromNode.x} ${fromNode.y} Q ${(fromNode.x + toNode.x) / 2 + (Math.random() - 0.5) * 20} ${(fromNode.y + toNode.y) / 2 + (Math.random() - 0.5) * 20} ${toNode.x} ${toNode.y}`}
-                stroke="url(#connectionGradient)"
-                strokeWidth={isActive ? 3 : 1.5}
-                fill="none"
-                strokeDasharray="8,4"
-                filter={isActive ? "url(#glow)" : undefined}
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ 
-                  pathLength: 1, 
-                  opacity: conn.strength * (isActive ? 1 : 0.5),
-                  strokeDashoffset: [0, -24]
-                }}
-                transition={{ 
-                  pathLength: { duration: 2, delay: i * 0.1 },
-                  opacity: { duration: 1 },
-                  strokeDashoffset: { 
-                    duration: 2, 
-                    repeat: Infinity, 
-                    ease: "linear" 
-                  }
-                }}
-              />
-              
-              {/* Data pulse traveling along line */}
-              <motion.circle
-                r={3}
-                fill="hsl(var(--secondary))"
-                filter="url(#glow)"
-                initial={{ opacity: 0 }}
-                animate={{
-                  opacity: [0, 1, 0],
-                  cx: [fromNode.x, toNode.x],
-                  cy: [fromNode.y, toNode.y]
-                }}
-                transition={{
-                  duration: 3,
-                  delay: i * 0.5,
-                  repeat: Infinity,
-                  repeatDelay: 2
-                }}
-              />
-            </g>
+            <motion.path
+              key={i}
+              d={`M ${fromNode.x} ${fromNode.y} Q ${(fromNode.x + toNode.x) / 2 + (Math.random() - 0.5) * 20} ${(fromNode.y + toNode.y) / 2 + (Math.random() - 0.5) * 20} ${toNode.x} ${toNode.y}`}
+              stroke="url(#connectionGradient)"
+              strokeWidth={isActive ? 3 : 1.5}
+              fill="none"
+              strokeDasharray="8,4"
+              filter={isActive ? "url(#glow)" : undefined}
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ 
+                pathLength: 1, 
+                opacity: conn.strength * (isActive ? 1 : 0.5),
+                strokeDashoffset: [0, -24]
+              }}
+              transition={{ 
+                pathLength: { duration: 2, delay: i * 0.1 },
+                opacity: { duration: 1 },
+                strokeDashoffset: { 
+                  duration: 2, 
+                  repeat: Infinity, 
+                  ease: "linear" 
+                }
+              }}
+            />
           );
         })}
 
