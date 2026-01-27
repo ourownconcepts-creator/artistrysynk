@@ -41,19 +41,44 @@ const Projects = () => {
   }, [navigate]);
 
   const loadProjects = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("projects")
-      .select(`
-        *,
-        project_members(count)
-      `)
-      .eq("created_by", userId)
-      .order("created_at", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("created_by", userId)
+        .order("created_at", { ascending: false });
 
-    if (error) {
+      if (error) {
+        console.error("Projects load error:", error);
+        toast.error("Failed to load projects");
+        setProjects([]);
+      } else {
+        // Fetch member counts separately
+        const projectIds = data?.map(p => p.id) || [];
+        if (projectIds.length > 0) {
+          const { data: memberCounts } = await supabase
+            .from("project_members")
+            .select("project_id")
+            .in("project_id", projectIds);
+          
+          const countMap = (memberCounts || []).reduce((acc, m) => {
+            acc[m.project_id] = (acc[m.project_id] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>);
+
+          const projectsWithCounts = (data || []).map(p => ({
+            ...p,
+            project_members: [{ count: countMap[p.id] || 0 }]
+          }));
+          setProjects(projectsWithCounts);
+        } else {
+          setProjects([]);
+        }
+      }
+    } catch (err) {
+      console.error("Projects fetch error:", err);
       toast.error("Failed to load projects");
-    } else {
-      setProjects(data || []);
+      setProjects([]);
     }
     setLoading(false);
   };
