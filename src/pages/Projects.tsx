@@ -47,7 +47,7 @@ const Projects = () => {
         *,
         project_members(count)
       `)
-      .or(`created_by.eq.${userId}`)
+      .eq("created_by", userId)
       .order("created_at", { ascending: false });
 
     if (error) {
