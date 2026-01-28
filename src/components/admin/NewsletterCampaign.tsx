@@ -10,12 +10,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { newsletterTemplates, getTemplateById, type NewsletterTemplate } from "@/lib/newsletterTemplates";
 import { cn } from "@/lib/utils";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export const NewsletterCampaign = () => {
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
   const [previewText, setPreviewText] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("gradient-header");
+  const [audience, setAudience] = useState<"subscribers" | "users" | "both">("both");
   const [isSending, setIsSending] = useState(false);
   const [lastResult, setLastResult] = useState<{
     sent: number;
@@ -42,7 +44,8 @@ export const NewsletterCampaign = () => {
           subject: subject.trim(),
           content: htmlContent,
           previewText: previewText.trim() || undefined,
-          useRawHtml: true, // Signal to use content directly
+          audience,
+          useRawHtml: true,
         },
       });
 
@@ -56,10 +59,10 @@ export const NewsletterCampaign = () => {
       setLastResult({
         sent: data.sent,
         failed: data.failed,
-        total: data.totalSubscribers,
+        total: data.totalRecipients,
       });
 
-      toast.success(`Newsletter sent to ${data.sent} subscribers!`, {
+      toast.success(`Newsletter sent to ${data.sent} recipients!`, {
         description: data.failed > 0 ? `${data.failed} failed to send` : undefined,
       });
 
@@ -137,6 +140,28 @@ export const NewsletterCampaign = () => {
               </div>
             </div>
           )}
+
+          <div className="space-y-2">
+            <Label>Audience</Label>
+            <RadioGroup
+              value={audience}
+              onValueChange={(value) => setAudience(value as "subscribers" | "users" | "both")}
+              className="flex flex-wrap gap-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="subscribers" id="subscribers" />
+                <Label htmlFor="subscribers" className="cursor-pointer">Newsletter Subscribers Only</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="users" id="users" />
+                <Label htmlFor="users" className="cursor-pointer">Registered App Users Only</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="both" id="both" />
+                <Label htmlFor="both" className="cursor-pointer">Both (Subscribers + Users)</Label>
+              </div>
+            </RadioGroup>
+          </div>
 
           <div className="space-y-4">
             <div className="space-y-2">

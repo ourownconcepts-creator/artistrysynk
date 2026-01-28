@@ -14,6 +14,7 @@ interface NewsletterCampaignRequest {
   subject: string;
   content: string;
   previewText?: string;
+  audience?: "subscribers" | "users" | "both";
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -62,7 +63,7 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    const { subject, content, previewText }: NewsletterCampaignRequest = await req.json();
+    const { subject, content, previewText, audience = "subscribers" }: NewsletterCampaignRequest = await req.json();
 
     if (!subject || !content) {
       return new Response(JSON.stringify({ error: "Subject and content are required" }), {
@@ -71,37 +72,54 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    // Fetch active subscribers
-    const { data: subscribers, error: subscribersError } = await supabase
-      .from("newsletter_subscribers")
-      .select("email")
-      .eq("is_active", true);
+    const emails: string[] = [];
 
-    if (subscribersError) {
-      console.error("Error fetching subscribers:", subscribersError);
-      return new Response(JSON.stringify({ error: "Failed to fetch subscribers" }), {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      });
+    // Fetch newsletter subscribers
+    if (audience === "subscribers" || audience === "both") {
+      const { data: subscribers, error: subscribersError } = await supabase
+        .from("newsletter_subscribers")
+        .select("email")
+        .eq("is_active", true);
+
+      if (subscribersError) {
+        console.error("Error fetching subscribers:", subscribersError);
+      } else if (subscribers) {
+        emails.push(...subscribers.map((s) => s.email));
+      }
     }
 
-    if (!subscribers || subscribers.length === 0) {
-      return new Response(JSON.stringify({ error: "No active subscribers found" }), {
+    // Fetch app users
+    if (audience === "users" || audience === "both") {
+      const { data: users, error: usersError } = await supabase
+        .from("profiles")
+        .select("email")
+        .not("email", "is", null);
+
+      if (usersError) {
+        console.error("Error fetching users:", usersError);
+      } else if (users) {
+        emails.push(...users.filter((u) => u.email).map((u) => u.email as string));
+      }
+    }
+
+    // Remove duplicates
+    const uniqueEmails = [...new Set(emails.map(e => e.toLowerCase()))];
+
+    if (uniqueEmails.length === 0) {
+      return new Response(JSON.stringify({ error: "No recipients found" }), {
         status: 404,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
-    console.log(`Sending newsletter to ${subscribers.length} subscribers`);
+    console.log(`Sending newsletter to ${uniqueEmails.length} recipients (audience: ${audience})`);
 
-    const emails = subscribers.map((s) => s.email);
-    
     // Send emails in batches of 50 (Resend limit)
     const batchSize = 50;
     const results = [];
     
-    for (let i = 0; i < emails.length; i += batchSize) {
-      const batch = emails.slice(i, i + batchSize);
+    for (let i = 0; i < uniqueEmails.length; i += batchSize) {
+      const batch = uniqueEmails.slice(i, i + batchSize);
       
       // Send to each email individually to avoid BCC limits
       for (const email of batch) {
@@ -164,7 +182,7 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(
       JSON.stringify({
         success: true,
-        totalSubscribers: subscribers.length,
+        totalRecipients: uniqueEmails.length,
         sent: successCount,
         failed: failCount,
         results,
