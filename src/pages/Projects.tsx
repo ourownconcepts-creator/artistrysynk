@@ -89,23 +89,35 @@ const Projects = () => {
       return;
     }
 
-    const { data, error } = await supabase
-      .from("projects")
-      .insert({
-        title: newProject.title,
-        description: newProject.description,
-        created_by: currentUser,
-      })
-      .select()
-      .single();
+    if (!currentUser) {
+      toast.error("You must be logged in to create a project");
+      return;
+    }
 
-    if (error) {
-      toast.error("Failed to create project");
-    } else {
+    try {
+      const { data, error } = await supabase
+        .from("projects")
+        .insert({
+          title: newProject.title,
+          description: newProject.description || null,
+          created_by: currentUser,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Project creation error:", error);
+        toast.error(error.message || "Failed to create project");
+        return;
+      }
+      
       toast.success("Project created");
       setNewProjectOpen(false);
       setNewProject({ title: "", description: "" });
       navigate(`/projects/${data.id}`);
+    } catch (err: any) {
+      console.error("Project creation exception:", err);
+      toast.error("Failed to create project");
     }
   };
 
