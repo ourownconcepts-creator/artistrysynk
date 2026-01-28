@@ -1744,6 +1744,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_project_creator: {
+        Args: { _project_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_project_member: {
+        Args: { _project_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "user" | "admin" | "master_admin" | "super_admin"

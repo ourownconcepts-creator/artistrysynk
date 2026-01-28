@@ -242,13 +242,17 @@ export const NewsletterCampaign = () => {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Send Newsletter Campaign?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will send the newsletter using the "{currentTemplate?.name}" template to all active subscribers. This action cannot be undone.
+                    This will send the newsletter using the "{currentTemplate?.name}" template to {
+                      audience === "subscribers" ? "newsletter subscribers" :
+                      audience === "users" ? "registered app users" :
+                      "all subscribers and users"
+                    }. This action cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={sendCampaign}>
-                    Send to All Subscribers
+                    Send Newsletter
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
