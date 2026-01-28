@@ -54,9 +54,17 @@ const handler = async (req: Request): Promise<Response> => {
       .select("role")
       .eq("user_id", user.id)
       .in("role", ["admin", "master_admin", "super_admin"])
-      .single();
+      .maybeSingle();
 
-    if (roleError || !roleData) {
+    if (roleError) {
+      console.error("Role check error:", roleError);
+      return new Response(JSON.stringify({ error: "Failed to verify admin role" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    if (!roleData) {
       return new Response(JSON.stringify({ error: "Admin access required" }), {
         status: 403,
         headers: { "Content-Type": "application/json", ...corsHeaders },
