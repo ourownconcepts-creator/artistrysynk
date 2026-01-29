@@ -48,13 +48,13 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    // Check if user has admin role
+    // Check if user has admin role (user may have multiple roles, just check if any admin role exists)
     const { data: roleData, error: roleError } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)
       .in("role", ["admin", "master_admin", "super_admin"])
-      .maybeSingle();
+      .limit(1);
 
     if (roleError) {
       console.error("Role check error:", roleError);
@@ -64,7 +64,7 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    if (!roleData) {
+    if (!roleData || roleData.length === 0) {
       return new Response(JSON.stringify({ error: "Admin access required" }), {
         status: 403,
         headers: { "Content-Type": "application/json", ...corsHeaders },
