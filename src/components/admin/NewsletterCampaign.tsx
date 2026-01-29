@@ -6,14 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Send, Mail, Users, Loader2, Palette, Clock, CalendarClock } from "lucide-react";
+import { Send, Mail, Users, Loader2, Palette, Clock, CalendarClock, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { newsletterTemplates, getTemplateById } from "@/lib/newsletterTemplates";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScheduledNewsletters } from "./ScheduledNewsletters";
+import { NewsletterPreviewDialog } from "./NewsletterPreviewDialog";
 
 export const NewsletterCampaign = () => {
   const queryClient = useQueryClient();
@@ -26,6 +26,8 @@ export const NewsletterCampaign = () => {
   const [isScheduling, setIsScheduling] = useState(false);
   const [scheduleDate, setScheduleDate] = useState("");
   const [scheduleTime, setScheduleTime] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewMode, setPreviewMode] = useState<"send" | "schedule" | "view">("view");
   const [lastResult, setLastResult] = useState<{
     sent: number;
     failed: number;
@@ -147,6 +149,30 @@ export const NewsletterCampaign = () => {
   };
 
   const currentTemplate = getTemplateById(selectedTemplate);
+
+  const getHtmlContent = () => {
+    const template = getTemplateById(selectedTemplate);
+    return template 
+      ? template.generateHtml(content.trim(), subject.trim())
+      : content.trim();
+  };
+
+  const getScheduledAt = () => {
+    if (!scheduleDate || !scheduleTime) return null;
+    return new Date(`${scheduleDate}T${scheduleTime}`);
+  };
+
+  const openPreview = (mode: "send" | "schedule" | "view") => {
+    if (mode === "schedule") {
+      const scheduledAt = getScheduledAt();
+      if (!scheduledAt || scheduledAt <= new Date()) {
+        toast.error("Please select a valid future date and time");
+        return;
+      }
+    }
+    setPreviewMode(mode);
+    setPreviewOpen(true);
+  };
 
   return (
     <Tabs defaultValue="compose" className="space-y-6">
@@ -334,63 +360,35 @@ export const NewsletterCampaign = () => {
                   <Button
                     variant="outline"
                     className="w-full"
-                    onClick={scheduleNewsletter}
+                    onClick={() => openPreview("schedule")}
                     disabled={isSending || isScheduling || !subject.trim() || !content.trim() || !scheduleDate || !scheduleTime}
                   >
-                    {isScheduling ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Scheduling...
-                      </>
-                    ) : (
-                      <>
-                        <CalendarClock className="w-4 h-4 mr-2" />
-                        Schedule Newsletter
-                      </>
-                    )}
+                    <Eye className="w-4 h-4 mr-2" />
+                    Preview & Schedule
                   </Button>
                 </CardContent>
               </Card>
 
-              {/* Send Now */}
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    className="w-full"
-                    disabled={isSending || isScheduling || !subject.trim() || !content.trim()}
-                  >
-                    {isSending ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Sending Campaign...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 mr-2" />
-                        Send Now
-                      </>
-                    )}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Send Newsletter Campaign?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will send the newsletter using the "{currentTemplate?.name}" template to {
-                        audience === "subscribers" ? "newsletter subscribers" :
-                        audience === "users" ? "registered app users" :
-                        "all subscribers and users"
-                      }. This action cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={sendCampaign}>
-                      Send Newsletter
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => openPreview("view")}
+                  disabled={!subject.trim() || !content.trim()}
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  Preview
+                </Button>
+                <Button
+                  className="flex-1"
+                  onClick={() => openPreview("send")}
+                  disabled={isSending || isScheduling || !subject.trim() || !content.trim()}
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Preview & Send
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -399,6 +397,28 @@ export const NewsletterCampaign = () => {
       <TabsContent value="scheduled">
         <ScheduledNewsletters />
       </TabsContent>
+
+      {/* Preview Dialog */}
+      <NewsletterPreviewDialog
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        subject={subject}
+        previewText={previewText}
+        htmlContent={getHtmlContent()}
+        templateName={currentTemplate?.name || "Custom"}
+        audience={audience}
+        scheduledAt={previewMode === "schedule" ? getScheduledAt() : null}
+        onConfirmSend={previewMode === "send" ? async () => {
+          await sendCampaign();
+          setPreviewOpen(false);
+        } : undefined}
+        onConfirmSchedule={previewMode === "schedule" ? async () => {
+          await scheduleNewsletter();
+          setPreviewOpen(false);
+        } : undefined}
+        isSending={isSending}
+        isScheduling={isScheduling}
+      />
     </Tabs>
   );
 };
