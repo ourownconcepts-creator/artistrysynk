@@ -1043,6 +1043,57 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_newsletters: {
+        Row: {
+          audience: string
+          content: string
+          created_at: string
+          created_by: string
+          error_message: string | null
+          id: string
+          preview_text: string | null
+          recipients_count: number | null
+          scheduled_at: string
+          sent_at: string | null
+          status: string
+          subject: string
+          template_id: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          content: string
+          created_at?: string
+          created_by: string
+          error_message?: string | null
+          id?: string
+          preview_text?: string | null
+          recipients_count?: number | null
+          scheduled_at: string
+          sent_at?: string | null
+          status?: string
+          subject: string
+          template_id?: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          content?: string
+          created_at?: string
+          created_by?: string
+          error_message?: string | null
+          id?: string
+          preview_text?: string | null
+          recipients_count?: number | null
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          template_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       scheduled_reports: {
         Row: {
           created_at: string | null
