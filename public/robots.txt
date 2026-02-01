@@ -23,7 +23,7 @@ Allow: /
 Crawl-delay: 5
 
 # Sitemap location
-Sitemap: https://artistrysynk.lovable.app/sitemap.xml
+Sitemap: https://artistryng.lovable.app/sitemap.xml
 
 # Disallow admin and private areas
 Disallow: /admin*
