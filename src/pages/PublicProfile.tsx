@@ -31,14 +31,29 @@ const PublicProfile = () => {
     }
   }, [userId]);
 
-  const loadProfile = async (id: string) => {
+  const loadProfile = async (identifier: string) => {
     setLoading(true);
 
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle();
+    // Check if identifier is a UUID or username
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+    
+    let profileData;
+    if (isUUID) {
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", identifier)
+        .maybeSingle();
+      profileData = data;
+    } else {
+      // Try to find by username
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("username", identifier)
+        .maybeSingle();
+      profileData = data;
+    }
 
     if (!profileData) {
       toast.error("Profile not found");
@@ -49,12 +64,12 @@ const PublicProfile = () => {
     const { data: rolesData } = await supabase
       .from("user_creative_roles")
       .select("role")
-      .eq("user_id", id);
+      .eq("user_id", profileData.id);
 
     const { data: genresData } = await supabase
       .from("user_genres")
       .select("genre")
-      .eq("user_id", id);
+      .eq("user_id", profileData.id);
 
     setProfile(profileData);
     setRoles(rolesData || []);
@@ -106,7 +121,7 @@ const PublicProfile = () => {
     return null;
   }
 
-  const profileUrl = `https://artistry.ng/profile/${userId}`;
+  const profileUrl = `https://artistrysynk.com/profile/${profile.username || userId}`;
 
   return (
     <>
@@ -114,7 +129,7 @@ const PublicProfile = () => {
         title={`${profile.full_name} (@${profile.username}) | Artistry.ng`}
         description={profile.bio || `Check out ${profile.full_name}'s creative profile on Artistry.ng. ${roles.length > 0 ? `Roles: ${roles.map(r => r.role).join(', ')}.` : ''}`}
         keywords={`${profile.full_name}, ${profile.username}, ${roles.map(r => r.role).join(', ')}, Nigerian creative, Artistry.ng`}
-        ogImage={profile.avatar_url || 'https://artistry.ng/og-image.jpg'}
+        ogImage={profile.avatar_url || 'https://artistrysynk.com/og-image.png'}
         ogType="profile"
         canonicalUrl={profileUrl}
       />
