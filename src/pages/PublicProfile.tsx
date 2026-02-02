@@ -64,12 +64,12 @@ const PublicProfile = () => {
     const { data: rolesData } = await supabase
       .from("user_creative_roles")
       .select("role")
-      .eq("user_id", id);
+      .eq("user_id", profileData.id);
 
     const { data: genresData } = await supabase
       .from("user_genres")
       .select("genre")
-      .eq("user_id", id);
+      .eq("user_id", profileData.id);
 
     setProfile(profileData);
     setRoles(rolesData || []);
