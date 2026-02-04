@@ -376,6 +376,7 @@ const Auth = () => {
                         clearError('email');
                       }}
                       className={errors.email ? "border-destructive" : ""}
+                      autoComplete="email"
                       required
                     />
                     {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
@@ -392,6 +393,7 @@ const Auth = () => {
                           clearError('password');
                         }}
                         className={errors.password ? "border-destructive pr-10" : "pr-10"}
+                        autoComplete="current-password"
                         required
                       />
                       <button
@@ -490,6 +492,7 @@ const Auth = () => {
                         clearError('email');
                       }}
                       className={errors.email ? "border-destructive" : ""}
+                      autoComplete="email"
                       required
                     />
                     {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
@@ -506,6 +509,7 @@ const Auth = () => {
                           clearError('password');
                         }}
                         className={errors.password ? "border-destructive pr-10" : "pr-10"}
+                        autoComplete="new-password"
                         required
                       />
                       <button
