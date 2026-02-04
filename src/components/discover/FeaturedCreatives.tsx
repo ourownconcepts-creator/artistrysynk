@@ -138,7 +138,7 @@ export const FeaturedCreatives = () => {
       >
         <CarouselContent className="-ml-2">
           {featured.map((item) => (
-            <CarouselItem key={item.id} className="pl-2 basis-[160px] md:basis-[180px]">
+            <CarouselItem key={item.id} className="pl-2 basis-[180px] md:basis-[200px]">
               <Card
                 className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.03] overflow-hidden group border-0 bg-gradient-to-br from-card to-card/80 shadow-md"
                 onClick={() => navigate(`/profile/${item.user_id}`)}
@@ -163,10 +163,10 @@ export const FeaturedCreatives = () => {
                   </div>
                   
                   <CardContent className="pt-10 pb-3 px-3 text-center">
-                    <p className="font-semibold text-sm truncate group-hover:text-primary transition-colors">
+                    <p className="font-semibold text-sm truncate max-w-full group-hover:text-primary transition-colors" title={item.profiles.full_name}>
                       {item.profiles.full_name}
                     </p>
-                    <p className="text-xs text-muted-foreground truncate">
+                    <p className="text-xs text-muted-foreground truncate max-w-full" title={`@${item.profiles.username}`}>
                       @{item.profiles.username}
                     </p>
                     
