@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Users, Sparkles } from "lucide-react";
@@ -9,11 +9,6 @@ import { ThemeToggle } from './navbar/ThemeToggle';
 
 const ConnectionWeb = lazy(() => import('./hero/ConnectionWeb').then(m => ({ default: m.ConnectionWeb })));
 
-const stats = [
-  { value: 10000, suffix: '+', label: 'Creators' },
-  { value: 5000, suffix: '+', label: 'Collaborations' },
-  { value: 50, suffix: '+', label: 'Countries' },
-];
 
 const FloatingBadge = ({ 
   children, 
@@ -47,27 +42,6 @@ export const Hero = () => {
   const y1 = useTransform(scrollY, [0, 500], [0, 150]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
   const scale = useTransform(scrollY, [0, 300], [1, 0.95]);
-  
-  const [counts, setCounts] = useState(stats.map(() => 0));
-
-  useEffect(() => {
-    const duration = 2000;
-    const frameDuration = 1000 / 60;
-    const totalFrames = Math.round(duration / frameDuration);
-
-    let frame = 0;
-    const counter = setInterval(() => {
-      frame++;
-      const progress = easeOutExpo(frame / totalFrames);
-      setCounts(stats.map(stat => Math.floor(stat.value * progress)));
-      
-      if (frame === totalFrames) {
-        clearInterval(counter);
-      }
-    }, frameDuration);
-
-    return () => clearInterval(counter);
-  }, []);
 
   return (
     <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-background">
@@ -210,30 +184,6 @@ export const Hero = () => {
             </Button>
           </motion.div>
 
-          {/* Stats */}
-          <motion.div 
-            className="grid grid-cols-3 gap-8 pt-16 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.2 }}
-          >
-            {stats.map((stat, i) => (
-              <motion.div 
-                key={stat.label}
-                className="space-y-2 text-center"
-                whileHover={{ scale: 1.05 }}
-              >
-                <div className="text-3xl sm:text-4xl md:text-5xl font-bold">
-                  <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                    {counts[i].toLocaleString()}{stat.suffix}
-                  </span>
-                </div>
-                <div className="text-sm md:text-base text-muted-foreground font-medium">
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
 
           {/* Trust indicators */}
           <motion.div
@@ -283,6 +233,3 @@ export const Hero = () => {
   );
 };
 
-const easeOutExpo = (x: number): number => {
-  return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
-};
