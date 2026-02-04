@@ -5,6 +5,7 @@ import { ArrowRight, Zap, Users, Sparkles } from "lucide-react";
 import { MorphingBlobs } from './hero/MorphingBlobs';
 import { SyncPulse } from './hero/SyncPulse';
 import { AnimatedText, GlowText } from './hero/AnimatedText';
+import { ThemeToggle } from './navbar/ThemeToggle';
 
 const ConnectionWeb = lazy(() => import('./hero/ConnectionWeb').then(m => ({ default: m.ConnectionWeb })));
 
@@ -70,6 +71,10 @@ export const Hero = () => {
 
   return (
     <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-background">
+      {/* Theme toggle - fixed top right */}
+      <div className="absolute top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
       {/* Layered backgrounds */}
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-secondary/5" />
       
