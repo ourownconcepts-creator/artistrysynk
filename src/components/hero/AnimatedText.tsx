@@ -38,16 +38,16 @@ interface GlowTextProps {
 
 export const GlowText = ({ children, className = '' }: GlowTextProps) => {
   return (
-    <span className={`relative ${className}`}>
+    <span className={`relative inline-block ${className}`}>
       {/* Glow layer */}
       <span 
-        className="absolute inset-0 blur-2xl opacity-50"
+        className={`absolute inset-0 blur-2xl opacity-50 ${className}`}
         aria-hidden="true"
       >
         {children}
       </span>
-      {/* Main text */}
-      <span className="relative">{children}</span>
+      {/* Main text - inherit gradient */}
+      <span className={`relative ${className}`}>{children}</span>
     </span>
   );
 };
