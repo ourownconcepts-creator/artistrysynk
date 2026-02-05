@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Users, Sparkles } from "lucide-react";
@@ -9,6 +9,34 @@ import { ThemeToggle } from './navbar/ThemeToggle';
 
 const ConnectionWeb = lazy(() => import('./hero/ConnectionWeb').then(m => ({ default: m.ConnectionWeb })));
 
+const subtitles = [
+  "Find musicians, producers & creatives to collaborate with in minutes.",
+  "Turn your talent into opportunities. Collaborate. Get discovered."
+];
+
+const RotatingSubtitle = () => {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % subtitles.length);
+    }, 45000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <motion.p
+      key={index}
+      className="text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.6 }}
+    >
+      {subtitles[index]}
+    </motion.p>
+  );
+};
 
 const FloatingBadge = ({ 
   children, 
@@ -136,15 +164,7 @@ export const Hero = () => {
               </span>
             </motion.h1>
             
-            <motion.p 
-              className="text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-            >
-              Connect with musicians, producers, dancers, actors, and visionaries. 
-              <span className="text-foreground font-medium"> Create magic together.</span>
-            </motion.p>
+            <RotatingSubtitle />
           </div>
 
           {/* CTA Buttons */}
