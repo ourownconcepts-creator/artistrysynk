@@ -22,7 +22,7 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email Us",
-      info: "hello@artistry.ng",
+      info: "hello@artistrysynk.com",
       description: "We'll respond within 24 hours"
     },
     {
@@ -47,23 +47,23 @@ const Contact = () => {
 
   const contactFaqs = [
     {
-      question: "How do I reset my Artistry.ng password?",
+      question: "How do I reset my ArtistrySynk password?",
       answer: "Click on 'Forgot Password' on the login page and follow the instructions sent to your email."
     },
     {
-      question: "How do I delete my Artistry.ng account?",
+      question: "How do I delete my ArtistrySynk account?",
       answer: "Go to Settings → Account → Delete Account. Note that this action is permanent and cannot be undone."
     },
     {
-      question: "Can I change my creative role on Artistry.ng?",
+      question: "Can I change my creative role on ArtistrySynk?",
       answer: "Yes! Go to your Profile settings and update your creative role and genres at any time."
     },
     {
-      question: "How does matching work on Artistry.ng?",
+      question: "How does matching work on ArtistrySynk?",
       answer: "Our algorithm considers your role, location, genres, and preferences to show you compatible creatives. When you both like each other, it's a match!"
     },
     {
-      question: "Is Artistry.ng really free?",
+      question: "Is ArtistrySynk really free?",
       answer: "Yes! Our core features including unlimited matches and messaging are completely free. We offer premium features for those who want advanced capabilities."
     }
   ];
@@ -125,13 +125,13 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <PageSEO
-        title="Contact Us - Get In Touch | Artistry.ng"
-        description="Have questions about Artistry.ng? Contact us via email, phone, or live chat. We respond within 24 hours. Lagos, Nigeria based support team."
-        canonicalUrl="https://artistry.ng/contact"
-        keywords="contact Artistry.ng, creative platform support, Artistry.ng help, Lagos Nigeria contact"
+        title="Contact Us - Get In Touch | ArtistrySynk"
+        description="Have questions about ArtistrySynk? Contact us via email, phone, or live chat. We respond within 24 hours. Lagos, Nigeria based support team."
+        canonicalUrl="https://artistrysynk.com/contact"
+        keywords="contact ArtistrySynk, creative platform support, ArtistrySynk help, Lagos Nigeria contact"
         breadcrumbs={[
-          { name: "Home", url: "https://artistry.ng" },
-          { name: "Contact", url: "https://artistry.ng/contact" }
+          { name: "Home", url: "https://artistrysynk.com" },
+          { name: "Contact", url: "https://artistrysynk.com/contact" }
         ]}
       />
       <FAQSchema faqs={contactFaqs} />

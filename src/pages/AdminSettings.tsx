@@ -29,7 +29,7 @@ interface AppSettings {
 }
 
 const defaultSettings: AppSettings = {
-  site_name: "Artistry.ng",
+  site_name: "ArtistrySynk",
   site_description: "Creative collaboration platform",
   contact_email: "",
   support_email: "",
@@ -272,7 +272,7 @@ const AdminSettings = () => {
                     type="email"
                     value={settings.contact_email}
                     onChange={(e) => updateSetting("contact_email", e.target.value)}
-                    placeholder="contact@artistry.ng"
+                    placeholder="contact@artistrysynk.com"
                   />
                 </div>
                 <div className="space-y-2">
@@ -281,7 +281,7 @@ const AdminSettings = () => {
                     type="email"
                     value={settings.support_email}
                     onChange={(e) => updateSetting("support_email", e.target.value)}
-                    placeholder="support@artistry.ng"
+                    placeholder="support@artistrysynk.com"
                   />
                 </div>
               </CardContent>

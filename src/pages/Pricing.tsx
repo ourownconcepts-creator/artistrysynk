@@ -67,15 +67,15 @@ const Pricing = () => {
 
   const faqs = [
     {
-      question: "Can I cancel my Artistry.ng subscription anytime?",
+      question: "Can I cancel my ArtistrySynk subscription anytime?",
       answer: "Yes! You can cancel your subscription at any time. No questions asked."
     },
     {
-      question: "Is the Artistry.ng free plan really free forever?",
-      answer: "Absolutely! You can use Artistry.ng completely free with unlimited matches and messaging."
+      question: "Is the ArtistrySynk free plan really free forever?",
+      answer: "Absolutely! You can use ArtistrySynk completely free with unlimited matches and messaging."
     },
     {
-      question: "What payment methods does Artistry.ng accept?",
+      question: "What payment methods does ArtistrySynk accept?",
       answer: "We accept all major Nigerian payment methods including cards, bank transfers, and mobile money via Paystack."
     }
   ];
@@ -170,13 +170,13 @@ const Pricing = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <PageSEO
-        title="Pricing - Simple & Transparent | Artistry.ng"
-        description="Start free and upgrade when you're ready. Connect with African creatives, unlimited matches and messaging. Pro plans for verified badges and advanced features."
-        canonicalUrl="https://artistry.ng/pricing"
-        keywords="Artistry.ng pricing, creative collaboration cost, African artist network pricing, free creative platform"
+        title="Pricing - Simple & Transparent | ArtistrySynk"
+        description="Start free and upgrade when you're ready. Connect with creatives, unlimited matches and messaging. Pro plans for verified badges and advanced features."
+        canonicalUrl="https://artistrysynk.com/pricing"
+        keywords="ArtistrySynk pricing, creative collaboration cost, artist network pricing, free creative platform"
         breadcrumbs={[
-          { name: "Home", url: "https://artistry.ng" },
-          { name: "Pricing", url: "https://artistry.ng/pricing" }
+          { name: "Home", url: "https://artistrysynk.com" },
+          { name: "Pricing", url: "https://artistrysynk.com/pricing" }
         ]}
       />
       <FAQSchema faqs={faqs} />
@@ -266,7 +266,7 @@ const Pricing = () => {
             <Card>
               <CardContent className="pt-6">
                 <h3 className="font-bold text-lg mb-2">Is the free plan really free forever?</h3>
-                <p className="text-muted-foreground">Absolutely! You can use Artistry.ng completely free with unlimited matches and messaging.</p>
+                <p className="text-muted-foreground">Absolutely! You can use ArtistrySynk completely free with unlimited matches and messaging.</p>
               </CardContent>
             </Card>
             <Card>

@@ -34,13 +34,13 @@ const About = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <PageSEO
-        title="About Us - Our Story & Mission | Artistry.ng"
+        title="About Us - Our Story & Mission | ArtistrySynk"
         description="Building the home of African creativity, one connection at a time. Learn about our mission to empower African creatives and connect talented professionals."
-        canonicalUrl="https://artistry.ng/about"
-        keywords="about Artistry.ng, African creative platform, creative networking Africa, Nigerian artist platform, creative community"
+        canonicalUrl="https://artistrysynk.com/about"
+        keywords="about ArtistrySynk, African creative platform, creative networking Africa, Nigerian artist platform, creative community"
         breadcrumbs={[
-          { name: "Home", url: "https://artistry.ng" },
-          { name: "About", url: "https://artistry.ng/about" }
+          { name: "Home", url: "https://artistrysynk.com" },
+          { name: "About", url: "https://artistrysynk.com/about" }
         ]}
       />
       
@@ -48,7 +48,7 @@ const About = () => {
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-            About Artistry.ng
+            About ArtistrySynk
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
             We're building the home of African creativity, one connection at a time.
@@ -64,7 +64,7 @@ const About = () => {
               <h2 className="text-3xl font-bold mb-6">Our Story</h2>
               <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
                 <p>
-                  Artistry.ng was born from a simple observation: Africa is bursting with incredible creative talent, but finding the right collaborators has always been a challenge.
+                  ArtistrySynk was born from a simple observation: Africa is bursting with incredible creative talent, but finding the right collaborators has always been a challenge.
                 </p>
                 <p>
                   In 2024, we set out to change that. We built a platform where producers can find artists, filmmakers can discover cinematographers, and designers can connect with photographers—all through an intuitive, mobile-first experience.

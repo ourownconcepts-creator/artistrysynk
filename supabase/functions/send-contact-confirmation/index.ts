@@ -36,9 +36,9 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Sending contact confirmation to: ${email}`);
 
     const emailResponse = await resend.emails.send({
-      from: "Artistry.ng <onboarding@resend.dev>",
+      from: "ArtistrySynk <onboarding@resend.dev>",
       to: [email],
-      subject: "We received your message - Artistry.ng",
+      subject: "We received your message - ArtistrySynk",
       html: `
         <!DOCTYPE html>
         <html>
@@ -49,7 +49,7 @@ const handler = async (req: Request): Promise<Response> => {
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f5;">
           <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
             <div style="background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%); padding: 40px; border-radius: 16px 16px 0 0; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 28px;">Artistry.ng</h1>
+              <h1 style="color: white; margin: 0; font-size: 28px;">ArtistrySynk</h1>
               <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Connect. Create. Collaborate.</p>
             </div>
             
@@ -57,7 +57,7 @@ const handler = async (req: Request): Promise<Response> => {
               <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px;">Hi ${name}! 👋</h2>
               
               <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
-                Thank you for reaching out to Artistry.ng! We've received your message regarding:
+                Thank you for reaching out to ArtistrySynk! We've received your message regarding:
               </p>
               
               <div style="background: #f9fafb; border-left: 4px solid #8B5CF6; padding: 15px 20px; margin: 0 0 20px 0; border-radius: 0 8px 8px 0;">
@@ -69,21 +69,21 @@ const handler = async (req: Request): Promise<Response> => {
               </p>
               
               <ul style="color: #4b5563; font-size: 16px; line-height: 1.8; padding-left: 20px; margin: 0 0 30px 0;">
-                <li>Email: <a href="mailto:hello@artistry.ng" style="color: #8B5CF6;">hello@artistry.ng</a></li>
+                <li>Email: <a href="mailto:hello@artistrysynk.com" style="color: #8B5CF6;">hello@artistrysynk.com</a></li>
                 <li>Phone: +234 (0) 800 ARTIST</li>
               </ul>
               
               <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 30px;">
                 <p style="color: #6b7280; font-size: 14px; margin: 0;">
                   Best regards,<br>
-                  <strong>The Artistry.ng Team</strong>
+                  <strong>The ArtistrySynk Team</strong>
                 </p>
               </div>
             </div>
             
             <div style="text-align: center; padding: 20px;">
               <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-                © ${new Date().getFullYear()} Artistry.ng. All rights reserved.<br>
+                © ${new Date().getFullYear()} ArtistrySynk. All rights reserved.<br>
                 Lagos, Nigeria
               </p>
             </div>

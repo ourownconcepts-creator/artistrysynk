@@ -22,7 +22,7 @@ const Blog = () => {
       readTime: "5 min read"
     },
     {
-      title: "How Artistry.ng is Transforming Nigeria's Music Industry",
+      title: "How ArtistrySynk is Transforming Nigeria's Music Industry",
       excerpt: "Discover how producers and artists are using our platform to create chart-topping collaborations across Nigeria.",
       author: "Tunde Adeyemi",
       date: "Jan 10, 2025",
@@ -39,7 +39,7 @@ const Blog = () => {
     },
     {
       title: "Building Your Creative Portfolio: A Complete Guide",
-      excerpt: "Essential tips for showcasing your work effectively and attracting the right collaborators on Artistry.ng.",
+      excerpt: "Essential tips for showcasing your work effectively and attracting the right collaborators on ArtistrySynk.",
       author: "Zainab Mohammed",
       date: "Dec 28, 2024",
       category: "Tips & Tricks",
@@ -47,7 +47,7 @@ const Blog = () => {
     },
     {
       title: "From Match to Masterpiece: A Filmmaker's Journey",
-      excerpt: "How one filmmaker found their cinematographer on Artistry.ng and created award-winning content together.",
+      excerpt: "How one filmmaker found their cinematographer on ArtistrySynk and created award-winning content together.",
       author: "David Okafor",
       date: "Dec 20, 2024",
       category: "Success Stories",
@@ -119,7 +119,7 @@ const Blog = () => {
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-            The Artistry.ng Blog
+            The ArtistrySynk Blog
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
             Insights, stories, and tips for African creatives
