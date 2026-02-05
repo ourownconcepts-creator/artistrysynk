@@ -114,7 +114,7 @@ const ApiAccess = () => {
             API Access
           </h1>
           <p className="text-muted-foreground">
-            Integrate Artistry.ng into your applications with our REST API
+            Integrate ArtistrySynk into your applications with our REST API
           </p>
         </div>
 
@@ -188,7 +188,7 @@ const ApiAccess = () => {
                 Quick Start
               </CardTitle>
               <CardDescription>
-                Get started with the Artistry.ng API
+                Get started with the ArtistrySynk API
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -225,7 +225,7 @@ Content-Type: application/json
                     variant="outline" 
                     size="sm" 
                     className="mt-2"
-                    onClick={() => copyToClipboard(`curl -X GET "https://api.artistry.ng/v1/profiles?role=producer" -H "Authorization: Bearer ${apiKey || 'YOUR_API_KEY'}"`)}
+                    onClick={() => copyToClipboard(`curl -X GET "https://api.artistrysynk.com/v1/profiles?role=producer" -H "Authorization: Bearer ${apiKey || 'YOUR_API_KEY'}"`)}
                   >
                     <Copy className="w-3 h-3 mr-2" />
                     Copy cURL

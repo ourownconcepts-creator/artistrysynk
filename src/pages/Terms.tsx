@@ -13,7 +13,7 @@ const Terms = () => {
           </h1>
           <p className="text-muted-foreground mb-4">Last updated: January 2025</p>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Please read these terms carefully before using Artistry.ng
+            Please read these terms carefully before using ArtistrySynk
           </p>
         </div>
       </section>
@@ -70,7 +70,7 @@ const Terms = () => {
               <CardContent className="pt-6 prose prose-lg max-w-none">
                 <h2 className="text-2xl font-bold mb-4">1. Acceptance of Terms</h2>
                 <p className="text-muted-foreground">
-                  By accessing or using Artistry.ng, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using this service.
+                  By accessing or using ArtistrySynk, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using this service.
                 </p>
               </CardContent>
             </Card>
@@ -79,7 +79,7 @@ const Terms = () => {
               <CardContent className="pt-6 prose prose-lg max-w-none">
                 <h2 className="text-2xl font-bold mb-4">2. Eligibility</h2>
                 <p className="text-muted-foreground mb-4">
-                  To use Artistry.ng, you must:
+                  To use ArtistrySynk, you must:
                 </p>
                 <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
                   <li>Be at least 18 years old</li>
@@ -129,7 +129,7 @@ const Terms = () => {
               <CardContent className="pt-6 prose prose-lg max-w-none">
                 <h2 className="text-2xl font-bold mb-4">5. Content Ownership</h2>
                 <p className="text-muted-foreground mb-4">
-                  You retain ownership of all content you submit to Artistry.ng. However, by posting content, you grant us a worldwide, non-exclusive, royalty-free license to:
+                  You retain ownership of all content you submit to ArtistrySynk. However, by posting content, you grant us a worldwide, non-exclusive, royalty-free license to:
                 </p>
                 <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
                   <li>Display your content on the platform</li>
@@ -181,7 +181,7 @@ const Terms = () => {
               <CardContent className="pt-6 prose prose-lg max-w-none">
                 <h2 className="text-2xl font-bold mb-4">8. Disclaimer of Warranties</h2>
                 <p className="text-muted-foreground">
-                  Artistry.ng is provided "as is" without warranties of any kind. We do not guarantee that the service will be uninterrupted, error-free, or secure. We are not responsible for the conduct of other users or the accuracy of user-provided information.
+                  ArtistrySynk is provided "as is" without warranties of any kind. We do not guarantee that the service will be uninterrupted, error-free, or secure. We are not responsible for the conduct of other users or the accuracy of user-provided information.
                 </p>
               </CardContent>
             </Card>
@@ -190,7 +190,7 @@ const Terms = () => {
               <CardContent className="pt-6 prose prose-lg max-w-none">
                 <h2 className="text-2xl font-bold mb-4">9. Limitation of Liability</h2>
                 <p className="text-muted-foreground">
-                  To the fullest extent permitted by law, Artistry.ng shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the service. Our total liability shall not exceed the amount you paid us in the past 12 months (if any).
+                  To the fullest extent permitted by law, ArtistrySynk shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the service. Our total liability shall not exceed the amount you paid us in the past 12 months (if any).
                 </p>
               </CardContent>
             </Card>
@@ -220,7 +220,7 @@ const Terms = () => {
                   If you have questions about these Terms, contact us at:
                 </p>
                 <ul className="list-none space-y-2 text-muted-foreground mt-4">
-                  <li><strong>Email:</strong> legal@artistry.ng</li>
+                  <li><strong>Email:</strong> legal@artistrysynk.com</li>
                   <li><strong>Address:</strong> Lagos, Nigeria</li>
                 </ul>
               </CardContent>

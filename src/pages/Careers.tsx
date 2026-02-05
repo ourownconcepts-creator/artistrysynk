@@ -133,13 +133,13 @@ const Careers = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <PageSEO
-        title="Careers - Join Our Team | Artistry.ng"
+        title="Careers - Join Our Team | ArtistrySynk"
         description="Help us build the future of creative collaboration in Africa. Explore open positions in engineering, design, and marketing with competitive pay and remote-first culture."
-        canonicalUrl="https://artistry.ng/careers"
-        keywords="Artistry.ng jobs, creative tech jobs Nigeria, African startup careers, remote jobs Africa, Lagos tech jobs"
+        canonicalUrl="https://artistrysynk.com/careers"
+        keywords="ArtistrySynk jobs, creative tech jobs Nigeria, African startup careers, remote jobs Africa, Lagos tech jobs"
         breadcrumbs={[
-          { name: "Home", url: "https://artistry.ng" },
-          { name: "Careers", url: "https://artistry.ng/careers" }
+          { name: "Home", url: "https://artistrysynk.com" },
+          { name: "Careers", url: "https://artistrysynk.com/careers" }
         ]}
       />
       
@@ -160,9 +160,9 @@ const Careers = () => {
         <div className="container mx-auto max-w-4xl">
           <Card className="border-border/50">
             <CardContent className="pt-8">
-              <h2 className="text-3xl font-bold mb-6 text-center">Why Artistry.ng?</h2>
+              <h2 className="text-3xl font-bold mb-6 text-center">Why ArtistrySynk?</h2>
               <p className="text-muted-foreground text-lg leading-relaxed mb-6">
-                We're not just building a product—we're creating a movement. At Artistry.ng, you'll work on meaningful problems that impact millions of African creatives. We value innovation, collaboration, and most importantly, the creative spirit.
+                We're not just building a product—we're creating a movement. At ArtistrySynk, you'll work on meaningful problems that impact millions of African creatives. We value innovation, collaboration, and most importantly, the creative spirit.
               </p>
               <div className="grid md:grid-cols-2 gap-4">
                 {perks.map((perk, index) => (
@@ -229,7 +229,7 @@ const Careers = () => {
                 Don't see the right role?
               </h2>
               <p className="text-muted-foreground mb-6 text-lg">
-                We're always looking for exceptional talent. Send us your resume and tell us why you'd be a great fit for Artistry.ng.
+                We're always looking for exceptional talent. Send us your resume and tell us why you'd be a great fit for ArtistrySynk.
               </p>
               <Button variant="outline" size="lg" onClick={handleGeneralApply}>
                 <Upload className="w-4 h-4 mr-2" />

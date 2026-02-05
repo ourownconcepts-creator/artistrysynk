@@ -126,9 +126,9 @@ const PublicProfile = () => {
   return (
     <>
       <PageSEO
-        title={`${profile.full_name} (@${profile.username}) | Artistry.ng`}
-        description={profile.bio || `Check out ${profile.full_name}'s creative profile on Artistry.ng. ${roles.length > 0 ? `Roles: ${roles.map(r => r.role).join(', ')}.` : ''}`}
-        keywords={`${profile.full_name}, ${profile.username}, ${roles.map(r => r.role).join(', ')}, Nigerian creative, Artistry.ng`}
+        title={`${profile.full_name} (@${profile.username}) | ArtistrySynk`}
+        description={profile.bio || `Check out ${profile.full_name}'s creative profile on ArtistrySynk. ${roles.length > 0 ? `Roles: ${roles.map(r => r.role).join(', ')}.` : ''}`}
+        keywords={`${profile.full_name}, ${profile.username}, ${roles.map(r => r.role).join(', ')}, Nigerian creative, ArtistrySynk`}
         ogImage={profile.avatar_url || 'https://artistrysynk.com/og-image.png'}
         ogType="profile"
         canonicalUrl={profileUrl}

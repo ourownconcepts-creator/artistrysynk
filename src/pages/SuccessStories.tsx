@@ -13,7 +13,7 @@ const SuccessStories = () => {
       names: "Tunde & Amara",
       roles: "Producer & Artist",
       location: "Lagos, Nigeria",
-      story: "We matched on Artistry.ng in March 2024. Within weeks, we created three tracks together. Our collaboration led to a record deal and our single 'African Dreams' hit 1M streams!",
+      story: "We matched on ArtistrySynk in March 2024. Within weeks, we created three tracks together. Our collaboration led to a record deal and our single 'African Dreams' hit 1M streams!",
       achievement: "1M+ Streams",
       color: "from-primary to-primary/80"
     },
@@ -22,7 +22,7 @@ const SuccessStories = () => {
       names: "Kwame & Zainab",
       roles: "Filmmaker & Cinematographer",
       location: "Accra, Ghana",
-      story: "Found each other through Artistry.ng while looking for a creative partner. We've since shot 5 music videos for top African artists and launched our own production company.",
+      story: "Found each other through ArtistrySynk while looking for a creative partner. We've since shot 5 music videos for top African artists and launched our own production company.",
       achievement: "5 Music Videos",
       color: "from-secondary to-secondary/80"
     },
@@ -31,7 +31,7 @@ const SuccessStories = () => {
       names: "Chioma & David",
       roles: "Designer & Photographer",
       location: "Nairobi, Kenya",
-      story: "Matched during the pandemic. Started with one brand shoot and now we're the go-to creative team for major brands across East Africa. Artistry.ng changed our lives!",
+      story: "Matched during the pandemic. Started with one brand shoot and now we're the go-to creative team for major brands across East Africa. ArtistrySynk changed our lives!",
       achievement: "20+ Brand Clients",
       color: "from-accent to-accent/80"
     },
@@ -40,7 +40,7 @@ const SuccessStories = () => {
       names: "Femi & Sarah",
       roles: "Rapper & Audio Engineer",
       location: "Abuja, Nigeria",
-      story: "I was struggling to find the right sound engineer. Found Sarah on Artistry.ng and she understood my vision perfectly. We've released an EP that's doing amazing numbers!",
+      story: "I was struggling to find the right sound engineer. Found Sarah on ArtistrySynk and she understood my vision perfectly. We've released an EP that's doing amazing numbers!",
       achievement: "EP Released",
       color: "from-primary to-secondary"
     }

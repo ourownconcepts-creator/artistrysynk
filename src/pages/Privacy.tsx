@@ -141,7 +141,7 @@ const Privacy = () => {
                   <li>Object to certain data processing</li>
                 </ul>
                 <p className="text-muted-foreground mt-4">
-                  To exercise these rights, contact us at privacy@artistry.ng
+                  To exercise these rights, contact us at privacy@artistrysynk.com
                 </p>
               </CardContent>
             </Card>
@@ -159,7 +159,7 @@ const Privacy = () => {
               <CardContent className="pt-6 prose prose-lg max-w-none">
                 <h2 className="text-2xl font-bold mb-4">7. Children's Privacy</h2>
                 <p className="text-muted-foreground">
-                  Artistry.ng is not intended for users under 18 years of age. We do not knowingly collect information from children under 18. If you believe we have collected information from a child under 18, please contact us immediately.
+                  ArtistrySynk is not intended for users under 18 years of age. We do not knowingly collect information from children under 18. If you believe we have collected information from a child under 18, please contact us immediately.
                 </p>
               </CardContent>
             </Card>
@@ -180,7 +180,7 @@ const Privacy = () => {
                   If you have questions about this Privacy Policy, please contact us at:
                 </p>
                 <ul className="list-none space-y-2 text-muted-foreground mt-4">
-                  <li><strong>Email:</strong> privacy@artistry.ng</li>
+                  <li><strong>Email:</strong> privacy@artistrysynk.com</li>
                   <li><strong>Address:</strong> Lagos, Nigeria</li>
                 </ul>
               </CardContent>

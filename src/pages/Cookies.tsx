@@ -209,7 +209,7 @@ const Cookies = () => {
                   If you have questions about our use of cookies, please contact us at:
                 </p>
                 <ul className="list-none space-y-2 text-muted-foreground mt-4">
-                  <li><strong>Email:</strong> privacy@artistry.ng</li>
+                  <li><strong>Email:</strong> privacy@artistrysynk.com</li>
                   <li><strong>Address:</strong> Lagos, Nigeria</li>
                 </ul>
               </CardContent>

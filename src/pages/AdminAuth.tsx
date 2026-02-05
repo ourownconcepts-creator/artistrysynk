@@ -261,7 +261,7 @@ const AdminAuth = () => {
                   <Input
                     id="reset-email"
                     type="email"
-                    placeholder="admin@artistry.ng"
+                    placeholder="admin@artistrysynk.com"
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value);
@@ -320,7 +320,7 @@ const AdminAuth = () => {
                 <Input
                   id="admin-email"
                   type="email"
-                  placeholder="admin@artistry.ng"
+                  placeholder="admin@artistrysynk.com"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);

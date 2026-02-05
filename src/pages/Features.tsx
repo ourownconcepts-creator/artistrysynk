@@ -50,13 +50,13 @@ const FeaturesPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <PageSEO
-        title="Features - Smart Matching & Collaboration Tools | Artistry.ng"
+        title="Features - Smart Matching & Collaboration Tools | ArtistrySynk"
         description="Discover powerful features for African creatives: AI-powered matching, real-time collaboration, portfolio showcase, verified profiles, and quick discovery tools."
-        canonicalUrl="https://artistry.ng/features"
+        canonicalUrl="https://artistrysynk.com/features"
         keywords="creative matching, artist collaboration tools, portfolio showcase, verified creatives, African artist features, music collaboration"
         breadcrumbs={[
-          { name: "Home", url: "https://artistry.ng" },
-          { name: "Features", url: "https://artistry.ng/features" }
+          { name: "Home", url: "https://artistrysynk.com" },
+          { name: "Features", url: "https://artistrysynk.com/features" }
         ]}
       />
       
@@ -103,7 +103,7 @@ const FeaturesPage = () => {
                 Ready to Start Creating?
               </h2>
               <p className="text-muted-foreground mb-8 text-lg">
-                Join thousands of African creatives already collaborating on Artistry.ng
+                Join thousands of African creatives already collaborating on ArtistrySynk
               </p>
               <Button variant="hero" size="lg" onClick={() => navigate("/auth")}>
                 Join Now - It's Free

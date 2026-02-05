@@ -36,7 +36,7 @@ const handler = async (req: Request): Promise<Response> => {
           <p>You now have a verified badge on your profile, which helps build trust with other creatives on the platform.</p>
           <p>Keep creating amazing work!</p>
           <hr style="margin: 20px 0; border: none; border-top: 1px solid #E5E7EB;" />
-          <p style="color: #6B7280; font-size: 12px;">The Artistry.ng Team</p>
+          <p style="color: #6B7280; font-size: 12px;">The ArtistrySynk Team</p>
         </div>
       `
       : `
@@ -47,7 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
           <p>Don't worry! You can submit a new verification request after addressing any issues.</p>
           <p>If you have questions, feel free to reach out to our support team.</p>
           <hr style="margin: 20px 0; border: none; border-top: 1px solid #E5E7EB;" />
-          <p style="color: #6B7280; font-size: 12px;">The Artistry.ng Team</p>
+          <p style="color: #6B7280; font-size: 12px;">The ArtistrySynk Team</p>
         </div>
       `;
 
@@ -58,7 +58,7 @@ const handler = async (req: Request): Promise<Response> => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Artistry.ng <notifications@resend.dev>",
+        from: "ArtistrySynk <notifications@resend.dev>",
         to: [email],
         subject,
         html,

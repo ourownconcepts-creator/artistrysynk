@@ -87,11 +87,11 @@ const HowItWorksPage = () => {
       <PageSEO
         title="How It Works - Find Your Creative Match | Artistry"
         description="Four simple steps to finding your perfect creative collaborator: Create profile, discover creatives, match & connect, and create together."
-        canonicalUrl="https://artistry.com/how-it-works"
+        canonicalUrl="https://artistrysynk.com/how-it-works"
         keywords="how to find collaborators, creative matching process, artist networking, music collaboration steps, find producers"
         breadcrumbs={[
-          { name: "Home", url: "https://artistry.com" },
-          { name: "How It Works", url: "https://artistry.com/how-it-works" }
+          { name: "Home", url: "https://artistrysynk.com" },
+          { name: "How It Works", url: "https://artistrysynk.com/how-it-works" }
         ]}
       />
       
@@ -99,7 +99,7 @@ const HowItWorksPage = () => {
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-            How Artistry Works
+            How ArtistrySynk Works
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
             Four simple steps to finding your perfect creative collaborator
@@ -240,7 +240,7 @@ const HowItWorksPage = () => {
             Ready to Get Started?
           </h2>
           <p className="text-muted-foreground mb-8 text-lg">
-            Join Artistry today and start your creative journey
+            Join ArtistrySynk today and start your creative journey
           </p>
           <Button variant="hero" size="lg" onClick={() => navigate("/auth")}>
             Create Your Free Account
