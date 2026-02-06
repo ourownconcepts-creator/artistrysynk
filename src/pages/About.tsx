@@ -12,7 +12,7 @@ const About = () => {
     {
       icon: Heart,
       title: "Passion for Creativity",
-      description: "We believe African creativity is unmatched and deserves a platform to flourish."
+      description: "We believe creativity is unmatched and deserves a platform to flourish."
     },
     {
       icon: Users,
@@ -26,8 +26,8 @@ const About = () => {
     },
     {
       icon: Globe,
-      title: "Pan-African Vision",
-      description: "Connecting creatives across all African nations to build a unified creative ecosystem."
+      title: "Global Vision",
+      description: "Connecting creatives across the world to build a unified creative ecosystem."
     }
   ];
 
@@ -35,9 +35,9 @@ const About = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <PageSEO
         title="About Us - Our Story & Mission | ArtistrySynk"
-        description="Building the home of African creativity, one connection at a time. Learn about our mission to empower African creatives and connect talented professionals."
+        description="Building the home of global creativity, one connection at a time. Learn about our mission to empower creatives and connect talented professionals."
         canonicalUrl="https://artistrysynk.com/about"
-        keywords="about ArtistrySynk, African creative platform, creative networking Africa, Nigerian artist platform, creative community"
+        keywords="about ArtistrySynk, global creative platform, creative networking, artist platform, creative community"
         breadcrumbs={[
           { name: "Home", url: "https://artistrysynk.com" },
           { name: "About", url: "https://artistrysynk.com/about" }
@@ -51,7 +51,7 @@ const About = () => {
             About ArtistrySynk
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            We're building the home of African creativity, one connection at a time.
+            We're building the home of global creativity, one connection at a time.
           </p>
         </div>
       </section>
@@ -64,16 +64,16 @@ const About = () => {
               <h2 className="text-3xl font-bold mb-6">Our Story</h2>
               <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
                 <p>
-                  ArtistrySynk was born from a simple observation: Africa is bursting with incredible creative talent, but finding the right collaborators has always been a challenge.
+                  ArtistrySynk was born from a simple observation: The world is bursting with incredible creative talent, but finding the right collaborators has always been a challenge.
                 </p>
                 <p>
                   In 2024, we set out to change that. We built a platform where producers can find artists, filmmakers can discover cinematographers, and designers can connect with photographers—all through an intuitive, mobile-first experience.
                 </p>
                 <p>
-                  Today, we're proud to be the leading creative networking platform across Africa, helping thousands of creatives turn their ideas into reality through meaningful collaborations.
+                  Today, we're proud to be a leading creative networking platform globally, helping thousands of creatives turn their ideas into reality through meaningful collaborations.
                 </p>
                 <p className="font-semibold text-foreground">
-                  Our mission is simple: empower African creatives to find their perfect collaborators and create world-class work together.
+                  Our mission is simple: empower creatives to find their perfect collaborators and create world-class work together.
                 </p>
               </div>
             </CardContent>
@@ -110,12 +110,12 @@ const About = () => {
             Meet the Team
           </h2>
           <p className="text-muted-foreground mb-12 text-lg max-w-2xl mx-auto">
-            We're a diverse team of creatives, developers, and dreamers passionate about empowering African talent.
+            We're a diverse team of creatives, developers, and dreamers passionate about empowering global talent.
           </p>
           <Card className="max-w-2xl mx-auto">
             <CardContent className="pt-8">
               <p className="text-muted-foreground text-lg">
-                Our team is currently expanding. If you're passionate about connecting African creatives and want to join our mission, check out our <button onClick={() => navigate("/careers")} className="text-primary hover:underline font-semibold">careers page</button>.
+                Our team is currently expanding. If you're passionate about connecting creatives worldwide and want to join our mission, check out our <button onClick={() => navigate("/careers")} className="text-primary hover:underline font-semibold">careers page</button>.
               </p>
             </CardContent>
           </Card>
@@ -129,7 +129,7 @@ const About = () => {
             Join Our Community
           </h2>
           <p className="text-muted-foreground mb-8 text-lg">
-            Be part of the movement that's transforming African creative collaboration
+            Be part of the movement that's transforming global creative collaboration
           </p>
           <Button variant="hero" size="lg" onClick={() => navigate("/auth")}>
             Get Started Today
