@@ -36,7 +36,7 @@ const FeaturesPage = () => {
     {
       icon: Zap,
       title: "Quick Discovery",
-      description: "Swipe through talented creatives in your area and across Africa. Find your next collaborator in seconds.",
+      description: "Swipe through talented creatives in your area and around the world. Find your next collaborator in seconds.",
       color: "from-secondary to-accent"
     },
     {
@@ -51,9 +51,9 @@ const FeaturesPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <PageSEO
         title="Features - Smart Matching & Collaboration Tools | ArtistrySynk"
-        description="Discover powerful features for African creatives: AI-powered matching, real-time collaboration, portfolio showcase, verified profiles, and quick discovery tools."
+        description="Discover powerful features for creatives: AI-powered matching, real-time collaboration, portfolio showcase, verified profiles, and quick discovery tools."
         canonicalUrl="https://artistrysynk.com/features"
-        keywords="creative matching, artist collaboration tools, portfolio showcase, verified creatives, African artist features, music collaboration"
+        keywords="creative matching, artist collaboration tools, portfolio showcase, verified creatives, global artist features, music collaboration"
         breadcrumbs={[
           { name: "Home", url: "https://artistrysynk.com" },
           { name: "Features", url: "https://artistrysynk.com/features" }
@@ -64,10 +64,10 @@ const FeaturesPage = () => {
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-            Powerful Features for African Creatives
+            Powerful Features for Global Creatives
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            Everything you need to discover, connect, and collaborate with talented creatives across Africa
+            Everything you need to discover, connect, and collaborate with talented creatives worldwide
           </p>
           <Button variant="hero" size="lg" onClick={() => navigate("/auth")}>
             Get Started Free
@@ -103,7 +103,7 @@ const FeaturesPage = () => {
                 Ready to Start Creating?
               </h2>
               <p className="text-muted-foreground mb-8 text-lg">
-                Join thousands of African creatives already collaborating on ArtistrySynk
+                Join thousands of creatives already collaborating on ArtistrySynk
               </p>
               <Button variant="hero" size="lg" onClick={() => navigate("/auth")}>
                 Join Now - It's Free
