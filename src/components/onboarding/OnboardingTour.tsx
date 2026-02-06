@@ -126,10 +126,10 @@ export const OnboardingTour = ({ userId }: OnboardingTourProps) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md mx-auto z-[100] bg-background border rounded-lg shadow-lg p-6">
         <button
           onClick={handleSkip}
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none"
+          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none z-10"
         >
           <X className="h-4 w-4" />
           <span className="sr-only">Skip tour</span>
@@ -156,7 +156,7 @@ export const OnboardingTour = ({ userId }: OnboardingTourProps) => {
         </div>
 
         <DialogFooter className="flex-col sm:flex-row gap-2">
-          <div className="flex gap-2 w-full sm:w-auto">
+          <div className="flex gap-2 w-full sm:w-auto justify-center">
             <Button
               variant="outline"
               onClick={handlePrev}
