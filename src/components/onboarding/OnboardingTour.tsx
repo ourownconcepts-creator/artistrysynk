@@ -1,17 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Sparkles, Users, MessageCircle, Briefcase, Store, ChevronRight, ChevronLeft, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface TourStep {
   title: string;
@@ -125,67 +119,92 @@ export const OnboardingTour = ({ userId }: OnboardingTourProps) => {
   const progress = ((currentStep + 1) / tourSteps.length) * 100;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md mx-auto z-[100] bg-background border rounded-lg shadow-lg p-6">
-        <button
-          onClick={handleSkip}
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none z-10"
-        >
-          <X className="h-4 w-4" />
-          <span className="sr-only">Skip tour</span>
-        </button>
+    <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
+      <DialogPrimitive.Portal>
+        {/* Overlay */}
+        <DialogPrimitive.Overlay 
+          className="fixed inset-0 z-[99] bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" 
+        />
         
-        <div className="flex flex-col items-center text-center pt-4">
-          <div className="mb-4 p-4 rounded-full bg-muted">
-            {step.icon}
-          </div>
-          
-          <DialogHeader className="space-y-2">
-            <DialogTitle className="text-xl">{step.title}</DialogTitle>
-            <DialogDescription className="text-base">
-              {step.description}
-            </DialogDescription>
-          </DialogHeader>
-        </div>
-
-        <div className="py-4">
-          <Progress value={progress} className="h-2" />
-          <p className="text-xs text-muted-foreground text-center mt-2">
-            Step {currentStep + 1} of {tourSteps.length}
-          </p>
-        </div>
-
-        <DialogFooter className="flex-col sm:flex-row gap-2">
-          <div className="flex gap-2 w-full sm:w-auto justify-center">
-            <Button
-              variant="outline"
-              onClick={handlePrev}
-              disabled={currentStep === 0}
-              className="flex-1 sm:flex-none"
-            >
-              <ChevronLeft className="w-4 h-4 mr-1" />
-              Back
-            </Button>
-            <Button
-              onClick={handleNext}
-              className="flex-1 sm:flex-none"
-            >
-              {currentStep === tourSteps.length - 1 ? "Get Started" : "Next"}
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
-          </div>
-          
-          {step.action && (
-            <Button
-              variant="secondary"
-              onClick={handleAction}
-              className="w-full sm:w-auto"
-            >
-              {step.action}
-            </Button>
+        {/* Content - Perfectly Centered */}
+        <DialogPrimitive.Content
+          className={cn(
+            "fixed z-[100]",
+            "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
+            "w-[90vw] max-w-md",
+            "bg-background border rounded-lg shadow-lg",
+            "p-6",
+            "data-[state=open]:animate-in data-[state=closed]:animate-out",
+            "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+            "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
           )}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        >
+          {/* Custom Close Button */}
+          <button
+            onClick={handleSkip}
+            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            aria-label="Skip tour"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          
+          {/* Icon and Content */}
+          <div className="flex flex-col items-center text-center pt-4">
+            <div className="mb-4 p-4 rounded-full bg-muted">
+              {step.icon}
+            </div>
+            
+            <div className="space-y-2">
+              <DialogPrimitive.Title className="text-xl font-semibold leading-none tracking-tight">
+                {step.title}
+              </DialogPrimitive.Title>
+              <DialogPrimitive.Description className="text-base text-muted-foreground">
+                {step.description}
+              </DialogPrimitive.Description>
+            </div>
+          </div>
+
+          {/* Progress */}
+          <div className="py-4">
+            <Progress value={progress} className="h-2" />
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              Step {currentStep + 1} of {tourSteps.length}
+            </p>
+          </div>
+
+          {/* Footer Buttons */}
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex gap-2 w-full sm:w-auto justify-center">
+              <Button
+                variant="outline"
+                onClick={handlePrev}
+                disabled={currentStep === 0}
+                className="flex-1 sm:flex-none"
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Back
+              </Button>
+              <Button
+                onClick={handleNext}
+                className="flex-1 sm:flex-none"
+              >
+                {currentStep === tourSteps.length - 1 ? "Get Started" : "Next"}
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
+            
+            {step.action && (
+              <Button
+                variant="secondary"
+                onClick={handleAction}
+                className="w-full sm:w-auto"
+              >
+                {step.action}
+              </Button>
+            )}
+          </div>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 };
