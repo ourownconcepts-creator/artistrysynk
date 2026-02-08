@@ -145,8 +145,8 @@ const Jobs = () => {
       job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.description.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesRole = !roleFilter || job.required_roles.includes(roleFilter);
-    const matchesType = !jobTypeFilter || job.job_type === jobTypeFilter;
+    const matchesRole = roleFilter === "all" || !roleFilter || job.required_roles.includes(roleFilter);
+    const matchesType = jobTypeFilter === "all" || !jobTypeFilter || job.job_type === jobTypeFilter;
 
     return matchesSearch && matchesRole && matchesType;
   });
@@ -204,23 +204,23 @@ const Jobs = () => {
                       className="pl-10"
                     />
                   </div>
-                  <Select value={roleFilter} onValueChange={setRoleFilter}>
+                  <Select value={roleFilter || "all"} onValueChange={(val) => setRoleFilter(val === "all" ? "" : val)}>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Filter by role" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All roles</SelectItem>
+                      <SelectItem value="all">All roles</SelectItem>
                       {Constants.public.Enums.creative_role.map((role) => (
                         <SelectItem key={role} value={role}>{role}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <Select value={jobTypeFilter} onValueChange={setJobTypeFilter}>
+                  <Select value={jobTypeFilter || "all"} onValueChange={(val) => setJobTypeFilter(val === "all" ? "" : val)}>
                     <SelectTrigger className="w-[150px]">
                       <SelectValue placeholder="Job type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All types</SelectItem>
+                      <SelectItem value="all">All types</SelectItem>
                       <SelectItem value="contract">Contract</SelectItem>
                       <SelectItem value="full-time">Full-time</SelectItem>
                       <SelectItem value="part-time">Part-time</SelectItem>
