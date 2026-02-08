@@ -98,21 +98,18 @@ export const VerificationRequests = () => {
     // Get request details for email
     const request = requests.find(r => r.id === requestId);
     
-    // Send email notification
+    // Send email notification using profile email
     try {
       const { data: userProfile } = await supabase
         .from('profiles')
-        .select('full_name')
+        .select('full_name, email')
         .eq('id', userId)
         .single();
 
-      const { data: authUser } = await supabase.auth.admin.getUserById(userId);
-      const email = authUser?.user?.email;
-
-      if (email && userProfile) {
+      if (userProfile?.email && userProfile?.full_name) {
         await supabase.functions.invoke('notify-verification-status', {
           body: {
-            email,
+            email: userProfile.email,
             fullName: userProfile.full_name,
             status,
             requestType: request?.request_type || 'verification',

@@ -110,6 +110,9 @@ export const VerificationRequestButton = ({ userId, isVerified }: VerificationRe
                       <SelectItem value="identity">Identity Verification</SelectItem>
                       <SelectItem value="professional">Professional Credentials</SelectItem>
                       <SelectItem value="portfolio">Portfolio Review</SelectItem>
+                      <SelectItem value="artist">Artist Verification</SelectItem>
+                      <SelectItem value="producer">Producer Verification</SelectItem>
+                      <SelectItem value="label">Label Verification</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -162,6 +165,9 @@ export const VerificationRequestButton = ({ userId, isVerified }: VerificationRe
                 <SelectItem value="identity">Identity Verification</SelectItem>
                 <SelectItem value="professional">Professional Credentials</SelectItem>
                 <SelectItem value="portfolio">Portfolio Review</SelectItem>
+                <SelectItem value="artist">Artist Verification</SelectItem>
+                <SelectItem value="producer">Producer Verification</SelectItem>
+                <SelectItem value="label">Label Verification</SelectItem>
               </SelectContent>
             </Select>
           </div>
