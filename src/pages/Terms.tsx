@@ -1,10 +1,20 @@
 import { FileText, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
+import { PageSEO } from "@/components/seo";
 
 const Terms = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      <PageSEO
+        title="Terms of Service - ArtistrySynk Platform Rules"
+        description="Read the ArtistrySynk terms of service. Understand the rules and guidelines for using our creative collaboration platform."
+        canonicalUrl="https://artistrysynk.com/terms"
+        breadcrumbs={[
+          { name: "Home", url: "https://artistrysynk.com" },
+          { name: "Terms of Service", url: "https://artistrysynk.com/terms" }
+        ]}
+      />
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl text-center">

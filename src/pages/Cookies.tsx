@@ -2,10 +2,20 @@ import { Cookie, Settings, BarChart3, Shield } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { PageSEO } from "@/components/seo";
 
 const Cookies = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      <PageSEO
+        title="Cookie Policy - How We Use Cookies"
+        description="Learn about how ArtistrySynk uses cookies and similar technologies to improve your experience on our platform."
+        canonicalUrl="https://artistrysynk.com/cookies"
+        breadcrumbs={[
+          { name: "Home", url: "https://artistrysynk.com" },
+          { name: "Cookie Policy", url: "https://artistrysynk.com/cookies" }
+        ]}
+      />
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl text-center">

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { PageSEO } from "@/components/seo";
 
 const Blog = () => {
   const [email, setEmail] = useState("");
@@ -115,6 +116,16 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      <PageSEO
+        title="Blog - Creative Collaboration Tips & Industry Insights"
+        description="Read the latest articles on creative collaboration, music production tips, artist networking, and industry insights from ArtistrySynk."
+        canonicalUrl="https://artistrysynk.com/blog"
+        keywords="creative blog, music collaboration tips, artist networking, AfroBeats industry, creative professionals blog"
+        breadcrumbs={[
+          { name: "Home", url: "https://artistrysynk.com" },
+          { name: "Blog", url: "https://artistrysynk.com/blog" }
+        ]}
+      />
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl text-center">

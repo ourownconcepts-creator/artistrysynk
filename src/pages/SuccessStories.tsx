@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { PageSEO } from "@/components/seo";
 
 const SuccessStories = () => {
   const navigate = useNavigate();
@@ -48,6 +49,16 @@ const SuccessStories = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      <PageSEO
+        title="Success Stories - Creative Collaborations That Inspire"
+        description="Read how musicians, producers, dancers, and creatives found their perfect match on ArtistrySynk and created amazing projects together."
+        canonicalUrl="https://artistrysynk.com/success-stories"
+        keywords="creative success stories, artist collaboration stories, music collaboration, ArtistrySynk testimonials"
+        breadcrumbs={[
+          { name: "Home", url: "https://artistrysynk.com" },
+          { name: "Success Stories", url: "https://artistrysynk.com/success-stories" }
+        ]}
+      />
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl text-center">

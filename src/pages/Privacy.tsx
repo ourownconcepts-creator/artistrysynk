@@ -1,10 +1,20 @@
 import { Shield, Eye, Lock, UserX } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
+import { PageSEO } from "@/components/seo";
 
 const Privacy = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      <PageSEO
+        title="Privacy Policy - How We Protect Your Data"
+        description="Learn how ArtistrySynk collects, uses, and protects your personal information. Your privacy matters to us."
+        canonicalUrl="https://artistrysynk.com/privacy"
+        breadcrumbs={[
+          { name: "Home", url: "https://artistrysynk.com" },
+          { name: "Privacy Policy", url: "https://artistrysynk.com/privacy" }
+        ]}
+      />
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl text-center">
