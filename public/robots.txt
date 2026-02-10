@@ -22,15 +22,43 @@ User-agent: *
 Allow: /
 Crawl-delay: 5
 
-# Sitemap location
-Sitemap: https://artistrysynk.com/sitemap.xml
+# Allow public pages explicitly
+Allow: /features
+Allow: /how-it-works
+Allow: /pricing
+Allow: /about
+Allow: /blog
+Allow: /success-stories
+Allow: /careers
+Allow: /contact
+Allow: /auth
+Allow: /privacy
+Allow: /terms
+Allow: /cookies
 
-# Disallow admin and private areas
-Disallow: /admin*
+# Disallow admin and private/protected areas
+Disallow: /admin
+Disallow: /admin-auth
+Disallow: /admin-reports
+Disallow: /admin-settings
+Disallow: /master-admin
+Disallow: /super-admin
 Disallow: /profile
 Disallow: /edit-profile
 Disallow: /setup-profile
 Disallow: /messages
 Disallow: /matches
+Disallow: /who-liked-you
 Disallow: /projects
+Disallow: /open-projects
 Disallow: /studio
+Disallow: /discover
+Disallow: /marketplace
+Disallow: /jobs
+Disallow: /teams
+Disallow: /api-access
+Disallow: /settings
+Disallow: /reset-password
+
+# Sitemap location
+Sitemap: https://artistrysynk.com/sitemap.xml
