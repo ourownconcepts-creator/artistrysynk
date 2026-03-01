@@ -61,7 +61,7 @@ Disallow: /settings
 Disallow: /reset-password
 
 # Block non-existent assets (stale cached URLs)
-Disallow: /og-image.jpg
+Disallow: /og-image.png
 
 # Sitemap location
 Sitemap: https://artistrysynk.com/sitemap.xml

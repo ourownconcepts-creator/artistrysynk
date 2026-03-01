@@ -15,7 +15,7 @@ export const PageSEO = ({
   title,
   description,
   canonicalUrl,
-  ogImage = "https://artistrysynk.com/og-image.png",
+  ogImage = "https://artistrysynk.com/og-image.jpg",
   ogType = "website",
   keywords,
   noIndex = false,
