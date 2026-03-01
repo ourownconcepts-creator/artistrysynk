@@ -47,7 +47,7 @@ export const usePushNotifications = () => {
     if (isSupported) {
       const permission = Notification.permission;
       const registration = await navigator.serviceWorker.getRegistration();
-      const subscription = registration ? await registration.pushManager.getSubscription() : null;
+      const subscription = registration ? await (registration as any).pushManager?.getSubscription() : null;
       
       setState({
         isSupported: true,
@@ -123,7 +123,7 @@ export const usePushNotifications = () => {
       const registration = await registerServiceWorker();
 
       // Subscribe to push with the fetched or default VAPID key
-      const subscription = await registration.pushManager.subscribe({
+      const subscription = await (registration as any).pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
       });
@@ -166,7 +166,7 @@ export const usePushNotifications = () => {
     try {
       const registration = await navigator.serviceWorker.getRegistration();
       if (registration) {
-        const subscription = await registration.pushManager.getSubscription();
+        const subscription = await (registration as any).pushManager?.getSubscription();
         if (subscription) {
           // Remove from database
           const { data: { user } } = await supabase.auth.getUser();
