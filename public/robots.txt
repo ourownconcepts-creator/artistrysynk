@@ -60,5 +60,8 @@ Disallow: /api-access
 Disallow: /settings
 Disallow: /reset-password
 
+# Block non-existent assets (stale cached URLs)
+Disallow: /og-image.jpg
+
 # Sitemap location
 Sitemap: https://artistrysynk.com/sitemap.xml
