@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Send, ArrowLeft, FolderPlus, Flag, MoreVertical } from "lucide-react";
+import { Send, ArrowLeft, FolderPlus, Flag, MoreVertical, CheckCheck } from "lucide-react";
 import { FlagContentDialog } from "@/components/FlagContentDialog";
 import {
   DropdownMenu,
@@ -30,6 +30,7 @@ interface Message {
   sender_id: string;
   content: string;
   created_at: string;
+  read: boolean;
 }
 
 interface OtherUser {
@@ -65,6 +66,23 @@ const Messages = () => {
       }
     });
   }, [navigate, conversationId]);
+
+  // Mark messages as read when viewing conversation
+  useEffect(() => {
+    if (!conversationId || !currentUser || messages.length === 0) return;
+
+    const unreadIds = messages
+      .filter(m => m.sender_id !== currentUser && !m.read)
+      .map(m => m.id);
+
+    if (unreadIds.length > 0) {
+      supabase
+        .from('messages')
+        .update({ read: true })
+        .in('id', unreadIds)
+        .then();
+    }
+  }, [messages, currentUser, conversationId]);
 
   useEffect(() => {
     if (!conversationId || !currentUser) return;
@@ -334,16 +352,21 @@ const Messages = () => {
                           }`}
                         >
                           <p className="text-sm">{message.content}</p>
-                          <p className={`text-xs mt-1 ${
-                            isCurrentUser
-                              ? 'text-primary-foreground/70'
-                              : 'text-muted-foreground'
-                          }`}>
-                            {new Date(message.created_at).toLocaleTimeString([], {
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </p>
+                          <div className={`flex items-center gap-1 mt-1 ${isCurrentUser ? 'justify-end' : ''}`}>
+                            <p className={`text-xs ${
+                              isCurrentUser
+                                ? 'text-primary-foreground/70'
+                                : 'text-muted-foreground'
+                            }`}>
+                              {new Date(message.created_at).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </p>
+                            {isCurrentUser && (
+                              <CheckCheck className={`w-3.5 h-3.5 ${message.read ? 'text-primary-foreground' : 'text-primary-foreground/40'}`} />
+                            )}
+                          </div>
                         </div>
                         {!isCurrentUser && (
                           <DropdownMenu>

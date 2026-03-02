@@ -6,7 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { MessageCircle, Users, Heart } from "lucide-react";
+import { MessageCircle, Users, Heart, CheckCheck } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { useSubscription } from "@/hooks/useSubscription";
 
 interface Match {
@@ -21,6 +22,13 @@ interface Match {
     user_creative_roles: { role: string }[];
   };
   conversation_id: string;
+  last_message?: {
+    content: string;
+    created_at: string;
+    sender_id: string;
+    read: boolean;
+  };
+  unread_count: number;
 }
 
 const Matches = () => {
@@ -87,7 +95,7 @@ const Matches = () => {
       (data || []).map(async (match) => {
         const otherUserId = match.user_id_1 === userId ? match.user_id_2 : match.user_id_1;
         
-        const { data: profile } = await supabase
+      const { data: profile } = await supabase
           .from('profiles')
           .select(`
             id,
@@ -100,11 +108,40 @@ const Matches = () => {
           .eq('id', otherUserId)
           .single();
 
+        const conversationId = match.conversations[0]?.id;
+        let last_message = undefined;
+        let unread_count = 0;
+
+        if (conversationId) {
+          const { data: lastMsg } = await supabase
+            .from('messages')
+            .select('content, created_at, sender_id, read')
+            .eq('conversation_id', conversationId)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (lastMsg) {
+            last_message = lastMsg;
+          }
+
+          const { count } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('conversation_id', conversationId)
+            .neq('sender_id', userId)
+            .eq('read', false);
+
+          unread_count = count || 0;
+        }
+
         return {
           id: match.id,
           matched_at: match.matched_at,
           profile: profile!,
-          conversation_id: match.conversations[0]?.id,
+          conversation_id: conversationId,
+          last_message,
+          unread_count,
         };
       })
     );
@@ -185,7 +222,7 @@ const Matches = () => {
             {matches.map((match) => (
               <Card
                 key={match.id}
-                className="cursor-pointer hover:shadow-lg transition-shadow"
+                className="cursor-pointer hover:shadow-lg transition-shadow relative"
                 onClick={() => navigate(`/messages/${match.conversation_id}`)}
               >
                 <CardContent className="p-6">
@@ -220,10 +257,27 @@ const Matches = () => {
                         </div>
                       )}
 
-                      {match.profile.bio && (
-                        <p className="text-sm text-muted-foreground line-clamp-2">
+                      {match.last_message ? (
+                        <div className="flex items-center gap-1 mt-1">
+                          {match.last_message.sender_id === currentUser && (
+                            <CheckCheck className={`w-3.5 h-3.5 shrink-0 ${match.last_message.read ? 'text-primary' : 'text-muted-foreground'}`} />
+                          )}
+                          <p className={`text-sm line-clamp-1 ${match.unread_count > 0 ? 'font-medium text-foreground' : 'text-muted-foreground'}`}>
+                            {match.last_message.content}
+                          </p>
+                          <span className="text-xs text-muted-foreground whitespace-nowrap ml-auto">
+                            {formatDistanceToNow(new Date(match.last_message.created_at), { addSuffix: true })}
+                          </span>
+                        </div>
+                      ) : match.profile.bio ? (
+                        <p className="text-sm text-muted-foreground line-clamp-1">
                           {match.profile.bio}
                         </p>
+                      ) : null}
+                      {match.unread_count > 0 && (
+                        <Badge className="bg-primary text-primary-foreground text-xs px-1.5 py-0.5 absolute top-4 right-4">
+                          {match.unread_count}
+                        </Badge>
                       )}
                     </div>
                   </div>
