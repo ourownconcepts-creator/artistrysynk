@@ -43,6 +43,7 @@ const Messages = () => {
   const { conversationId } = useParams();
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [currentUserProfile, setCurrentUserProfile] = useState<OtherUser | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [otherUser, setOtherUser] = useState<OtherUser | null>(null);
@@ -59,6 +60,7 @@ const Messages = () => {
         navigate("/auth");
       } else {
         setCurrentUser(user.id);
+        loadCurrentUserProfile(user.id);
         loadConversation(user.id);
       }
     });
@@ -91,6 +93,15 @@ const Messages = () => {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const loadCurrentUserProfile = async (userId: string) => {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id, full_name, username, avatar_url')
+      .eq('id', userId)
+      .single();
+    setCurrentUserProfile(profile);
   };
 
   const loadConversation = async (userId: string) => {
@@ -294,57 +305,73 @@ const Messages = () => {
           </CardHeader>
 
           <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${
-                  message.sender_id === currentUser ? 'justify-end' : 'justify-start'
-                }`}
-              >
-                <div className={`flex items-start gap-1 max-w-[70%] ${message.sender_id === currentUser ? 'flex-row-reverse' : ''}`}>
-                  <div
-                    className={`rounded-lg p-3 ${
-                      message.sender_id === currentUser
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted'
-                    }`}
-                  >
-                    <p className="text-sm">{message.content}</p>
-                    <p className={`text-xs mt-1 ${
-                      message.sender_id === currentUser
-                        ? 'text-primary-foreground/70'
-                        : 'text-muted-foreground'
-                    }`}>
-                      {new Date(message.created_at).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </p>
+            {messages.map((message) => {
+              const isCurrentUser = message.sender_id === currentUser;
+              const senderProfile = isCurrentUser ? currentUserProfile : otherUser;
+              return (
+                <div
+                  key={message.id}
+                  className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`flex items-start gap-2 max-w-[70%] ${isCurrentUser ? 'flex-row-reverse' : ''}`}>
+                    <Avatar className="w-8 h-8 mt-1 shrink-0">
+                      <AvatarImage src={senderProfile?.avatar_url} />
+                      <AvatarFallback className="text-xs">
+                        {senderProfile?.full_name?.charAt(0) || '?'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className={`text-xs font-medium mb-1 ${isCurrentUser ? 'text-right' : 'text-left'} text-muted-foreground`}>
+                        {senderProfile?.full_name || 'Unknown'}{' '}
+                        <span className="font-normal">@{senderProfile?.username || 'unknown'}</span>
+                      </p>
+                      <div className={`flex items-start gap-1 ${isCurrentUser ? 'flex-row-reverse' : ''}`}>
+                        <div
+                          className={`rounded-lg p-3 ${
+                            isCurrentUser
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted'
+                          }`}
+                        >
+                          <p className="text-sm">{message.content}</p>
+                          <p className={`text-xs mt-1 ${
+                            isCurrentUser
+                              ? 'text-primary-foreground/70'
+                              : 'text-muted-foreground'
+                          }`}>
+                            {new Date(message.created_at).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </p>
+                        </div>
+                        {!isCurrentUser && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 hover:opacity-100">
+                                <MoreVertical className="h-3 w-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                              <FlagContentDialog
+                                contentType="message"
+                                contentId={message.id}
+                                trigger={
+                                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    <Flag className="h-4 w-4 mr-2 text-destructive" />
+                                    Report Message
+                                  </DropdownMenuItem>
+                                }
+                              />
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  {message.sender_id !== currentUser && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 hover:opacity-100">
-                          <MoreVertical className="h-3 w-3" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start">
-                        <FlagContentDialog
-                          contentType="message"
-                          contentId={message.id}
-                          trigger={
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                              <Flag className="h-4 w-4 mr-2 text-destructive" />
-                              Report Message
-                            </DropdownMenuItem>
-                          }
-                        />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
             <div ref={messagesEndRef} />
           </CardContent>
 
