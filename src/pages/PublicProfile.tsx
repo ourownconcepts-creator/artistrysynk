@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, ArrowLeft, Verified, Heart, Flag } from "lucide-react";
+import { MapPin, Calendar, ArrowLeft, BadgeCheck, Heart, Flag } from "lucide-react";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { toast } from "sonner";
 import { ProfileSchema, PageSEO } from "@/components/seo";
@@ -176,7 +176,7 @@ const PublicProfile = () => {
             <div className="flex items-center justify-center gap-2 mt-4">
               <CardTitle className="text-3xl">{profile.full_name}</CardTitle>
               {profile.is_verified && (
-                <Verified className="w-6 h-6 text-primary fill-primary/20" />
+                <BadgeCheck className="w-6 h-6 text-emerald-500" />
               )}
             </div>
             <p className="text-muted-foreground text-lg">@{profile.username}</p>
