@@ -118,13 +118,27 @@ const Marketplace = () => {
   };
 
   const loadServices = async () => {
-    const { data } = await supabase
+    const { data: servicesData } = await supabase
       .from("services")
       .select("*, average_rating, total_reviews")
       .eq("is_active", true)
       .order("created_at", { ascending: false });
 
-    setServices((data || []) as Service[]);
+    if (servicesData && servicesData.length > 0) {
+      const sellerIds = [...new Set(servicesData.map(s => s.seller_id))];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, full_name, username, avatar_url, is_verified")
+        .in("id", sellerIds);
+
+      const servicesWithProfiles = servicesData.map(s => ({
+        ...s,
+        profiles: profiles?.find(p => p.id === s.seller_id),
+      }));
+      setServices(servicesWithProfiles as Service[]);
+    } else {
+      setServices([]);
+    }
   };
 
   const loadMyServices = async (userId: string) => {
