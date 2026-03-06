@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ShieldAlert, BadgeCheck, X, ArrowRight } from "lucide-react";
+import { useState, useRef } from "react";
+import { ShieldAlert, BadgeCheck, X, ArrowRight, Upload, FileCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,6 +21,9 @@ export const VerificationBanner = ({ userId, isVerified, hasPendingRequest, onRe
   const [loading, setLoading] = useState(false);
   const [requestType, setRequestType] = useState("identity");
   const [additionalInfo, setAdditionalInfo] = useState("");
+  const [idFile, setIdFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (isVerified || dismissed) return null;
 
@@ -41,25 +44,81 @@ export const VerificationBanner = ({ userId, isVerified, hasPendingRequest, onRe
     );
   }
 
-  const handleSubmit = async () => {
-    setLoading(true);
-    const { error } = await supabase
-      .from('verification_requests')
-      .insert({
-        user_id: userId,
-        request_type: requestType,
-        verification_data: { additional_info: additionalInfo, requires_gov_id: true },
-        status: 'pending'
-      });
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    if (error) {
-      toast.error('Failed to submit verification request');
-    } else {
-      toast.success('Verification request submitted! We\'ll review your application soon.');
-      setOpen(false);
-      onRequestSubmitted();
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please upload a JPG, PNG, WebP, or PDF file');
+      return;
     }
-    setLoading(false);
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size must be less than 5MB');
+      return;
+    }
+
+    setIdFile(file);
+  };
+
+  const handleSubmit = async () => {
+    if (!idFile) {
+      toast.error('Please upload your government-issued ID');
+      return;
+    }
+
+    setLoading(true);
+    setUploading(true);
+
+    try {
+      // Upload the ID document
+      const fileExt = idFile.name.split('.').pop();
+      const filePath = `${userId}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('verification-documents')
+        .upload(filePath, idFile);
+
+      if (uploadError) {
+        toast.error('Failed to upload ID document');
+        setLoading(false);
+        setUploading(false);
+        return;
+      }
+
+      // Submit verification request with document reference
+      const { error } = await supabase
+        .from('verification_requests')
+        .insert({
+          user_id: userId,
+          request_type: requestType,
+          verification_data: {
+            additional_info: additionalInfo,
+            requires_gov_id: true,
+            document_path: filePath,
+            document_name: idFile.name,
+          },
+          status: 'pending'
+        });
+
+      if (error) {
+        toast.error('Failed to submit verification request');
+      } else {
+        toast.success('Verification request submitted! We\'ll review your application soon.');
+        setOpen(false);
+        setIdFile(null);
+        setAdditionalInfo('');
+        onRequestSubmitted();
+      }
+    } catch (err) {
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+      setUploading(false);
+    }
   };
 
   return (
@@ -93,7 +152,7 @@ export const VerificationBanner = ({ userId, isVerified, hasPendingRequest, onRe
               Get Verified
             </DialogTitle>
             <DialogDescription>
-              Submit your government-issued ID for verification. This helps build trust in the community.
+              Upload your government-issued ID for verification. This helps build trust in the community.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -112,28 +171,72 @@ export const VerificationBanner = ({ userId, isVerified, hasPendingRequest, onRe
                 </SelectContent>
               </Select>
             </div>
+
+            {/* ID Upload */}
+            <div className="space-y-2">
+              <Label>Upload Government-Issued ID <span className="text-destructive">*</span></Label>
+              <div
+                className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+                  idFile ? 'border-emerald-500 bg-emerald-500/5' : 'border-muted-foreground/30 hover:border-primary/50'
+                }`}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,application/pdf"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                {idFile ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <FileCheck className="w-6 h-6 text-emerald-500" />
+                    <div>
+                      <p className="font-medium text-sm">{idFile.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {(idFile.size / 1024 / 1024).toFixed(2)} MB — Click to change
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Upload className="w-8 h-8 mx-auto text-muted-foreground" />
+                    <p className="text-sm font-medium">Click to upload your ID</p>
+                    <p className="text-xs text-muted-foreground">
+                      JPG, PNG, WebP, or PDF — Max 5MB
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label>Additional Information</Label>
               <Textarea
                 placeholder="Provide details about your identity documents, links to official profiles, or any supporting information..."
                 value={additionalInfo}
                 onChange={(e) => setAdditionalInfo(e.target.value)}
-                rows={4}
+                rows={3}
               />
             </div>
             <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-md">
-              <p className="font-medium mb-1">What you'll need:</p>
+              <p className="font-medium mb-1">Requirements:</p>
               <ul className="list-disc list-inside space-y-1">
                 <li>A valid government-issued photo ID (passport, driver's license, or national ID)</li>
                 <li>Your ID must match the name on your profile</li>
+                <li>File must be clear and all text readable</li>
                 <li>Review typically takes 1–3 business days</li>
               </ul>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={handleSubmit} disabled={loading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
-              {loading ? 'Submitting...' : 'Submit Verification'}
+            <Button
+              onClick={handleSubmit}
+              disabled={loading || !idFile}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              {uploading ? 'Uploading...' : loading ? 'Submitting...' : 'Submit Verification'}
             </Button>
           </DialogFooter>
         </DialogContent>

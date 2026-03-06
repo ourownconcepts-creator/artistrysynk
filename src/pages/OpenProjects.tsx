@@ -25,6 +25,7 @@ interface OpenProject {
   created_by: string;
   profiles: {
     full_name: string;
+    username: string;
     avatar_url: string;
   };
   project_members: { count: number }[];
@@ -67,7 +68,7 @@ const OpenProjects = () => {
       .from("projects")
       .select(`
         *,
-        profiles:created_by(full_name, avatar_url),
+        profiles:created_by(full_name, username, avatar_url),
         project_members(count)
       `)
       .eq("is_public", true)
@@ -287,7 +288,8 @@ const OpenProjects = () => {
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    by {project.profiles?.full_name || "Unknown"}
+                    by {project.profiles?.full_name || "Unknown"}{' '}
+                    {project.profiles?.username && <span className="text-xs">@{project.profiles.username}</span>}
                   </p>
                 </CardHeader>
                 <CardContent className="flex-1">

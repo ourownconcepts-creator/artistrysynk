@@ -55,8 +55,11 @@ export const JobPostingCard = ({
             <CardTitle className="text-lg">{job.title}</CardTitle>
             {job.profiles && (
               <p className="text-sm text-muted-foreground mt-1">
-                Posted by @{job.profiles.username}
-                {job.profiles.is_verified && " ✓"}
+                Posted by {job.profiles.full_name}{' '}
+                <span className="text-xs">@{job.profiles.username}</span>
+                {job.profiles.is_verified && (
+                  <span className="text-emerald-500 ml-1">✓</span>
+                )}
               </p>
             )}
           </div>

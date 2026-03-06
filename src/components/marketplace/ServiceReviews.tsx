@@ -12,6 +12,7 @@ interface Review {
   created_at: string;
   reviewer_profile?: {
     full_name: string;
+    username: string;
     avatar_url: string | null;
   };
 }
@@ -46,7 +47,7 @@ export const ServiceReviews = ({ serviceId, averageRating = 0, totalReviews = 0 
         const reviewerIds = data.map(r => r.reviewer_id);
         const { data: profiles } = await supabase
           .from("profiles")
-          .select("id, full_name, avatar_url")
+          .select("id, full_name, username, avatar_url")
           .in("id", reviewerIds);
 
         const reviewsWithProfiles = data.map(review => ({
@@ -121,6 +122,9 @@ export const ServiceReviews = ({ serviceId, averageRating = 0, totalReviews = 0 
                     <div className="flex items-center justify-between">
                       <span className="font-medium">
                         {review.reviewer_profile?.full_name || "Anonymous"}
+                        {review.reviewer_profile?.username && (
+                          <span className="text-xs text-muted-foreground ml-1">@{review.reviewer_profile.username}</span>
+                        )}
                       </span>
                       <span className="text-xs text-muted-foreground">
                         {format(new Date(review.created_at), "MMM d, yyyy")}
