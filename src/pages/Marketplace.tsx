@@ -28,6 +28,7 @@ interface Service {
   total_reviews: number | null;
   profiles?: {
     full_name: string;
+    username: string;
     avatar_url: string;
     is_verified: boolean;
   };
@@ -444,7 +445,8 @@ const Marketplace = () => {
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        by {service.profiles?.full_name || "Unknown"}
+                        by {service.profiles?.full_name || "Unknown"}{' '}
+                        {service.profiles?.username && <span className="text-xs">@{service.profiles.username}</span>}
                       </p>
                     </CardHeader>
                     <CardContent className="flex-1">
