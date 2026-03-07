@@ -13,6 +13,7 @@ const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     subject: "",
     message: ""
   });
@@ -88,9 +89,10 @@ const Contact = () => {
       const { error } = await supabase.from("contact_submissions").insert({
         name: formData.name,
         email: formData.email,
+        phone: formData.phone || null,
         subject: formData.subject,
         message: formData.message,
-      });
+      } as any);
 
       if (error) throw error;
       
@@ -113,7 +115,7 @@ const Contact = () => {
         description: "We've sent you a confirmation email. We'll get back to you within 24 hours."
       });
       
-      setFormData({ name: "", email: "", subject: "", message: "" });
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
     } catch (error) {
       console.error("Contact submission error:", error);
       toast.error("Failed to send message. Please try again.");
@@ -190,6 +192,15 @@ const Contact = () => {
                       placeholder="john@example.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Phone Number (Optional)</label>
+                    <Input 
+                      type="tel" 
+                      placeholder="+234 800 000 0000"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     />
                   </div>
                   <div>

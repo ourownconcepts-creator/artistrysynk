@@ -43,17 +43,27 @@ export const SessionManagement = () => {
   }, []);
 
   const fetchSessions = async () => {
-    const { data, error } = await supabase
+    const { data: sessionsData, error } = await supabase
       .from('user_sessions')
-      .select(`
-        *,
-        profiles!user_sessions_user_id_fkey(full_name, username)
-      `)
+      .select('*')
       .eq('is_active', true)
       .order('last_active', { ascending: false });
 
-    if (!error && data) {
-      setSessions(data as any);
+    if (!error && sessionsData && sessionsData.length > 0) {
+      const userIds = [...new Set(sessionsData.map(s => s.user_id))];
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('id, full_name, username')
+        .in('id', userIds);
+
+      const profileMap = new Map(profilesData?.map(p => [p.id, p]) || []);
+      const merged = sessionsData.map(s => ({
+        ...s,
+        profiles: profileMap.get(s.user_id) || { full_name: 'Unknown', username: 'unknown' }
+      }));
+      setSessions(merged as any);
+    } else {
+      setSessions([]);
     }
     setLoading(false);
   };
