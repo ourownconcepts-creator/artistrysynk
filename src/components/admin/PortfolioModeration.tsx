@@ -47,13 +47,26 @@ export const PortfolioModeration = () => {
       .from('portfolio_items')
       .select(`
         *,
-        profiles!inner(full_name),
-        user_creative_roles(role)
+        profiles!inner(full_name)
       `)
       .order('created_at', { ascending: false })
       .limit(50);
 
     if (!error && data) {
+      // Fetch creative roles for all users
+      const userIds = [...new Set(data.map((item: any) => item.user_id))];
+      const { data: rolesData } = await supabase
+        .from('user_creative_roles')
+        .select('user_id, role')
+        .in('user_id', userIds);
+
+      const rolesMap = new Map<string, string[]>();
+      rolesData?.forEach((r: any) => {
+        const existing = rolesMap.get(r.user_id) || [];
+        existing.push(r.role);
+        rolesMap.set(r.user_id, existing);
+      });
+
       const formattedItems = data.map((item: any) => ({
         id: item.id,
         user_id: item.user_id,
@@ -62,7 +75,7 @@ export const PortfolioModeration = () => {
         media_url: item.media_url,
         created_at: item.created_at,
         user_name: item.profiles?.full_name || 'Unknown',
-        user_roles: item.user_creative_roles?.map((r: any) => r.role) || []
+        user_roles: rolesMap.get(item.user_id) || []
       }));
       setItems(formattedItems);
     }
