@@ -161,6 +161,8 @@ export const ContactSubmissionsManager = () => {
                 <TableHead>Date</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Roles</TableHead>
                 <TableHead>Subject</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
@@ -181,6 +183,22 @@ export const ContactSubmissionsManager = () => {
                       <Mail className="w-3 h-3" />
                       {submission.email}
                     </a>
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {(submission as any).phone || '-'}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-1 flex-wrap max-w-[150px]">
+                      {submission.creative_roles && submission.creative_roles.length > 0 ? (
+                        submission.creative_roles.map((role, idx) => (
+                          <Badge key={idx} variant="outline" className="text-xs">
+                            {role}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-muted-foreground text-xs">-</span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="max-w-[200px] truncate">
                     {submission.subject}
