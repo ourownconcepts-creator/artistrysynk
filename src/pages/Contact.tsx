@@ -203,6 +203,7 @@ const Contact = () => {
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     />
                   </div>
+                  <div>
                     <label className="text-sm font-medium mb-2 block">Subject</label>
                     <Input 
                       placeholder="How can we help?"
