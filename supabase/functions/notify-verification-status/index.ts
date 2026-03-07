@@ -58,7 +58,7 @@ const handler = async (req: Request): Promise<Response> => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "ArtistrySynk <notifications@resend.dev>",
+        from: "ArtistrySynk <notifications@artistrysynk.com>",
         to: [email],
         subject,
         html,

@@ -63,7 +63,7 @@ serve(async (req) => {
       
       if (user?.email) {
         await resend.emails.send({
-          from: 'Admin Reports <onboarding@resend.dev>',
+          from: 'Admin Reports <reports@artistrysynk.com>',
           to: [user.email],
           subject: 'Weekly Analytics Report',
           html: `

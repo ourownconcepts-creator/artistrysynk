@@ -41,11 +41,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Sending welcome email to ${email}`);
 
-    // Note: Using onboarding@resend.dev only works for sending to your Resend account email.
-    // For production, you need to verify your own domain in Resend and use that instead.
-    // Example: "ArtistrySynk <noreply@yourdomain.com>"
     const emailResponse = await resend.emails.send({
-      from: "ArtistrySynk <onboarding@resend.dev>",
+      from: "ArtistrySynk <hello@artistrysynk.com>",
       to: [email],
       subject: `Welcome to ArtistrySynk, ${fullName}! 🎨`,
       html: `

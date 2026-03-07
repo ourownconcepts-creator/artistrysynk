@@ -36,7 +36,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Sending contact confirmation to: ${email}`);
 
     const emailResponse = await resend.emails.send({
-      from: "ArtistrySynk <onboarding@resend.dev>",
+      from: "ArtistrySynk <hello@artistrysynk.com>",
       to: [email],
       subject: "We received your message - ArtistrySynk",
       html: `
