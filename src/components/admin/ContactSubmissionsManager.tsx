@@ -14,10 +14,12 @@ interface ContactSubmission {
   id: string;
   name: string;
   email: string;
+  phone: string | null;
   subject: string;
   message: string;
   status: string;
   created_at: string;
+  creative_roles?: string[];
 }
 
 export const ContactSubmissionsManager = () => {
@@ -39,9 +41,44 @@ export const ContactSubmissionsManager = () => {
     if (error) {
       toast.error("Failed to fetch contact submissions");
       console.error(error);
-    } else {
-      setSubmissions(data || []);
+      setLoading(false);
+      return;
     }
+
+    // Cross-reference emails with profiles to get creative roles
+    const emails = (data || []).map((s: any) => s.email).filter(Boolean);
+    const { data: profilesData } = await supabase
+      .from("profiles")
+      .select("email")
+      .in("email", emails);
+
+    const profileIds = new Map<string, string>();
+    profilesData?.forEach((p: any) => {
+      if (p.email) profileIds.set(p.email, p.id);
+    });
+
+    // Fetch creative roles for matched profiles
+    const matchedIds = Array.from(profileIds.values());
+    let rolesMap = new Map<string, string[]>();
+    if (matchedIds.length > 0) {
+      const { data: rolesData } = await supabase
+        .from("user_creative_roles")
+        .select("user_id, role")
+        .in("user_id", matchedIds);
+
+      rolesData?.forEach((r: any) => {
+        const existing = rolesMap.get(r.user_id) || [];
+        existing.push(r.role);
+        rolesMap.set(r.user_id, existing);
+      });
+    }
+
+    const enriched = (data || []).map((s: any) => ({
+      ...s,
+      creative_roles: rolesMap.get(profileIds.get(s.email) || '') || []
+    }));
+
+    setSubmissions(enriched);
     setLoading(false);
   };
 
