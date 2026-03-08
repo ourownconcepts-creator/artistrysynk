@@ -179,6 +179,33 @@ const Projects = () => {
                     placeholder="Describe your project"
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label>Category</Label>
+                  <Select value={newProject.project_category} onValueChange={(v) => setNewProject({ ...newProject, project_category: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="music">Music</SelectItem>
+                      <SelectItem value="film">Film</SelectItem>
+                      <SelectItem value="tech">Tech</SelectItem>
+                      <SelectItem value="startup">Startup</SelectItem>
+                      <SelectItem value="content_creation">Content Creation</SelectItem>
+                      <SelectItem value="design">Design</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Compensation</Label>
+                  <Select value={newProject.compensation_type} onValueChange={(v) => setNewProject({ ...newProject, compensation_type: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="paid">Paid</SelectItem>
+                      <SelectItem value="revenue_share">Revenue Share</SelectItem>
+                      <SelectItem value="equity">Equity</SelectItem>
+                      <SelectItem value="open_collaboration">Open Collaboration</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <Button onClick={createProject} className="w-full">
                   Create Project
                 </Button>
