@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Sparkles, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { Sparkles, Eye, EyeOff, CheckCircle, Shield } from "lucide-react";
 import { z } from "zod";
 
 const passwordSchema = z.string()
@@ -16,7 +16,7 @@ const passwordSchema = z.string()
   .regex(/[0-9]/, "Password must contain at least one number")
   .regex(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character");
 
-const ResetPassword = () => {
+const ForcePasswordChange = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
@@ -24,29 +24,19 @@ const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isValidSession, setIsValidSession] = useState(false);
-  const [resetComplete, setResetComplete] = useState(false);
+  const [updateComplete, setUpdateComplete] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if we have a valid recovery session
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY") {
-        setIsValidSession(true);
-      } else if (event === "SIGNED_IN" && session) {
-        // User successfully reset password and is now signed in
-        setIsValidSession(true);
-      }
-    });
-
-    // Also check current session
+    // Check if user is logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setIsValidSession(true);
+      if (!session) {
+        navigate("/auth");
+        return;
       }
+      setUserId(session.user.id);
     });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -64,7 +54,7 @@ const ResetPassword = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleResetPassword = async (e: React.FormEvent) => {
+  const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) return;
@@ -81,13 +71,19 @@ const ResetPassword = () => {
       return;
     }
 
-    setResetComplete(true);
+    // Clear the force_password_change flag
+    if (userId) {
+      await supabase
+        .from('user_settings')
+        .update({ force_password_change: false })
+        .eq('user_id', userId);
+    }
+
+    setUpdateComplete(true);
     toast.success("Password updated successfully!");
     
-    // Sign out and redirect to login
-    setTimeout(async () => {
-      await supabase.auth.signOut();
-      navigate("/auth");
+    setTimeout(() => {
+      navigate("/discover");
     }, 2000);
 
     setLoading(false);
@@ -103,7 +99,7 @@ const ResetPassword = () => {
     }
   };
 
-  if (resetComplete) {
+  if (updateComplete) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
         <div className="w-full max-w-md">
@@ -111,45 +107,11 @@ const ResetPassword = () => {
             <CardContent className="pt-6">
               <div className="text-center space-y-4">
                 <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
-                <h2 className="text-2xl font-bold">Password Reset Complete!</h2>
+                <h2 className="text-2xl font-bold">Password Updated!</h2>
                 <p className="text-muted-foreground">
-                  Your password has been updated. Redirecting to login...
+                  Redirecting to your dashboard...
                 </p>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isValidSession) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Sparkles className="w-8 h-8 text-secondary" />
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent">
-                ArtistrySynk
-              </h1>
-            </div>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Invalid or Expired Link</CardTitle>
-              <CardDescription>
-                This password reset link is invalid or has expired.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">
-                Please request a new password reset link from the login page.
-              </p>
-              <Button onClick={() => navigate("/auth")} className="w-full">
-                Back to Login
-              </Button>
             </CardContent>
           </Card>
         </div>
@@ -161,24 +123,27 @@ const ResetPassword = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Sparkles className="w-8 h-8 text-secondary" />
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent">
-                ArtistrySynk
-              </h1>
-            </div>
-          <p className="text-muted-foreground">Create your new password</p>
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Sparkles className="w-8 h-8 text-secondary" />
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent">
+              ArtistrySynk
+            </h1>
+          </div>
+          <p className="text-muted-foreground">Security Update Required</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Reset Password</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-primary" />
+              Update Your Password
+            </CardTitle>
             <CardDescription>
-              Enter your new password below
+              We've enhanced our password security. Please create a new password that meets our updated requirements.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleResetPassword} className="space-y-4">
+            <form onSubmit={handleUpdatePassword} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="new-password">New Password</Label>
                 <div className="relative">
@@ -233,16 +198,7 @@ const ResetPassword = () => {
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Updating password..." : "Update Password"}
-              </Button>
-
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-full"
-                onClick={() => navigate("/auth")}
-              >
-                Back to Login
+                {loading ? "Updating..." : "Update Password"}
               </Button>
             </form>
           </CardContent>
@@ -252,4 +208,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+export default ForcePasswordChange;
