@@ -48,22 +48,26 @@ export const MatchManagement = () => {
   const fetchMatches = async () => {
     const { data: matchesData, error } = await supabase
       .from('matches')
-      .select(`
-        *,
-        user1:profiles!matches_user_id_1_fkey(full_name),
-        user2:profiles!matches_user_id_2_fkey(full_name)
-      `)
+      .select('*')
       .order('matched_at', { ascending: false })
       .limit(50);
 
-    if (!error && matchesData) {
+    if (!error && matchesData && matchesData.length > 0) {
+      const userIds = [...new Set(matchesData.flatMap(m => [m.user_id_1, m.user_id_2]))];
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', userIds);
+
+      const profileMap = new Map(profilesData?.map(p => [p.id, p.full_name]) || []);
+
       const formattedMatches = matchesData.map((m: any) => ({
         id: m.id,
         user_id_1: m.user_id_1,
         user_id_2: m.user_id_2,
         matched_at: m.matched_at,
-        user1_name: m.user1?.full_name || 'Unknown',
-        user2_name: m.user2?.full_name || 'Unknown'
+        user1_name: profileMap.get(m.user_id_1) || 'Unknown',
+        user2_name: profileMap.get(m.user_id_2) || 'Unknown'
       }));
       setMatches(formattedMatches);
 
