@@ -889,7 +889,9 @@ export type Database = {
           is_featured: boolean | null
           is_hidden: boolean | null
           is_verified: boolean | null
+          latitude: number | null
           location: string | null
+          longitude: number | null
           looking_for: string[] | null
           social_links: Json | null
           synergy_boost_score: number | null
@@ -910,7 +912,9 @@ export type Database = {
           is_featured?: boolean | null
           is_hidden?: boolean | null
           is_verified?: boolean | null
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
           looking_for?: string[] | null
           social_links?: Json | null
           synergy_boost_score?: number | null
@@ -931,7 +935,9 @@ export type Database = {
           is_featured?: boolean | null
           is_hidden?: boolean | null
           is_verified?: boolean | null
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
           looking_for?: string[] | null
           social_links?: Json | null
           synergy_boost_score?: number | null
@@ -2047,6 +2053,29 @@ export type Database = {
       can_see_user: {
         Args: { _target_id: string; _viewer_id: string }
         Returns: boolean
+      }
+      get_nearby_creators: {
+        Args: {
+          _lat: number
+          _limit?: number
+          _lng: number
+          _radius_km?: number
+          _user_id: string
+        }
+        Returns: {
+          avatar_url: string
+          bio: string
+          city: string
+          country: string
+          distance_km: number
+          full_name: string
+          id: string
+          is_verified: boolean
+          latitude: number
+          location: string
+          longitude: number
+          username: string
+        }[]
       }
       get_user_role: {
         Args: { _user_id: string }
