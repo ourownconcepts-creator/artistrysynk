@@ -26,6 +26,8 @@ interface Profile {
   bio: string;
   location: string;
   avatar_url: string;
+  is_verified?: boolean;
+  is_featured?: boolean;
   user_creative_roles: { role: string }[];
   user_genres: { genre: string }[];
   user_skill_tags?: { skill: string }[];
