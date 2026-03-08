@@ -49,6 +49,8 @@ const OpenProjects = () => {
     description: "",
     budget: "",
     looking_for: [] as string[],
+    project_category: "other",
+    compensation_type: "open_collaboration",
   });
 
   useEffect(() => {
