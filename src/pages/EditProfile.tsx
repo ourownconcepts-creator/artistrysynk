@@ -104,6 +104,12 @@ const EditProfile = () => {
           twitter: links.twitter || "",
           youtube: links.youtube || "",
           website: links.website || "",
+          spotify: links.spotify || "",
+          soundcloud: links.soundcloud || "",
+          audiomack: links.audiomack || "",
+          tiktok: links.tiktok || "",
+          behance: links.behance || "",
+          dribbble: links.dribbble || "",
         });
       }
     }
