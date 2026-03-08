@@ -13,7 +13,7 @@ interface InitializeRequest {
 }
 
 const PLAN_PRICES = {
-  pro: 250000, // ₦2,500 in kobo
+  pro: 450000, // ₦4,500 in kobo
   studio: 1500000, // ₦15,000 in kobo
 };
 
