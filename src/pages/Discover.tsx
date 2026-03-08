@@ -48,8 +48,8 @@ const Discover = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [aiMatchingEnabled, setAiMatchingEnabled] = useState(false);
-  const [roleFilter, setRoleFilter] = useState<string>("");
-  const [genreFilter, setGenreFilter] = useState<string>("");
+  const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [genreFilter, setGenreFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [lastSwipe, setLastSwipe] = useState<{ id: string; swipedId: string } | null>(null);
@@ -126,13 +126,13 @@ const Discover = () => {
     } else {
       let filteredData = data || [];
       
-      if (roleFilter) {
+      if (roleFilter && roleFilter !== "all") {
         filteredData = filteredData.filter(p => 
           p.user_creative_roles.some((r: any) => r.role === roleFilter)
         );
       }
       
-      if (genreFilter) {
+      if (genreFilter && genreFilter !== "all") {
         filteredData = filteredData.filter(p => 
           p.user_genres.some((g: any) => g.genre === genreFilter)
         );
@@ -313,7 +313,7 @@ const Discover = () => {
               <Button variant="outline" size="sm" className="mt-4">
                 <Filter className="w-4 h-4 mr-2" />
                 Filters
-                {(roleFilter || genreFilter || locationFilter) && (
+                {(( roleFilter && roleFilter !== "all") || (genreFilter && genreFilter !== "all") || locationFilter) && (
                   <Badge variant="secondary" className="ml-2">Active</Badge>
                 )}
               </Button>
@@ -330,7 +330,7 @@ const Discover = () => {
                       <SelectValue placeholder="All roles" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All roles</SelectItem>
+                      <SelectItem value="all">All roles</SelectItem>
                       {Constants.public.Enums.creative_role.map((role) => (
                         <SelectItem key={role} value={role}>{role}</SelectItem>
                       ))}
@@ -344,7 +344,7 @@ const Discover = () => {
                       <SelectValue placeholder="All genres" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All genres</SelectItem>
+                      <SelectItem value="all">All genres</SelectItem>
                       {Constants.public.Enums.genre.map((genre) => (
                         <SelectItem key={genre} value={genre}>{genre}</SelectItem>
                       ))}
@@ -366,8 +366,8 @@ const Discover = () => {
                   variant="outline" 
                   className="w-full"
                   onClick={() => {
-                    setRoleFilter("");
-                    setGenreFilter("");
+                    setRoleFilter("all");
+                    setGenreFilter("all");
                     setLocationFilter("");
                     if (currentUser) loadProfiles(currentUser);
                   }}
