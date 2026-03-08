@@ -101,7 +101,7 @@ const Pricing = () => {
     {
       id: "pro" as const,
       name: "Pro",
-      price: "₦2,500",
+      price: "₦4,500",
       period: "per month",
       description: "For serious collaborators",
       features: [

@@ -309,33 +309,42 @@ export const Testimonials = () => {
           ))}
         </div>
 
-        {/* Stats Row */}
-        <motion.div
-          className="grid grid-cols-3 gap-8 mt-16 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <div className="space-y-2">
-            <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              {realStats.matches}
-            </div>
-            <p className="text-sm text-muted-foreground">Matches Made</p>
-          </div>
-          <div className="space-y-2">
-            <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
-              {realStats.collabs}
-            </div>
-            <p className="text-sm text-muted-foreground">Collaborations</p>
-          </div>
-          <div className="space-y-2">
-            <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-              {realStats.posts}
-            </div>
-            <p className="text-sm text-muted-foreground">Community Posts</p>
-          </div>
-        </motion.div>
+        {/* Stats Row - only show non-zero stats */}
+        {(realStats.matches > 0 || realStats.collabs > 0 || realStats.posts > 0) && (
+          <motion.div
+            className={`grid gap-8 mt-16 text-center`}
+            style={{ gridTemplateColumns: `repeat(${[realStats.matches, realStats.collabs, realStats.posts].filter(v => v > 0).length}, minmax(0, 1fr))` }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            {realStats.matches > 0 && (
+              <div className="space-y-2">
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  {realStats.matches}
+                </div>
+                <p className="text-sm text-muted-foreground">Matches Made</p>
+              </div>
+            )}
+            {realStats.collabs > 0 && (
+              <div className="space-y-2">
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
+                  {realStats.collabs}
+                </div>
+                <p className="text-sm text-muted-foreground">Collaborations</p>
+              </div>
+            )}
+            {realStats.posts > 0 && (
+              <div className="space-y-2">
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+                  {realStats.posts}
+                </div>
+                <p className="text-sm text-muted-foreground">Community Posts</p>
+              </div>
+            )}
+          </motion.div>
+        )}
       </div>
     </section>
   );
