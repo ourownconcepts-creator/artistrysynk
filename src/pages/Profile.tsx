@@ -16,6 +16,7 @@ import { ProfileAnalytics } from "@/components/profile/ProfileAnalytics";
 import { ProfileCompletionProgress } from "@/components/profile/ProfileCompletionProgress";
 import { useSessionTracking } from "@/hooks/useSessionTracking";
 import { MyAppeals } from "@/components/content/MyAppeals";
+import { ReferralCard } from "@/components/referral/ReferralCard";
 
 const Profile = () => {
   const navigate = useNavigate();
