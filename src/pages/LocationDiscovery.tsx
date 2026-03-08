@@ -29,7 +29,7 @@ const LocationDiscovery = () => {
   const navigate = useNavigate();
   const [creators, setCreators] = useState<Creator[]>([]);
   const [loading, setLoading] = useState(true);
-  const [roleFilter, setRoleFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [radius, setRadius] = useState(100);
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
