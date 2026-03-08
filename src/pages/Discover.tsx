@@ -126,7 +126,7 @@ const Discover = () => {
     } else {
       let filteredData = data || [];
       
-      if (roleFilter) {
+      if (roleFilter && roleFilter !== "all") {
         filteredData = filteredData.filter(p => 
           p.user_creative_roles.some((r: any) => r.role === roleFilter)
         );
