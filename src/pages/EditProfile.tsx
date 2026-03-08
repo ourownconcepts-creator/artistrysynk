@@ -186,6 +186,19 @@ const EditProfile = () => {
     setLoading(true);
 
     try {
+      // Try to get geolocation for proximity features
+      let latitude: number | null = null;
+      let longitude: number | null = null;
+      try {
+        const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+        });
+        latitude = pos.coords.latitude;
+        longitude = pos.coords.longitude;
+      } catch {
+        // Geolocation not available, skip
+      }
+
       // Update profile
       const { error: profileError } = await supabase
         .from('profiles')
@@ -201,6 +214,8 @@ const EditProfile = () => {
           looking_for: lookingFor,
           country,
           city,
+          latitude,
+          longitude,
         } as any)
         .eq('id', userId);
 

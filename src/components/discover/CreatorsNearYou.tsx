@@ -4,8 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { MapPin, ArrowRight } from "lucide-react";
+import { MapPin, Loader2 } from "lucide-react";
 import { getRoleLabel } from "@/lib/creativeRoles";
 
 interface NearbyCreator {
@@ -16,30 +15,104 @@ interface NearbyCreator {
   location: string;
   city: string;
   country: string;
+  distance_km: number;
   roles: string[];
 }
 
 export const CreatorsNearYou = ({ currentUserId }: { currentUserId: string }) => {
   const navigate = useNavigate();
   const [creators, setCreators] = useState<NearbyCreator[]>([]);
-  const [userLocation, setUserLocation] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [locationLabel, setLocationLabel] = useState<string | null>(null);
 
   useEffect(() => {
     loadNearbyCreators();
   }, [currentUserId]);
 
   const loadNearbyCreators = async () => {
+    setLoading(true);
+
+    // Try to get user's saved coordinates first
     const { data: myProfile } = await supabase
       .from("profiles")
-      .select("location, city, country")
+      .select("latitude, longitude, city, country, location")
       .eq("id", currentUserId)
       .single();
 
-    if (!myProfile) return;
+    let lat = (myProfile as any)?.latitude;
+    let lng = (myProfile as any)?.longitude;
 
-    const loc = (myProfile as any).city || (myProfile as any).country || myProfile.location;
-    if (!loc) return;
-    setUserLocation(loc);
+    // If no saved coordinates, try browser geolocation
+    if (!lat || !lng) {
+      try {
+        const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            timeout: 5000,
+            enableHighAccuracy: false,
+          });
+        });
+        lat = pos.coords.latitude;
+        lng = pos.coords.longitude;
+
+        // Save coordinates to profile for future use
+        await supabase
+          .from("profiles")
+          .update({ latitude: lat, longitude: lng } as any)
+          .eq("id", currentUserId);
+      } catch {
+        // Geolocation unavailable, fall back to text-based matching
+        await loadFallback(myProfile);
+        return;
+      }
+    }
+
+    setLocationLabel(
+      (myProfile as any)?.city || (myProfile as any)?.country || myProfile?.location || "Your area"
+    );
+
+    // Use the proximity function
+    const { data, error } = await supabase.rpc("get_nearby_creators", {
+      _user_id: currentUserId,
+      _lat: lat,
+      _lng: lng,
+      _radius_km: 200,
+      _limit: 6,
+    });
+
+    if (error || !data || data.length === 0) {
+      // Fall back to text matching if no proximity results
+      await loadFallback(myProfile);
+      return;
+    }
+
+    const userIds = data.map((d: any) => d.id);
+    const { data: rolesData } = await supabase
+      .from("user_creative_roles")
+      .select("user_id, role")
+      .in("user_id", userIds);
+
+    const roleMap: Record<string, string[]> = {};
+    (rolesData || []).forEach((r) => {
+      if (!roleMap[r.user_id]) roleMap[r.user_id] = [];
+      roleMap[r.user_id].push(r.role);
+    });
+
+    setCreators(
+      data.map((d: any) => ({
+        ...d,
+        roles: roleMap[d.id] || [],
+      }))
+    );
+    setLoading(false);
+  };
+
+  const loadFallback = async (myProfile: any) => {
+    const loc = myProfile?.city || myProfile?.country || myProfile?.location;
+    if (!loc) {
+      setLoading(false);
+      return;
+    }
+    setLocationLabel(loc);
 
     const { data } = await supabase
       .from("profiles")
@@ -48,27 +121,42 @@ export const CreatorsNearYou = ({ currentUserId }: { currentUserId: string }) =>
       .or(`city.ilike.%${loc}%,country.ilike.%${loc}%,location.ilike.%${loc}%`)
       .limit(6);
 
-    if (!data || data.length === 0) return;
+    if (!data || data.length === 0) {
+      setLoading(false);
+      return;
+    }
 
-    const userIds = data.map(d => d.id);
+    const userIds = data.map((d) => d.id);
     const { data: rolesData } = await supabase
       .from("user_creative_roles")
       .select("user_id, role")
       .in("user_id", userIds);
 
     const roleMap: Record<string, string[]> = {};
-    (rolesData || []).forEach(r => {
+    (rolesData || []).forEach((r) => {
       if (!roleMap[r.user_id]) roleMap[r.user_id] = [];
       roleMap[r.user_id].push(r.role);
     });
 
-    setCreators(data.map(d => ({
-      ...d,
-      city: (d as any).city || "",
-      country: (d as any).country || "",
-      roles: roleMap[d.id] || [],
-    })));
+    setCreators(
+      data.map((d) => ({
+        ...d,
+        city: d.city || "",
+        country: d.country || "",
+        distance_km: 0,
+        roles: roleMap[d.id] || [],
+      }))
+    );
+    setLoading(false);
   };
+
+  if (loading) {
+    return (
+      <div className="mb-6 flex items-center gap-2 text-muted-foreground text-sm">
+        <Loader2 className="w-4 h-4 animate-spin" /> Finding creators near you...
+      </div>
+    );
+  }
 
   if (creators.length === 0) return null;
 
@@ -78,11 +166,15 @@ export const CreatorsNearYou = ({ currentUserId }: { currentUserId: string }) =>
         <div className="flex items-center gap-2">
           <MapPin className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-sm">Creators Near You</h3>
-          {userLocation && <Badge variant="outline" className="text-xs">{userLocation}</Badge>}
+          {locationLabel && (
+            <Badge variant="outline" className="text-xs">
+              {locationLabel}
+            </Badge>
+          )}
         </div>
       </div>
       <div className="flex gap-3 overflow-x-auto pb-2">
-        {creators.map(creator => (
+        {creators.map((creator) => (
           <Card
             key={creator.id}
             className="shrink-0 w-36 cursor-pointer hover:shadow-md transition-shadow"
@@ -95,6 +187,13 @@ export const CreatorsNearYou = ({ currentUserId }: { currentUserId: string }) =>
               </Avatar>
               <p className="text-xs font-medium truncate">{creator.full_name}</p>
               <p className="text-xs text-muted-foreground truncate">@{creator.username}</p>
+              {creator.distance_km > 0 && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {creator.distance_km < 1
+                    ? "< 1 km away"
+                    : `${Math.round(creator.distance_km)} km away`}
+                </p>
+              )}
               {creator.roles[0] && (
                 <Badge variant="secondary" className="text-xs mt-1 truncate max-w-full">
                   {getRoleLabel(creator.roles[0])}
