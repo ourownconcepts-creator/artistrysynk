@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Heart, X, User, MapPin, Sparkles, Filter, RotateCcw, Crown, Zap, BadgeCheck, ShieldCheck } from "lucide-react";
+import { DiscoverProfileCard } from "@/components/discover/DiscoverProfileCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -380,166 +381,45 @@ const Discover = () => {
         <FeaturedCreatives />
         <TrendingCollaborations />
 
-        <Card className="overflow-hidden">
-          {isTransitioning ? (
-            <>
-              <div className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 relative">
-                <Skeleton className="w-full h-full animate-pulse" />
+        {isTransitioning ? (
+          <div className="rounded-xl overflow-hidden border border-border bg-card shadow-lg">
+            <div className="flex flex-col md:flex-row min-h-[420px]">
+              <div className="md:w-1/2 w-full aspect-square md:aspect-auto">
+                <Skeleton className="w-full h-full" />
               </div>
-              <CardContent className="p-6 space-y-4">
-                <div className="space-y-2">
-                  <Skeleton className="h-8 w-48" />
-                  <Skeleton className="h-4 w-32" />
-                </div>
-                <Skeleton className="h-4 w-40" />
+              <div className="md:w-1/2 w-full p-5 space-y-4">
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-6 w-40 rounded-lg" />
                 <div className="flex gap-2">
                   <Skeleton className="h-6 w-20 rounded-full" />
                   <Skeleton className="h-6 w-24 rounded-full" />
                 </div>
-                <div className="flex gap-2">
-                  <Skeleton className="h-6 w-16 rounded-full" />
-                  <Skeleton className="h-6 w-20 rounded-full" />
-                </div>
                 <Skeleton className="h-16 w-full" />
-                <div className="flex gap-4 pt-4">
-                  <Skeleton className="h-12 flex-1 rounded-md" />
-                  <Skeleton className="h-12 flex-1 rounded-md" />
+                <div className="flex gap-1.5">
+                  <Skeleton className="h-12 w-12 rounded-md" />
+                  <Skeleton className="h-12 w-12 rounded-md" />
+                  <Skeleton className="h-12 w-12 rounded-md" />
                 </div>
-              </CardContent>
-            </>
-          ) : (
-            <>
-              <div 
-                className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 relative animate-fade-in cursor-pointer"
-                onClick={() => navigate(`/profile/${currentProfile.id}`)}
-              >
-                {currentProfile.avatar_url ? (
-                  <img
-                    src={currentProfile.avatar_url}
-                    alt={currentProfile.full_name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Avatar className="w-32 h-32">
-                      <AvatarFallback className="text-4xl">
-                        {currentProfile.full_name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                )}
-                {/* Trust indicators overlay */}
-                <div className="absolute top-3 right-3 flex gap-1.5">
-                  {currentProfile.is_verified && (
-                    <div className="bg-background/80 backdrop-blur-sm rounded-full p-1.5" title="Verified Creator">
-                      <BadgeCheck className="w-5 h-5 text-emerald-500" />
-                    </div>
-                  )}
-                  {currentProfile.is_featured && (
-                    <div className="bg-background/80 backdrop-blur-sm rounded-full p-1.5" title="Featured Creator">
-                      <Sparkles className="w-5 h-5 text-yellow-500" />
-                    </div>
-                  )}
+                <div className="flex gap-3 pt-4">
+                  <Skeleton className="h-12 flex-1 rounded-md" />
+                  <Skeleton className="h-11 w-11 rounded-md" />
+                  <Skeleton className="h-12 flex-1 rounded-md" />
                 </div>
               </div>
-
-              <CardContent className="p-6 space-y-4 animate-fade-in">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h2 className="text-2xl font-bold flex items-center gap-1.5">
-                      {currentProfile.full_name}
-                      {currentProfile.is_verified && (
-                        <BadgeCheck className="w-5 h-5 text-emerald-500 shrink-0" />
-                      )}
-                    </h2>
-                    <p className="text-muted-foreground">@{currentProfile.username}</p>
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={(e) => { e.stopPropagation(); navigate(`/profile/${currentProfile.id}`); }}
-                  >
-                    <User className="w-4 h-4 mr-1" />
-                    Profile
-                  </Button>
-                </div>
-
-                {currentProfile.location && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="w-4 h-4" />
-                    {currentProfile.location}
-                  </div>
-                )}
-
-                {currentProfile.user_creative_roles.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {currentProfile.user_creative_roles.map((r, i) => (
-                      <Badge key={i} variant="secondary">
-                        {getRoleLabel(r.role)}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-
-                {/* Synergy Score - shown when AI matching is active */}
-                {currentProfile.synergyScore && currentProfile.synergyScore > 0 && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Zap className="w-4 h-4 text-yellow-500" />
-                    <span className="font-semibold">{currentProfile.synergyScore}% Synergy</span>
-                    {currentProfile.matchReason && (
-                      <span className="text-muted-foreground">— {currentProfile.matchReason}</span>
-                    )}
-                  </div>
-                )}
-
-                {currentProfile.user_genres.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {currentProfile.user_genres.map((g, i) => (
-                      <Badge key={i} variant="outline">
-                        {g.genre}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-
-                {currentProfile.bio && (
-                  <p className="text-sm">{currentProfile.bio}</p>
-                )}
-
-                <div className="flex gap-4 pt-4">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="flex-1"
-                    onClick={() => handleSwipe(false)}
-                    disabled={isTransitioning}
-                  >
-                    <X className="w-6 h-6" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={handleRewind}
-                    disabled={!lastSwipe || isTransitioning}
-                    title={canRewindSwipes ? "Undo last swipe" : "Pro feature"}
-                  >
-                    <RotateCcw className="w-5 h-5" />
-                    {!canRewindSwipes && <Crown className="w-3 h-3 absolute -top-1 -right-1 text-yellow-500" />}
-                  </Button>
-                  <Button
-                    variant="hero"
-                    size="lg"
-                    className="flex-1"
-                    onClick={() => handleSwipe(true)}
-                    disabled={isTransitioning}
-                  >
-                    <Heart className="w-6 h-6" />
-                  </Button>
-                </div>
-              </CardContent>
-            </>
-          )}
-        </Card>
+            </div>
+          </div>
+        ) : (
+          <DiscoverProfileCard
+            profile={currentProfile}
+            currentUserId={currentUser!}
+            onSwipe={handleSwipe}
+            onRewind={handleRewind}
+            canRewind={canRewindSwipes}
+            hasLastSwipe={!!lastSwipe}
+            isTransitioning={isTransitioning}
+          />
+        )}
       </div>
     </div>
   );
