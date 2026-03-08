@@ -48,8 +48,8 @@ const Discover = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [aiMatchingEnabled, setAiMatchingEnabled] = useState(false);
-  const [roleFilter, setRoleFilter] = useState<string>("");
-  const [genreFilter, setGenreFilter] = useState<string>("");
+  const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [genreFilter, setGenreFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [lastSwipe, setLastSwipe] = useState<{ id: string; swipedId: string } | null>(null);
