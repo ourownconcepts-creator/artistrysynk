@@ -9,25 +9,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Camera, Upload, Link, Instagram, Twitter, Youtube, Music, Mic, Users, Film, Palette } from "lucide-react";
+import { Camera, Upload, Link, Instagram, Twitter, Youtube, Music, Headphones } from "lucide-react";
 import { SkillTagsInput } from "@/components/profile/SkillTagsInput";
+import { roleCategories, allRoles } from "@/lib/creativeRoles";
 
-const creativeRoles = [
-  { value: 'musician', label: 'Musician', icon: Music },
-  { value: 'producer', label: 'Producer', icon: Mic },
-  { value: 'songwriter', label: 'Songwriter', icon: Music },
-  { value: 'performer', label: 'Performer', icon: Users },
-  { value: 'dancer', label: 'Dancer', icon: Users },
-  { value: 'vixen', label: 'Vixen', icon: Camera },
-  { value: 'actor', label: 'Actor', icon: Film },
-  { value: 'director', label: 'Director', icon: Film },
-  { value: 'photographer', label: 'Photographer', icon: Camera },
-  { value: 'videographer', label: 'Videographer', icon: Camera },
-  { value: 'designer', label: 'Designer', icon: Palette },
-  { value: 'screenwriter', label: 'Screenwriter', icon: Film },
-  { value: 'promoter', label: 'Promoter', icon: Users },
-  { value: 'manager', label: 'Manager', icon: Users },
-  { value: 'strategist', label: 'Strategist', icon: Users },
+const genres = [
+  { value: 'afrobeats', label: 'Afrobeats' },
+  { value: 'hip_hop', label: 'Hip Hop' },
+  { value: 'rnb', label: 'R&B' },
+  { value: 'gospel', label: 'Gospel' },
+  { value: 'pop', label: 'Pop' },
+  { value: 'reggae', label: 'Reggae' },
+  { value: 'dancehall', label: 'Dancehall' },
+  { value: 'amapiano', label: 'Amapiano' },
+  { value: 'highlife', label: 'Highlife' },
+  { value: 'fuji', label: 'Fuji' },
+  { value: 'juju', label: 'Juju' },
+  { value: 'other', label: 'Other' },
 ];
 
 const genres = [
