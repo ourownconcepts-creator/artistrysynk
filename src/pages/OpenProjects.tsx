@@ -138,7 +138,9 @@ const OpenProjects = () => {
       created_by: currentUser,
       is_public: true,
       status: "active",
-    }).select().single();
+      project_category: newProject.project_category,
+      compensation_type: newProject.compensation_type,
+    } as any).select().single();
 
     if (error) {
       toast.error("Failed to create project");
