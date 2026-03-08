@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Heart, X, User, MapPin, Sparkles, Filter, RotateCcw, Crown, Zap, BadgeCheck, ShieldCheck } from "lucide-react";
+import { DiscoverProfileCard } from "@/components/discover/DiscoverProfileCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
