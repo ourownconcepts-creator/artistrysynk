@@ -122,7 +122,7 @@ const PublicProfile = () => {
     return null;
   }
 
-  const profileUrl = `https://artistrysynk.com/profile/${profile.username || userId}`;
+  const profileUrl = `${window.location.origin}/profile/${profile.username || userId}`;
 
   return (
     <>
