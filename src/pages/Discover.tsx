@@ -15,6 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Constants } from "@/integrations/supabase/types";
 import { FeaturedCreatives } from "@/components/discover/FeaturedCreatives";
+import { getRoleLabel } from "@/lib/creativeRoles";
 import { FeaturedProfiles } from "@/components/discover/FeaturedProfiles";
 import { TrendingCollaborations } from "@/components/discover/TrendingCollaborations";
 import { useSubscription } from "@/hooks/useSubscription";
