@@ -203,6 +203,53 @@ export type Database = {
         }
         Relationships: []
       }
+      collaboration_requests: {
+        Row: {
+          created_at: string
+          id: string
+          match_id: string
+          message: string | null
+          project_title: string
+          project_type: string
+          recipient_id: string
+          sender_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          match_id: string
+          message?: string | null
+          project_title: string
+          project_type: string
+          recipient_id: string
+          sender_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          match_id?: string
+          message?: string | null
+          project_title?: string
+          project_type?: string
+          recipient_id?: string
+          sender_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collaboration_requests_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_submissions: {
         Row: {
           created_at: string
@@ -1007,6 +1054,36 @@ export type Database = {
           p256dh?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          referral_code: string
+          referred_id: string | null
+          referrer_id: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code: string
+          referred_id?: string | null
+          referrer_id: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code?: string
+          referred_id?: string | null
+          referrer_id?: string
+          status?: string
         }
         Relationships: []
       }
@@ -1826,6 +1903,28 @@ export type Database = {
         | "promoter"
         | "manager"
         | "strategist"
+        | "singer"
+        | "rapper"
+        | "dj"
+        | "sound_engineer"
+        | "beatmaker"
+        | "vocal_coach"
+        | "filmmaker"
+        | "video_editor"
+        | "cinematographer"
+        | "animator"
+        | "motion_designer"
+        | "podcaster"
+        | "voiceover_artist"
+        | "graphic_designer"
+        | "illustrator"
+        | "model"
+        | "stylist"
+        | "makeup_artist"
+        | "writer"
+        | "creative_director"
+        | "choreographer"
+        | "fashion_designer"
       genre:
         | "afrobeats"
         | "hip_hop"
@@ -1985,6 +2084,28 @@ export const Constants = {
         "promoter",
         "manager",
         "strategist",
+        "singer",
+        "rapper",
+        "dj",
+        "sound_engineer",
+        "beatmaker",
+        "vocal_coach",
+        "filmmaker",
+        "video_editor",
+        "cinematographer",
+        "animator",
+        "motion_designer",
+        "podcaster",
+        "voiceover_artist",
+        "graphic_designer",
+        "illustrator",
+        "model",
+        "stylist",
+        "makeup_artist",
+        "writer",
+        "creative_director",
+        "choreographer",
+        "fashion_designer",
       ],
       genre: [
         "afrobeats",
