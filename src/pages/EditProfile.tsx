@@ -9,26 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Camera, Upload, Link, Instagram, Twitter, Youtube, Music, Mic, Users, Film, Palette } from "lucide-react";
+import { Camera, Upload, Link, Instagram, Twitter, Youtube, Music, Headphones } from "lucide-react";
 import { SkillTagsInput } from "@/components/profile/SkillTagsInput";
-
-const creativeRoles = [
-  { value: 'musician', label: 'Musician', icon: Music },
-  { value: 'producer', label: 'Producer', icon: Mic },
-  { value: 'songwriter', label: 'Songwriter', icon: Music },
-  { value: 'performer', label: 'Performer', icon: Users },
-  { value: 'dancer', label: 'Dancer', icon: Users },
-  { value: 'vixen', label: 'Vixen', icon: Camera },
-  { value: 'actor', label: 'Actor', icon: Film },
-  { value: 'director', label: 'Director', icon: Film },
-  { value: 'photographer', label: 'Photographer', icon: Camera },
-  { value: 'videographer', label: 'Videographer', icon: Camera },
-  { value: 'designer', label: 'Designer', icon: Palette },
-  { value: 'screenwriter', label: 'Screenwriter', icon: Film },
-  { value: 'promoter', label: 'Promoter', icon: Users },
-  { value: 'manager', label: 'Manager', icon: Users },
-  { value: 'strategist', label: 'Strategist', icon: Users },
-];
+import { roleCategories, allRoles } from "@/lib/creativeRoles";
 
 const genres = [
   { value: 'afrobeats', label: 'Afrobeats' },
@@ -44,6 +27,7 @@ const genres = [
   { value: 'juju', label: 'Juju' },
   { value: 'other', label: 'Other' },
 ];
+
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -63,6 +47,12 @@ const EditProfile = () => {
     twitter: "",
     youtube: "",
     website: "",
+    spotify: "",
+    soundcloud: "",
+    audiomack: "",
+    tiktok: "",
+    behance: "",
+    dribbble: "",
   });
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
@@ -100,6 +90,12 @@ const EditProfile = () => {
           twitter: links.twitter || "",
           youtube: links.youtube || "",
           website: links.website || "",
+          spotify: links.spotify || "",
+          soundcloud: links.soundcloud || "",
+          audiomack: links.audiomack || "",
+          tiktok: links.tiktok || "",
+          behance: links.behance || "",
+          dribbble: links.dribbble || "",
         });
       }
     }
@@ -356,24 +352,29 @@ const EditProfile = () => {
               </div>
 
               {/* Creative Roles */}
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <Label>Creative Roles (Select at least 1)</Label>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                  {creativeRoles.map(role => {
-                    const Icon = role.icon;
-                    return (
-                      <Badge
-                        key={role.value}
-                        variant={selectedRoles.includes(role.value) ? "default" : "outline"}
-                        className="cursor-pointer p-3 justify-center"
-                        onClick={() => toggleRole(role.value)}
-                      >
-                        <Icon className="w-4 h-4 mr-2" />
-                        {role.label}
-                      </Badge>
-                    );
-                  })}
-                </div>
+                {roleCategories.map((category) => (
+                  <div key={category.label} className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">{category.label}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                      {category.roles.map(role => {
+                        const Icon = role.icon;
+                        return (
+                          <Badge
+                            key={role.value}
+                            variant={selectedRoles.includes(role.value) ? "default" : "outline"}
+                            className="cursor-pointer p-3 justify-center"
+                            onClick={() => toggleRole(role.value)}
+                          >
+                            <Icon className="w-4 h-4 mr-2" />
+                            {role.label}
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
 
               {/* Genres */}
@@ -403,39 +404,47 @@ const EditProfile = () => {
 
               {/* Social Links */}
               <div className="space-y-4">
-                <Label>Social Links</Label>
+                <Label>Social & Portfolio Links</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-center gap-2">
                     <Instagram className="w-5 h-5 text-muted-foreground" />
-                    <Input
-                      placeholder="Instagram username"
-                      value={socialLinks.instagram}
-                      onChange={(e) => setSocialLinks(prev => ({ ...prev, instagram: e.target.value }))}
-                    />
+                    <Input placeholder="Instagram username" value={socialLinks.instagram} onChange={(e) => setSocialLinks(prev => ({ ...prev, instagram: e.target.value }))} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Twitter className="w-5 h-5 text-muted-foreground" />
-                    <Input
-                      placeholder="Twitter/X handle"
-                      value={socialLinks.twitter}
-                      onChange={(e) => setSocialLinks(prev => ({ ...prev, twitter: e.target.value }))}
-                    />
+                    <Input placeholder="Twitter/X handle" value={socialLinks.twitter} onChange={(e) => setSocialLinks(prev => ({ ...prev, twitter: e.target.value }))} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Youtube className="w-5 h-5 text-muted-foreground" />
-                    <Input
-                      placeholder="YouTube channel"
-                      value={socialLinks.youtube}
-                      onChange={(e) => setSocialLinks(prev => ({ ...prev, youtube: e.target.value }))}
-                    />
+                    <Input placeholder="YouTube channel URL" value={socialLinks.youtube} onChange={(e) => setSocialLinks(prev => ({ ...prev, youtube: e.target.value }))} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Music className="w-5 h-5 text-muted-foreground" />
+                    <Input placeholder="Spotify artist URL" value={socialLinks.spotify} onChange={(e) => setSocialLinks(prev => ({ ...prev, spotify: e.target.value }))} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Headphones className="w-5 h-5 text-muted-foreground" />
+                    <Input placeholder="SoundCloud URL" value={socialLinks.soundcloud} onChange={(e) => setSocialLinks(prev => ({ ...prev, soundcloud: e.target.value }))} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Music className="w-5 h-5 text-muted-foreground" />
+                    <Input placeholder="Audiomack URL" value={socialLinks.audiomack} onChange={(e) => setSocialLinks(prev => ({ ...prev, audiomack: e.target.value }))} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Music className="w-5 h-5 text-muted-foreground" />
+                    <Input placeholder="TikTok username" value={socialLinks.tiktok} onChange={(e) => setSocialLinks(prev => ({ ...prev, tiktok: e.target.value }))} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Link className="w-5 h-5 text-muted-foreground" />
-                    <Input
-                      placeholder="Website URL"
-                      value={socialLinks.website}
-                      onChange={(e) => setSocialLinks(prev => ({ ...prev, website: e.target.value }))}
-                    />
+                    <Input placeholder="Behance URL" value={socialLinks.behance} onChange={(e) => setSocialLinks(prev => ({ ...prev, behance: e.target.value }))} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Link className="w-5 h-5 text-muted-foreground" />
+                    <Input placeholder="Dribbble URL" value={socialLinks.dribbble} onChange={(e) => setSocialLinks(prev => ({ ...prev, dribbble: e.target.value }))} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Link className="w-5 h-5 text-muted-foreground" />
+                    <Input placeholder="Website URL" value={socialLinks.website} onChange={(e) => setSocialLinks(prev => ({ ...prev, website: e.target.value }))} />
                   </div>
                 </div>
               </div>

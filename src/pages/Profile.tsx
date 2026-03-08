@@ -16,6 +16,7 @@ import { ProfileAnalytics } from "@/components/profile/ProfileAnalytics";
 import { ProfileCompletionProgress } from "@/components/profile/ProfileCompletionProgress";
 import { useSessionTracking } from "@/hooks/useSessionTracking";
 import { MyAppeals } from "@/components/content/MyAppeals";
+import { ReferralCard } from "@/components/referral/ReferralCard";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -379,6 +380,7 @@ const Profile = () => {
             </TabsContent>
 
             <TabsContent value="settings" className="mt-6 space-y-6">
+              <ReferralCard />
               <MyAppeals />
               <Card>
                 <CardHeader>

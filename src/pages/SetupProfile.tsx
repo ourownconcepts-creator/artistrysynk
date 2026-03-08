@@ -8,21 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Music, Mic, Users, Camera, Film, Palette } from "lucide-react";
-
-const creativeRoles = [
-  { value: 'musician', label: 'Musician', icon: Music },
-  { value: 'producer', label: 'Producer', icon: Mic },
-  { value: 'songwriter', label: 'Songwriter', icon: Music },
-  { value: 'performer', label: 'Performer', icon: Users },
-  { value: 'dancer', label: 'Dancer', icon: Users },
-  { value: 'vixen', label: 'Vixen', icon: Camera },
-  { value: 'actor', label: 'Actor', icon: Film },
-  { value: 'director', label: 'Director', icon: Film },
-  { value: 'photographer', label: 'Photographer', icon: Camera },
-  { value: 'videographer', label: 'Videographer', icon: Camera },
-  { value: 'designer', label: 'Designer', icon: Palette },
-];
+import { roleCategories } from "@/lib/creativeRoles";
 
 const genres = [
   { value: 'afrobeats', label: 'Afrobeats' },
@@ -133,24 +119,29 @@ const SetupProfile = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <Label>Select Your Creative Roles (Choose at least 1)</Label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {creativeRoles.map(role => {
-                    const Icon = role.icon;
-                    return (
-                      <Badge
-                        key={role.value}
-                        variant={selectedRoles.includes(role.value) ? "default" : "outline"}
-                        className="cursor-pointer p-3 justify-center"
-                        onClick={() => toggleRole(role.value)}
-                      >
-                        <Icon className="w-4 h-4 mr-2" />
-                        {role.label}
-                      </Badge>
-                    );
-                  })}
-                </div>
+                {roleCategories.map((category) => (
+                  <div key={category.label} className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">{category.label}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {category.roles.map(role => {
+                        const Icon = role.icon;
+                        return (
+                          <Badge
+                            key={role.value}
+                            variant={selectedRoles.includes(role.value) ? "default" : "outline"}
+                            className="cursor-pointer p-3 justify-center"
+                            onClick={() => toggleRole(role.value)}
+                          >
+                            <Icon className="w-4 h-4 mr-2" />
+                            {role.label}
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className="space-y-2">
