@@ -366,8 +366,8 @@ const Discover = () => {
                   variant="outline" 
                   className="w-full"
                   onClick={() => {
-                    setRoleFilter("");
-                    setGenreFilter("");
+                    setRoleFilter("all");
+                    setGenreFilter("all");
                     setLocationFilter("");
                     if (currentUser) loadProfiles(currentUser);
                   }}
