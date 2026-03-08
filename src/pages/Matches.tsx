@@ -246,14 +246,22 @@ const Matches = () => {
                             @{match.profile.username}
                           </p>
                         </div>
-                        <MessageCircle className="w-5 h-5 text-muted-foreground" />
+                        <div className="flex items-center gap-2">
+                          <MessageCircle className="w-5 h-5 text-muted-foreground" />
+                          <CollaborationRequestDialog
+                            matchId={match.id}
+                            recipientId={match.profile.id}
+                            recipientName={match.profile.full_name}
+                            currentUserId={currentUser!}
+                          />
+                        </div>
                       </div>
 
                       {match.profile.user_creative_roles.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-2">
                           {match.profile.user_creative_roles.map((r, i) => (
                             <Badge key={i} variant="secondary" className="text-xs">
-                              {r.role}
+                              {getRoleLabel(r.role)}
                             </Badge>
                           ))}
                         </div>
