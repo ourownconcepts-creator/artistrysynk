@@ -44,6 +44,8 @@ import Privacy from '@/pages/Privacy';
 import Terms from '@/pages/Terms';
 import Cookies from '@/pages/Cookies';
 import Settings from '@/pages/Settings';
+import CollaborationFeed from '@/pages/CollaborationFeed';
+import CreatorCredits from '@/pages/CreatorCredits';
 
 export const AnimatedRoutes = () => {
   const location = useLocation();
