@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Sparkles, Eye, EyeOff, ArrowLeft, Mail, CheckCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { z } from "zod";
+import { lovable } from "@/integrations/lovable/index";
 
 // Validation schemas
 const emailSchema = z.string().email("Please enter a valid email address");
@@ -199,15 +200,12 @@ const Auth = () => {
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/discover`,
-      },
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
     });
 
-    if (error) {
-      toast.error(error.message);
+    if (result?.error) {
+      toast.error(result.error.message || "Failed to sign in with Google");
       setLoading(false);
     }
   };
