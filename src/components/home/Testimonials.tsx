@@ -74,6 +74,19 @@ const testimonials: Testimonial[] = [
 export const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [realStats, setRealStats] = useState({ matches: 0, collabs: 0, posts: 0 });
+
+  useEffect(() => {
+    const loadStats = async () => {
+      const [{ count: matchCount }, { count: collabCount }, { count: postCount }] = await Promise.all([
+        supabase.from("matches").select("*", { count: "exact", head: true }),
+        supabase.from("collaboration_requests").select("*", { count: "exact", head: true }).eq("status", "accepted"),
+        supabase.from("collaboration_posts").select("*", { count: "exact", head: true }),
+      ]);
+      setRealStats({ matches: matchCount || 0, collabs: collabCount || 0, posts: postCount || 0 });
+    };
+    loadStats();
+  }, []);
 
   const slideVariants = {
     enter: (direction: number) => ({
