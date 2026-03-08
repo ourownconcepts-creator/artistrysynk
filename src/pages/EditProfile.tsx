@@ -366,24 +366,29 @@ const EditProfile = () => {
               </div>
 
               {/* Creative Roles */}
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <Label>Creative Roles (Select at least 1)</Label>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                  {creativeRoles.map(role => {
-                    const Icon = role.icon;
-                    return (
-                      <Badge
-                        key={role.value}
-                        variant={selectedRoles.includes(role.value) ? "default" : "outline"}
-                        className="cursor-pointer p-3 justify-center"
-                        onClick={() => toggleRole(role.value)}
-                      >
-                        <Icon className="w-4 h-4 mr-2" />
-                        {role.label}
-                      </Badge>
-                    );
-                  })}
-                </div>
+                {roleCategories.map((category) => (
+                  <div key={category.label} className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">{category.label}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                      {category.roles.map(role => {
+                        const Icon = role.icon;
+                        return (
+                          <Badge
+                            key={role.value}
+                            variant={selectedRoles.includes(role.value) ? "default" : "outline"}
+                            className="cursor-pointer p-3 justify-center"
+                            onClick={() => toggleRole(role.value)}
+                          >
+                            <Icon className="w-4 h-4 mr-2" />
+                            {role.label}
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
 
               {/* Genres */}
