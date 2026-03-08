@@ -203,6 +203,134 @@ export type Database = {
         }
         Relationships: []
       }
+      collaboration_post_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collaboration_post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "collaboration_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collaboration_post_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collaboration_post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "collaboration_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collaboration_post_saves: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collaboration_post_saves_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "collaboration_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collaboration_posts: {
+        Row: {
+          content: string
+          created_at: string
+          hashtags: string[] | null
+          id: string
+          role_tags: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          hashtags?: string[] | null
+          id?: string
+          role_tags?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          hashtags?: string[] | null
+          id?: string
+          role_tags?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collaboration_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collaboration_requests: {
         Row: {
           created_at: string
@@ -395,6 +523,41 @@ export type Database = {
             columns: ["match_id"]
             isOneToOne: false
             referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_credits: {
+        Row: {
+          created_at: string
+          id: string
+          is_verified: boolean | null
+          project_id: string
+          role_title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_verified?: boolean | null
+          project_id: string
+          role_title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_verified?: boolean | null
+          project_id?: string
+          role_title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_credits_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -715,6 +878,8 @@ export type Database = {
         Row: {
           avatar_url: string | null
           bio: string | null
+          city: string | null
+          country: string | null
           cover_image_url: string | null
           created_at: string | null
           email: string | null
@@ -725,6 +890,7 @@ export type Database = {
           is_hidden: boolean | null
           is_verified: boolean | null
           location: string | null
+          looking_for: string[] | null
           social_links: Json | null
           synergy_boost_score: number | null
           updated_at: string | null
@@ -733,6 +899,8 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           bio?: string | null
+          city?: string | null
+          country?: string | null
           cover_image_url?: string | null
           created_at?: string | null
           email?: string | null
@@ -743,6 +911,7 @@ export type Database = {
           is_hidden?: boolean | null
           is_verified?: boolean | null
           location?: string | null
+          looking_for?: string[] | null
           social_links?: Json | null
           synergy_boost_score?: number | null
           updated_at?: string | null
@@ -751,6 +920,8 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           bio?: string | null
+          city?: string | null
+          country?: string | null
           cover_image_url?: string | null
           created_at?: string | null
           email?: string | null
@@ -761,6 +932,7 @@ export type Database = {
           is_hidden?: boolean | null
           is_verified?: boolean | null
           location?: string | null
+          looking_for?: string[] | null
           social_links?: Json | null
           synergy_boost_score?: number | null
           updated_at?: string | null
@@ -977,39 +1149,48 @@ export type Database = {
       projects: {
         Row: {
           budget: string | null
+          compensation_type: string | null
           created_at: string | null
           created_by: string
           description: string | null
           id: string
           is_hidden: boolean | null
+          is_open: boolean | null
           is_public: boolean | null
           looking_for: string[] | null
+          project_category: string | null
           status: Database["public"]["Enums"]["collaboration_status"] | null
           title: string
           updated_at: string | null
         }
         Insert: {
           budget?: string | null
+          compensation_type?: string | null
           created_at?: string | null
           created_by: string
           description?: string | null
           id?: string
           is_hidden?: boolean | null
+          is_open?: boolean | null
           is_public?: boolean | null
           looking_for?: string[] | null
+          project_category?: string | null
           status?: Database["public"]["Enums"]["collaboration_status"] | null
           title: string
           updated_at?: string | null
         }
         Update: {
           budget?: string | null
+          compensation_type?: string | null
           created_at?: string | null
           created_by?: string
           description?: string | null
           id?: string
           is_hidden?: boolean | null
+          is_open?: boolean | null
           is_public?: boolean | null
           looking_for?: string[] | null
+          project_category?: string | null
           status?: Database["public"]["Enums"]["collaboration_status"] | null
           title?: string
           updated_at?: string | null
@@ -1925,6 +2106,29 @@ export type Database = {
         | "creative_director"
         | "choreographer"
         | "fashion_designer"
+        | "artist"
+        | "audio_engineer"
+        | "software_developer"
+        | "frontend_developer"
+        | "backend_developer"
+        | "full_stack_developer"
+        | "mobile_app_developer"
+        | "ai_engineer"
+        | "blockchain_developer"
+        | "ui_designer"
+        | "ux_designer"
+        | "product_designer"
+        | "3d_designer"
+        | "product_manager"
+        | "startup_founder"
+        | "technical_cofounder"
+        | "growth_marketer"
+        | "seo_specialist"
+        | "digital_marketer"
+        | "data_scientist"
+        | "devops_engineer"
+        | "game_developer"
+        | "content_creator"
       genre:
         | "afrobeats"
         | "hip_hop"
@@ -2106,6 +2310,29 @@ export const Constants = {
         "creative_director",
         "choreographer",
         "fashion_designer",
+        "artist",
+        "audio_engineer",
+        "software_developer",
+        "frontend_developer",
+        "backend_developer",
+        "full_stack_developer",
+        "mobile_app_developer",
+        "ai_engineer",
+        "blockchain_developer",
+        "ui_designer",
+        "ux_designer",
+        "product_designer",
+        "3d_designer",
+        "product_manager",
+        "startup_founder",
+        "technical_cofounder",
+        "growth_marketer",
+        "seo_specialist",
+        "digital_marketer",
+        "data_scientist",
+        "devops_engineer",
+        "game_developer",
+        "content_creator",
       ],
       genre: [
         "afrobeats",
