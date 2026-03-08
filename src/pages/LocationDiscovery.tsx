@@ -216,7 +216,7 @@ const LocationDiscovery = () => {
                   <SelectValue placeholder="Filter by role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All roles</SelectItem>
+                  <SelectItem value="all">All roles</SelectItem>
                   {roleCategories.flatMap((c) => c.roles).slice(0, 30).map((role) => (
                     <SelectItem key={role.value} value={role.value}>
                       {role.label}
