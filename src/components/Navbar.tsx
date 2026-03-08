@@ -146,6 +146,14 @@ export const Navbar = () => {
                   My Projects
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/explore")}>
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  Explore
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/explore/nearby")}>
+                  <MapPin className="w-4 h-4 mr-2" />
+                  Creators Near You
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/open-projects")}>
                   <Briefcase className="w-4 h-4 mr-2" />
                   Open Projects
