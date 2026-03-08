@@ -426,6 +426,23 @@ const EditProfile = () => {
                 </div>
               </div>
 
+              {/* Looking For */}
+              <div className="space-y-4">
+                <Label>Looking For (Who do you want to collaborate with?)</Label>
+                <div className="flex flex-wrap gap-2">
+                  {allRoles.slice(0, 40).map(role => (
+                    <Badge
+                      key={role.value}
+                      variant={lookingFor.includes(role.value) ? "default" : "outline"}
+                      className="cursor-pointer"
+                      onClick={() => setLookingFor(prev => prev.includes(role.value) ? prev.filter(r => r !== role.value) : [...prev, role.value])}
+                    >
+                      {role.label}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
               {/* Custom Skill Tags */}
               {userId && (
                 <div className="space-y-2">
@@ -465,6 +482,10 @@ const EditProfile = () => {
                   <div className="flex items-center gap-2">
                     <Music className="w-5 h-5 text-muted-foreground" />
                     <Input placeholder="TikTok username" value={socialLinks.tiktok} onChange={(e) => setSocialLinks(prev => ({ ...prev, tiktok: e.target.value }))} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Code className="w-5 h-5 text-muted-foreground" />
+                    <Input placeholder="GitHub URL" value={socialLinks.github} onChange={(e) => setSocialLinks(prev => ({ ...prev, github: e.target.value }))} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Link className="w-5 h-5 text-muted-foreground" />
