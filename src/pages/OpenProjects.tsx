@@ -339,7 +339,7 @@ const OpenProjects = () => {
                       <div className="flex flex-wrap gap-1">
                         {project.looking_for.map((role, idx) => (
                           <Badge key={idx} variant="outline" className="text-xs">
-                            {role}
+                            {getRoleLabel(role)}
                           </Badge>
                         ))}
                       </div>
