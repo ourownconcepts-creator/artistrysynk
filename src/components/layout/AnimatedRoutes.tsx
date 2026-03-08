@@ -173,6 +173,18 @@ export const AnimatedRoutes = () => {
             <PageTransition><Settings /></PageTransition>
           </ProtectedRoute>
         } />
+        <Route path="/feed" element={
+          <ProtectedRoute>
+            <Navbar />
+            <PageTransition><CollaborationFeed /></PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/credits" element={
+          <ProtectedRoute>
+            <Navbar />
+            <PageTransition><CreatorCredits /></PageTransition>
+          </ProtectedRoute>
+        } />
 
         {/* Admin Routes */}
         <Route path="/admin" element={
