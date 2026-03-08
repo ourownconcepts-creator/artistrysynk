@@ -45,10 +45,7 @@ export const PortfolioModeration = () => {
   const fetchPortfolioItems = async () => {
     const { data, error } = await supabase
       .from('portfolio_items')
-      .select(`
-        *,
-        profiles!inner(full_name)
-      `)
+      .select('*')
       .order('created_at', { ascending: false })
       .limit(50);
 
