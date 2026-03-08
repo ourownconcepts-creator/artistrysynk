@@ -380,6 +380,7 @@ const Profile = () => {
             </TabsContent>
 
             <TabsContent value="settings" className="mt-6 space-y-6">
+              <ReferralCard />
               <MyAppeals />
               <Card>
                 <CardHeader>
