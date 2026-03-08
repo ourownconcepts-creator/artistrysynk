@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { MessageCircle, Users, Heart, CheckCheck } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useSubscription } from "@/hooks/useSubscription";
+import { CollaborationRequestDialog } from "@/components/collaboration/CollaborationRequestDialog";
+import { getRoleLabel } from "@/lib/creativeRoles";
 
 interface Match {
   id: string;
