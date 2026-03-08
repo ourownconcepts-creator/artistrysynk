@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Camera, Upload, Link, Instagram, Twitter, Youtube, Music, Headphones } from "lucide-react";
+import { Camera, Upload, Link, Instagram, Twitter, Youtube, Music, Headphones, Code } from "lucide-react";
 import { SkillTagsInput } from "@/components/profile/SkillTagsInput";
 import { roleCategories, allRoles } from "@/lib/creativeRoles";
 
