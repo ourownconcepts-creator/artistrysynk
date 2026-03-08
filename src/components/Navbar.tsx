@@ -97,6 +97,17 @@ export const Navbar = () => {
               </Button>
             </Link>
 
+            <Link to="/feed">
+              <Button
+                variant={isActive("/feed") ? "default" : "ghost"}
+                size="sm"
+                className="gap-2"
+              >
+                <Rss className="w-4 h-4" />
+                Feed
+              </Button>
+            </Link>
+
             <Link to="/jobs">
               <Button
                 variant={isActive("/jobs") ? "default" : "ghost"}
