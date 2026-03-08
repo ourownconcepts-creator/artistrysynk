@@ -381,6 +381,8 @@ const Discover = () => {
 
         <FeaturedProfiles />
         <FeaturedCreatives />
+        {currentUser && <CreatorsNearYou currentUserId={currentUser} />}
+        <OpenProjectsPreview />
         <TrendingCollaborations />
 
         {isTransitioning ? (
