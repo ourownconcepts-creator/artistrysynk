@@ -197,7 +197,7 @@ const PublicProfile = () => {
                 <div className="flex flex-wrap justify-center gap-2">
                   {roles.map((r, i) => (
                     <Badge key={i} variant="secondary" className="text-sm px-3 py-1">
-                      {r.role}
+                      {getRoleLabel(r.role)}
                     </Badge>
                   ))}
                 </div>
@@ -213,6 +213,32 @@ const PublicProfile = () => {
                       {g.genre}
                     </Badge>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Social & Portfolio Links */}
+            {profile.social_links && Object.values(profile.social_links as Record<string, string>).some(Boolean) && (
+              <div className="text-center">
+                <h3 className="font-semibold mb-3">Links</h3>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {Object.entries(profile.social_links as Record<string, string>)
+                    .filter(([, url]) => url)
+                    .map(([platform, url]) => (
+                      <Button
+                        key={platform}
+                        variant="outline"
+                        size="sm"
+                        className="gap-1 capitalize"
+                        onClick={() => {
+                          const fullUrl = url.startsWith("http") ? url : `https://${url}`;
+                          window.open(fullUrl, "_blank");
+                        }}
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                        {platform}
+                      </Button>
+                    ))}
                 </div>
               </div>
             )}

@@ -404,39 +404,47 @@ const EditProfile = () => {
 
               {/* Social Links */}
               <div className="space-y-4">
-                <Label>Social Links</Label>
+                <Label>Social & Portfolio Links</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-center gap-2">
                     <Instagram className="w-5 h-5 text-muted-foreground" />
-                    <Input
-                      placeholder="Instagram username"
-                      value={socialLinks.instagram}
-                      onChange={(e) => setSocialLinks(prev => ({ ...prev, instagram: e.target.value }))}
-                    />
+                    <Input placeholder="Instagram username" value={socialLinks.instagram} onChange={(e) => setSocialLinks(prev => ({ ...prev, instagram: e.target.value }))} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Twitter className="w-5 h-5 text-muted-foreground" />
-                    <Input
-                      placeholder="Twitter/X handle"
-                      value={socialLinks.twitter}
-                      onChange={(e) => setSocialLinks(prev => ({ ...prev, twitter: e.target.value }))}
-                    />
+                    <Input placeholder="Twitter/X handle" value={socialLinks.twitter} onChange={(e) => setSocialLinks(prev => ({ ...prev, twitter: e.target.value }))} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Youtube className="w-5 h-5 text-muted-foreground" />
-                    <Input
-                      placeholder="YouTube channel"
-                      value={socialLinks.youtube}
-                      onChange={(e) => setSocialLinks(prev => ({ ...prev, youtube: e.target.value }))}
-                    />
+                    <Input placeholder="YouTube channel URL" value={socialLinks.youtube} onChange={(e) => setSocialLinks(prev => ({ ...prev, youtube: e.target.value }))} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Music className="w-5 h-5 text-muted-foreground" />
+                    <Input placeholder="Spotify artist URL" value={socialLinks.spotify} onChange={(e) => setSocialLinks(prev => ({ ...prev, spotify: e.target.value }))} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Headphones className="w-5 h-5 text-muted-foreground" />
+                    <Input placeholder="SoundCloud URL" value={socialLinks.soundcloud} onChange={(e) => setSocialLinks(prev => ({ ...prev, soundcloud: e.target.value }))} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Music className="w-5 h-5 text-muted-foreground" />
+                    <Input placeholder="Audiomack URL" value={socialLinks.audiomack} onChange={(e) => setSocialLinks(prev => ({ ...prev, audiomack: e.target.value }))} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Music className="w-5 h-5 text-muted-foreground" />
+                    <Input placeholder="TikTok username" value={socialLinks.tiktok} onChange={(e) => setSocialLinks(prev => ({ ...prev, tiktok: e.target.value }))} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Link className="w-5 h-5 text-muted-foreground" />
-                    <Input
-                      placeholder="Website URL"
-                      value={socialLinks.website}
-                      onChange={(e) => setSocialLinks(prev => ({ ...prev, website: e.target.value }))}
-                    />
+                    <Input placeholder="Behance URL" value={socialLinks.behance} onChange={(e) => setSocialLinks(prev => ({ ...prev, behance: e.target.value }))} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Link className="w-5 h-5 text-muted-foreground" />
+                    <Input placeholder="Dribbble URL" value={socialLinks.dribbble} onChange={(e) => setSocialLinks(prev => ({ ...prev, dribbble: e.target.value }))} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Link className="w-5 h-5 text-muted-foreground" />
+                    <Input placeholder="Website URL" value={socialLinks.website} onChange={(e) => setSocialLinks(prev => ({ ...prev, website: e.target.value }))} />
                   </div>
                 </div>
               </div>
