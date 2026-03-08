@@ -179,7 +179,7 @@ const LocationDiscovery = () => {
   };
 
   const clearFilters = () => {
-    setRoleFilter("");
+    setRoleFilter("all");
     setSearchQuery("");
     setRadius(100);
     if (userCoords && userId) {
