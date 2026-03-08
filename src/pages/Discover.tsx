@@ -382,30 +382,19 @@ const Discover = () => {
         <TrendingCollaborations />
 
         {isTransitioning ? (
-          <div className="rounded-xl overflow-hidden border border-border bg-card shadow-lg">
-            <div className="flex flex-col md:flex-row min-h-[420px]">
-              <div className="md:w-1/2 w-full aspect-square md:aspect-auto">
-                <Skeleton className="w-full h-full" />
+          <div className="relative rounded-2xl overflow-hidden border border-border aspect-[3/4] max-h-[75vh] bg-muted">
+            <Skeleton className="w-full h-full" />
+            <div className="absolute inset-x-0 bottom-0 p-5 space-y-3">
+              <Skeleton className="h-8 w-48 bg-muted-foreground/20" />
+              <Skeleton className="h-4 w-32 bg-muted-foreground/20" />
+              <div className="flex gap-2">
+                <Skeleton className="h-6 w-20 rounded-full bg-muted-foreground/20" />
+                <Skeleton className="h-6 w-24 rounded-full bg-muted-foreground/20" />
               </div>
-              <div className="md:w-1/2 w-full p-5 space-y-4">
-                <Skeleton className="h-8 w-48" />
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-6 w-40 rounded-lg" />
-                <div className="flex gap-2">
-                  <Skeleton className="h-6 w-20 rounded-full" />
-                  <Skeleton className="h-6 w-24 rounded-full" />
-                </div>
-                <Skeleton className="h-16 w-full" />
-                <div className="flex gap-1.5">
-                  <Skeleton className="h-12 w-12 rounded-md" />
-                  <Skeleton className="h-12 w-12 rounded-md" />
-                  <Skeleton className="h-12 w-12 rounded-md" />
-                </div>
-                <div className="flex gap-3 pt-4">
-                  <Skeleton className="h-12 flex-1 rounded-md" />
-                  <Skeleton className="h-11 w-11 rounded-md" />
-                  <Skeleton className="h-12 flex-1 rounded-md" />
-                </div>
+              <div className="flex justify-center gap-4 pt-2">
+                <Skeleton className="h-14 w-14 rounded-full bg-muted-foreground/20" />
+                <Skeleton className="h-10 w-10 rounded-full bg-muted-foreground/20" />
+                <Skeleton className="h-14 w-14 rounded-full bg-muted-foreground/20" />
               </div>
             </div>
           </div>
