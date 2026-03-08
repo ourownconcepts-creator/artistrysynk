@@ -28,20 +28,6 @@ const genres = [
   { value: 'other', label: 'Other' },
 ];
 
-const genres = [
-  { value: 'afrobeats', label: 'Afrobeats' },
-  { value: 'hip_hop', label: 'Hip Hop' },
-  { value: 'rnb', label: 'R&B' },
-  { value: 'gospel', label: 'Gospel' },
-  { value: 'pop', label: 'Pop' },
-  { value: 'reggae', label: 'Reggae' },
-  { value: 'dancehall', label: 'Dancehall' },
-  { value: 'amapiano', label: 'Amapiano' },
-  { value: 'highlife', label: 'Highlife' },
-  { value: 'fuji', label: 'Fuji' },
-  { value: 'juju', label: 'Juju' },
-  { value: 'other', label: 'Other' },
-];
 
 const EditProfile = () => {
   const navigate = useNavigate();
