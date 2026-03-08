@@ -137,6 +137,7 @@ const Auth = () => {
         data: {
           full_name: fullName,
           username: username,
+          ...(referralCode ? { referral_code: referralCode } : {}),
         },
         emailRedirectTo: `${window.location.origin}/setup-profile`,
       },
