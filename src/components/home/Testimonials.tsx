@@ -78,12 +78,14 @@ export const Testimonials = () => {
 
   useEffect(() => {
     const loadStats = async () => {
-      const [{ count: matchCount }, { count: collabCount }, { count: postCount }] = await Promise.all([
-        supabase.from("matches").select("*", { count: "exact", head: true }),
-        supabase.from("collaboration_requests").select("*", { count: "exact", head: true }).eq("status", "accepted"),
-        supabase.from("collaboration_posts").select("*", { count: "exact", head: true }),
-      ]);
-      setRealStats({ matches: matchCount || 0, collabs: collabCount || 0, posts: postCount || 0 });
+      const { data, error } = await supabase.rpc("get_platform_stats");
+      if (error || !data) return;
+      const d = data as Record<string, number>;
+      setRealStats({
+        matches: d.matches || 0,
+        collabs: d.collaboration_requests || 0,
+        posts: d.collaboration_posts || 0,
+      });
     };
     loadStats();
   }, []);
