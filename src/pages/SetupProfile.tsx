@@ -8,21 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Music, Mic, Users, Camera, Film, Palette } from "lucide-react";
-
-const creativeRoles = [
-  { value: 'musician', label: 'Musician', icon: Music },
-  { value: 'producer', label: 'Producer', icon: Mic },
-  { value: 'songwriter', label: 'Songwriter', icon: Music },
-  { value: 'performer', label: 'Performer', icon: Users },
-  { value: 'dancer', label: 'Dancer', icon: Users },
-  { value: 'vixen', label: 'Vixen', icon: Camera },
-  { value: 'actor', label: 'Actor', icon: Film },
-  { value: 'director', label: 'Director', icon: Film },
-  { value: 'photographer', label: 'Photographer', icon: Camera },
-  { value: 'videographer', label: 'Videographer', icon: Camera },
-  { value: 'designer', label: 'Designer', icon: Palette },
-];
+import { roleCategories } from "@/lib/creativeRoles";
 
 const genres = [
   { value: 'afrobeats', label: 'Afrobeats' },
