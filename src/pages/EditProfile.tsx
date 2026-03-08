@@ -61,6 +61,12 @@ const EditProfile = () => {
     twitter: "",
     youtube: "",
     website: "",
+    spotify: "",
+    soundcloud: "",
+    audiomack: "",
+    tiktok: "",
+    behance: "",
+    dribbble: "",
   });
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
