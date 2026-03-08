@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Sparkles, Eye, EyeOff, ArrowLeft, Mail, CheckCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { z } from "zod";
+import { lovable } from "@/integrations/lovable/index";
 
 // Validation schemas
 const emailSchema = z.string().email("Please enter a valid email address");
