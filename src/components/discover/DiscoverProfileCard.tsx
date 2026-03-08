@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, X, RotateCcw, Crown, MapPin, Zap, BadgeCheck, Sparkles, User, Music, Users } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Heart, X, RotateCcw, Crown, MapPin, Zap, BadgeCheck, Sparkles, Music, Users, Play, Pause, ChevronUp } from "lucide-react";
 import { getRoleLabel } from "@/lib/creativeRoles";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Profile {
   id: string;
@@ -47,13 +48,20 @@ export const DiscoverProfileCard = ({
   const [audioItem, setAudioItem] = useState<any>(null);
   const [mutualCount, setMutualCount] = useState(0);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     loadExtras(profile.id);
+    setExpanded(false);
+    setIsAudioPlaying(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
   }, [profile.id]);
 
   const loadExtras = async (profileId: string) => {
-    // Load portfolio thumbnails + audio
     const { data: items } = await supabase
       .from("portfolio_items")
       .select("id, title, media_url, media_type, thumbnail_url")
@@ -63,268 +71,274 @@ export const DiscoverProfileCard = ({
 
     if (items) {
       setPortfolioItems(items);
-      const audio = items.find(i => i.media_type === "audio");
-      setAudioItem(audio || null);
+      setAudioItem(items.find(i => i.media_type === "audio") || null);
     }
 
-    // Load mutual connections (shared matches)
-    const { data: myMatches } = await supabase
-      .from("matches")
-      .select("user_id_1, user_id_2")
-      .or(`user_id_1.eq.${currentUserId},user_id_2.eq.${currentUserId}`);
-
-    const { data: theirMatches } = await supabase
-      .from("matches")
-      .select("user_id_1, user_id_2")
-      .or(`user_id_1.eq.${profileId},user_id_2.eq.${profileId}`);
+    // Mutual connections
+    const [{ data: myMatches }, { data: theirMatches }] = await Promise.all([
+      supabase.from("matches").select("user_id_1, user_id_2")
+        .or(`user_id_1.eq.${currentUserId},user_id_2.eq.${currentUserId}`),
+      supabase.from("matches").select("user_id_1, user_id_2")
+        .or(`user_id_1.eq.${profileId},user_id_2.eq.${profileId}`),
+    ]);
 
     if (myMatches && theirMatches) {
-      const myConnections = new Set(
-        myMatches.map(m => m.user_id_1 === currentUserId ? m.user_id_2 : m.user_id_1)
-      );
-      const theirConnections = theirMatches.map(m =>
-        m.user_id_1 === profileId ? m.user_id_2 : m.user_id_1
-      );
-      const mutual = theirConnections.filter(id => myConnections.has(id));
-      setMutualCount(mutual.length);
+      const mySet = new Set(myMatches.map(m => m.user_id_1 === currentUserId ? m.user_id_2 : m.user_id_1));
+      const count = theirMatches.filter(m => {
+        const otherId = m.user_id_1 === profileId ? m.user_id_2 : m.user_id_1;
+        return mySet.has(otherId);
+      }).length;
+      setMutualCount(count);
     }
+  };
+
+  const toggleAudio = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!audioRef.current) return;
+    if (isAudioPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsAudioPlaying(!isAudioPlaying);
   };
 
   const imageItems = portfolioItems.filter(i => i.media_type === "image" || i.thumbnail_url);
 
   return (
-    <div className="rounded-xl overflow-hidden border border-border bg-card shadow-lg animate-fade-in">
-      {/* Split layout: image left, info right on md+; stacked on mobile */}
-      <div className="flex flex-col md:flex-row min-h-[420px]">
-        {/* Left: Image */}
-        <div
-          className="relative md:w-1/2 w-full aspect-square md:aspect-auto cursor-pointer group"
-          onClick={() => navigate(`/profile/${profile.id}`)}
-        >
-          {profile.avatar_url ? (
-            <img
-              src={profile.avatar_url}
-              alt={profile.full_name}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
-              <Avatar className="w-28 h-28">
-                <AvatarFallback className="text-5xl font-bold bg-primary/10 text-primary">
-                  {profile.full_name.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-          )}
-
-          {/* Gradient overlay at bottom of image */}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/60 to-transparent" />
-
-          {/* Trust badges top-right */}
-          <div className="absolute top-3 right-3 flex gap-1.5">
-            {profile.is_verified && (
-              <div className="bg-background/80 backdrop-blur-sm rounded-full p-1.5" title="Verified Creator">
-                <BadgeCheck className="w-5 h-5 text-emerald-500" />
-              </div>
-            )}
-            {profile.is_featured && (
-              <div className="bg-background/80 backdrop-blur-sm rounded-full p-1.5" title="Featured Creator">
-                <Sparkles className="w-5 h-5 text-amber-400" />
-              </div>
-            )}
+    <motion.div
+      key={profile.id}
+      initial={{ scale: 0.95, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.9, opacity: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className="relative rounded-2xl overflow-hidden shadow-xl border border-border aspect-[3/4] max-h-[75vh] bg-card"
+    >
+      {/* Full-bleed image */}
+      <div
+        className="absolute inset-0 cursor-pointer"
+        onClick={() => navigate(`/profile/${profile.id}`)}
+      >
+        {profile.avatar_url ? (
+          <img
+            src={profile.avatar_url}
+            alt={profile.full_name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/30 to-secondary/30">
+            <Avatar className="w-32 h-32">
+              <AvatarFallback className="text-5xl font-bold text-primary bg-primary/10">
+                {profile.full_name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
           </div>
+        )}
+      </div>
 
-          {/* Name overlay on image (mobile) */}
-          <div className="absolute bottom-3 left-3 md:hidden">
-            <h2 className="text-xl font-bold text-white flex items-center gap-1.5 drop-shadow-lg" title={profile.full_name}>
-              {profile.full_name}
-              {profile.is_verified && <BadgeCheck className="w-4 h-4 text-emerald-400 shrink-0" />}
-            </h2>
-            <p className="text-white/80 text-sm drop-shadow-lg">@{profile.username}</p>
+      {/* Trust badges - top right */}
+      <div className="absolute top-4 right-4 flex gap-2 z-10">
+        {profile.is_verified && (
+          <div className="bg-background/70 backdrop-blur-md rounded-full p-2 shadow-md" title="Verified">
+            <BadgeCheck className="w-5 h-5 text-emerald-500" />
+          </div>
+        )}
+        {profile.is_featured && (
+          <div className="bg-background/70 backdrop-blur-md rounded-full p-2 shadow-md" title="Featured">
+            <Sparkles className="w-5 h-5 text-amber-400" />
+          </div>
+        )}
+      </div>
+
+      {/* Synergy badge - top left */}
+      {profile.synergyScore && profile.synergyScore > 0 && (
+        <div className="absolute top-4 left-4 z-10">
+          <div className="flex items-center gap-1.5 bg-accent/90 backdrop-blur-md text-accent-foreground px-3 py-1.5 rounded-full shadow-md text-sm font-bold">
+            <Zap className="w-4 h-4" />
+            {profile.synergyScore}%
+          </div>
+        </div>
+      )}
+
+      {/* Audio mini-player - top center */}
+      {audioItem && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+          <button
+            onClick={toggleAudio}
+            className="flex items-center gap-2 bg-background/70 backdrop-blur-md rounded-full px-3 py-1.5 shadow-md hover:bg-background/90 transition-colors"
+          >
+            {isAudioPlaying ? (
+              <Pause className="w-4 h-4 text-primary" />
+            ) : (
+              <Play className="w-4 h-4 text-primary" />
+            )}
+            <span className="text-xs font-medium truncate max-w-[120px]">{audioItem.title}</span>
+          </button>
+          <audio
+            ref={audioRef}
+            src={audioItem.media_url}
+            onEnded={() => setIsAudioPlaying(false)}
+            preload="none"
+          />
+        </div>
+      )}
+
+      {/* Gradient overlay - bottom */}
+      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none"
+        style={{ height: expanded ? '75%' : '50%' }}
+      />
+
+      {/* Bottom overlay content */}
+      <div className="absolute inset-x-0 bottom-0 z-10 p-5 flex flex-col gap-3">
+        {/* Expand toggle */}
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="self-center mb-1"
+        >
+          <motion.div
+            animate={{ rotate: expanded ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ChevronUp className="w-5 h-5 text-white/70 hover:text-white transition-colors" />
+          </motion.div>
+        </button>
+
+        {/* Name & username */}
+        <div>
+          <h2 className="text-2xl font-bold text-white flex items-center gap-1.5 drop-shadow-lg" title={profile.full_name}>
+            {profile.full_name}
+            {profile.is_verified && <BadgeCheck className="w-5 h-5 text-emerald-400 shrink-0" />}
+          </h2>
+          <div className="flex items-center gap-3 mt-0.5">
+            <p className="text-white/70 text-sm">@{profile.username}</p>
+            {profile.location && (
+              <span className="flex items-center gap-1 text-white/60 text-xs">
+                <MapPin className="w-3 h-3" />
+                {profile.location}
+              </span>
+            )}
+            {mutualCount > 0 && (
+              <span className="flex items-center gap-1 text-accent text-xs font-medium">
+                <Users className="w-3 h-3" />
+                {mutualCount} mutual
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Right: Info */}
-        <div className="md:w-1/2 w-full p-5 flex flex-col justify-between gap-4">
-          {/* Header - hidden on mobile (shown on image) */}
-          <div className="space-y-3">
-            <div className="hidden md:block">
-              <h2 className="text-2xl font-bold flex items-center gap-1.5 truncate" title={profile.full_name}>
-                {profile.full_name}
-                {profile.is_verified && <BadgeCheck className="w-5 h-5 text-emerald-500 shrink-0" />}
-              </h2>
-              <p className="text-muted-foreground truncate" title={`@${profile.username}`}>@{profile.username}</p>
-            </div>
-
-            {/* Location & mutual connections */}
-            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              {profile.location && (
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5" />
-                  {profile.location}
-                </span>
-              )}
-              {mutualCount > 0 && (
-                <span className="flex items-center gap-1 text-primary font-medium">
-                  <Users className="w-3.5 h-3.5" />
-                  {mutualCount} mutual
-                </span>
-              )}
-            </div>
-
-            {/* Synergy / Compatibility tag */}
-            {profile.synergyScore && profile.synergyScore > 0 ? (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent/10 border border-accent/20 w-fit">
-                <Zap className="w-4 h-4 text-accent" />
-                <span className="text-sm font-semibold text-accent">{profile.synergyScore}% Synergy</span>
-              </div>
-            ) : profile.matchReason ? (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/10 border border-secondary/20 w-fit">
-                <Sparkles className="w-3.5 h-3.5 text-secondary" />
-                <span className="text-xs text-secondary font-medium">{profile.matchReason}</span>
-              </div>
-            ) : null}
-
-            {/* Creative Roles */}
-            {profile.user_creative_roles.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {profile.user_creative_roles.slice(0, 3).map((r, i) => (
-                  <Badge key={i} variant="secondary" className="text-xs">
-                    {getRoleLabel(r.role)}
-                  </Badge>
-                ))}
-                {profile.user_creative_roles.length > 3 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{profile.user_creative_roles.length - 3}
-                  </Badge>
-                )}
-              </div>
+        {/* Roles */}
+        {profile.user_creative_roles.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {profile.user_creative_roles.slice(0, 3).map((r, i) => (
+              <Badge key={i} className="bg-white/15 text-white border-white/20 backdrop-blur-sm text-xs hover:bg-white/25">
+                {getRoleLabel(r.role)}
+              </Badge>
+            ))}
+            {profile.user_creative_roles.length > 3 && (
+              <Badge className="bg-white/10 text-white/70 border-white/10 text-xs">
+                +{profile.user_creative_roles.length - 3}
+              </Badge>
             )}
+          </div>
+        )}
 
-            {/* Genres */}
-            {profile.user_genres.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {profile.user_genres.slice(0, 3).map((g, i) => (
-                  <Badge key={i} variant="outline" className="text-xs">
-                    {g.genre}
-                  </Badge>
-                ))}
-                {profile.user_genres.length > 3 && (
-                  <Badge variant="outline" className="text-xs opacity-60">
-                    +{profile.user_genres.length - 3}
-                  </Badge>
-                )}
-              </div>
-            )}
+        {/* Match reason */}
+        {profile.matchReason && (
+          <p className="text-xs text-white/70 italic">"{profile.matchReason}"</p>
+        )}
 
-            {/* Bio */}
-            {profile.bio && (
-              <p className="text-sm text-muted-foreground line-clamp-2">{profile.bio}</p>
-            )}
-
-            {/* Audio preview */}
-            {audioItem && (
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 border border-border">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 shrink-0"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const audioEl = document.getElementById(`audio-${profile.id}`) as HTMLAudioElement;
-                    if (audioEl) {
-                      if (isAudioPlaying) {
-                        audioEl.pause();
-                      } else {
-                        audioEl.play();
-                      }
-                      setIsAudioPlaying(!isAudioPlaying);
-                    }
-                  }}
-                >
-                  <Music className="w-4 h-4 text-primary" />
-                </Button>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium truncate">{audioItem.title}</p>
-                  <p className="text-[10px] text-muted-foreground">Tap to {isAudioPlaying ? "pause" : "preview"}</p>
+        {/* Expanded content */}
+        <AnimatePresence>
+          {expanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="overflow-hidden space-y-3"
+            >
+              {/* Genres */}
+              {profile.user_genres.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {profile.user_genres.map((g, i) => (
+                    <Badge key={i} variant="outline" className="border-white/20 text-white/80 text-xs">
+                      {g.genre}
+                    </Badge>
+                  ))}
                 </div>
-                <audio
-                  id={`audio-${profile.id}`}
-                  src={audioItem.media_url}
-                  onEnded={() => setIsAudioPlaying(false)}
-                  preload="none"
-                />
-              </div>
-            )}
+              )}
 
-            {/* Portfolio thumbnails */}
-            {imageItems.length > 0 && (
-              <div className="flex gap-1.5 overflow-hidden">
-                {imageItems.slice(0, 4).map((item, i) => (
-                  <div
-                    key={item.id}
-                    className="w-12 h-12 rounded-md overflow-hidden border border-border shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/profile/${profile.id}`);
-                    }}
-                  >
-                    <img
-                      src={item.thumbnail_url || item.media_url}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-                {portfolioItems.length > 4 && (
-                  <div
-                    className="w-12 h-12 rounded-md border border-border shrink-0 flex items-center justify-center bg-muted/50 text-xs text-muted-foreground cursor-pointer hover:bg-muted transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/profile/${profile.id}`);
-                    }}
-                  >
-                    +{portfolioItems.length - 4}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+              {/* Bio */}
+              {profile.bio && (
+                <p className="text-sm text-white/80 line-clamp-3">{profile.bio}</p>
+              )}
 
-          {/* Action buttons */}
-          <div className="flex items-center gap-3 pt-2">
-            <Button
-              variant="outline"
-              size="lg"
-              className="flex-1 border-destructive/30 hover:bg-destructive/10 hover:text-destructive transition-colors"
-              onClick={() => onSwipe(false)}
-              disabled={isTransitioning}
-            >
-              <X className="w-6 h-6" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="relative h-11 w-11"
-              onClick={onRewind}
-              disabled={!hasLastSwipe || isTransitioning}
-              title={canRewind ? "Undo last swipe" : "Pro feature"}
-            >
-              <RotateCcw className="w-5 h-5" />
-              {!canRewind && <Crown className="w-3 h-3 absolute -top-1 -right-1 text-amber-400" />}
-            </Button>
-            <Button
-              variant="hero"
-              size="lg"
-              className="flex-1"
-              onClick={() => onSwipe(true)}
-              disabled={isTransitioning}
-            >
-              <Heart className="w-6 h-6" />
-            </Button>
-          </div>
+              {/* Portfolio thumbnails */}
+              {imageItems.length > 0 && (
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {imageItems.slice(0, 4).map((item) => (
+                    <div
+                      key={item.id}
+                      className="w-14 h-14 rounded-lg overflow-hidden border border-white/20 shrink-0 cursor-pointer hover:border-white/50 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/profile/${profile.id}`);
+                      }}
+                    >
+                      <img
+                        src={item.thumbnail_url || item.media_url}
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                  {portfolioItems.length > 4 && (
+                    <div
+                      className="w-14 h-14 rounded-lg border border-white/20 shrink-0 flex items-center justify-center text-xs text-white/60 cursor-pointer hover:border-white/50 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/profile/${profile.id}`);
+                      }}
+                    >
+                      +{portfolioItems.length - 4}
+                    </div>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Action buttons */}
+        <div className="flex items-center justify-center gap-4 pt-1">
+          <Button
+            size="lg"
+            className="h-14 w-14 rounded-full bg-white/15 backdrop-blur-md border border-white/20 hover:bg-destructive/80 hover:border-destructive/50 transition-all shadow-lg"
+            onClick={() => onSwipe(false)}
+            disabled={isTransitioning}
+          >
+            <X className="w-7 h-7 text-white" />
+          </Button>
+          <Button
+            size="icon"
+            className="h-10 w-10 rounded-full bg-white/10 backdrop-blur-md border border-white/15 hover:bg-white/20 transition-all relative"
+            onClick={onRewind}
+            disabled={!hasLastSwipe || isTransitioning}
+            title={canRewind ? "Undo last swipe" : "Pro feature"}
+          >
+            <RotateCcw className="w-4 h-4 text-white/80" />
+            {!canRewind && <Crown className="w-3 h-3 absolute -top-1 -right-1 text-amber-400" />}
+          </Button>
+          <Button
+            size="lg"
+            className="h-14 w-14 rounded-full bg-primary/80 backdrop-blur-md border border-primary/50 hover:bg-primary transition-all shadow-lg shadow-primary/30"
+            onClick={() => onSwipe(true)}
+            disabled={isTransitioning}
+          >
+            <Heart className="w-7 h-7 text-white" />
+          </Button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
