@@ -344,7 +344,7 @@ const Discover = () => {
                       <SelectValue placeholder="All genres" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All genres</SelectItem>
+                      <SelectItem value="all">All genres</SelectItem>
                       {Constants.public.Enums.genre.map((genre) => (
                         <SelectItem key={genre} value={genre}>{genre}</SelectItem>
                       ))}
