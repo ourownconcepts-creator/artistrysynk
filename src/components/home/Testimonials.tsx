@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -73,6 +74,19 @@ const testimonials: Testimonial[] = [
 export const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [realStats, setRealStats] = useState({ matches: 0, collabs: 0, posts: 0 });
+
+  useEffect(() => {
+    const loadStats = async () => {
+      const [{ count: matchCount }, { count: collabCount }, { count: postCount }] = await Promise.all([
+        supabase.from("matches").select("*", { count: "exact", head: true }),
+        supabase.from("collaboration_requests").select("*", { count: "exact", head: true }).eq("status", "accepted"),
+        supabase.from("collaboration_posts").select("*", { count: "exact", head: true }),
+      ]);
+      setRealStats({ matches: matchCount || 0, collabs: collabCount || 0, posts: postCount || 0 });
+    };
+    loadStats();
+  }, []);
 
   const slideVariants = {
     enter: (direction: number) => ({
@@ -303,21 +317,21 @@ export const Testimonials = () => {
         >
           <div className="space-y-2">
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              98%
+              {realStats.matches}
             </div>
-            <p className="text-sm text-muted-foreground">Satisfaction Rate</p>
+            <p className="text-sm text-muted-foreground">Matches Made</p>
           </div>
           <div className="space-y-2">
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
-              5,000+
+              {realStats.collabs}
             </div>
-            <p className="text-sm text-muted-foreground">Successful Collabs</p>
+            <p className="text-sm text-muted-foreground">Collaborations</p>
           </div>
           <div className="space-y-2">
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-              4.9★
+              {realStats.posts}
             </div>
-            <p className="text-sm text-muted-foreground">Average Rating</p>
+            <p className="text-sm text-muted-foreground">Community Posts</p>
           </div>
         </motion.div>
       </div>
