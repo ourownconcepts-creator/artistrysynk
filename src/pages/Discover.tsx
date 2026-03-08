@@ -132,7 +132,7 @@ const Discover = () => {
         );
       }
       
-      if (genreFilter) {
+      if (genreFilter && genreFilter !== "all") {
         filteredData = filteredData.filter(p => 
           p.user_genres.some((g: any) => g.genre === genreFilter)
         );
