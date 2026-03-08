@@ -60,30 +60,27 @@ export const StatsCounter = () => {
 
   const loadRealStats = async () => {
     try {
-      const [
-        { count: usersCount },
-        { count: projectsCount },
-        { count: portfolioCount },
-        { count: matchesCount },
-        { count: postsCount },
-        { count: servicesCount },
-      ] = await Promise.all([
-        supabase.from("profiles").select("*", { count: "exact", head: true }),
-        supabase.from("projects").select("*", { count: "exact", head: true }),
-        supabase.from("portfolio_items").select("*", { count: "exact", head: true }),
-        supabase.from("matches").select("*", { count: "exact", head: true }),
-        supabase.from("collaboration_posts").select("*", { count: "exact", head: true }),
-        supabase.from("services").select("*", { count: "exact", head: true }).eq("is_active", true),
-      ]);
+      const { data, error } = await supabase.rpc("get_platform_stats");
 
-      setStats([
-        { icon: <Users className="w-8 h-8" />, value: usersCount || 0, suffix: "", label: "Creative Professionals", color: "from-primary to-primary/50" },
-        { icon: <FolderOpen className="w-8 h-8" />, value: projectsCount || 0, suffix: "", label: "Projects Created", color: "from-secondary to-secondary/50" },
-        { icon: <Music className="w-8 h-8" />, value: portfolioCount || 0, suffix: "", label: "Portfolio Pieces", color: "from-accent to-accent/50" },
-        { icon: <Handshake className="w-8 h-8" />, value: matchesCount || 0, suffix: "", label: "Matches Made", color: "from-primary to-secondary" },
-        { icon: <Briefcase className="w-8 h-8" />, value: servicesCount || 0, suffix: "", label: "Services Available", color: "from-secondary to-accent" },
-        { icon: <Globe className="w-8 h-8" />, value: postsCount || 0, suffix: "", label: "Collaboration Posts", color: "from-accent to-primary" },
-      ]);
+      if (error || !data) {
+        console.error("Error loading stats:", error);
+        setLoading(false);
+        return;
+      }
+
+      const d = data as Record<string, number>;
+
+      const items: StatItem[] = [
+        { icon: <Users className="w-8 h-8" />, value: d.users || 0, suffix: "", label: "Creative Professionals", color: "from-primary to-primary/50" },
+        { icon: <FolderOpen className="w-8 h-8" />, value: d.projects || 0, suffix: "", label: "Projects Created", color: "from-secondary to-secondary/50" },
+        { icon: <Music className="w-8 h-8" />, value: d.portfolio_items || 0, suffix: "", label: "Portfolio Pieces", color: "from-accent to-accent/50" },
+        { icon: <Handshake className="w-8 h-8" />, value: d.matches || 0, suffix: "", label: "Matches Made", color: "from-primary to-secondary" },
+        { icon: <Briefcase className="w-8 h-8" />, value: d.services || 0, suffix: "", label: "Services Available", color: "from-secondary to-accent" },
+        { icon: <Globe className="w-8 h-8" />, value: d.collaboration_posts || 0, suffix: "", label: "Collaboration Posts", color: "from-accent to-primary" },
+      ];
+
+      // Only show stats that have values > 0
+      setStats(items.filter(s => s.value > 0));
     } catch (error) {
       console.error("Error loading stats:", error);
     } finally {
@@ -91,7 +88,7 @@ export const StatsCounter = () => {
     }
   };
 
-  if (loading || stats.every(s => s.value === 0)) {
+  if (loading || stats.length === 0) {
     return null;
   }
 
@@ -115,7 +112,7 @@ export const StatsCounter = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className={`grid grid-cols-2 md:grid-cols-3 ${stats.length > 3 ? 'lg:grid-cols-' + Math.min(stats.length, 6) : ''} gap-6 max-w-5xl mx-auto`}>
           {stats.map((stat, index) => (
             <motion.div
               key={stat.label}

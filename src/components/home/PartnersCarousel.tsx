@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-import { Badge } from "@/components/ui/badge";
-import { Users, MapPin } from "lucide-react";
+import { MapPin, Users } from "lucide-react";
 
 export const PartnersCarousel = () => {
   const [countries, setCountries] = useState<string[]>([]);
@@ -13,12 +12,17 @@ export const PartnersCarousel = () => {
   }, []);
 
   const loadCommunityData = async () => {
-    const [{ count }, { data: locationData }] = await Promise.all([
-      supabase.from("profiles").select("*", { count: "exact", head: true }),
-      supabase.from("profiles").select("country").not("country", "is", null),
-    ]);
+    const { data, error } = await supabase.rpc("get_platform_stats");
+    if (error || !data) return;
 
-    setUserCount(count || 0);
+    const d = data as Record<string, number>;
+    setUserCount(d.users || 0);
+
+    // Fetch distinct countries separately
+    const { data: locationData } = await supabase
+      .from("profiles")
+      .select("country")
+      .not("country", "is", null);
 
     if (locationData) {
       const uniqueCountries = [...new Set(locationData.map(p => p.country).filter(Boolean))] as string[];
@@ -26,13 +30,34 @@ export const PartnersCarousel = () => {
     }
   };
 
-  if (userCount === 0 && countries.length === 0) return null;
+  // If no countries data, show a simpler community banner
+  if (userCount === 0) return null;
 
-  const displayItems = countries.length > 0
-    ? countries.map(c => ({ label: c, icon: "🌍" }))
-    : [];
-
-  if (displayItems.length === 0) return null;
+  if (countries.length === 0) {
+    return (
+      <section className="py-12 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Users className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-bold text-foreground">
+                {userCount} Creative{userCount !== 1 ? "s" : ""} and Growing
+              </h2>
+            </div>
+            <p className="text-muted-foreground text-sm">
+              Join our community of creative professionals collaborating worldwide
+            </p>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-12 bg-muted/30 overflow-hidden">
@@ -72,15 +97,15 @@ export const PartnersCarousel = () => {
             },
           }}
         >
-          {[...displayItems, ...displayItems, ...displayItems].map((item, index) => (
+          {[...countries, ...countries, ...countries].map((country, index) => (
             <motion.div
-              key={`${item.label}-${index}`}
+              key={`${country}-${index}`}
               className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-card/50 backdrop-blur-sm rounded-lg border border-border/50 hover:border-primary/50 transition-colors"
               whileHover={{ scale: 1.05 }}
             >
               <MapPin className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium text-foreground whitespace-nowrap">
-                {item.label}
+                {country}
               </span>
             </motion.div>
           ))}
