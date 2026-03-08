@@ -1,4 +1,4 @@
-import { Music, Mic, Users, Camera, Film, Palette, Headphones, Pen, Scissors, Monitor } from "lucide-react";
+import { Music, Mic, Users, Camera, Film, Palette, Headphones, Pen, Scissors, Monitor, Code, Smartphone, Brain, Blocks, Layout, Layers, Box, Briefcase, Rocket, TrendingUp, Search, Megaphone, Database, Server, Gamepad2, Video } from "lucide-react";
 
 export interface RoleCategory {
   label: string;
@@ -9,6 +9,7 @@ export const roleCategories: RoleCategory[] = [
   {
     label: "Music & Audio",
     roles: [
+      { value: "artist", label: "Artist", icon: Music },
       { value: "musician", label: "Musician", icon: Music },
       { value: "singer", label: "Singer", icon: Mic },
       { value: "rapper", label: "Rapper", icon: Mic },
@@ -17,6 +18,7 @@ export const roleCategories: RoleCategory[] = [
       { value: "songwriter", label: "Songwriter", icon: Pen },
       { value: "dj", label: "DJ", icon: Headphones },
       { value: "sound_engineer", label: "Sound Engineer", icon: Monitor },
+      { value: "audio_engineer", label: "Audio Engineer", icon: Headphones },
       { value: "vocal_coach", label: "Vocal Coach", icon: Mic },
       { value: "performer", label: "Performer", icon: Users },
     ],
@@ -35,15 +37,49 @@ export const roleCategories: RoleCategory[] = [
       { value: "videographer", label: "Videographer", icon: Camera },
       { value: "voiceover_artist", label: "Voice-Over Artist", icon: Mic },
       { value: "screenwriter", label: "Screenwriter", icon: Pen },
+      { value: "content_creator", label: "Content Creator", icon: Video },
     ],
   },
   {
-    label: "Visual & Design",
+    label: "Tech & Product",
+    roles: [
+      { value: "software_developer", label: "Software Developer", icon: Code },
+      { value: "frontend_developer", label: "Frontend Developer", icon: Layout },
+      { value: "backend_developer", label: "Backend Developer", icon: Server },
+      { value: "full_stack_developer", label: "Full Stack Developer", icon: Layers },
+      { value: "mobile_app_developer", label: "Mobile App Developer", icon: Smartphone },
+      { value: "ai_engineer", label: "AI Engineer", icon: Brain },
+      { value: "blockchain_developer", label: "Blockchain Developer", icon: Blocks },
+      { value: "data_scientist", label: "Data Scientist", icon: Database },
+      { value: "devops_engineer", label: "DevOps Engineer", icon: Server },
+      { value: "game_developer", label: "Game Developer", icon: Gamepad2 },
+    ],
+  },
+  {
+    label: "Design",
     roles: [
       { value: "graphic_designer", label: "Graphic Designer", icon: Palette },
+      { value: "ui_designer", label: "UI Designer", icon: Layout },
+      { value: "ux_designer", label: "UX Designer", icon: Layers },
+      { value: "product_designer", label: "Product Designer", icon: Box },
       { value: "designer", label: "UI/UX Designer", icon: Palette },
       { value: "illustrator", label: "Illustrator", icon: Palette },
+      { value: "3d_designer", label: "3D Designer", icon: Box },
       { value: "photographer", label: "Photographer", icon: Camera },
+    ],
+  },
+  {
+    label: "Business & Growth",
+    roles: [
+      { value: "product_manager", label: "Product Manager", icon: Briefcase },
+      { value: "startup_founder", label: "Startup Founder", icon: Rocket },
+      { value: "technical_cofounder", label: "Technical Co-Founder", icon: Rocket },
+      { value: "growth_marketer", label: "Growth Marketer", icon: TrendingUp },
+      { value: "seo_specialist", label: "SEO Specialist", icon: Search },
+      { value: "digital_marketer", label: "Digital Marketer", icon: Megaphone },
+      { value: "strategist", label: "Strategist", icon: Users },
+      { value: "promoter", label: "Promoter", icon: Users },
+      { value: "manager", label: "Manager", icon: Users },
     ],
   },
   {
@@ -62,14 +98,6 @@ export const roleCategories: RoleCategory[] = [
     roles: [
       { value: "writer", label: "Writer", icon: Pen },
       { value: "creative_director", label: "Creative Director", icon: Users },
-      { value: "strategist", label: "Strategist", icon: Users },
-      { value: "promoter", label: "Promoter", icon: Users },
-      { value: "manager", label: "Manager", icon: Users },
-    ],
-  },
-  {
-    label: "Culture & Performance",
-    roles: [
       { value: "choreographer", label: "Choreographer", icon: Users },
     ],
   },
