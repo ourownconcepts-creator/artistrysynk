@@ -71,9 +71,22 @@ const SetupProfile = () => {
     setLoading(true);
 
     try {
+      // Try to get geolocation for proximity features
+      let latitude: number | null = null;
+      let longitude: number | null = null;
+      try {
+        const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+        });
+        latitude = pos.coords.latitude;
+        longitude = pos.coords.longitude;
+      } catch {
+        // Geolocation not available, skip
+      }
+
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({ bio, location, looking_for: lookingFor, country, city } as any)
+        .update({ bio, location, looking_for: lookingFor, country, city, latitude, longitude } as any)
         .eq('id', userId);
 
       if (profileError) throw profileError;
