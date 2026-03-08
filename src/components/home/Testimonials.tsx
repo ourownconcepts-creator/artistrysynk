@@ -317,21 +317,21 @@ export const Testimonials = () => {
         >
           <div className="space-y-2">
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              98%
+              {realStats.matches}
             </div>
-            <p className="text-sm text-muted-foreground">Satisfaction Rate</p>
+            <p className="text-sm text-muted-foreground">Matches Made</p>
           </div>
           <div className="space-y-2">
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
-              5,000+
+              {realStats.collabs}
             </div>
-            <p className="text-sm text-muted-foreground">Successful Collabs</p>
+            <p className="text-sm text-muted-foreground">Collaborations</p>
           </div>
           <div className="space-y-2">
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-              4.9★
+              {realStats.posts}
             </div>
-            <p className="text-sm text-muted-foreground">Average Rating</p>
+            <p className="text-sm text-muted-foreground">Community Posts</p>
           </div>
         </motion.div>
       </div>
