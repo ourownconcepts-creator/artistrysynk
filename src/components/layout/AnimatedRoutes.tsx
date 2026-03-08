@@ -48,6 +48,7 @@ import CollaborationFeed from '@/pages/CollaborationFeed';
 import CreatorCredits from '@/pages/CreatorCredits';
 import LocationDiscovery from '@/pages/LocationDiscovery';
 import Explore from '@/pages/Explore';
+import ForcePasswordChange from '@/pages/ForcePasswordChange';
 
 export const AnimatedRoutes = () => {
   const location = useLocation();
@@ -59,6 +60,7 @@ export const AnimatedRoutes = () => {
         <Route path="/" element={<PageTransition><Index /></PageTransition>} />
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
+        <Route path="/force-password-change" element={<PageTransition><ForcePasswordChange /></PageTransition>} />
         <Route path="/admin-auth" element={<PageTransition><AdminAuth /></PageTransition>} />
         <Route path="/features" element={<PageTransition><FeaturesPage /></PageTransition>} />
         <Route path="/how-it-works" element={<PageTransition><HowItWorksPage /></PageTransition>} />

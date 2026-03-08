@@ -18,7 +18,8 @@ const passwordSchema = z.string()
   .min(8, "Password must be at least 8 characters")
   .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
   .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-  .regex(/[0-9]/, "Password must contain at least one number");
+  .regex(/[0-9]/, "Password must contain at least one number")
+  .regex(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character");
 const usernameSchema = z.string()
   .min(3, "Username must be at least 3 characters")
   .max(20, "Username must be at most 20 characters")
@@ -105,7 +106,7 @@ const Auth = () => {
     
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -116,10 +117,27 @@ const Auth = () => {
       } else {
         toast.error(error.message);
       }
-    } else {
-      toast.success("Welcome back!");
+      setLoading(false);
+      return;
     }
-    
+
+    // Check if user needs to change password (non-SSO users)
+    if (data.user) {
+      const { data: settings } = await supabase
+        .from('user_settings')
+        .select('force_password_change')
+        .eq('user_id', data.user.id)
+        .single();
+
+      if (settings?.force_password_change) {
+        toast.info("Please update your password to meet new security requirements.");
+        navigate("/force-password-change");
+        setLoading(false);
+        return;
+      }
+    }
+
+    toast.success("Welcome back!");
     setLoading(false);
   };
 
@@ -526,7 +544,7 @@ const Auth = () => {
                     </div>
                     {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                     <p className="text-xs text-muted-foreground">
-                      Min 8 chars with uppercase, lowercase, and number
+                      Min 8 chars with uppercase, lowercase, number, and special character
                     </p>
                   </div>
                   <Button type="submit" variant="hero" className="w-full" disabled={loading}>

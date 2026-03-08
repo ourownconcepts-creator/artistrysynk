@@ -1855,6 +1855,7 @@ export type Database = {
           allow_messages_from: string | null
           created_at: string
           email_notifications: boolean | null
+          force_password_change: boolean | null
           id: string
           marketing_emails: boolean | null
           match_notifications: boolean | null
@@ -1872,6 +1873,7 @@ export type Database = {
           allow_messages_from?: string | null
           created_at?: string
           email_notifications?: boolean | null
+          force_password_change?: boolean | null
           id?: string
           marketing_emails?: boolean | null
           match_notifications?: boolean | null
@@ -1889,6 +1891,7 @@ export type Database = {
           allow_messages_from?: string | null
           created_at?: string
           email_notifications?: boolean | null
+          force_password_change?: boolean | null
           id?: string
           marketing_emails?: boolean | null
           match_notifications?: boolean | null
