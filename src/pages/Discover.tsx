@@ -19,6 +19,8 @@ import { FeaturedCreatives } from "@/components/discover/FeaturedCreatives";
 import { getRoleLabel } from "@/lib/creativeRoles";
 import { FeaturedProfiles } from "@/components/discover/FeaturedProfiles";
 import { TrendingCollaborations } from "@/components/discover/TrendingCollaborations";
+import { CreatorsNearYou } from "@/components/discover/CreatorsNearYou";
+import { OpenProjectsPreview } from "@/components/discover/OpenProjectsPreview";
 import { useSubscription } from "@/hooks/useSubscription";
 
 interface Profile {
