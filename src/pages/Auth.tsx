@@ -200,15 +200,12 @@ const Auth = () => {
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/discover`,
-      },
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
     });
 
-    if (error) {
-      toast.error(error.message);
+    if (result?.error) {
+      toast.error(result.error.message || "Failed to sign in with Google");
       setLoading(false);
     }
   };
