@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,8 @@ const usernameSchema = z.string()
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const referralCode = useMemo(() => searchParams.get("ref") || "", [searchParams]);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -134,6 +137,7 @@ const Auth = () => {
         data: {
           full_name: fullName,
           username: username,
+          ...(referralCode ? { referral_code: referralCode } : {}),
         },
         emailRedirectTo: `${window.location.origin}/setup-profile`,
       },

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Heart, X, User, MapPin, Sparkles, Filter, RotateCcw, Crown, Zap } from "lucide-react";
+import { Heart, X, User, MapPin, Sparkles, Filter, RotateCcw, Crown, Zap, BadgeCheck, ShieldCheck } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -26,6 +26,8 @@ interface Profile {
   bio: string;
   location: string;
   avatar_url: string;
+  is_verified?: boolean;
+  is_featured?: boolean;
   user_creative_roles: { role: string }[];
   user_genres: { genre: string }[];
   user_skill_tags?: { skill: string }[];
@@ -406,7 +408,10 @@ const Discover = () => {
             </>
           ) : (
             <>
-              <div className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 relative animate-fade-in">
+              <div 
+                className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 relative animate-fade-in cursor-pointer"
+                onClick={() => navigate(`/profile/${currentProfile.id}`)}
+              >
                 {currentProfile.avatar_url ? (
                   <img
                     src={currentProfile.avatar_url}
@@ -422,12 +427,40 @@ const Discover = () => {
                     </Avatar>
                   </div>
                 )}
+                {/* Trust indicators overlay */}
+                <div className="absolute top-3 right-3 flex gap-1.5">
+                  {currentProfile.is_verified && (
+                    <div className="bg-background/80 backdrop-blur-sm rounded-full p-1.5" title="Verified Creator">
+                      <BadgeCheck className="w-5 h-5 text-emerald-500" />
+                    </div>
+                  )}
+                  {currentProfile.is_featured && (
+                    <div className="bg-background/80 backdrop-blur-sm rounded-full p-1.5" title="Featured Creator">
+                      <Sparkles className="w-5 h-5 text-yellow-500" />
+                    </div>
+                  )}
+                </div>
               </div>
 
               <CardContent className="p-6 space-y-4 animate-fade-in">
-                <div>
-                  <h2 className="text-2xl font-bold">{currentProfile.full_name}</h2>
-                  <p className="text-muted-foreground">@{currentProfile.username}</p>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold flex items-center gap-1.5">
+                      {currentProfile.full_name}
+                      {currentProfile.is_verified && (
+                        <BadgeCheck className="w-5 h-5 text-emerald-500 shrink-0" />
+                      )}
+                    </h2>
+                    <p className="text-muted-foreground">@{currentProfile.username}</p>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={(e) => { e.stopPropagation(); navigate(`/profile/${currentProfile.id}`); }}
+                  >
+                    <User className="w-4 h-4 mr-1" />
+                    Profile
+                  </Button>
                 </div>
 
                 {currentProfile.location && (
