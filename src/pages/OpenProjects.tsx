@@ -149,7 +149,7 @@ const OpenProjects = () => {
 
     toast.success("Project posted successfully!");
     setShowCreateDialog(false);
-    setNewProject({ title: "", description: "", budget: "", looking_for: [] });
+    setNewProject({ title: "", description: "", budget: "", looking_for: [], project_category: "other", compensation_type: "open_collaboration" });
     navigate(`/projects/${data.id}`);
   };
 
