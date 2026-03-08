@@ -28,7 +28,7 @@ const Projects = () => {
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [newProjectOpen, setNewProjectOpen] = useState(false);
-  const [newProject, setNewProject] = useState({ title: "", description: "" });
+  const [newProject, setNewProject] = useState({ title: "", description: "", project_category: "other", compensation_type: "open_collaboration" });
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
