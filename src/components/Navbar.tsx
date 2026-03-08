@@ -154,6 +154,10 @@ export const Navbar = () => {
                   <Store className="w-4 h-4 mr-2" />
                   Marketplace
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/credits")}>
+                  <Award className="w-4 h-4 mr-2" />
+                  My Credits
+                </DropdownMenuItem>
                 {isStudio && (
                   <>
                     <DropdownMenuItem onClick={() => navigate("/teams")}>
