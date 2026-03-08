@@ -17,6 +17,7 @@ import { ProfileCompletionProgress } from "@/components/profile/ProfileCompletio
 import { useSessionTracking } from "@/hooks/useSessionTracking";
 import { MyAppeals } from "@/components/content/MyAppeals";
 import { ReferralCard } from "@/components/referral/ReferralCard";
+import { getRoleLabel } from "@/lib/creativeRoles";
 
 const Profile = () => {
   const navigate = useNavigate();
