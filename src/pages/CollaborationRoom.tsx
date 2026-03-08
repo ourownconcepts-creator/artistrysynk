@@ -433,17 +433,28 @@ const CollaborationRoom = () => {
               <CardContent>
                 <div className="space-y-3">
                   {members.map((member) => (
-                    <div key={member.user_id} className="flex items-center gap-3">
-                      <Avatar className="w-8 h-8">
+                    <div
+                      key={member.user_id}
+                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                      onClick={() => navigate(`/profile/${member.user_id}`)}
+                    >
+                      <Avatar className="w-10 h-10 border-2 border-primary/20">
                         <AvatarImage src={member.profiles?.avatar_url} />
                         <AvatarFallback>{member.profiles?.full_name?.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{member.profiles?.full_name}</p>
-                        <p className="text-xs text-muted-foreground">{member.role}</p>
+                        {member.role && (
+                          <Badge variant="secondary" className="text-xs mt-0.5">{member.role}</Badge>
+                        )}
                       </div>
                     </div>
                   ))}
+                  {members.length === 0 && (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      No team members yet
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -217,6 +217,19 @@ const PublicProfile = () => {
               </div>
             )}
 
+            {/* Looking For */}
+            {(profile as any)?.looking_for && (profile as any).looking_for.length > 0 && (
+              <div className="text-center">
+                <h3 className="font-semibold mb-3">Looking For</h3>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {(profile as any).looking_for.map((r: string, i: number) => (
+                    <Badge key={i} variant="outline" className="text-sm px-3 py-1">
+                      {getRoleLabel(r)}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
             {/* Social & Portfolio Links */}
             {profile.social_links && Object.values(profile.social_links as Record<string, string>).some(Boolean) && (
               <div className="text-center">

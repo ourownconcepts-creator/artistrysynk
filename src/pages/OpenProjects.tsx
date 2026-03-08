@@ -8,12 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Search, Users, Calendar, Send, Briefcase, CheckCircle, Plus, Crown } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useSubscription } from "@/hooks/useSubscription";
 import { Constants } from "@/integrations/supabase/types";
+import { getRoleLabel } from "@/lib/creativeRoles";
 
 interface OpenProject {
   id: string;
@@ -49,6 +50,8 @@ const OpenProjects = () => {
     description: "",
     budget: "",
     looking_for: [] as string[],
+    project_category: "other",
+    compensation_type: "open_collaboration",
   });
 
   useEffect(() => {
@@ -136,7 +139,9 @@ const OpenProjects = () => {
       created_by: currentUser,
       is_public: true,
       status: "active",
-    }).select().single();
+      project_category: newProject.project_category,
+      compensation_type: newProject.compensation_type,
+    } as any).select().single();
 
     if (error) {
       toast.error("Failed to create project");
@@ -145,7 +150,7 @@ const OpenProjects = () => {
 
     toast.success("Project posted successfully!");
     setShowCreateDialog(false);
-    setNewProject({ title: "", description: "", budget: "", looking_for: [] });
+    setNewProject({ title: "", description: "", budget: "", looking_for: [], project_category: "other", compensation_type: "open_collaboration" });
     navigate(`/projects/${data.id}`);
   };
 
@@ -223,17 +228,46 @@ const OpenProjects = () => {
                       placeholder="e.g., ₦50,000 - ₦100,000"
                     />
                   </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label>Category</Label>
+                      <Select value={newProject.project_category} onValueChange={(v) => setNewProject({ ...newProject, project_category: v })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="music">Music</SelectItem>
+                          <SelectItem value="film">Film</SelectItem>
+                          <SelectItem value="tech">Tech</SelectItem>
+                          <SelectItem value="startup">Startup</SelectItem>
+                          <SelectItem value="content_creation">Content Creation</SelectItem>
+                          <SelectItem value="design">Design</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Compensation</Label>
+                      <Select value={newProject.compensation_type} onValueChange={(v) => setNewProject({ ...newProject, compensation_type: v })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="paid">Paid</SelectItem>
+                          <SelectItem value="revenue_share">Revenue Share</SelectItem>
+                          <SelectItem value="equity">Equity</SelectItem>
+                          <SelectItem value="open_collaboration">Open Collaboration</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                   <div className="space-y-2">
                     <Label>Looking for (select roles)</Label>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
                       {Constants.public.Enums.creative_role.map((role) => (
                         <Badge
                           key={role}
                           variant={newProject.looking_for.includes(role) ? "default" : "outline"}
-                          className="cursor-pointer"
+                          className="cursor-pointer text-xs"
                           onClick={() => toggleRole(role)}
                         >
-                          {role.replace('_', ' ')}
+                          {getRoleLabel(role)}
                         </Badge>
                       ))}
                     </div>
@@ -305,7 +339,7 @@ const OpenProjects = () => {
                       <div className="flex flex-wrap gap-1">
                         {project.looking_for.map((role, idx) => (
                           <Badge key={idx} variant="outline" className="text-xs">
-                            {role}
+                            {getRoleLabel(role)}
                           </Badge>
                         ))}
                       </div>

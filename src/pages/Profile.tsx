@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Calendar, Edit, Shield, Instagram, Twitter, Youtube, Link as LinkIcon, ExternalLink, Image, Monitor, Settings, BarChart3, BadgeCheck } from "lucide-react";
+import { MapPin, Calendar, Edit, Shield, Instagram, Twitter, Youtube, Link as LinkIcon, ExternalLink, Image, Monitor, Settings, BarChart3, BadgeCheck, Award, Users as UsersIcon, Code, Github } from "lucide-react";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { PortfolioUpload } from "@/components/portfolio/PortfolioUpload";
 import { VerificationRequestButton } from "@/components/profile/VerificationRequestButton";
@@ -17,6 +17,7 @@ import { ProfileCompletionProgress } from "@/components/profile/ProfileCompletio
 import { useSessionTracking } from "@/hooks/useSessionTracking";
 import { MyAppeals } from "@/components/content/MyAppeals";
 import { ReferralCard } from "@/components/referral/ReferralCard";
+import { getRoleLabel } from "@/lib/creativeRoles";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -294,7 +295,23 @@ const Profile = () => {
                 <div className="flex flex-wrap justify-center gap-2">
                   {roles.map((r, i) => (
                     <Badge key={i} variant="secondary">
-                      {r.role.replace('_', ' ')}
+                      {getRoleLabel(r.role)}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Looking For */}
+            {(profile as any)?.looking_for && (profile as any).looking_for.length > 0 && (
+              <div>
+                <h3 className="font-semibold mb-2 text-center flex items-center justify-center gap-1">
+                  <UsersIcon className="w-4 h-4" /> Looking For
+                </h3>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {(profile as any).looking_for.map((r: string, i: number) => (
+                    <Badge key={i} variant="outline">
+                      {getRoleLabel(r)}
                     </Badge>
                   ))}
                 </div>

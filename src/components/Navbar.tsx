@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sparkles, Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code, Settings, Rss, Award } from "lucide-react";
+import { Sparkles, Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code, Settings, Rss, Award, MapPin, TrendingUp } from "lucide-react";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { ThemeToggle } from "@/components/navbar/ThemeToggle";
 import { GlobalSearch } from "@/components/navbar/GlobalSearch";
@@ -146,6 +146,14 @@ export const Navbar = () => {
                   My Projects
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/explore")}>
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  Explore
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/explore/nearby")}>
+                  <MapPin className="w-4 h-4 mr-2" />
+                  Creators Near You
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/open-projects")}>
                   <Briefcase className="w-4 h-4 mr-2" />
                   Open Projects
