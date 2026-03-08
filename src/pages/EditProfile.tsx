@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Camera, Upload, Link, Instagram, Twitter, Youtube, Music, Headphones } from "lucide-react";
+import { Camera, Upload, Link, Instagram, Twitter, Youtube, Music, Headphones, Code } from "lucide-react";
 import { SkillTagsInput } from "@/components/profile/SkillTagsInput";
 import { roleCategories, allRoles } from "@/lib/creativeRoles";
 
@@ -53,9 +53,13 @@ const EditProfile = () => {
     tiktok: "",
     behance: "",
     dribbble: "",
+    github: "",
   });
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [lookingFor, setLookingFor] = useState<string[]>([]);
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -83,6 +87,9 @@ const EditProfile = () => {
       setLocation(profile.location || "");
       setAvatarUrl(profile.avatar_url || "");
       setCoverImageUrl(profile.cover_image_url || "");
+      setLookingFor((profile as any).looking_for || []);
+      setCountry((profile as any).country || "");
+      setCity((profile as any).city || "");
       const links = profile.social_links as any;
       if (links) {
         setSocialLinks({
@@ -96,6 +103,7 @@ const EditProfile = () => {
           tiktok: links.tiktok || "",
           behance: links.behance || "",
           dribbble: links.dribbble || "",
+          github: links.github || "",
         });
       }
     }
@@ -190,6 +198,9 @@ const EditProfile = () => {
           avatar_url: avatarUrl,
           cover_image_url: coverImageUrl,
           social_links: socialLinks,
+          looking_for: lookingFor,
+          country,
+          city,
         } as any)
         .eq('id', userId);
 
@@ -340,6 +351,27 @@ const EditProfile = () => {
                 />
               </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="country">Country</Label>
+                  <Input
+                    id="country"
+                    placeholder="Nigeria"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="city">City</Label>
+                  <Input
+                    id="city"
+                    placeholder="Lagos"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="bio">Bio</Label>
                 <Textarea
@@ -394,6 +426,23 @@ const EditProfile = () => {
                 </div>
               </div>
 
+              {/* Looking For */}
+              <div className="space-y-4">
+                <Label>Looking For (Who do you want to collaborate with?)</Label>
+                <div className="flex flex-wrap gap-2">
+                  {allRoles.slice(0, 40).map(role => (
+                    <Badge
+                      key={role.value}
+                      variant={lookingFor.includes(role.value) ? "default" : "outline"}
+                      className="cursor-pointer"
+                      onClick={() => setLookingFor(prev => prev.includes(role.value) ? prev.filter(r => r !== role.value) : [...prev, role.value])}
+                    >
+                      {role.label}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
               {/* Custom Skill Tags */}
               {userId && (
                 <div className="space-y-2">
@@ -433,6 +482,10 @@ const EditProfile = () => {
                   <div className="flex items-center gap-2">
                     <Music className="w-5 h-5 text-muted-foreground" />
                     <Input placeholder="TikTok username" value={socialLinks.tiktok} onChange={(e) => setSocialLinks(prev => ({ ...prev, tiktok: e.target.value }))} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Code className="w-5 h-5 text-muted-foreground" />
+                    <Input placeholder="GitHub URL" value={socialLinks.github} onChange={(e) => setSocialLinks(prev => ({ ...prev, github: e.target.value }))} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Link className="w-5 h-5 text-muted-foreground" />

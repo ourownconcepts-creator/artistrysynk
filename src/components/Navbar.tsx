@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sparkles, Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code, Settings } from "lucide-react";
+import { Sparkles, Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code, Settings, Rss, Award } from "lucide-react";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { ThemeToggle } from "@/components/navbar/ThemeToggle";
 import { GlobalSearch } from "@/components/navbar/GlobalSearch";
@@ -97,6 +97,17 @@ export const Navbar = () => {
               </Button>
             </Link>
 
+            <Link to="/feed">
+              <Button
+                variant={isActive("/feed") ? "default" : "ghost"}
+                size="sm"
+                className="gap-2"
+              >
+                <Rss className="w-4 h-4" />
+                Feed
+              </Button>
+            </Link>
+
             <Link to="/jobs">
               <Button
                 variant={isActive("/jobs") ? "default" : "ghost"}
@@ -142,6 +153,10 @@ export const Navbar = () => {
                 <DropdownMenuItem onClick={() => navigate("/marketplace")}>
                   <Store className="w-4 h-4 mr-2" />
                   Marketplace
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/credits")}>
+                  <Award className="w-4 h-4 mr-2" />
+                  My Credits
                 </DropdownMenuItem>
                 {isStudio && (
                   <>

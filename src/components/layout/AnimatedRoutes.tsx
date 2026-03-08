@@ -44,6 +44,8 @@ import Privacy from '@/pages/Privacy';
 import Terms from '@/pages/Terms';
 import Cookies from '@/pages/Cookies';
 import Settings from '@/pages/Settings';
+import CollaborationFeed from '@/pages/CollaborationFeed';
+import CreatorCredits from '@/pages/CreatorCredits';
 
 export const AnimatedRoutes = () => {
   const location = useLocation();
@@ -169,6 +171,18 @@ export const AnimatedRoutes = () => {
           <ProtectedRoute>
             <Navbar />
             <PageTransition><Settings /></PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/feed" element={
+          <ProtectedRoute>
+            <Navbar />
+            <PageTransition><CollaborationFeed /></PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/credits" element={
+          <ProtectedRoute>
+            <Navbar />
+            <PageTransition><CreatorCredits /></PageTransition>
           </ProtectedRoute>
         } />
 
