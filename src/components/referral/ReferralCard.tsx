@@ -58,7 +58,7 @@ export const ReferralCard = () => {
     setLoading(false);
   };
 
-  const referralLink = `https://artistrysynk.com/auth?ref=${referralCode}`;
+  const referralLink = `${window.location.origin}/auth?ref=${referralCode}`;
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);

@@ -475,9 +475,20 @@ const Discover = () => {
                   <div className="flex flex-wrap gap-2">
                     {currentProfile.user_creative_roles.map((r, i) => (
                       <Badge key={i} variant="secondary">
-                        {r.role}
+                        {getRoleLabel(r.role)}
                       </Badge>
                     ))}
+                  </div>
+                )}
+
+                {/* Synergy Score - shown when AI matching is active */}
+                {currentProfile.synergyScore && currentProfile.synergyScore > 0 && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Zap className="w-4 h-4 text-yellow-500" />
+                    <span className="font-semibold">{currentProfile.synergyScore}% Synergy</span>
+                    {currentProfile.matchReason && (
+                      <span className="text-muted-foreground">— {currentProfile.matchReason}</span>
+                    )}
                   </div>
                 )}
 
