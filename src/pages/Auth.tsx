@@ -106,7 +106,7 @@ const Auth = () => {
     
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -117,10 +117,27 @@ const Auth = () => {
       } else {
         toast.error(error.message);
       }
-    } else {
-      toast.success("Welcome back!");
+      setLoading(false);
+      return;
     }
-    
+
+    // Check if user needs to change password (non-SSO users)
+    if (data.user) {
+      const { data: settings } = await supabase
+        .from('user_settings')
+        .select('force_password_change')
+        .eq('user_id', data.user.id)
+        .single();
+
+      if (settings?.force_password_change) {
+        toast.info("Please update your password to meet new security requirements.");
+        navigate("/force-password-change");
+        setLoading(false);
+        return;
+      }
+    }
+
+    toast.success("Welcome back!");
     setLoading(false);
   };
 
