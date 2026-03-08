@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, ArrowLeft, BadgeCheck, Heart, Flag } from "lucide-react";
+import { MapPin, Calendar, ArrowLeft, BadgeCheck, Heart, Flag, ExternalLink } from "lucide-react";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { toast } from "sonner";
 import { ProfileSchema, PageSEO } from "@/components/seo";
 import { FlagContentDialog } from "@/components/FlagContentDialog";
 import { BlockUserButton } from "@/components/settings/BlockUserButton";
+import { getRoleLabel } from "@/lib/creativeRoles";
 
 const PublicProfile = () => {
   const { userId } = useParams();
