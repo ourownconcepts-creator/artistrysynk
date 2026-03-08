@@ -198,6 +198,9 @@ const EditProfile = () => {
           avatar_url: avatarUrl,
           cover_image_url: coverImageUrl,
           social_links: socialLinks,
+          looking_for: lookingFor,
+          country,
+          city,
         } as any)
         .eq('id', userId);
 
