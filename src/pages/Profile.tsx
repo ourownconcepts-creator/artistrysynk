@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Calendar, Edit, Shield, Instagram, Twitter, Youtube, Link as LinkIcon, ExternalLink, Image, Monitor, Settings, BarChart3, BadgeCheck } from "lucide-react";
+import { MapPin, Calendar, Edit, Shield, Instagram, Twitter, Youtube, Link as LinkIcon, ExternalLink, Image, Monitor, Settings, BarChart3, BadgeCheck, Award, Users as UsersIcon, Code, Github } from "lucide-react";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { PortfolioUpload } from "@/components/portfolio/PortfolioUpload";
 import { VerificationRequestButton } from "@/components/profile/VerificationRequestButton";
