@@ -9,6 +9,7 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { PartnersCarousel } from "@/components/home/PartnersCarousel";
 import { NewsletterSignup } from "@/components/home/NewsletterSignup";
 import { StatsCounter } from "@/components/home/StatsCounter";
+import { RecentSignups } from "@/components/home/RecentSignups";
 import { OrganizationSchema, WebsiteSchema, PageSEO } from "@/components/seo";
 
 const Index = () => {
@@ -25,6 +26,7 @@ const Index = () => {
       <Hero />
       <PartnersCarousel />
       <StatsCounter />
+      <RecentSignups />
       <PortfolioShowcase />
       <Features />
       <Roles />

@@ -54,10 +54,6 @@ export const StatsCounter = () => {
   const [stats, setStats] = useState<StatItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadRealStats();
-  }, []);
-
   const loadRealStats = async () => {
     try {
       const { data, error } = await supabase.rpc("get_platform_stats");
@@ -71,15 +67,14 @@ export const StatsCounter = () => {
       const d = data as Record<string, number>;
 
       const items: StatItem[] = [
-        { icon: <Users className="w-8 h-8" />, value: d.users || 0, suffix: "", label: "Creative Professionals", color: "from-primary to-primary/50" },
-        { icon: <FolderOpen className="w-8 h-8" />, value: d.projects || 0, suffix: "", label: "Projects Created", color: "from-secondary to-secondary/50" },
-        { icon: <Music className="w-8 h-8" />, value: d.portfolio_items || 0, suffix: "", label: "Portfolio Pieces", color: "from-accent to-accent/50" },
-        { icon: <Handshake className="w-8 h-8" />, value: d.matches || 0, suffix: "", label: "Matches Made", color: "from-primary to-secondary" },
-        { icon: <Briefcase className="w-8 h-8" />, value: d.services || 0, suffix: "", label: "Services Available", color: "from-secondary to-accent" },
-        { icon: <Globe className="w-8 h-8" />, value: d.collaboration_posts || 0, suffix: "", label: "Collaboration Posts", color: "from-accent to-primary" },
+        { icon: <Users className="w-8 h-8" />, value: d.users || 0, suffix: "+", label: "Creative Professionals", color: "from-primary to-primary/50" },
+        { icon: <FolderOpen className="w-8 h-8" />, value: d.projects || 0, suffix: "+", label: "Projects Created", color: "from-secondary to-secondary/50" },
+        { icon: <Music className="w-8 h-8" />, value: d.portfolio_items || 0, suffix: "+", label: "Portfolio Pieces", color: "from-accent to-accent/50" },
+        { icon: <Handshake className="w-8 h-8" />, value: d.matches || 0, suffix: "+", label: "Matches Made", color: "from-primary to-secondary" },
+        { icon: <Briefcase className="w-8 h-8" />, value: d.services || 0, suffix: "+", label: "Services Available", color: "from-secondary to-accent" },
+        { icon: <Globe className="w-8 h-8" />, value: d.collaboration_posts || 0, suffix: "+", label: "Collaboration Posts", color: "from-accent to-primary" },
       ];
 
-      // Only show stats that have values > 0
       setStats(items.filter(s => s.value > 0));
     } catch (error) {
       console.error("Error loading stats:", error);
@@ -87,6 +82,22 @@ export const StatsCounter = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadRealStats();
+
+    // Realtime: refresh stats when profiles change
+    const channel = supabase
+      .channel("stats-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
+        loadRealStats();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   if (loading || stats.length === 0) {
     return null;
