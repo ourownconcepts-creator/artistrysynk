@@ -295,7 +295,23 @@ const Profile = () => {
                 <div className="flex flex-wrap justify-center gap-2">
                   {roles.map((r, i) => (
                     <Badge key={i} variant="secondary">
-                      {r.role.replace('_', ' ')}
+                      {getRoleLabel(r.role)}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Looking For */}
+            {(profile as any)?.looking_for && (profile as any).looking_for.length > 0 && (
+              <div>
+                <h3 className="font-semibold mb-2 text-center flex items-center justify-center gap-1">
+                  <UsersIcon className="w-4 h-4" /> Looking For
+                </h3>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {(profile as any).looking_for.map((r: string, i: number) => (
+                    <Badge key={i} variant="outline">
+                      {getRoleLabel(r)}
                     </Badge>
                   ))}
                 </div>
