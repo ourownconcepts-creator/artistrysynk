@@ -330,7 +330,7 @@ const Discover = () => {
                       <SelectValue placeholder="All roles" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All roles</SelectItem>
+                      <SelectItem value="all">All roles</SelectItem>
                       {Constants.public.Enums.creative_role.map((role) => (
                         <SelectItem key={role} value={role}>{role}</SelectItem>
                       ))}
