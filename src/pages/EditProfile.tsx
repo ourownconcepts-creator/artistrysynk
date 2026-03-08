@@ -53,9 +53,13 @@ const EditProfile = () => {
     tiktok: "",
     behance: "",
     dribbble: "",
+    github: "",
   });
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [lookingFor, setLookingFor] = useState<string[]>([]);
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
