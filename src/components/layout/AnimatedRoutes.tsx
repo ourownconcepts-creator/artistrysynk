@@ -187,6 +187,18 @@ export const AnimatedRoutes = () => {
             <PageTransition><CreatorCredits /></PageTransition>
           </ProtectedRoute>
         } />
+        <Route path="/explore" element={
+          <ProtectedRoute>
+            <Navbar />
+            <PageTransition><Explore /></PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/explore/nearby" element={
+          <ProtectedRoute>
+            <Navbar />
+            <PageTransition><LocationDiscovery /></PageTransition>
+          </ProtectedRoute>
+        } />
 
         {/* Admin Routes */}
         <Route path="/admin" element={
