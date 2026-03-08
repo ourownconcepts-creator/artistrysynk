@@ -48,6 +48,7 @@ import CollaborationFeed from '@/pages/CollaborationFeed';
 import CreatorCredits from '@/pages/CreatorCredits';
 import LocationDiscovery from '@/pages/LocationDiscovery';
 import Explore from '@/pages/Explore';
+import ForcePasswordChange from '@/pages/ForcePasswordChange';
 
 export const AnimatedRoutes = () => {
   const location = useLocation();
