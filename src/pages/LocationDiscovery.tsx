@@ -118,7 +118,7 @@ const LocationDiscovery = () => {
       roles: roleMap[d.id] || [],
     }));
 
-    if (roleFilter) {
+    if (roleFilter && roleFilter !== "all") {
       results = results.filter((c) => c.roles.includes(roleFilter));
     }
     if (searchQuery) {
