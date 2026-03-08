@@ -87,6 +87,9 @@ const EditProfile = () => {
       setLocation(profile.location || "");
       setAvatarUrl(profile.avatar_url || "");
       setCoverImageUrl(profile.cover_image_url || "");
+      setLookingFor((profile as any).looking_for || []);
+      setCountry((profile as any).country || "");
+      setCity((profile as any).city || "");
       const links = profile.social_links as any;
       if (links) {
         setSocialLinks({
@@ -100,6 +103,7 @@ const EditProfile = () => {
           tiktok: links.tiktok || "",
           behance: links.behance || "",
           dribbble: links.dribbble || "",
+          github: links.github || "",
         });
       }
     }
