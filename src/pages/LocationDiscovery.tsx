@@ -29,7 +29,7 @@ const LocationDiscovery = () => {
   const navigate = useNavigate();
   const [creators, setCreators] = useState<Creator[]>([]);
   const [loading, setLoading] = useState(true);
-  const [roleFilter, setRoleFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [radius, setRadius] = useState(100);
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -118,7 +118,7 @@ const LocationDiscovery = () => {
       roles: roleMap[d.id] || [],
     }));
 
-    if (roleFilter) {
+    if (roleFilter && roleFilter !== "all") {
       results = results.filter((c) => c.roles.includes(roleFilter));
     }
     if (searchQuery) {
@@ -179,7 +179,7 @@ const LocationDiscovery = () => {
   };
 
   const clearFilters = () => {
-    setRoleFilter("");
+    setRoleFilter("all");
     setSearchQuery("");
     setRadius(100);
     if (userCoords && userId) {
@@ -216,7 +216,7 @@ const LocationDiscovery = () => {
                   <SelectValue placeholder="Filter by role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All roles</SelectItem>
+                  <SelectItem value="all">All roles</SelectItem>
                   {roleCategories.flatMap((c) => c.roles).slice(0, 30).map((role) => (
                     <SelectItem key={role.value} value={role.value}>
                       {role.label}
