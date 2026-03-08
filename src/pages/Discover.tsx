@@ -313,7 +313,7 @@ const Discover = () => {
               <Button variant="outline" size="sm" className="mt-4">
                 <Filter className="w-4 h-4 mr-2" />
                 Filters
-                {(roleFilter || genreFilter || locationFilter) && (
+                {(( roleFilter && roleFilter !== "all") || (genreFilter && genreFilter !== "all") || locationFilter) && (
                   <Badge variant="secondary" className="ml-2">Active</Badge>
                 )}
               </Button>
