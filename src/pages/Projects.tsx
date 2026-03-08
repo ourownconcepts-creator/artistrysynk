@@ -116,7 +116,7 @@ const Projects = () => {
       
       toast.success("Project created");
       setNewProjectOpen(false);
-      setNewProject({ title: "", description: "" });
+      setNewProject({ title: "", description: "", project_category: "other", compensation_type: "open_collaboration" });
       navigate(`/projects/${data.id}`);
     } catch (err: any) {
       console.error("Project creation exception:", err);
