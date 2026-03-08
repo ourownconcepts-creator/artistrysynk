@@ -102,7 +102,9 @@ const Projects = () => {
           title: newProject.title,
           description: newProject.description || null,
           created_by: currentUser,
-        })
+          project_category: newProject.project_category,
+          compensation_type: newProject.compensation_type,
+        } as any)
         .select()
         .single();
 
