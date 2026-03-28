@@ -10,7 +10,7 @@ import { MapPin, Calendar, Edit, Shield, Instagram, Twitter, Youtube, Link as Li
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { PortfolioUpload } from "@/components/portfolio/PortfolioUpload";
 import { VerificationRequestButton } from "@/components/profile/VerificationRequestButton";
-import { VerificationBanner } from "@/components/profile/VerificationBanner";
+
 import { UserSessions } from "@/components/profile/UserSessions";
 import { ProfileAnalytics } from "@/components/profile/ProfileAnalytics";
 import { ProfileCompletionProgress } from "@/components/profile/ProfileCompletionProgress";
