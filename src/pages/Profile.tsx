@@ -10,7 +10,7 @@ import { MapPin, Calendar, Edit, Shield, Instagram, Twitter, Youtube, Link as Li
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { PortfolioUpload } from "@/components/portfolio/PortfolioUpload";
 import { VerificationRequestButton } from "@/components/profile/VerificationRequestButton";
-import { VerificationBanner } from "@/components/profile/VerificationBanner";
+
 import { UserSessions } from "@/components/profile/UserSessions";
 import { ProfileAnalytics } from "@/components/profile/ProfileAnalytics";
 import { ProfileCompletionProgress } from "@/components/profile/ProfileCompletionProgress";
@@ -28,7 +28,7 @@ const Profile = () => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [allRoles, setAllRoles] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
-  const [hasPendingVerification, setHasPendingVerification] = useState(false);
+  
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const Profile = () => {
         setUserId(user.id);
         loadProfile(user.id);
         loadUserRole(user.id);
-        checkPendingVerification(user.id);
+        
       }
     });
   }, [navigate]);
@@ -69,16 +69,6 @@ const Profile = () => {
     setLoading(false);
   };
 
-  const checkPendingVerification = async (uid: string) => {
-    const { data } = await supabase
-      .from('verification_requests')
-      .select('status')
-      .eq('user_id', uid)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
-    setHasPendingVerification(data?.status === 'pending');
-  };
 
   const loadUserRole = async (userId: string) => {
     const { data } = await supabase
@@ -147,17 +137,6 @@ const Profile = () => {
       )}
       
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Verification Banner */}
-        {userId && !profile?.is_verified && (
-          <div className="mb-6">
-            <VerificationBanner
-              userId={userId}
-              isVerified={profile?.is_verified || false}
-              hasPendingRequest={hasPendingVerification}
-              onRequestSubmitted={() => checkPendingVerification(userId)}
-            />
-          </div>
-        )}
 
         <Card className={profile?.cover_image_url ? "-mt-16 relative z-10" : ""}>
           <CardHeader className="text-center pb-2">
