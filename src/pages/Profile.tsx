@@ -69,16 +69,6 @@ const Profile = () => {
     setLoading(false);
   };
 
-  const checkPendingVerification = async (uid: string) => {
-    const { data } = await supabase
-      .from('verification_requests')
-      .select('status')
-      .eq('user_id', uid)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
-    setHasPendingVerification(data?.status === 'pending');
-  };
 
   const loadUserRole = async (userId: string) => {
     const { data } = await supabase
