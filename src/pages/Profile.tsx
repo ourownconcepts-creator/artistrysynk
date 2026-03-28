@@ -39,7 +39,7 @@ const Profile = () => {
         setUserId(user.id);
         loadProfile(user.id);
         loadUserRole(user.id);
-        checkPendingVerification(user.id);
+        
       }
     });
   }, [navigate]);
