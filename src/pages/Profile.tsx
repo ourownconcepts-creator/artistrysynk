@@ -28,7 +28,7 @@ const Profile = () => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [allRoles, setAllRoles] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
-  const [hasPendingVerification, setHasPendingVerification] = useState(false);
+  
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
