@@ -69,6 +69,49 @@ export const VerificationRequestButton = ({ userId, isVerified }: VerificationRe
     );
   }
 
+  const renderForm = () => (
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Request Profile Verification</DialogTitle>
+        <DialogDescription>
+          Submit a verification request to get the verified badge on your profile.
+        </DialogDescription>
+      </DialogHeader>
+      <div className="space-y-4 py-4">
+        <div className="space-y-2">
+          <Label>Verification Type</Label>
+          <Select value={requestType} onValueChange={setRequestType}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="identity">Profile Verification</SelectItem>
+              <SelectItem value="professional">Professional Credentials</SelectItem>
+              <SelectItem value="artist">Artist Verification</SelectItem>
+              <SelectItem value="producer">Producer Verification</SelectItem>
+              <SelectItem value="label">Label Verification</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label>Additional Information</Label>
+          <Textarea
+            placeholder="Provide any additional details to support your verification request, such as links to official profiles or portfolio..."
+            value={additionalInfo}
+            onChange={(e) => setAdditionalInfo(e.target.value)}
+            rows={4}
+          />
+        </div>
+      </div>
+      <DialogFooter>
+        <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+        <Button onClick={handleSubmit} disabled={loading}>
+          {loading ? 'Submitting...' : 'Submit Request'}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  );
+
   if (existingRequest) {
     const status = existingRequest.status;
     
@@ -92,47 +135,7 @@ export const VerificationRequestButton = ({ userId, isVerified }: VerificationRe
             <DialogTrigger asChild>
               <Button variant="outline" size="sm">Reapply</Button>
             </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Request Verification</DialogTitle>
-                <DialogDescription>
-                  Submit a new verification request to get your account verified.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label>Verification Type</Label>
-                  <Select value={requestType} onValueChange={setRequestType}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="identity">Identity Verification</SelectItem>
-                      <SelectItem value="professional">Professional Credentials</SelectItem>
-                      <SelectItem value="portfolio">Portfolio Review</SelectItem>
-                      <SelectItem value="artist">Artist Verification</SelectItem>
-                      <SelectItem value="producer">Producer Verification</SelectItem>
-                      <SelectItem value="label">Label Verification</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Additional Information</Label>
-                  <Textarea
-                    placeholder="Provide any additional details to support your verification request..."
-                    value={additionalInfo}
-                    onChange={(e) => setAdditionalInfo(e.target.value)}
-                    rows={4}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                <Button onClick={handleSubmit} disabled={loading}>
-                  {loading ? 'Submitting...' : 'Submit Request'}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
+            {renderForm()}
           </Dialog>
         </div>
       );
@@ -147,47 +150,7 @@ export const VerificationRequestButton = ({ userId, isVerified }: VerificationRe
           Get Verified
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Request Verification</DialogTitle>
-          <DialogDescription>
-            Submit a verification request to get the verified badge on your profile.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label>Verification Type</Label>
-            <Select value={requestType} onValueChange={setRequestType}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="identity">Identity Verification</SelectItem>
-                <SelectItem value="professional">Professional Credentials</SelectItem>
-                <SelectItem value="portfolio">Portfolio Review</SelectItem>
-                <SelectItem value="artist">Artist Verification</SelectItem>
-                <SelectItem value="producer">Producer Verification</SelectItem>
-                <SelectItem value="label">Label Verification</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label>Additional Information</Label>
-            <Textarea
-              placeholder="Provide any additional details to support your verification request..."
-              value={additionalInfo}
-              onChange={(e) => setAdditionalInfo(e.target.value)}
-              rows={4}
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading ? 'Submitting...' : 'Submit Request'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
+      {renderForm()}
     </Dialog>
   );
 };

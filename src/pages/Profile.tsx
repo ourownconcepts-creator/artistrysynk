@@ -147,17 +147,6 @@ const Profile = () => {
       )}
       
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Verification Banner */}
-        {userId && !profile?.is_verified && (
-          <div className="mb-6">
-            <VerificationBanner
-              userId={userId}
-              isVerified={profile?.is_verified || false}
-              hasPendingRequest={hasPendingVerification}
-              onRequestSubmitted={() => checkPendingVerification(userId)}
-            />
-          </div>
-        )}
 
         <Card className={profile?.cover_image_url ? "-mt-16 relative z-10" : ""}>
           <CardHeader className="text-center pb-2">
