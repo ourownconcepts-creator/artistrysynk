@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,7 @@ const App = () => (
         <BrowserRouter>
           <AnalyticsProvider>
             <AnimatedRoutes />
+            <InstallPrompt />
           </AnalyticsProvider>
         </BrowserRouter>
       </TooltipProvider>
