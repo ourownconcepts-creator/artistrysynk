@@ -1,54 +1,62 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import { lazy, Suspense } from 'react';
 import { PageTransition } from './PageTransition';
 import { Navbar } from '@/components/Navbar';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { AdminProtectedRoute } from '@/components/AdminProtectedRoute';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
-// Page imports
-import Index from '@/pages/Index';
-import Auth from '@/pages/Auth';
-import AdminAuth from '@/pages/AdminAuth';
-import ResetPassword from '@/pages/ResetPassword';
-import SetupProfile from '@/pages/SetupProfile';
-import Discover from '@/pages/Discover';
-import Matches from '@/pages/Matches';
-import Messages from '@/pages/Messages';
-import Profile from '@/pages/Profile';
-import PublicProfile from '@/pages/PublicProfile';
-import AdminDashboard from '@/pages/AdminDashboard';
-import MasterAdminDashboard from '@/pages/MasterAdminDashboard';
-import SuperAdminDashboard from '@/pages/SuperAdminDashboard';
-import AdminReports from '@/pages/AdminReports';
-import Projects from '@/pages/Projects';
-import CollaborationRoom from '@/pages/CollaborationRoom';
-import WhoLikedYou from '@/pages/WhoLikedYou';
-import Studio from '@/pages/Studio';
-import AdminSettings from '@/pages/AdminSettings';
-import EditProfile from '@/pages/EditProfile';
-import NotFound from '@/pages/NotFound';
-import OpenProjects from '@/pages/OpenProjects';
-import Marketplace from '@/pages/Marketplace';
-import TeamManagement from '@/pages/TeamManagement';
-import ApiAccess from '@/pages/ApiAccess';
-import Jobs from '@/pages/Jobs';
-import FeaturesPage from '@/pages/Features';
-import HowItWorksPage from '@/pages/HowItWorksPage';
-import Pricing from '@/pages/Pricing';
-import SuccessStories from '@/pages/SuccessStories';
-import About from '@/pages/About';
-import Careers from '@/pages/Careers';
-import Blog from '@/pages/Blog';
-import Contact from '@/pages/Contact';
-import Privacy from '@/pages/Privacy';
-import Terms from '@/pages/Terms';
-import Cookies from '@/pages/Cookies';
-import Settings from '@/pages/Settings';
-import CollaborationFeed from '@/pages/CollaborationFeed';
-import CreatorCredits from '@/pages/CreatorCredits';
-import LocationDiscovery from '@/pages/LocationDiscovery';
-import Explore from '@/pages/Explore';
-import ForcePasswordChange from '@/pages/ForcePasswordChange';
+// Lazy-loaded pages
+const Index = lazy(() => import('@/pages/Index'));
+const Auth = lazy(() => import('@/pages/Auth'));
+const AdminAuth = lazy(() => import('@/pages/AdminAuth'));
+const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
+const ForcePasswordChange = lazy(() => import('@/pages/ForcePasswordChange'));
+const SetupProfile = lazy(() => import('@/pages/SetupProfile'));
+const Discover = lazy(() => import('@/pages/Discover'));
+const Matches = lazy(() => import('@/pages/Matches'));
+const Messages = lazy(() => import('@/pages/Messages'));
+const Profile = lazy(() => import('@/pages/Profile'));
+const PublicProfile = lazy(() => import('@/pages/PublicProfile'));
+const EditProfile = lazy(() => import('@/pages/EditProfile'));
+const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
+const MasterAdminDashboard = lazy(() => import('@/pages/MasterAdminDashboard'));
+const SuperAdminDashboard = lazy(() => import('@/pages/SuperAdminDashboard'));
+const AdminReports = lazy(() => import('@/pages/AdminReports'));
+const AdminSettings = lazy(() => import('@/pages/AdminSettings'));
+const Projects = lazy(() => import('@/pages/Projects'));
+const CollaborationRoom = lazy(() => import('@/pages/CollaborationRoom'));
+const WhoLikedYou = lazy(() => import('@/pages/WhoLikedYou'));
+const Studio = lazy(() => import('@/pages/Studio'));
+const OpenProjects = lazy(() => import('@/pages/OpenProjects'));
+const Marketplace = lazy(() => import('@/pages/Marketplace'));
+const TeamManagement = lazy(() => import('@/pages/TeamManagement'));
+const ApiAccess = lazy(() => import('@/pages/ApiAccess'));
+const Jobs = lazy(() => import('@/pages/Jobs'));
+const FeaturesPage = lazy(() => import('@/pages/Features'));
+const HowItWorksPage = lazy(() => import('@/pages/HowItWorksPage'));
+const Pricing = lazy(() => import('@/pages/Pricing'));
+const SuccessStories = lazy(() => import('@/pages/SuccessStories'));
+const About = lazy(() => import('@/pages/About'));
+const Careers = lazy(() => import('@/pages/Careers'));
+const Blog = lazy(() => import('@/pages/Blog'));
+const Contact = lazy(() => import('@/pages/Contact'));
+const Privacy = lazy(() => import('@/pages/Privacy'));
+const Terms = lazy(() => import('@/pages/Terms'));
+const Cookies = lazy(() => import('@/pages/Cookies'));
+const Settings = lazy(() => import('@/pages/Settings'));
+const CollaborationFeed = lazy(() => import('@/pages/CollaborationFeed'));
+const CreatorCredits = lazy(() => import('@/pages/CreatorCredits'));
+const LocationDiscovery = lazy(() => import('@/pages/LocationDiscovery'));
+const Explore = lazy(() => import('@/pages/Explore'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
+
+const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><LoadingSpinner /></div>}>
+    {children}
+  </Suspense>
+);
 
 export const AnimatedRoutes = () => {
   const location = useLocation();
@@ -57,180 +65,117 @@ export const AnimatedRoutes = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         {/* Public Routes */}
-        <Route path="/" element={<PageTransition><Index /></PageTransition>} />
-        <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
-        <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
-        <Route path="/force-password-change" element={<PageTransition><ForcePasswordChange /></PageTransition>} />
-        <Route path="/admin-auth" element={<PageTransition><AdminAuth /></PageTransition>} />
-        <Route path="/features" element={<PageTransition><FeaturesPage /></PageTransition>} />
-        <Route path="/how-it-works" element={<PageTransition><HowItWorksPage /></PageTransition>} />
-        <Route path="/pricing" element={<PageTransition><Pricing /></PageTransition>} />
-        <Route path="/success-stories" element={<PageTransition><SuccessStories /></PageTransition>} />
-        <Route path="/about" element={<PageTransition><About /></PageTransition>} />
-        <Route path="/careers" element={<PageTransition><Careers /></PageTransition>} />
-        <Route path="/blog" element={<PageTransition><Blog /></PageTransition>} />
-        <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
-        <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
-        <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
-        <Route path="/cookies" element={<PageTransition><Cookies /></PageTransition>} />
+        <Route path="/" element={<SuspenseWrapper><PageTransition><Index /></PageTransition></SuspenseWrapper>} />
+        <Route path="/auth" element={<SuspenseWrapper><PageTransition><Auth /></PageTransition></SuspenseWrapper>} />
+        <Route path="/reset-password" element={<SuspenseWrapper><PageTransition><ResetPassword /></PageTransition></SuspenseWrapper>} />
+        <Route path="/force-password-change" element={<SuspenseWrapper><PageTransition><ForcePasswordChange /></PageTransition></SuspenseWrapper>} />
+        <Route path="/admin-auth" element={<SuspenseWrapper><PageTransition><AdminAuth /></PageTransition></SuspenseWrapper>} />
+        <Route path="/features" element={<SuspenseWrapper><PageTransition><FeaturesPage /></PageTransition></SuspenseWrapper>} />
+        <Route path="/how-it-works" element={<SuspenseWrapper><PageTransition><HowItWorksPage /></PageTransition></SuspenseWrapper>} />
+        <Route path="/pricing" element={<SuspenseWrapper><PageTransition><Pricing /></PageTransition></SuspenseWrapper>} />
+        <Route path="/success-stories" element={<SuspenseWrapper><PageTransition><SuccessStories /></PageTransition></SuspenseWrapper>} />
+        <Route path="/about" element={<SuspenseWrapper><PageTransition><About /></PageTransition></SuspenseWrapper>} />
+        <Route path="/careers" element={<SuspenseWrapper><PageTransition><Careers /></PageTransition></SuspenseWrapper>} />
+        <Route path="/blog" element={<SuspenseWrapper><PageTransition><Blog /></PageTransition></SuspenseWrapper>} />
+        <Route path="/contact" element={<SuspenseWrapper><PageTransition><Contact /></PageTransition></SuspenseWrapper>} />
+        <Route path="/privacy" element={<SuspenseWrapper><PageTransition><Privacy /></PageTransition></SuspenseWrapper>} />
+        <Route path="/terms" element={<SuspenseWrapper><PageTransition><Terms /></PageTransition></SuspenseWrapper>} />
+        <Route path="/cookies" element={<SuspenseWrapper><PageTransition><Cookies /></PageTransition></SuspenseWrapper>} />
 
         {/* Protected Routes */}
         <Route path="/setup-profile" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><SetupProfile /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><SetupProfile /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/discover" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><Discover /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Discover /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/matches" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><Matches /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Matches /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/who-liked-you" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><WhoLikedYou /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><WhoLikedYou /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/messages/:conversationId" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><Messages /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Messages /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/profile" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><Profile /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Profile /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/edit-profile" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><EditProfile /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><EditProfile /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/profile/:userId" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><PublicProfile /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><PublicProfile /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/projects" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><Projects /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Projects /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/projects/:projectId" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><CollaborationRoom /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><CollaborationRoom /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/studio/:itemId" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><Studio /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Studio /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/open-projects" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><OpenProjects /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><OpenProjects /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/marketplace" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><Marketplace /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Marketplace /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/teams" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><TeamManagement /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><TeamManagement /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/api-access" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><ApiAccess /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><ApiAccess /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/jobs" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><Jobs /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Jobs /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/settings" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><Settings /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Settings /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/feed" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><CollaborationFeed /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><CollaborationFeed /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/credits" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><CreatorCredits /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><CreatorCredits /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/explore" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><Explore /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Explore /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/explore/nearby" element={
-          <ProtectedRoute>
-            <Navbar />
-            <PageTransition><LocationDiscovery /></PageTransition>
-          </ProtectedRoute>
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><LocationDiscovery /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
 
         {/* Admin Routes */}
         <Route path="/admin" element={
           <AdminProtectedRoute allowedRoles={['admin', 'master_admin', 'super_admin']}>
-            <PageTransition><AdminDashboard /></PageTransition>
+            <SuspenseWrapper><PageTransition><AdminDashboard /></PageTransition></SuspenseWrapper>
           </AdminProtectedRoute>
         } />
         <Route path="/master-admin" element={
           <AdminProtectedRoute allowedRoles={['master_admin', 'super_admin']}>
-            <PageTransition><MasterAdminDashboard /></PageTransition>
+            <SuspenseWrapper><PageTransition><MasterAdminDashboard /></PageTransition></SuspenseWrapper>
           </AdminProtectedRoute>
         } />
         <Route path="/super-admin" element={
           <AdminProtectedRoute allowedRoles={['super_admin']}>
-            <PageTransition><SuperAdminDashboard /></PageTransition>
+            <SuspenseWrapper><PageTransition><SuperAdminDashboard /></PageTransition></SuspenseWrapper>
           </AdminProtectedRoute>
         } />
         <Route path="/admin-reports" element={
           <AdminProtectedRoute allowedRoles={['admin', 'master_admin', 'super_admin']}>
-            <PageTransition><AdminReports /></PageTransition>
+            <SuspenseWrapper><PageTransition><AdminReports /></PageTransition></SuspenseWrapper>
           </AdminProtectedRoute>
         } />
         <Route path="/admin-settings" element={
           <AdminProtectedRoute allowedRoles={['super_admin']}>
-            <PageTransition><AdminSettings /></PageTransition>
+            <SuspenseWrapper><PageTransition><AdminSettings /></PageTransition></SuspenseWrapper>
           </AdminProtectedRoute>
         } />
 
         {/* Catch-all */}
-        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+        <Route path="*" element={<SuspenseWrapper><PageTransition><NotFound /></PageTransition></SuspenseWrapper>} />
       </Routes>
     </AnimatePresence>
   );
