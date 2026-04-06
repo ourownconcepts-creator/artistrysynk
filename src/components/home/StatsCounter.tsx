@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, useInView } from "framer-motion";
 import { Users, Briefcase, Music, Handshake, Globe, FolderOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -48,56 +48,71 @@ const AnimatedNumber = ({ value, suffix, isInView }: { value: number; suffix: st
   );
 };
 
+// Simple in-memory cache for stats
+let statsCache: { data: Record<string, number>; ts: number } | null = null;
+const CACHE_TTL = 60_000; // 1 minute
+
 export const StatsCounter = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [stats, setStats] = useState<StatItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const loadRealStats = async () => {
+  const buildStats = useCallback((d: Record<string, number>) => {
+    const items: StatItem[] = [
+      { icon: <Users className="w-8 h-8" />, value: d.users || 0, suffix: "+", label: "Creative Professionals", color: "from-primary to-primary/50" },
+      { icon: <FolderOpen className="w-8 h-8" />, value: d.projects || 0, suffix: "+", label: "Projects Created", color: "from-secondary to-secondary/50" },
+      { icon: <Music className="w-8 h-8" />, value: d.portfolio_items || 0, suffix: "+", label: "Portfolio Pieces", color: "from-accent to-accent/50" },
+      { icon: <Handshake className="w-8 h-8" />, value: d.matches || 0, suffix: "+", label: "Matches Made", color: "from-primary to-secondary" },
+      { icon: <Briefcase className="w-8 h-8" />, value: d.services || 0, suffix: "+", label: "Services Available", color: "from-secondary to-accent" },
+      { icon: <Globe className="w-8 h-8" />, value: d.collaboration_posts || 0, suffix: "+", label: "Collaboration Posts", color: "from-accent to-primary" },
+    ];
+    setStats(items.filter(s => s.value > 0));
+  }, []);
+
+  const loadRealStats = useCallback(async (skipCache = false) => {
+    // Return cached data if fresh
+    if (!skipCache && statsCache && Date.now() - statsCache.ts < CACHE_TTL) {
+      buildStats(statsCache.data);
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase.rpc("get_platform_stats");
-
       if (error || !data) {
         console.error("Error loading stats:", error);
         setLoading(false);
         return;
       }
-
       const d = data as Record<string, number>;
-
-      const items: StatItem[] = [
-        { icon: <Users className="w-8 h-8" />, value: d.users || 0, suffix: "+", label: "Creative Professionals", color: "from-primary to-primary/50" },
-        { icon: <FolderOpen className="w-8 h-8" />, value: d.projects || 0, suffix: "+", label: "Projects Created", color: "from-secondary to-secondary/50" },
-        { icon: <Music className="w-8 h-8" />, value: d.portfolio_items || 0, suffix: "+", label: "Portfolio Pieces", color: "from-accent to-accent/50" },
-        { icon: <Handshake className="w-8 h-8" />, value: d.matches || 0, suffix: "+", label: "Matches Made", color: "from-primary to-secondary" },
-        { icon: <Briefcase className="w-8 h-8" />, value: d.services || 0, suffix: "+", label: "Services Available", color: "from-secondary to-accent" },
-        { icon: <Globe className="w-8 h-8" />, value: d.collaboration_posts || 0, suffix: "+", label: "Collaboration Posts", color: "from-accent to-primary" },
-      ];
-
-      setStats(items.filter(s => s.value > 0));
+      statsCache = { data: d, ts: Date.now() };
+      buildStats(d);
     } catch (error) {
       console.error("Error loading stats:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [buildStats]);
 
   useEffect(() => {
     loadRealStats();
 
-    // Realtime: refresh stats when profiles change
+    // Debounced realtime refresh — wait 5s after last change before re-fetching
     const channel = supabase
       .channel("stats-realtime")
       .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
-        loadRealStats();
+        clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => loadRealStats(true), 5000);
       })
       .subscribe();
 
     return () => {
+      clearTimeout(debounceRef.current);
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [loadRealStats]);
 
   if (loading || stats.length === 0) {
     return null;
