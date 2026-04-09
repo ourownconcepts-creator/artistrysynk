@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Shield, Eye, EyeOff, ArrowLeft, Mail, CheckCircle } from "lucide-react";
+import logoImg from "@/assets/logo.png";
 import { z } from "zod";
 
 // Validation schemas
@@ -191,11 +192,8 @@ const AdminAuth = () => {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/10 to-secondary/10 p-4">
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <Shield className="w-8 h-8 text-primary" />
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                  Admin Portal
-                </h1>
+              <div className="flex items-center justify-center mb-4">
+                <img src={logoImg} alt="ArtistrySynk" className="h-40 w-auto" />
               </div>
             </div>
 
@@ -235,11 +233,8 @@ const AdminAuth = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/10 to-secondary/10 p-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Shield className="w-8 h-8 text-primary" />
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                Admin Portal
-              </h1>
+            <div className="flex items-center justify-center mb-4">
+              <img src={logoImg} alt="ArtistrySynk" className="h-40 w-auto" />
             </div>
             <p className="text-muted-foreground">Reset your password</p>
           </div>
@@ -299,11 +294,8 @@ const AdminAuth = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/10 to-secondary/10 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Shield className="w-8 h-8 text-primary" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              Admin Portal
-            </h1>
+          <div className="flex items-center justify-center mb-4">
+            <img src={logoImg} alt="ArtistrySynk" className="h-40 w-auto" />
           </div>
           <p className="text-muted-foreground">Secure administrative access</p>
         </div>

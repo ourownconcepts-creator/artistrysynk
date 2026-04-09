@@ -2,6 +2,7 @@ import { lazy, Suspense, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Users, Sparkles } from "lucide-react";
+import logoImg from "@/assets/logo.png";
 import { MorphingBlobs } from './hero/MorphingBlobs';
 import { SyncPulse } from './hero/SyncPulse';
 import { AnimatedText, GlowText } from './hero/AnimatedText';
@@ -146,17 +147,23 @@ export const Hero = () => {
             </span>
           </motion.div>
 
-          {/* Main headline */}
+          {/* Logo + headline */}
           <div className="space-y-4">
-            <motion.h1 
-              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[1.1] tracking-tight"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+            <motion.div
+              className="flex justify-center"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <span className="block text-foreground">
-                <AnimatedText delay={0.3}>ArtistrySynk</AnimatedText>
-              </span>
+              <img src={logoImg} alt="ArtistrySynk" className="h-40 w-auto" />
+            </motion.div>
+            
+            <motion.h1 
+              className="text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.1] tracking-tight"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
               <span className="block">
                 <GlowText className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
                   <AnimatedText delay={0.6}>Creatives Synk</AnimatedText>
