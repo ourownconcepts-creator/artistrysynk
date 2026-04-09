@@ -80,7 +80,7 @@ export const InstallPrompt = () => {
           </button>
 
           <div className="flex items-center gap-3 mb-3">
-            <img src="/icons/icon-192.png" alt="ArtistrySynk" className="w-12 h-12 rounded-xl" />
+            <img src="/logo.png" alt="ArtistrySynk" className="w-12 h-12 rounded-xl object-contain" />
             <div>
               <h3 className="font-semibold text-foreground text-sm">Install ArtistrySynk</h3>
               <p className="text-xs text-muted-foreground">Get the full app experience</p>

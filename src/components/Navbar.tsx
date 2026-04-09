@@ -3,7 +3,8 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sparkles, Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code, Settings, Rss, Award, MapPin, TrendingUp } from "lucide-react";
+import { Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code, Settings, Rss, Award, MapPin, TrendingUp } from "lucide-react";
+import logoImg from "@/assets/logo.png";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { ThemeToggle } from "@/components/navbar/ThemeToggle";
 import { GlobalSearch } from "@/components/navbar/GlobalSearch";
@@ -67,11 +68,8 @@ export const Navbar = () => {
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link to="/discover" className="flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-secondary" />
-            <span className="font-bold text-xl bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent">
-              ArtistrySynk
-            </span>
+          <Link to="/discover" className="flex items-center">
+            <img src={logoImg} alt="ArtistrySynk" className="h-10 w-auto" />
           </Link>
 
           <div className="flex items-center gap-6">
