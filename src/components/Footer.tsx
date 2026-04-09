@@ -1,4 +1,5 @@
-import { Music, Instagram, Twitter, Facebook } from "lucide-react";
+import { Instagram, Twitter, Facebook } from "lucide-react";
+import logoImg from "@/assets/logo.png";
 
 export const Footer = () => {
   return (
@@ -7,11 +8,8 @@ export const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Music className="w-6 h-6 text-primary" />
-              <span className="text-xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                ArtistrySynk
-              </span>
+            <div className="flex items-center">
+              <img src={logoImg} alt="ArtistrySynk" className="h-10 w-auto" />
             </div>
             <p className="text-sm text-muted-foreground">
               The home of African creativity. Connect, collaborate, and create.
