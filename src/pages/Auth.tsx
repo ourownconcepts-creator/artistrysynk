@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Sparkles, Eye, EyeOff, ArrowLeft, Mail, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Mail, CheckCircle } from "lucide-react";
+import logoImg from "@/assets/logo.png";
 import { Separator } from "@/components/ui/separator";
 import { z } from "zod";
 import { lovable } from "@/integrations/lovable/index";
@@ -253,11 +254,8 @@ const Auth = () => {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <Sparkles className="w-8 h-8 text-secondary" />
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent">
-                  ArtistrySynk
-                </h1>
+              <div className="flex items-center justify-center mb-4">
+                <img src={logoImg} alt="ArtistrySynk" className="h-12 w-auto" />
               </div>
             </div>
 
@@ -297,11 +295,8 @@ const Auth = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <Sparkles className="w-8 h-8 text-secondary" />
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent">
-                  ArtistrySynk
-                </h1>
+              <div className="flex items-center justify-center mb-4">
+                <img src={logoImg} alt="ArtistrySynk" className="h-12 w-auto" />
               </div>
             <p className="text-muted-foreground">Reset your password</p>
           </div>
@@ -361,12 +356,9 @@ const Auth = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Sparkles className="w-8 h-8 text-secondary" />
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent">
-                ArtistrySynk
-              </h1>
-            </div>
+              <div className="flex items-center justify-center mb-4">
+                <img src={logoImg} alt="ArtistrySynk" className="h-12 w-auto" />
+              </div>
           <p className="text-muted-foreground">Create • Connect • Collaborate</p>
         </div>
 
