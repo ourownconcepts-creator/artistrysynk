@@ -69,7 +69,7 @@ export const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/discover" className="flex items-center">
-            <img src={logoImg} alt="ArtistrySynk" className="h-10 w-auto" />
+            <img src={logoImg} alt="ArtistrySynk" className="h-40 w-auto" />
           </Link>
 
           <div className="flex items-center gap-6">
