@@ -147,7 +147,7 @@ const Careers = () => {
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl text-center">
-          <img src={logoImg} alt="ArtistrySynk" className="h-40 w-auto mx-auto mb-6" />
+          <img src={logoImg} alt="ArtistrySynk" className="h-80 w-auto mx-auto mb-6" />
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
             Join Our Team
           </h1>
