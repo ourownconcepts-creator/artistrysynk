@@ -130,7 +130,7 @@ const ResetPassword = () => {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
-              <img src={logoImg} alt="ArtistrySynk" className="h-40 w-auto" />
+              <img src={logoImg} alt="ArtistrySynk" className="h-80 w-auto" />
             </div>
           </div>
 
@@ -160,7 +160,7 @@ const ResetPassword = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
-              <img src={logoImg} alt="ArtistrySynk" className="h-40 w-auto" />
+              <img src={logoImg} alt="ArtistrySynk" className="h-80 w-auto" />
             </div>
           <p className="text-muted-foreground">Create your new password</p>
         </div>
