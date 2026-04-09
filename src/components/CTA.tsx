@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import logoImg from "@/assets/logo.png";
 
 export const CTA = () => {
   return (
@@ -10,16 +11,15 @@ export const CTA = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
-            <div className="flex items-center justify-center gap-2">
-              <Sparkles className="w-8 h-8 text-secondary animate-pulse" />
-              <h2 className="text-4xl md:text-6xl font-bold">
-                Ready to Create{" "}
-                <span className="bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent">
-                  Something Amazing?
-                </span>
-              </h2>
-              <Sparkles className="w-8 h-8 text-accent animate-pulse" />
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <img src={logoImg} alt="ArtistrySynk" className="h-20 w-auto" />
             </div>
+            <h2 className="text-4xl md:text-6xl font-bold">
+              Ready to Create{" "}
+              <span className="bg-gradient-to-r from-secondary via-accent to-primary bg-clip-text text-transparent">
+                Something Amazing?
+              </span>
+            </h2>
             
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               Join thousands of creative professionals building the future of African entertainment
