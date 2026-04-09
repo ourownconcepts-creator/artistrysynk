@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap, Users } from "lucide-react";
+import { ArrowRight, Zap, Users, Sparkles } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { MorphingBlobs } from './hero/MorphingBlobs';
 import { SyncPulse } from './hero/SyncPulse';
