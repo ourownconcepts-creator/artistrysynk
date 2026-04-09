@@ -12,7 +12,7 @@ export const CTA = () => {
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
             <div className="flex items-center justify-center gap-4 mb-4">
-              <img src={logoImg} alt="ArtistrySynk" className="h-20 w-auto" />
+              <img src={logoImg} alt="ArtistrySynk" className="h-40 w-auto" />
             </div>
             <h2 className="text-4xl md:text-6xl font-bold">
               Ready to Create{" "}
