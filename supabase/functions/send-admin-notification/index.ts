@@ -16,6 +16,8 @@ interface NotificationRequest {
   details?: string;
 }
 
+const LOGO_URL = "https://lihctrhzsyjqnlzwwkzo.supabase.co/storage/v1/object/public/email-assets/logo.png";
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -41,6 +43,10 @@ const handler = async (req: Request): Promise<Response> => {
       subject: `Admin Action Alert: ${action}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="text-align: center; padding: 30px 0 20px 0; background: linear-gradient(135deg, #c026d3 0%, #7c3aed 50%, #f97316 100%); border-radius: 12px 12px 0 0;">
+            <img src="${LOGO_URL}" alt="ArtistrySynk" style="height: 80px; width: auto;" />
+          </div>
+          <div style="padding: 30px;">
           <h2 style="color: #333;">Admin Action Notification</h2>
           <p>Hello,</p>
           <p>An admin action was performed that requires your attention:</p>
@@ -52,6 +58,7 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
           <p>Please review this action in your admin dashboard.</p>
           <p>Best regards,<br>Admin System</p>
+          </div>
         </div>
       `,
     });
