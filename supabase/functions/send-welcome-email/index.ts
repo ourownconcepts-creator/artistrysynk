@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const LOGO_URL = "https://lihctrhzsyjqnlzwwkzo.supabase.co/storage/v1/object/public/email-assets/logo.png";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -22,7 +23,6 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     if (!RESEND_API_KEY) {
-      console.error("RESEND_API_KEY is not configured");
       return new Response(
         JSON.stringify({ error: "Email service not configured" }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
@@ -39,8 +39,6 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log(`Sending welcome email to ${email}`);
-
     const emailResponse = await resend.emails.send({
       from: "ArtistrySynk <hello@artistrysynk.com>",
       to: [email],
@@ -51,26 +49,21 @@ const handler = async (req: Request): Promise<Response> => {
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Welcome to ArtistrySynk</title>
         </head>
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #0a0a0b;">
           <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0b; padding: 40px 20px;">
             <tr>
               <td align="center">
                 <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%;">
-                  <!-- Header -->
                   <tr>
-                    <td style="background: linear-gradient(135deg, #c026d3 0%, #7c3aed 50%, #f97316 100%); padding: 40px; border-radius: 16px 16px 0 0; text-align: center;">
-                      <h1 style="color: #ffffff; margin: 0; font-size: 36px; font-weight: bold;">
-                        ✨ ArtistrySynk
-                      </h1>
+                    <td style="text-align: center; padding: 30px 0 20px 0; background: linear-gradient(135deg, #c026d3 0%, #7c3aed 50%, #f97316 100%); border-radius: 16px 16px 0 0;">
+                      <img src="${LOGO_URL}" alt="ArtistrySynk" style="height: 80px; width: auto;" />
                       <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">
                         Create • Connect • Collaborate
                       </p>
                     </td>
                   </tr>
                   
-                  <!-- Main Content -->
                   <tr>
                     <td style="background-color: #18181b; padding: 40px; border-radius: 0 0 16px 16px;">
                       <h2 style="color: #ffffff; margin: 0 0 20px 0; font-size: 24px;">
@@ -78,28 +71,17 @@ const handler = async (req: Request): Promise<Response> => {
                       </h2>
                       
                       <p style="color: #a1a1aa; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
-                        You've just joined Africa's premier creative community. Whether you're a musician, producer, designer, videographer, or any creative professional – you're in the right place.
+                        You've just joined the global creative community. Whether you're a musician, producer, designer, videographer, or any creative professional – you're in the right place.
                       </p>
 
                       <div style="background-color: #27272a; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-                        <h3 style="color: #c026d3; margin: 0 0 16px 0; font-size: 18px;">
-                          🚀 Get Started
-                        </h3>
+                        <h3 style="color: #c026d3; margin: 0 0 16px 0; font-size: 18px;">🚀 Get Started</h3>
                         <ul style="color: #a1a1aa; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
                           <li><strong style="color: #ffffff;">Complete your profile</strong> – Add your skills, portfolio, and bio</li>
                           <li><strong style="color: #ffffff;">Discover creatives</strong> – Swipe through talented professionals</li>
                           <li><strong style="color: #ffffff;">Match & collaborate</strong> – Connect with like-minded creators</li>
                           <li><strong style="color: #ffffff;">Start projects</strong> – Build something amazing together</li>
                         </ul>
-                      </div>
-
-                      <div style="background: linear-gradient(135deg, rgba(192, 38, 211, 0.2) 0%, rgba(124, 58, 237, 0.2) 100%); border: 1px solid rgba(192, 38, 211, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-                        <h3 style="color: #f97316; margin: 0 0 12px 0; font-size: 18px;">
-                          💡 Pro Tip
-                        </h3>
-                        <p style="color: #a1a1aa; font-size: 14px; line-height: 1.6; margin: 0;">
-                          Upload your best work to your portfolio to increase your chances of getting matched with the perfect collaborators!
-                        </p>
                       </div>
 
                       <table width="100%" cellpadding="0" cellspacing="0">
@@ -118,11 +100,10 @@ const handler = async (req: Request): Promise<Response> => {
                     </td>
                   </tr>
 
-                  <!-- Footer -->
                   <tr>
                     <td style="padding: 24px; text-align: center;">
                       <p style="color: #52525b; font-size: 12px; margin: 0 0 8px 0;">
-                        © ${new Date().getFullYear()} ArtistrySynk – Africa's Creative Network
+                        © ${new Date().getFullYear()} ArtistrySynk – Global Creative Network
                       </p>
                       <p style="color: #52525b; font-size: 12px; margin: 0;">
                         <a href="https://artistrysynk.lovable.app" style="color: #c026d3; text-decoration: none;">Visit Website</a> •
@@ -138,8 +119,6 @@ const handler = async (req: Request): Promise<Response> => {
         </html>
       `,
     });
-
-    console.log("Welcome email sent successfully:", emailResponse);
 
     return new Response(
       JSON.stringify({ success: true, data: emailResponse }),
