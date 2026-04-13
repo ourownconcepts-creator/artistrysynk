@@ -1,3 +1,11 @@
+const LOGO_URL = "https://lihctrhzsyjqnlzwwkzo.supabase.co/storage/v1/object/public/email-assets/logo.png";
+
+const brandedHeader = `
+  <div style="text-align: center; padding: 30px 0 20px 0; background: linear-gradient(135deg, #c026d3 0%, #7c3aed 50%, #f97316 100%); border-radius: 12px 12px 0 0;">
+    <img src="${LOGO_URL}" alt="ArtistrySynk" style="height: 80px; width: auto;" />
+  </div>
+`;
+
 export interface NewsletterTemplate {
   id: string;
   name: string;
@@ -13,15 +21,18 @@ export const newsletterTemplates: NewsletterTemplate[] = [
     description: "Clean and simple design with focus on content",
     thumbnail: "📝",
     generateHtml: (content: string, subject: string) => `
-      <div style="max-width: 600px; margin: 0 auto; padding: 32px 24px;">
-        <h1 style="color: #18181b; font-size: 24px; margin-bottom: 24px;">${subject}</h1>
-        <div style="color: #52525b; font-size: 16px; line-height: 1.7;">
-          ${content}
+      <div style="max-width: 600px; margin: 0 auto;">
+        ${brandedHeader}
+        <div style="padding: 32px 24px;">
+          <h1 style="color: #18181b; font-size: 24px; margin-bottom: 24px;">${subject}</h1>
+          <div style="color: #52525b; font-size: 16px; line-height: 1.7;">
+            ${content}
+          </div>
+          <hr style="border: none; border-top: 1px solid #e4e4e7; margin: 32px 0;" />
+          <p style="color: #a1a1aa; font-size: 12px; text-align: center;">
+            © ${new Date().getFullYear()} ArtistrySynk • <a href="https://artistrysynk.com" style="color: #c026d3;">Visit Website</a>
+          </p>
         </div>
-        <hr style="border: none; border-top: 1px solid #e4e4e7; margin: 32px 0;" />
-        <p style="color: #a1a1aa; font-size: 12px; text-align: center;">
-          © ${new Date().getFullYear()} ArtistrySynk • <a href="https://artistrysynk.com" style="color: #c026d3;">Visit Website</a>
-        </p>
       </div>
     `,
   },
@@ -33,7 +44,7 @@ export const newsletterTemplates: NewsletterTemplate[] = [
     generateHtml: (content: string, subject: string) => `
       <div style="max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #c026d3 0%, #7c3aed 50%, #f97316 100%); padding: 40px 24px; text-align: center; border-radius: 12px 12px 0 0;">
-          <h1 style="color: #ffffff; font-size: 28px; margin: 0;">✨ Artistry</h1>
+          <img src="${LOGO_URL}" alt="ArtistrySynk" style="height: 80px; width: auto; margin-bottom: 12px;" />
           <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0;">${subject}</p>
         </div>
         <div style="background-color: #18181b; padding: 32px 24px; border-radius: 0 0 12px 12px;">
@@ -55,8 +66,7 @@ export const newsletterTemplates: NewsletterTemplate[] = [
     generateHtml: (content: string, subject: string) => `
       <div style="max-width: 600px; margin: 0 auto; padding: 24px;">
         <div style="text-align: center; margin-bottom: 24px;">
-          <span style="font-size: 32px;">✨</span>
-          <h1 style="color: #18181b; font-size: 20px; margin: 8px 0 0 0;">ARTISTRYSYNK</h1>
+          <img src="${LOGO_URL}" alt="ArtistrySynk" style="height: 60px; width: auto; margin-bottom: 8px;" />
         </div>
         <div style="background: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); padding: 32px; border: 1px solid #e4e4e7;">
           <h2 style="color: #18181b; font-size: 22px; margin: 0 0 20px 0; border-bottom: 2px solid #c026d3; padding-bottom: 12px;">
@@ -85,9 +95,10 @@ export const newsletterTemplates: NewsletterTemplate[] = [
     generateHtml: (content: string, subject: string) => `
       <div style="max-width: 600px; margin: 0 auto; background-color: #0a0a0b; border-radius: 16px; overflow: hidden;">
         <div style="background: linear-gradient(180deg, #27272a 0%, #18181b 100%); padding: 32px 24px; text-align: center; border-bottom: 1px solid #3f3f46;">
+          <img src="${LOGO_URL}" alt="ArtistrySynk" style="height: 60px; width: auto; margin-bottom: 12px;" />
           <h1 style="color: #ffffff; font-size: 24px; margin: 0;">
             <span style="background: linear-gradient(135deg, #c026d3, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-              ✨ ${subject}
+              ${subject}
             </span>
           </h1>
         </div>
@@ -117,6 +128,7 @@ export const newsletterTemplates: NewsletterTemplate[] = [
           <span style="color: #fff; font-size: 14px; font-weight: 600; letter-spacing: 1px;">📢 ANNOUNCEMENT</span>
         </div>
         <div style="background: linear-gradient(135deg, #18181b 0%, #27272a 100%); padding: 40px 24px; text-align: center;">
+          <img src="${LOGO_URL}" alt="ArtistrySynk" style="height: 60px; width: auto; margin-bottom: 16px;" />
           <h1 style="color: #ffffff; font-size: 28px; margin: 0 0 16px 0; line-height: 1.3;">
             ${subject}
           </h1>
@@ -148,7 +160,7 @@ export const newsletterTemplates: NewsletterTemplate[] = [
     generateHtml: (content: string, subject: string) => `
       <div style="max-width: 600px; margin: 0 auto; background: #0a0a0b;">
         <div style="padding: 32px 24px; text-align: center;">
-          <span style="font-size: 48px; display: block; margin-bottom: 16px;">🌟</span>
+          <img src="${LOGO_URL}" alt="ArtistrySynk" style="height: 60px; width: auto; margin-bottom: 16px;" />
           <h1 style="color: #ffffff; font-size: 26px; margin: 0; font-weight: 300;">
             ${subject}
           </h1>

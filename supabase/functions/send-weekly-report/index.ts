@@ -3,11 +3,18 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.78.0';
 import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const LOGO_URL = "https://lihctrhzsyjqnlzwwkzo.supabase.co/storage/v1/object/public/email-assets/logo.png";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
+
+const brandedHeader = `
+  <div style="text-align: center; padding: 30px 0 20px 0; background: linear-gradient(135deg, #c026d3 0%, #7c3aed 50%, #f97316 100%); border-radius: 12px 12px 0 0;">
+    <img src="${LOGO_URL}" alt="ArtistrySynk" style="height: 80px; width: auto;" />
+  </div>
+`;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -20,11 +27,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Fetch analytics data
-    const { data: profiles } = await supabase
-      .from('profiles')
-      .select('created_at');
-
+    const { data: profiles } = await supabase.from('profiles').select('created_at');
     const { data: activityLogs } = await supabase
       .from('activity_logs')
       .select('*')
@@ -33,31 +36,22 @@ serve(async (req) => {
 
     const now = new Date();
     const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    
-    const newUsers = profiles?.filter(p => 
-      new Date(p.created_at) > lastWeek
-    ).length || 0;
-
+    const newUsers = profiles?.filter(p => new Date(p.created_at) > lastWeek).length || 0;
     const totalUsers = profiles?.length || 0;
-    const recentActivity = activityLogs?.filter(a => 
-      new Date(a.created_at) > lastWeek
-    ).length || 0;
+    const recentActivity = activityLogs?.filter(a => new Date(a.created_at) > lastWeek).length || 0;
 
-    // Fetch super admin emails
     const { data: superAdmins } = await supabase
       .from('user_roles')
       .select('user_id')
       .eq('role', 'super_admin');
 
     if (!superAdmins || superAdmins.length === 0) {
-      console.log('No super admins found');
       return new Response(
         JSON.stringify({ message: 'No super admins to send report to' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
 
-    // For each super admin, send the report
     for (const admin of superAdmins) {
       const { data: { user } } = await supabase.auth.admin.getUserById(admin.user_id);
       
@@ -67,20 +61,26 @@ serve(async (req) => {
           to: [user.email],
           subject: 'Weekly Analytics Report',
           html: `
-            <h1>Weekly Analytics Report</h1>
-            <p>Here's your weekly summary:</p>
-            <ul>
-              <li><strong>Total Users:</strong> ${totalUsers}</li>
-              <li><strong>New Users (Last 7 Days):</strong> ${newUsers}</li>
-              <li><strong>Admin Activities (Last 7 Days):</strong> ${recentActivity}</li>
-            </ul>
-            <p>Generated on ${now.toLocaleDateString()}</p>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              ${brandedHeader}
+              <div style="padding: 30px;">
+                <h1>Weekly Analytics Report</h1>
+                <p>Here's your weekly summary:</p>
+                <ul>
+                  <li><strong>Total Users:</strong> ${totalUsers}</li>
+                  <li><strong>New Users (Last 7 Days):</strong> ${newUsers}</li>
+                  <li><strong>Admin Activities (Last 7 Days):</strong> ${recentActivity}</li>
+                </ul>
+                <p>Generated on ${now.toLocaleDateString()}</p>
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #E5E7EB;" />
+                <p style="color: #6B7280; font-size: 12px;">The ArtistrySynk Team</p>
+              </div>
+            </div>
           `,
         });
       }
     }
 
-    // Update scheduled reports
     await supabase
       .from('scheduled_reports')
       .update({ 
