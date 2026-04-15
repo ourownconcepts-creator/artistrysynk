@@ -180,18 +180,10 @@ const Auth = () => {
       return;
     }
 
-    // Send welcome email
-    try {
-      await supabase.functions.invoke("send-welcome-email", {
-        body: {
-          email,
-          fullName,
-          username,
-        },
-      });
-    } catch (emailError) {
-      // Don't block signup if email fails
-    }
+    // Send welcome email (fire-and-forget, never block signup)
+    supabase.functions.invoke("send-welcome-email", {
+      body: { email, fullName, username },
+    }).catch(() => {});
 
     toast.success("Account created! Complete your profile to get started.");
     navigate("/setup-profile");
