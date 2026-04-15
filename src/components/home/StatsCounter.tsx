@@ -66,7 +66,7 @@ export const StatsCounter = () => {
       { icon: <Music className="w-8 h-8" />, value: d.portfolio_items || 0, suffix: "+", label: "Portfolio Pieces", color: "from-accent to-accent/50" },
       { icon: <Handshake className="w-8 h-8" />, value: d.matches || 0, suffix: "+", label: "Matches Made", color: "from-primary to-secondary" },
       { icon: <Briefcase className="w-8 h-8" />, value: d.services || 0, suffix: "+", label: "Services Available", color: "from-secondary to-accent" },
-      { icon: <Globe className="w-8 h-8" />, value: d.collaboration_posts || 0, suffix: "+", label: "Collaboration Posts", color: "from-accent to-primary" },
+      { icon: <Globe className="w-8 h-8" />, value: d.countries || 0, suffix: "+", label: "Countries Represented", color: "from-accent to-primary" },
     ];
     setStats(items.filter(s => s.value > 0));
   }, []);
