@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { Users, Briefcase, Music, Handshake, Globe, FolderOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -11,28 +11,44 @@ interface StatItem {
   color: string;
 }
 
-const AnimatedNumber = ({ value, suffix, isInView }: { value: number; suffix: string; isInView: boolean }) => {
+const toNumber = (value: unknown) => {
+  const parsed = typeof value === "number" ? value : Number(value ?? 0);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const AnimatedNumber = ({ value, suffix }: { value: number; suffix: string }) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (!isInView || value === 0) return;
+    const target = Math.max(0, toNumber(value));
 
-    let startTime: number;
-    const duration = 2000;
+    if (target === 0) {
+      setCount(0);
+      return;
+    }
+
+    let frameId = 0;
+    let startTime: number | null = null;
+    const duration = 1800;
 
     const animate = (currentTime: number) => {
-      if (!startTime) startTime = currentTime;
+      if (startTime === null) {
+        startTime = currentTime;
+      }
+
       const progress = Math.min((currentTime - startTime) / duration, 1);
       const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-      setCount(Math.floor(easeOutQuart * value));
+      setCount(Math.round(easeOutQuart * target));
 
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        frameId = requestAnimationFrame(animate);
       }
     };
 
-    requestAnimationFrame(animate);
-  }, [value, isInView]);
+    frameId = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(frameId);
+  }, [value]);
 
   const formatNumber = (num: number) => {
     if (num >= 1000) {
@@ -53,22 +69,21 @@ let statsCache: { data: Record<string, number>; ts: number } | null = null;
 const CACHE_TTL = 60_000; // 1 minute
 
 export const StatsCounter = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [stats, setStats] = useState<StatItem[]>([]);
   const [loading, setLoading] = useState(true);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const buildStats = useCallback((d: Record<string, number>) => {
+  const buildStats = useCallback((d: Record<string, unknown>) => {
     const items: StatItem[] = [
-      { icon: <Users className="w-8 h-8" />, value: d.users || 0, suffix: "+", label: "Creative Professionals", color: "from-primary to-primary/50" },
-      { icon: <FolderOpen className="w-8 h-8" />, value: d.projects || 0, suffix: "+", label: "Projects Created", color: "from-secondary to-secondary/50" },
-      { icon: <Music className="w-8 h-8" />, value: d.portfolio_items || 0, suffix: "+", label: "Portfolio Pieces", color: "from-accent to-accent/50" },
-      { icon: <Handshake className="w-8 h-8" />, value: d.matches || 0, suffix: "+", label: "Matches Made", color: "from-primary to-secondary" },
-      { icon: <Briefcase className="w-8 h-8" />, value: d.services || 0, suffix: "+", label: "Services Available", color: "from-secondary to-accent" },
-      { icon: <Globe className="w-8 h-8" />, value: d.countries || 0, suffix: "+", label: "Countries Represented", color: "from-accent to-primary" },
+      { icon: <Users className="w-8 h-8" />, value: toNumber(d.users), suffix: "+", label: "Creative Professionals", color: "from-primary to-primary/50" },
+      { icon: <FolderOpen className="w-8 h-8" />, value: toNumber(d.projects), suffix: "+", label: "Projects Created", color: "from-secondary to-secondary/50" },
+      { icon: <Music className="w-8 h-8" />, value: toNumber(d.portfolio_items), suffix: "+", label: "Portfolio Pieces", color: "from-accent to-accent/50" },
+      { icon: <Handshake className="w-8 h-8" />, value: toNumber(d.matches), suffix: "+", label: "Matches Made", color: "from-primary to-secondary" },
+      { icon: <Briefcase className="w-8 h-8" />, value: toNumber(d.services), suffix: "+", label: "Services Available", color: "from-secondary to-accent" },
+      { icon: <Globe className="w-8 h-8" />, value: toNumber(d.countries), suffix: "+", label: "Countries Represented", color: "from-accent to-primary" },
     ];
-    setStats(items.filter(s => s.value > 0));
+
+    setStats(items.filter((stat) => stat.value > 0));
   }, []);
 
   const loadRealStats = useCallback(async (skipCache = false) => {
@@ -119,7 +134,7 @@ export const StatsCounter = () => {
   }
 
   return (
-    <section ref={ref} className="py-20 relative overflow-hidden">
+    <section className="py-20 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
       
       <div className="container mx-auto px-4 relative z-10">
@@ -161,7 +176,7 @@ export const StatsCounter = () => {
                   </motion.div>
                   
                   <div className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-                    <AnimatedNumber value={stat.value} suffix={stat.suffix} isInView={isInView} />
+                    <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                   </div>
                   
                   <p className="text-sm text-muted-foreground font-medium">
