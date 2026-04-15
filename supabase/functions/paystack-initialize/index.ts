@@ -6,15 +6,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface InitializeRequest {
-  email: string;
-  plan: "pro" | "studio";
-  userId: string;
-}
-
-const PLAN_PRICES = {
-  pro: 450000, // ₦4,500 in kobo
-  studio: 1500000, // ₦15,000 in kobo
+const PLAN_PRICES: Record<string, number> = {
+  pro: 450000,
+  studio: 1500000,
 };
 
 serve(async (req) => {
@@ -23,14 +17,60 @@ serve(async (req) => {
   }
 
   try {
-    const { email, plan, userId }: InitializeRequest = await req.json();
-    const paystackKey = Deno.env.get("PAYSTACK_SECRET_KEY");
-
-    if (!paystackKey) {
-      throw new Error("Paystack secret key not configured");
+    // Authenticate the user
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Missing authorization header" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    // Initialize transaction with Paystack
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const body = await req.json();
+    const { email, plan, userId } = body;
+
+    // Validate inputs
+    if (!email || typeof email !== "string" || email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email address" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!plan || !PLAN_PRICES[plan]) {
+      return new Response(
+        JSON.stringify({ error: "Invalid plan. Must be 'pro' or 'studio'" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Verify the authenticated user matches the userId
+    if (userId !== user.id) {
+      return new Response(
+        JSON.stringify({ error: "User ID mismatch" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const paystackKey = Deno.env.get("PAYSTACK_SECRET_KEY");
+    if (!paystackKey) {
+      throw new Error("Payment provider not configured");
+    }
+
     const response = await fetch("https://api.paystack.co/transaction/initialize", {
       method: "POST",
       headers: {
@@ -43,7 +83,7 @@ serve(async (req) => {
         currency: "NGN",
         callback_url: `${req.headers.get("origin")}/pricing?success=true`,
         metadata: {
-          user_id: userId,
+          user_id: user.id,
           plan,
           custom_fields: [
             {
@@ -59,7 +99,7 @@ serve(async (req) => {
     const data = await response.json();
 
     if (!data.status) {
-      throw new Error(data.message || "Failed to initialize payment");
+      throw new Error("Failed to initialize payment");
     }
 
     return new Response(JSON.stringify(data), {
@@ -67,9 +107,8 @@ serve(async (req) => {
     });
   } catch (error: unknown) {
     console.error("Error initializing payment:", error);
-    const message = error instanceof Error ? error.message : "Unknown error";
     return new Response(
-      JSON.stringify({ error: message }),
+      JSON.stringify({ error: "An error occurred while processing your request" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
