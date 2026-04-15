@@ -138,7 +138,7 @@ export const StatsCounter = () => {
           </p>
         </motion.div>
 
-        <div className={`grid grid-cols-2 md:grid-cols-3 ${stats.length > 3 ? 'lg:grid-cols-' + Math.min(stats.length, 6) : ''} gap-6 max-w-5xl mx-auto`}>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.label}
