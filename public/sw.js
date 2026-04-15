@@ -1,5 +1,5 @@
 // ArtistrySynk Service Worker - PWA + Push Notifications
-const CACHE_NAME = 'artistrysynk-cache-v2';
+const CACHE_NAME = 'artistrysynk-cache-v3';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
@@ -7,6 +7,12 @@ const STATIC_ASSETS = [
   '/icons/icon-512.png',
   '/favicon.ico'
 ];
+
+const isAppShellAsset = (pathname) =>
+  pathname.startsWith('/assets/') || pathname.match(/\.(js|css)$/);
+
+const isStaticMediaAsset = (pathname) =>
+  pathname.match(/\.(png|jpg|jpeg|webp|svg|woff2?|ttf|ico)$/);
 
 // Install: pre-cache static shell
 self.addEventListener('install', (event) => {
@@ -25,13 +31,13 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: network-first for navigation/API, cache-first for assets
+// Fetch: always prefer fresh app code on live site
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
   // Skip non-GET and cross-origin
-  if (request.method !== 'GET' || !url.origin.startsWith(self.location.origin)) return;
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
 
   // Never cache OAuth or edge function calls
   if (url.pathname.startsWith('/~oauth') || url.pathname.includes('/functions/')) return;
@@ -44,27 +50,44 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then((res) => {
-          const clone = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          if (res.ok) {
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
           return res;
         })
-        .catch(() => caches.match('/') || caches.match(request))
+        .catch(() => caches.match(request).then((cached) => cached || caches.match('/')))
     );
     return;
   }
 
-  // Static assets (JS, CSS, images, fonts): cache-first
-  if (
-    url.pathname.match(/\.(js|css|png|jpg|jpeg|webp|svg|woff2?|ttf|ico)$/) ||
-    url.pathname.startsWith('/assets/')
-  ) {
+  // Fresh app bundles first so published updates show up immediately
+  if (isAppShellAsset(url.pathname)) {
+    event.respondWith(
+      fetch(request)
+        .then((res) => {
+          if (res.ok) {
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // Images/fonts/icons: cache-first
+  if (isStaticMediaAsset(url.pathname)) {
     event.respondWith(
       caches.match(request).then(
         (cached) =>
           cached ||
           fetch(request).then((res) => {
-            const clone = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+            if (res.ok) {
+              const clone = res.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+            }
             return res;
           })
       )
