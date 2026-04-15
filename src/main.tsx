@@ -7,9 +7,22 @@ import "./index.css";
 const isInIframe = (() => { try { return window.self !== window.top; } catch { return true; } })();
 const isPreviewHost = window.location.hostname.includes("id-preview--") || window.location.hostname.includes("lovableproject.com");
 
-if ('serviceWorker' in navigator && !isInIframe && !isPreviewHost) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
+if ("serviceWorker" in navigator && !isInIframe && !isPreviewHost) {
+  let hasReloadedForServiceWorker = false;
+
+  window.addEventListener("load", async () => {
+    try {
+      const registration = await navigator.serviceWorker.register("/sw.js");
+      registration.update().catch(() => {});
+
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (hasReloadedForServiceWorker) return;
+        hasReloadedForServiceWorker = true;
+        window.location.reload();
+      });
+    } catch {
+      // Ignore service worker registration failures
+    }
   });
 } else if (isPreviewHost || isInIframe) {
   navigator.serviceWorker?.getRegistrations().then((regs) => regs.forEach((r) => r.unregister()));
