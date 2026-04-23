@@ -29,9 +29,10 @@ const colors = [
 
 interface ConnectionWebProps {
   query?: string;
+  isPro?: boolean;
 }
 
-export const ConnectionWeb = ({ query = '' }: ConnectionWebProps) => {
+export const ConnectionWeb = ({ query = '', isPro = true }: ConnectionWebProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 1200, height: 800 });
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -228,6 +229,9 @@ export const ConnectionWeb = ({ query = '' }: ConnectionWebProps) => {
         {/* Nodes */}
         {nodes.map((node, i) => (
           <g key={node.id} style={{ opacity: normalizedQuery && !isMatch(node.label) ? 0.2 : 1, transition: 'opacity 0.3s' }}>
+            {isMatch(node.label) && !isPro && (
+              <title>Free preview: only the top match highlights</title>
+            )}
             {/* Outer glow ring */}
             <motion.circle
               cx={node.x}
