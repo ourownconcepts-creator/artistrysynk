@@ -29,9 +29,10 @@ const colors = [
 
 interface ConnectionWebProps {
   query?: string;
+  isPro?: boolean;
 }
 
-export const ConnectionWeb = ({ query = '' }: ConnectionWebProps) => {
+export const ConnectionWeb = ({ query = '', isPro = true }: ConnectionWebProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 1200, height: 800 });
   const [nodes, setNodes] = useState<Node[]>([]);
