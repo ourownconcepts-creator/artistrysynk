@@ -170,7 +170,7 @@ export const Hero = () => {
       {/* Connection web - the star feature showing creatives connecting */}
       <Suspense fallback={null}>
         <motion.div style={{ opacity, scale }} className="absolute inset-0">
-          <ConnectionWeb query={effectiveQuery} />
+          <ConnectionWeb query={effectiveQuery} isPro={isPro} />
         </motion.div>
       </Suspense>
 
