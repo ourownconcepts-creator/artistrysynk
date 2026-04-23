@@ -272,7 +272,7 @@ export const ConnectionWeb = () => {
               y={node.y}
               textAnchor="middle"
               dominantBaseline="middle"
-              fill="hsl(var(--foreground))"
+              fill="#ffffff"
               fontSize={12}
               fontWeight={600}
               className="pointer-events-none select-none"
