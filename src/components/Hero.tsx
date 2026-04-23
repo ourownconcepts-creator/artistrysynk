@@ -1,9 +1,11 @@
 import { lazy, Suspense, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap, Users, Sparkles, Search, X } from "lucide-react";
+import { ArrowRight, Zap, Users, Sparkles, Search, X, Lock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { allRoles } from "@/lib/creativeRoles";
+import { useSubscription } from "@/hooks/useSubscription";
+import { Link } from "react-router-dom";
 import logoImg from "@/assets/logo.png";
 import { MorphingBlobs } from './hero/MorphingBlobs';
 import { SyncPulse } from './hero/SyncPulse';
@@ -74,11 +76,20 @@ export const Hero = () => {
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
   const scale = useTransform(scrollY, [0, 300], [1, 0.95]);
   const [roleQuery, setRoleQuery] = useState('');
-  const suggestions = roleQuery.trim()
-    ? allRoles
-        .filter((r) => r.label.toLowerCase().includes(roleQuery.trim().toLowerCase()))
-        .slice(0, 6)
+  const { isPro } = useSubscription();
+  const allMatches = roleQuery.trim()
+    ? allRoles.filter((r) =>
+        r.label.toLowerCase().includes(roleQuery.trim().toLowerCase())
+      )
     : [];
+  const suggestions = isPro ? allMatches.slice(0, 6) : allMatches.slice(0, 1);
+  const hiddenCount = isPro ? 0 : Math.max(0, allMatches.length - suggestions.length);
+  // Free users can highlight only the single top match; Pro highlights all matches.
+  const effectiveQuery = isPro
+    ? roleQuery
+    : roleQuery.trim() && suggestions[0]
+    ? suggestions[0].label
+    : '';
 
   return (
     <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-background">
@@ -123,7 +134,25 @@ export const Hero = () => {
                 <span>{r.label}</span>
               </button>
             ))}
+            {!isPro && hiddenCount > 0 && (
+              <Link
+                to="/pricing"
+                className="flex items-center gap-2 px-3 py-2 text-xs bg-primary/10 hover:bg-primary/20 transition-colors border-t border-border/50 text-primary font-medium"
+              >
+                <Lock className="w-3.5 h-3.5" />
+                <span>+{hiddenCount} more &mdash; Upgrade to Pro to unlock</span>
+              </Link>
+            )}
           </div>
+        )}
+        {!isPro && roleQuery.trim() && allMatches.length === 0 && (
+          <Link
+            to="/pricing"
+            className="mt-2 flex items-center gap-2 px-3 py-2 text-xs rounded-lg bg-card/90 backdrop-blur-sm border border-border/50 shadow-lg text-muted-foreground hover:text-primary transition-colors"
+          >
+            <Lock className="w-3.5 h-3.5" />
+            <span>Full role search is a Pro feature</span>
+          </Link>
         )}
       </div>
 
@@ -141,7 +170,7 @@ export const Hero = () => {
       {/* Connection web - the star feature showing creatives connecting */}
       <Suspense fallback={null}>
         <motion.div style={{ opacity, scale }} className="absolute inset-0">
-          <ConnectionWeb query={roleQuery} />
+          <ConnectionWeb query={effectiveQuery} />
         </motion.div>
       </Suspense>
 
