@@ -27,13 +27,21 @@ const colors = [
   'hsl(var(--accent))',
 ];
 
-export const ConnectionWeb = () => {
+interface ConnectionWebProps {
+  query?: string;
+}
+
+export const ConnectionWeb = ({ query = '' }: ConnectionWebProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 1200, height: 800 });
   const [nodes, setNodes] = useState<Node[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [activeNode, setActiveNode] = useState<number | null>(null);
   const animationRef = useRef<number>();
+
+  const normalizedQuery = query.trim().toLowerCase();
+  const isMatch = (label: string) =>
+    normalizedQuery.length > 0 && label.toLowerCase().includes(normalizedQuery);
 
   // Initialize nodes
   useEffect(() => {
@@ -219,16 +227,16 @@ export const ConnectionWeb = () => {
 
         {/* Nodes */}
         {nodes.map((node, i) => (
-          <g key={node.id}>
+          <g key={node.id} style={{ opacity: normalizedQuery && !isMatch(node.label) ? 0.2 : 1, transition: 'opacity 0.3s' }}>
             {/* Outer glow ring */}
             <motion.circle
               cx={node.x}
               cy={node.y}
-              r={node.radius + 10}
+              r={node.radius + (isMatch(node.label) ? 18 : 10)}
               fill="none"
               stroke={node.color}
-              strokeWidth={2}
-              opacity={0.3}
+              strokeWidth={isMatch(node.label) ? 3 : 2}
+              opacity={isMatch(node.label) ? 0.8 : 0.3}
               initial={{ scale: 0 }}
               animate={{ 
                 scale: [1, 1.2, 1],
