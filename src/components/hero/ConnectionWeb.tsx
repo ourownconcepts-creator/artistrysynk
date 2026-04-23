@@ -227,16 +227,16 @@ export const ConnectionWeb = ({ query = '' }: ConnectionWebProps) => {
 
         {/* Nodes */}
         {nodes.map((node, i) => (
-          <g key={node.id}>
+          <g key={node.id} style={{ opacity: normalizedQuery && !isMatch(node.label) ? 0.2 : 1, transition: 'opacity 0.3s' }}>
             {/* Outer glow ring */}
             <motion.circle
               cx={node.x}
               cy={node.y}
-              r={node.radius + 10}
+              r={node.radius + (isMatch(node.label) ? 18 : 10)}
               fill="none"
               stroke={node.color}
-              strokeWidth={2}
-              opacity={0.3}
+              strokeWidth={isMatch(node.label) ? 3 : 2}
+              opacity={isMatch(node.label) ? 0.8 : 0.3}
               initial={{ scale: 0 }}
               animate={{ 
                 scale: [1, 1.2, 1],
