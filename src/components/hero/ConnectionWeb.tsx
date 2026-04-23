@@ -27,13 +27,21 @@ const colors = [
   'hsl(var(--accent))',
 ];
 
-export const ConnectionWeb = () => {
+interface ConnectionWebProps {
+  query?: string;
+}
+
+export const ConnectionWeb = ({ query = '' }: ConnectionWebProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 1200, height: 800 });
   const [nodes, setNodes] = useState<Node[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [activeNode, setActiveNode] = useState<number | null>(null);
   const animationRef = useRef<number>();
+
+  const normalizedQuery = query.trim().toLowerCase();
+  const isMatch = (label: string) =>
+    normalizedQuery.length > 0 && label.toLowerCase().includes(normalizedQuery);
 
   // Initialize nodes
   useEffect(() => {
