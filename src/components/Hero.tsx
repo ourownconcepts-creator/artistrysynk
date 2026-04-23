@@ -1,9 +1,11 @@
 import { lazy, Suspense, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap, Users, Sparkles, Search, X } from "lucide-react";
+import { ArrowRight, Zap, Users, Sparkles, Search, X, Lock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { allRoles } from "@/lib/creativeRoles";
+import { useSubscription } from "@/hooks/useSubscription";
+import { Link } from "react-router-dom";
 import logoImg from "@/assets/logo.png";
 import { MorphingBlobs } from './hero/MorphingBlobs';
 import { SyncPulse } from './hero/SyncPulse';
