@@ -134,7 +134,25 @@ export const Hero = () => {
                 <span>{r.label}</span>
               </button>
             ))}
+            {!isPro && hiddenCount > 0 && (
+              <Link
+                to="/pricing"
+                className="flex items-center gap-2 px-3 py-2 text-xs bg-primary/10 hover:bg-primary/20 transition-colors border-t border-border/50 text-primary font-medium"
+              >
+                <Lock className="w-3.5 h-3.5" />
+                <span>+{hiddenCount} more &mdash; Upgrade to Pro to unlock</span>
+              </Link>
+            )}
           </div>
+        )}
+        {!isPro && roleQuery.trim() && allMatches.length === 0 && (
+          <Link
+            to="/pricing"
+            className="mt-2 flex items-center gap-2 px-3 py-2 text-xs rounded-lg bg-card/90 backdrop-blur-sm border border-border/50 shadow-lg text-muted-foreground hover:text-primary transition-colors"
+          >
+            <Lock className="w-3.5 h-3.5" />
+            <span>Full role search is a Pro feature</span>
+          </Link>
         )}
       </div>
 
