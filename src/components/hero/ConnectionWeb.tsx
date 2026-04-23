@@ -229,6 +229,9 @@ export const ConnectionWeb = ({ query = '', isPro = true }: ConnectionWebProps) 
         {/* Nodes */}
         {nodes.map((node, i) => (
           <g key={node.id} style={{ opacity: normalizedQuery && !isMatch(node.label) ? 0.2 : 1, transition: 'opacity 0.3s' }}>
+            {isMatch(node.label) && !isPro && (
+              <title>Free preview: only the top match highlights</title>
+            )}
             {/* Outer glow ring */}
             <motion.circle
               cx={node.x}
