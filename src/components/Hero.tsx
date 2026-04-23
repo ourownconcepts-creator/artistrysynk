@@ -73,6 +73,12 @@ export const Hero = () => {
   const y1 = useTransform(scrollY, [0, 500], [0, 150]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
   const scale = useTransform(scrollY, [0, 300], [1, 0.95]);
+  const [roleQuery, setRoleQuery] = useState('');
+  const suggestions = roleQuery.trim()
+    ? allRoles
+        .filter((r) => r.label.toLowerCase().includes(roleQuery.trim().toLowerCase()))
+        .slice(0, 6)
+    : [];
 
   return (
     <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-background">
@@ -94,7 +100,7 @@ export const Hero = () => {
       {/* Connection web - the star feature showing creatives connecting */}
       <Suspense fallback={null}>
         <motion.div style={{ opacity, scale }} className="absolute inset-0">
-          <ConnectionWeb />
+          <ConnectionWeb query={roleQuery} />
         </motion.div>
       </Suspense>
 
