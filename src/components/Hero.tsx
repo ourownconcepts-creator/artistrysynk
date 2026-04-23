@@ -86,6 +86,47 @@ export const Hero = () => {
       <div className="absolute top-4 right-4 z-50">
         <ThemeToggle />
       </div>
+
+      {/* Browse roles search - top left */}
+      <div className="absolute top-4 left-4 z-50 w-64 max-w-[calc(100vw-5rem)]">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          <Input
+            type="text"
+            value={roleQuery}
+            onChange={(e) => setRoleQuery(e.target.value)}
+            placeholder="Browse roles..."
+            aria-label="Browse creative roles"
+            className="pl-9 pr-9 h-10 bg-card/80 backdrop-blur-sm border-border/50 shadow-lg"
+          />
+          {roleQuery && (
+            <button
+              type="button"
+              onClick={() => setRoleQuery('')}
+              aria-label="Clear search"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-muted/50 transition-colors"
+            >
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
+          )}
+        </div>
+        {suggestions.length > 0 && (
+          <div className="mt-2 rounded-lg bg-card/90 backdrop-blur-sm border border-border/50 shadow-lg overflow-hidden">
+            {suggestions.map((r) => (
+              <button
+                key={r.value}
+                type="button"
+                onClick={() => setRoleQuery(r.label)}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-primary/10 transition-colors flex items-center gap-2"
+              >
+                <r.icon className="w-3.5 h-3.5 text-primary" />
+                <span>{r.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Layered backgrounds */}
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-secondary/5" />
       
