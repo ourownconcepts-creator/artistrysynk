@@ -76,11 +76,20 @@ export const Hero = () => {
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
   const scale = useTransform(scrollY, [0, 300], [1, 0.95]);
   const [roleQuery, setRoleQuery] = useState('');
-  const suggestions = roleQuery.trim()
-    ? allRoles
-        .filter((r) => r.label.toLowerCase().includes(roleQuery.trim().toLowerCase()))
-        .slice(0, 6)
+  const { isPro } = useSubscription();
+  const allMatches = roleQuery.trim()
+    ? allRoles.filter((r) =>
+        r.label.toLowerCase().includes(roleQuery.trim().toLowerCase())
+      )
     : [];
+  const suggestions = isPro ? allMatches.slice(0, 6) : allMatches.slice(0, 1);
+  const hiddenCount = isPro ? 0 : Math.max(0, allMatches.length - suggestions.length);
+  // Free users can highlight only the single top match; Pro highlights all matches.
+  const effectiveQuery = isPro
+    ? roleQuery
+    : roleQuery.trim() && suggestions[0]
+    ? suggestions[0].label
+    : '';
 
   return (
     <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-background">
@@ -143,7 +152,7 @@ export const Hero = () => {
       {/* Connection web - the star feature showing creatives connecting */}
       <Suspense fallback={null}>
         <motion.div style={{ opacity, scale }} className="absolute inset-0">
-          <ConnectionWeb query={roleQuery} />
+          <ConnectionWeb query={effectiveQuery} />
         </motion.div>
       </Suspense>
 
