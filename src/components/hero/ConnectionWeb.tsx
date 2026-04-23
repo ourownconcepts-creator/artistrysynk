@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring, animate } from 'framer-motion';
+import { allRoles } from '@/lib/creativeRoles';
 
 interface Node {
   id: number;
@@ -18,11 +19,7 @@ interface Connection {
   strength: number;
 }
 
-const creativeLabels = [
-  'Producer', 'Vocalist', 'Dancer', 'Director', 
-  'Photographer', 'Songwriter', 'DJ', 'Actor',
-  'Designer', 'Musician', 'Videographer', 'Artist'
-];
+const creativeLabels = allRoles.map((r) => r.label);
 
 const colors = [
   'hsl(var(--primary))',
@@ -71,7 +68,7 @@ export const ConnectionWeb = () => {
         y: centerY + Math.sin(angle) * radius * (1 + (Math.random() - 0.5) * variance),
         vx: (Math.random() - 0.5) * 0.5,
         vy: (Math.random() - 0.5) * 0.5,
-        radius: 40 + Math.random() * 20,
+        radius: 28 + Math.random() * 10,
         color: colors[i % colors.length],
         label
       };
@@ -273,7 +270,7 @@ export const ConnectionWeb = () => {
               textAnchor="middle"
               dominantBaseline="middle"
               fill="#ffffff"
-              fontSize={12}
+              fontSize={9}
               fontWeight={600}
               className="pointer-events-none select-none"
               initial={{ opacity: 0 }}
