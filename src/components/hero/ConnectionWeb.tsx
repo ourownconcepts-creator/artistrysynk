@@ -38,6 +38,7 @@ export const ConnectionWeb = ({ query = '', isPro = true }: ConnectionWebProps) 
   const [nodes, setNodes] = useState<Node[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [activeNode, setActiveNode] = useState<number | null>(null);
+  const [hoveredMatch, setHoveredMatch] = useState<number | null>(null);
   const animationRef = useRef<number>();
 
   const normalizedQuery = query.trim().toLowerCase();
@@ -229,9 +230,6 @@ export const ConnectionWeb = ({ query = '', isPro = true }: ConnectionWebProps) 
         {/* Nodes */}
         {nodes.map((node, i) => (
           <g key={node.id} style={{ opacity: normalizedQuery && !isMatch(node.label) ? 0.2 : 1, transition: 'opacity 0.3s' }}>
-            {isMatch(node.label) && !isPro && (
-              <title>Free preview: only the top match highlights</title>
-            )}
             {/* Outer glow ring */}
             <motion.circle
               cx={node.x}
@@ -271,8 +269,14 @@ export const ConnectionWeb = ({ query = '', isPro = true }: ConnectionWebProps) 
               }}
               style={{ cursor: 'pointer' }}
               className="pointer-events-auto"
-              onMouseEnter={() => setActiveNode(node.id)}
-              onMouseLeave={() => setActiveNode(null)}
+              onMouseEnter={() => {
+                setActiveNode(node.id);
+                if (isMatch(node.label) && !isPro) setHoveredMatch(node.id);
+              }}
+              onMouseLeave={() => {
+                setActiveNode(null);
+                setHoveredMatch((curr) => (curr === node.id ? null : curr));
+              }}
             />
             
             {/* Label */}
@@ -291,6 +295,58 @@ export const ConnectionWeb = ({ query = '', isPro = true }: ConnectionWebProps) 
             >
               {node.label}
             </motion.text>
+
+            {/* Free-tier "1 of N highlights" badge */}
+            {isMatch(node.label) && !isPro && (
+              <g className="pointer-events-none">
+                <rect
+                  x={node.x + node.radius - 8}
+                  y={node.y - node.radius - 18}
+                  width={70}
+                  height={18}
+                  rx={9}
+                  fill="hsl(var(--background))"
+                  stroke={node.color}
+                  strokeWidth={1}
+                  opacity={0.95}
+                />
+                <text
+                  x={node.x + node.radius + 27}
+                  y={node.y - node.radius - 9}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill="hsl(var(--foreground))"
+                  fontSize={9}
+                  fontWeight={600}
+                >
+                  1 of 6 highlights
+                </text>
+              </g>
+            )}
+
+            {/* Free-tier hover tooltip with upgrade link */}
+            {isMatch(node.label) && !isPro && hoveredMatch === node.id && (
+              <foreignObject
+                x={node.x - 110}
+                y={node.y + node.radius + 8}
+                width={220}
+                height={70}
+                className="pointer-events-auto"
+              >
+                <div
+                  xmlns="http://www.w3.org/1999/xhtml"
+                  className="rounded-md border border-border/60 bg-popover/95 backdrop-blur-sm px-3 py-2 text-[11px] text-popover-foreground shadow-lg"
+                >
+                  <div>Free preview: only the top match highlights</div>
+                  <a
+                    href="/pricing"
+                    className="mt-1 inline-block text-primary font-semibold hover:underline"
+                  >
+                    Upgrade to Pro →
+                  </a>
+                </div>
+              </foreignObject>
+            )}
           </g>
         ))}
       </svg>
