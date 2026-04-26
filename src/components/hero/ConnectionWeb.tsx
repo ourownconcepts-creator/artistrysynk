@@ -334,7 +334,6 @@ export const ConnectionWeb = ({ query = '', isPro = true }: ConnectionWebProps) 
                 className="pointer-events-auto"
               >
                 <div
-                  xmlns="http://www.w3.org/1999/xhtml"
                   className="rounded-md border border-border/60 bg-popover/95 backdrop-blur-sm px-3 py-2 text-[11px] text-popover-foreground shadow-lg"
                 >
                   <div>Free preview: only the top match highlights</div>
