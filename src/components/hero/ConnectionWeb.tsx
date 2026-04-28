@@ -298,30 +298,22 @@ export const ConnectionWeb = ({ query = '', isPro = true }: ConnectionWebProps) 
 
             {/* Free-tier "1 of N highlights" badge */}
             {isMatch(node.label) && !isPro && (
-              <g className="pointer-events-none">
-                <rect
-                  x={node.x + node.radius - 8}
-                  y={node.y - node.radius - 18}
-                  width={70}
-                  height={18}
-                  rx={9}
-                  fill="hsl(var(--background))"
-                  stroke={node.color}
-                  strokeWidth={1}
-                  opacity={0.95}
-                />
-                <text
-                  x={node.x + node.radius + 27}
-                  y={node.y - node.radius - 9}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fill="hsl(var(--foreground))"
-                  fontSize={9}
-                  fontWeight={600}
+              <foreignObject
+                x={node.x + node.radius - 8}
+                y={node.y - node.radius - 20}
+                width={90}
+                height={22}
+                className="pointer-events-auto overflow-visible"
+              >
+                <a
+                  href="/pricing"
+                  title="Upgrade to Pro to highlight all matches"
+                  className="inline-flex items-center justify-center rounded-full border bg-background/95 px-2 py-0.5 text-[9px] font-semibold text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer"
+                  style={{ borderColor: node.color }}
                 >
-                  1 of 6 highlights
-                </text>
-              </g>
+                  1 of 6 highlights →
+                </a>
+              </foreignObject>
             )}
 
             {/* Free-tier hover tooltip with upgrade link */}
