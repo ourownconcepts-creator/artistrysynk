@@ -73,6 +73,8 @@ const EditProfile = () => {
   }, [navigate]);
 
   const loadProfile = async (uid: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setEmail(user?.email || "");
     const { data: profile } = await supabase
       .from('profiles')
       .select('*')
@@ -82,7 +84,6 @@ const EditProfile = () => {
     if (profile) {
       setFullName(profile.full_name || "");
       setUsername(profile.username || "");
-      setEmail((profile as any).email || "");
       setBio(profile.bio || "");
       setLocation(profile.location || "");
       setAvatarUrl(profile.avatar_url || "");

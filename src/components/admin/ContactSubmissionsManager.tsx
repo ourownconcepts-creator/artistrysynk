@@ -45,17 +45,21 @@ export const ContactSubmissionsManager = () => {
       return;
     }
 
-    // Cross-reference emails with profiles to get creative roles
-    const emails = (data || []).map((s: any) => s.email).filter(Boolean);
-    const { data: profilesData } = await supabase
-      .from("profiles")
-      .select("email")
-      .in("email", emails);
-
+    // Cross-reference submission emails with profile emails (admin-only via secure RPC).
+    const submissionEmails = (data || []).map((s: any) => s.email).filter(Boolean);
     const profileIds = new Map<string, string>();
-    profilesData?.forEach((p: any) => {
-      if (p.email) profileIds.set(p.email, p.id);
-    });
+    if (submissionEmails.length > 0) {
+      const { data: allProfiles } = await supabase
+        .from("profiles")
+        .select("id");
+      const allIds = (allProfiles || []).map((p: any) => p.id);
+      const { data: emailRows } = await supabase.rpc("get_profile_emails", { _user_ids: allIds });
+      (emailRows || []).forEach((p: any) => {
+        if (p.email && submissionEmails.includes(p.email)) {
+          profileIds.set(p.email, p.id);
+        }
+      });
+    }
 
     // Fetch creative roles for matched profiles
     const matchedIds = Array.from(profileIds.values());
