@@ -30,9 +30,11 @@ const colors = [
 interface ConnectionWebProps {
   query?: string;
   isPro?: boolean;
+  highlightedCount?: number;
+  totalMatches?: number;
 }
 
-export const ConnectionWeb = ({ query = '', isPro = true }: ConnectionWebProps) => {
+export const ConnectionWeb = ({ query = '', isPro = true, highlightedCount = 1, totalMatches = 0 }: ConnectionWebProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 1200, height: 800 });
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -306,12 +308,12 @@ export const ConnectionWeb = ({ query = '', isPro = true }: ConnectionWebProps) 
                 className="pointer-events-auto overflow-visible"
               >
                 <a
-                  href="/pricing"
+                  href="/pricing?source=badge"
                   title="Upgrade to Pro to highlight all matches"
                   className="inline-flex items-center justify-center rounded-full border bg-background/95 px-2 py-0.5 text-[9px] font-semibold text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer"
                   style={{ borderColor: node.color }}
                 >
-                  1 of 6 highlights →
+                  {highlightedCount} of {Math.max(totalMatches, highlightedCount)} highlights →
                 </a>
               </foreignObject>
             )}
@@ -330,7 +332,7 @@ export const ConnectionWeb = ({ query = '', isPro = true }: ConnectionWebProps) 
                 >
                   <div>Free preview: only the top match highlights</div>
                   <a
-                    href="/pricing"
+                    href="/pricing?source=tooltip"
                     className="mt-1 inline-block text-primary font-semibold hover:underline"
                   >
                     Upgrade to Pro →

@@ -170,7 +170,12 @@ export const Hero = () => {
       {/* Connection web - the star feature showing creatives connecting */}
       <Suspense fallback={null}>
         <motion.div style={{ opacity, scale }} className="absolute inset-0">
-          <ConnectionWeb query={effectiveQuery} isPro={isPro} />
+          <ConnectionWeb
+            query={effectiveQuery}
+            isPro={isPro}
+            highlightedCount={isPro ? allMatches.length : (suggestions[0] ? 1 : 0)}
+            totalMatches={allMatches.length}
+          />
         </motion.div>
       </Suspense>
 
