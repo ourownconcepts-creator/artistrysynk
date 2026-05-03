@@ -57,10 +57,13 @@ export const SubscriptionManager = () => {
     const userIds = subsData?.map(s => s.user_id) || [];
     const { data: profiles } = await supabase
       .from("profiles")
-      .select("id, full_name, email")
+      .select("id, full_name")
       .in("id", userIds);
 
-    const profileMap = new Map(profiles?.map(p => [p.id, { name: p.full_name, email: p.email }]) || []);
+    const { data: emails } = await supabase.rpc("get_profile_emails", { _user_ids: userIds });
+    const emailMap = new Map((emails || []).map((e: any) => [e.id, e.email]));
+
+    const profileMap = new Map(profiles?.map(p => [p.id, { name: p.full_name, email: emailMap.get(p.id) || "" }]) || []);
 
     const enrichedSubs = subsData?.map(sub => ({
       ...sub,

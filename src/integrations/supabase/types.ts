@@ -2148,6 +2148,13 @@ export type Database = {
         }[]
       }
       get_platform_stats: { Args: never; Returns: Json }
+      get_profile_emails: {
+        Args: { _user_ids: string[] }
+        Returns: {
+          email: string
+          id: string
+        }[]
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]

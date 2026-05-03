@@ -258,12 +258,13 @@ const Marketplace = () => {
     // Send email notification for status change
     if (order && (status === "in_progress" || status === "completed" || status === "cancelled")) {
       try {
-        // Get buyer's email from profiles table
+        // Get buyer's profile + email (email via secure RPC)
         const { data: buyerProfile } = await supabase
           .from("profiles")
-          .select("full_name, email")
+          .select("full_name")
           .eq("id", order.buyer_id)
           .single();
+        const { data: buyerEmailRows } = await supabase.rpc("get_profile_emails", { _user_ids: [order.buyer_id] });
         
         // Get seller profile for the name
         const { data: sellerProfile } = await supabase
@@ -272,7 +273,7 @@ const Marketplace = () => {
           .eq("id", currentUser)
           .single();
         
-        const buyerEmail = buyerProfile?.email;
+        const buyerEmail = buyerEmailRows?.[0]?.email;
         
         if (buyerEmail) {
           // Call the edge function with buyer email

@@ -102,14 +102,16 @@ export const VerificationRequests = () => {
     try {
       const { data: userProfile } = await supabase
         .from('profiles')
-        .select('full_name, email')
+        .select('full_name')
         .eq('id', userId)
         .single();
+      const { data: emailRows } = await supabase.rpc('get_profile_emails', { _user_ids: [userId] });
+      const userEmail = emailRows?.[0]?.email;
 
-      if (userProfile?.email && userProfile?.full_name) {
+      if (userEmail && userProfile?.full_name) {
         await supabase.functions.invoke('notify-verification-status', {
           body: {
-            email: userProfile.email,
+            email: userEmail,
             fullName: userProfile.full_name,
             status,
             requestType: request?.request_type || 'verification',
