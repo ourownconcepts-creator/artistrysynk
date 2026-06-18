@@ -64,4 +64,4 @@ Disallow: /reset-password
 Disallow: /og-image.png
 
 # Sitemap location
-Sitemap: https://artistrysynk.com/sitemap.xml
+Sitemap: https://artistrysynk.lovable.app/sitemap.xml

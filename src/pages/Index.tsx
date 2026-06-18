@@ -16,10 +16,10 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <PageSEO
-        title="ArtistrySynk - Create • Connect • Collaborate | Creative Network"
-        description="The ultimate platform connecting musicians, producers, dancers, actors, and creative professionals. Create, connect, and collaborate with talented creatives worldwide."
+        title="ArtistrySynk – Create, Connect, Collaborate"
+        description="Connect with musicians, producers, dancers and actors worldwide. Match, collaborate, and bring your creative vision to life on ArtistrySynk."
         canonicalUrl="https://artistrysynk.com/"
-        keywords="creative collaboration, artists, musicians, producers, dancers, actors, Afrobeats, music, creative professionals, talent network"
+        keywords="creative collaboration, artists, musicians, producers, dancers, actors, music, creative professionals, talent network"
       />
       <OrganizationSchema />
       <WebsiteSchema />

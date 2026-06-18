@@ -1,0 +1,23 @@
+# ArtistrySynk
+
+> Global creative collaboration platform connecting musicians, producers, dancers, actors, and creative professionals to match, collaborate, and build projects together.
+
+ArtistrySynk is a swipe-first discovery network where verified creatives find collaborators, post projects, hire services, and share portfolios across music, film, dance, and visual arts.
+
+## Pages
+
+- [Home](/): Overview of ArtistrySynk and how creatives connect.
+- [Features](/features): Discovery, matching, messaging, projects, and portfolio tools.
+- [How It Works](/how-it-works): Step-by-step guide to finding collaborators.
+- [Pricing](/pricing): Free, Pro, and Studio plans.
+- [About](/about): Mission and story behind ArtistrySynk.
+- [Blog](/blog): Articles on creative collaboration and industry trends.
+- [Success Stories](/success-stories): Real creator collaborations and outcomes.
+- [Careers](/careers): Open roles at ArtistrySynk.
+- [Contact](/contact): Get in touch with the team.
+
+## Optional
+
+- [Privacy](/privacy): Privacy policy.
+- [Terms](/terms): Terms of service.
+- [Cookies](/cookies): Cookie policy.
