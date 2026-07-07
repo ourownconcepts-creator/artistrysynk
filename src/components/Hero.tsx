@@ -257,7 +257,7 @@ export const Hero = () => {
             >
               <span className="block">
                 <GlowText className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                  <AnimatedText delay={0.6}>Creatives Synk</AnimatedText>
+                  <AnimatedText delay={0.6}>ArtistrySynk — Creative Collaboration Platform</AnimatedText>
                 </GlowText>
               </span>
             </motion.h1>

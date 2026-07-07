@@ -22,6 +22,7 @@ import { TrendingCollaborations } from "@/components/discover/TrendingCollaborat
 import { CreatorsNearYou } from "@/components/discover/CreatorsNearYou";
 import { OpenProjectsPreview } from "@/components/discover/OpenProjectsPreview";
 import { useSubscription } from "@/hooks/useSubscription";
+import { PageSEO } from "@/components/seo";
 
 interface Profile {
   id: string;
@@ -301,6 +302,12 @@ const Discover = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
+      <PageSEO
+        title="Discover Creatives — Swipe to Match | ArtistrySynk"
+        description="Swipe through musicians, producers, dancers, actors and creative professionals. Match with collaborators and start building together on ArtistrySynk."
+        canonicalUrl="https://artistrysynk.app/discover"
+        noIndex
+      />
       <div className="max-w-md mx-auto py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
