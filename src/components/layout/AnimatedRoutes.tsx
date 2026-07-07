@@ -41,6 +41,7 @@ const SuccessStories = lazy(() => import('@/pages/SuccessStories'));
 const About = lazy(() => import('@/pages/About'));
 const Careers = lazy(() => import('@/pages/Careers'));
 const Blog = lazy(() => import('@/pages/Blog'));
+const HowToFindAMusicProducer = lazy(() => import('@/pages/blog/HowToFindAMusicProducer'));
 const Contact = lazy(() => import('@/pages/Contact'));
 const Privacy = lazy(() => import('@/pages/Privacy'));
 const Terms = lazy(() => import('@/pages/Terms'));
@@ -77,6 +78,7 @@ export const AnimatedRoutes = () => {
         <Route path="/about" element={<SuspenseWrapper><PageTransition><About /></PageTransition></SuspenseWrapper>} />
         <Route path="/careers" element={<SuspenseWrapper><PageTransition><Careers /></PageTransition></SuspenseWrapper>} />
         <Route path="/blog" element={<SuspenseWrapper><PageTransition><Blog /></PageTransition></SuspenseWrapper>} />
+        <Route path="/blog/how-to-find-a-music-producer" element={<SuspenseWrapper><PageTransition><HowToFindAMusicProducer /></PageTransition></SuspenseWrapper>} />
         <Route path="/contact" element={<SuspenseWrapper><PageTransition><Contact /></PageTransition></SuspenseWrapper>} />
         <Route path="/privacy" element={<SuspenseWrapper><PageTransition><Privacy /></PageTransition></SuspenseWrapper>} />
         <Route path="/terms" element={<SuspenseWrapper><PageTransition><Terms /></PageTransition></SuspenseWrapper>} />

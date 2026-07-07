@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Calendar, User, ArrowRight, Mail } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
@@ -15,6 +16,15 @@ const Blog = () => {
   const [activeCategory, setActiveCategory] = useState("All");
 
   const posts = [
+    {
+      title: "How to Find a Music Producer: A Complete Guide for Artists",
+      excerpt: "What to look for, red flags to avoid, and how to match with vetted producers on ArtistrySynk — a step-by-step guide for artists at every level.",
+      author: "ArtistrySynk Team",
+      date: "Jul 7, 2026",
+      category: "Tips & Tricks",
+      readTime: "9 min read",
+      slug: "how-to-find-a-music-producer"
+    },
     {
       title: "5 Tips for Finding the Perfect Creative Collaborator",
       excerpt: "Learn how to identify and connect with creatives who complement your skills and share your vision for successful projects.",
@@ -190,9 +200,17 @@ const Blog = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">{post.readTime}</span>
-                      <Button variant="ghost" size="sm" className="group-hover:text-primary">
-                        Read More <ArrowRight className="w-4 h-4 ml-1" />
-                      </Button>
+                      {("slug" in post && (post as any).slug) ? (
+                        <Button asChild variant="ghost" size="sm" className="group-hover:text-primary">
+                          <Link to={`/blog/${(post as any).slug}`}>
+                            Read More <ArrowRight className="w-4 h-4 ml-1" />
+                          </Link>
+                        </Button>
+                      ) : (
+                        <Button variant="ghost" size="sm" className="group-hover:text-primary" disabled>
+                          Coming soon
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardContent>
