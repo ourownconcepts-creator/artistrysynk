@@ -105,7 +105,10 @@ export const RecentSignups = () => {
                   className="flex items-center gap-2.5 px-4 py-2.5 bg-card/80 backdrop-blur-sm rounded-full border border-border/50 hover:border-primary/50 hover:shadow-md hover:shadow-primary/10 transition-all duration-300"
                 >
                   <Avatar className="w-7 h-7 border border-primary/20">
-                    <AvatarImage src={user.avatar_url || undefined} />
+                    <AvatarImage
+                      src={user.avatar_url || undefined}
+                      alt={`${user.username} profile picture`}
+                    />
                     <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-primary-foreground text-xs font-bold">
                       {user.username?.charAt(0)?.toUpperCase() || "?"}
                     </AvatarFallback>
