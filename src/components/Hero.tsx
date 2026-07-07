@@ -238,7 +238,15 @@ export const Hero = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <img src={logoImg} alt="ArtistrySynk" className="h-80 w-auto" />
+              <img
+                src={logoImg}
+                alt="ArtistrySynk Creative Collaboration Platform"
+                width={640}
+                height={640}
+                fetchPriority="high"
+                decoding="async"
+                className="h-80 w-auto"
+              />
             </motion.div>
             
             <motion.h1 

@@ -203,6 +203,7 @@ const Pricing = () => {
       {/* Pricing Cards */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl">
+          <h2 className="sr-only">Subscription plans</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {plans.map((plan, index) => (
               <Card 

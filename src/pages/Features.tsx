@@ -80,6 +80,7 @@ const FeaturesPage = () => {
       {/* Features Grid */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl">
+          <h2 className="sr-only">Platform features</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-border/50">

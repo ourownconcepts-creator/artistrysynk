@@ -112,6 +112,7 @@ const HowItWorksPage = () => {
       {/* Steps Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl">
+          <h2 className="sr-only">Four steps to collaborate</h2>
           <div className="grid md:grid-cols-2 gap-12 relative">
             {steps.map((step, index) => (
               <div key={index} className="relative">

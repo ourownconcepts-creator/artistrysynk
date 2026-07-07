@@ -9,7 +9,7 @@ export const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center">
-              <img src={logoImg} alt="ArtistrySynk" className="h-40 w-auto" />
+              <img src={logoImg} alt="ArtistrySynk Creative Collaboration Platform" className="h-40 w-auto" />
             </div>
             <p className="text-sm text-muted-foreground">
               The home of African creativity. Connect, collaborate, and create.
@@ -58,13 +58,13 @@ export const Footer = () => {
           
           {/* Social Links */}
           <div className="flex gap-4">
-            <a href="#" className="p-2 rounded-lg hover:bg-muted transition-colors">
+            <a href="#" aria-label="Follow ArtistrySynk on Instagram" className="p-2 rounded-lg hover:bg-muted transition-colors">
               <Instagram className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
             </a>
-            <a href="#" className="p-2 rounded-lg hover:bg-muted transition-colors">
+            <a href="#" aria-label="Follow ArtistrySynk on Twitter" className="p-2 rounded-lg hover:bg-muted transition-colors">
               <Twitter className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
             </a>
-            <a href="#" className="p-2 rounded-lg hover:bg-muted transition-colors">
+            <a href="#" aria-label="Follow ArtistrySynk on Facebook" className="p-2 rounded-lg hover:bg-muted transition-colors">
               <Facebook className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
             </a>
           </div>
