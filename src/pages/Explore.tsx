@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrendingUp, Code, Palette, Music, Briefcase, Loader2, ArrowRight } from "lucide-react";
 import { getRoleLabel } from "@/lib/creativeRoles";
+import { PageSEO } from "@/components/seo";
 
 interface TrendingCreator {
   id: string;
@@ -168,6 +169,12 @@ const Explore = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
+      <PageSEO
+        title="Explore Top Creative Talent | ArtistrySynk"
+        description="Browse trending artists, featured developers, and top designers across the ArtistrySynk network. Discover creators by category and find your next collaborator."
+        canonicalUrl="https://artistrysynk.app/explore"
+        noIndex
+      />
       <div className="max-w-6xl mx-auto py-8 space-y-8">
         <div className="flex items-center justify-between">
           <div>
