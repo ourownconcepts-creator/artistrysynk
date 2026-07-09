@@ -203,6 +203,18 @@ const Auth = () => {
     }
   };
 
+  const handleAppleSignIn = async () => {
+    setLoading(true);
+    const result = await lovable.auth.signInWithOAuth("apple", {
+      redirect_uri: window.location.origin,
+    });
+
+    if (result?.error) {
+      toast.error(result.error.message || "Failed to sign in with Apple");
+      setLoading(false);
+    }
+  };
+
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     
