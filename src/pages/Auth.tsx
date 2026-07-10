@@ -40,6 +40,9 @@ const Auth = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -237,6 +240,46 @@ const Auth = () => {
       toast.error(error instanceof Error ? error.message : "Apple sign-in failed. Please try again.");
       setLoading(false);
     }
+  };
+
+  const phoneSchema = z
+    .string()
+    .regex(/^\+[1-9]\d{7,14}$/, "Enter phone in E.164 format, e.g. +14155551234");
+
+  const handleSendOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = phoneSchema.safeParse(phone);
+    if (!parsed.success) {
+      setErrors({ phone: parsed.error.errors[0].message });
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({ phone });
+    if (error) {
+      toast.error(error.message || "Failed to send code. SMS provider may not be configured.");
+      setLoading(false);
+      return;
+    }
+    setOtpSent(true);
+    toast.success("Verification code sent!");
+    setLoading(false);
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otp || otp.length < 6) {
+      setErrors({ otp: "Enter the 6-digit code" });
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.verifyOtp({ phone, token: otp, type: "sms" });
+    if (error) {
+      toast.error(error.message || "Invalid or expired code.");
+      setLoading(false);
+      return;
+    }
+    toast.success("Signed in!");
+    navigate("/discover");
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
