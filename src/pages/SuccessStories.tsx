@@ -53,11 +53,11 @@ const SuccessStories = () => {
       <PageSEO
         title="Success Stories - Creative Collaborations That Inspire"
         description="Read how musicians, producers, dancers, and creatives found their perfect match on ArtistrySynk and created amazing projects together."
-        canonicalUrl="https://artistrysynk.com/success-stories"
+        canonicalUrl="https://artistrysynk.app/success-stories"
         keywords="creative success stories, artist collaboration stories, music collaboration, ArtistrySynk testimonials"
         breadcrumbs={[
-          { name: "Home", url: "https://artistrysynk.com" },
-          { name: "Success Stories", url: "https://artistrysynk.com/success-stories" }
+          { name: "Home", url: "https://artistrysynk.app" },
+          { name: "Success Stories", url: "https://artistrysynk.app/success-stories" }
         ]}
       />
       {/* Hero Section */}

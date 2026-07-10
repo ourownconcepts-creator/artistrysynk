@@ -40,7 +40,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const emailResponse = await resend.emails.send({
-      from: "ArtistrySynk <hello@artistrysynk.com>",
+      from: "ArtistrySynk <hello@artistrysynk.app>",
       to: [email],
       subject: `Welcome to ArtistrySynk, ${fullName}! 🎨`,
       html: `

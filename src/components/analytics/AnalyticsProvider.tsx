@@ -7,7 +7,7 @@ import { useRealtimeNotifications, useMatchOnlinePresence } from '@/hooks/useRea
 
 // GA4 Measurement ID - replace with your actual ID
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || '';
-const PLAUSIBLE_DOMAIN = 'artistrysynk.com';
+const PLAUSIBLE_DOMAIN = 'artistrysynk.app';
 
 declare global {
   interface Window {

@@ -24,7 +24,7 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email Us",
-      info: "hello@artistrysynk.com",
+      info: "hello@artistrysynk.app",
       description: "We'll respond within 24 hours"
     },
     {
@@ -130,11 +130,11 @@ const Contact = () => {
       <PageSEO
         title="Contact Us - Get In Touch | ArtistrySynk"
         description="Have questions about ArtistrySynk? Contact us via email, phone, or live chat. We respond within 24 hours. Lagos, Nigeria based support team."
-        canonicalUrl="https://artistrysynk.com/contact"
+        canonicalUrl="https://artistrysynk.app/contact"
         keywords="contact ArtistrySynk, creative platform support, ArtistrySynk help, Lagos Nigeria contact"
         breadcrumbs={[
-          { name: "Home", url: "https://artistrysynk.com" },
-          { name: "Contact", url: "https://artistrysynk.com/contact" }
+          { name: "Home", url: "https://artistrysynk.app" },
+          { name: "Contact", url: "https://artistrysynk.app/contact" }
         ]}
       />
       <FAQSchema faqs={contactFaqs} />

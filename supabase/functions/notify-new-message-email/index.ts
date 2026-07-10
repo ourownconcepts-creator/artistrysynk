@@ -79,11 +79,11 @@ serve(async (req) => {
 
     const senderName = sender?.full_name || sender?.username || "Someone";
     const preview = (content || "").toString().slice(0, 140);
-    const messagesUrl = "https://artistrysynk.com/messages";
+    const messagesUrl = "https://artistrysynk.app/messages";
 
     const resend = new Resend(RESEND_API_KEY);
     await resend.emails.send({
-      from: "ArtistrySynk <hello@artistrysynk.com>",
+      from: "ArtistrySynk <hello@artistrysynk.app>",
       to: [recipient.email],
       subject: `New message from ${senderName}`,
       html: `<!DOCTYPE html><html><body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;margin:0;padding:0;background:#f4f4f5;">

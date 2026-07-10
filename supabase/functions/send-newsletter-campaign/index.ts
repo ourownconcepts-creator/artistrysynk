@@ -100,7 +100,7 @@ const handler = async (req: Request): Promise<Response> => {
       for (const email of batch) {
         try {
           const emailResponse = await resend.emails.send({
-            from: "ArtistrySynk <newsletter@artistrysynk.com>",
+            from: "ArtistrySynk <newsletter@artistrysynk.app>",
             to: [email],
             subject,
             html: `

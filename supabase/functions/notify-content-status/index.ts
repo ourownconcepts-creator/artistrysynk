@@ -119,7 +119,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const emailResponse = await resend.emails.send({
-      from: "ArtistrySynk <notifications@artistrysynk.com>",
+      from: "ArtistrySynk <notifications@artistrysynk.app>",
       to: [profile.email],
       subject,
       html: htmlContent,

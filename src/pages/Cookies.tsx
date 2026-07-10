@@ -11,10 +11,10 @@ const Cookies = () => {
       <PageSEO
         title="Cookie Policy - How We Use Cookies"
         description="Learn about how ArtistrySynk uses cookies and similar technologies to improve your experience on our platform."
-        canonicalUrl="https://artistrysynk.com/cookies"
+        canonicalUrl="https://artistrysynk.app/cookies"
         breadcrumbs={[
-          { name: "Home", url: "https://artistrysynk.com" },
-          { name: "Cookie Policy", url: "https://artistrysynk.com/cookies" }
+          { name: "Home", url: "https://artistrysynk.app" },
+          { name: "Cookie Policy", url: "https://artistrysynk.app/cookies" }
         ]}
       />
       {/* Hero Section */}
@@ -221,7 +221,7 @@ const Cookies = () => {
                   If you have questions about our use of cookies, please contact us at:
                 </p>
                 <ul className="list-none space-y-2 text-muted-foreground mt-4">
-                  <li><strong>Email:</strong> privacy@artistrysynk.com</li>
+                  <li><strong>Email:</strong> privacy@artistrysynk.app</li>
                   <li><strong>Address:</strong> Lagos, Nigeria</li>
                 </ul>
               </CardContent>

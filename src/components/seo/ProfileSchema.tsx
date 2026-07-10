@@ -38,7 +38,7 @@ export const ProfileSchema = ({
     "memberOf": {
       "@type": "Organization",
       "name": "ArtistrySynk",
-      "url": "https://artistrysynk.com"
+      "url": "https://artistrysynk.app"
     }
   };
 

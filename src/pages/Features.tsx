@@ -53,11 +53,11 @@ const FeaturesPage = () => {
       <PageSEO
         title="Features - Smart Matching & Collaboration Tools | ArtistrySynk"
         description="Discover powerful features for creatives: AI-powered matching, real-time collaboration, portfolio showcase, verified profiles, and quick discovery tools."
-        canonicalUrl="https://artistrysynk.com/features"
+        canonicalUrl="https://artistrysynk.app/features"
         keywords="creative matching, artist collaboration tools, portfolio showcase, verified creatives, global artist features, music collaboration"
         breadcrumbs={[
-          { name: "Home", url: "https://artistrysynk.com" },
-          { name: "Features", url: "https://artistrysynk.com/features" }
+          { name: "Home", url: "https://artistrysynk.app" },
+          { name: "Features", url: "https://artistrysynk.app/features" }
         ]}
       />
       

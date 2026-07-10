@@ -38,7 +38,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Sending admin notification to ${recipientEmail} for action: ${action}`);
 
     const emailResponse = await resend.emails.send({
-      from: "Admin Notifications <notifications@artistrysynk.com>",
+      from: "Admin Notifications <notifications@artistrysynk.app>",
       to: [recipientEmail],
       subject: `Admin Action Alert: ${action}`,
       html: `

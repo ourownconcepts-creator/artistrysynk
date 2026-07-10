@@ -30,7 +30,7 @@ export const newsletterTemplates: NewsletterTemplate[] = [
           </div>
           <hr style="border: none; border-top: 1px solid #e4e4e7; margin: 32px 0;" />
           <p style="color: #a1a1aa; font-size: 12px; text-align: center;">
-            © ${new Date().getFullYear()} ArtistrySynk • <a href="https://artistrysynk.com" style="color: #c026d3;">Visit Website</a>
+            © ${new Date().getFullYear()} ArtistrySynk • <a href="https://artistrysynk.app" style="color: #c026d3;">Visit Website</a>
           </p>
         </div>
       </div>
@@ -77,7 +77,7 @@ export const newsletterTemplates: NewsletterTemplate[] = [
           </div>
         </div>
         <div style="text-align: center; margin-top: 24px;">
-          <a href="https://artistrysynk.com" style="display: inline-block; background: linear-gradient(135deg, #c026d3, #7c3aed); color: #fff; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-weight: 600;">
+          <a href="https://artistrysynk.app" style="display: inline-block; background: linear-gradient(135deg, #c026d3, #7c3aed); color: #fff; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-weight: 600;">
             Explore ArtistrySynk
           </a>
         </div>
@@ -108,7 +108,7 @@ export const newsletterTemplates: NewsletterTemplate[] = [
           </div>
         </div>
         <div style="background-color: #18181b; padding: 20px 24px; text-align: center; border-top: 1px solid #27272a;">
-          <a href="https://artistrysynk.com" style="color: #c026d3; text-decoration: none; font-size: 13px;">
+          <a href="https://artistrysynk.app" style="color: #c026d3; text-decoration: none; font-size: 13px;">
             Visit ArtistrySynk
           </a>
           <span style="color: #52525b; margin: 0 8px;">•</span>
@@ -139,14 +139,14 @@ export const newsletterTemplates: NewsletterTemplate[] = [
             ${content}
           </div>
           <div style="text-align: center; margin-top: 32px;">
-            <a href="https://artistrysynk.com" style="display: inline-block; background: #c026d3; color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 15px;">
+            <a href="https://artistrysynk.app" style="display: inline-block; background: #c026d3; color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 15px;">
               Learn More
             </a>
           </div>
         </div>
         <div style="background-color: #f4f4f5; padding: 20px; text-align: center;">
           <p style="color: #71717a; font-size: 12px; margin: 0;">
-            © ${new Date().getFullYear()} ArtistrySynk • <a href="https://artistrysynk.com" style="color: #c026d3; text-decoration: none;">Unsubscribe</a>
+            © ${new Date().getFullYear()} ArtistrySynk • <a href="https://artistrysynk.app" style="color: #c026d3; text-decoration: none;">Unsubscribe</a>
           </p>
         </div>
       </div>
@@ -172,7 +172,7 @@ export const newsletterTemplates: NewsletterTemplate[] = [
           </div>
         </div>
         <div style="padding: 32px 24px; text-align: center;">
-          <a href="https://artistrysynk.com/discover" style="display: inline-block; border: 2px solid #c026d3; color: #c026d3; text-decoration: none; padding: 12px 28px; border-radius: 25px; font-weight: 500;">
+          <a href="https://artistrysynk.app/discover" style="display: inline-block; border: 2px solid #c026d3; color: #c026d3; text-decoration: none; padding: 12px 28px; border-radius: 25px; font-weight: 500;">
             Discover More Creatives
           </a>
         </div>

@@ -47,7 +47,7 @@ async function generateVapidAuthHeader(
   const payload = {
     aud: audience,
     exp: expiration,
-    sub: "mailto:hello@artistrysynk.com",
+    sub: "mailto:hello@artistrysynk.app",
   };
 
   const encoder = new TextEncoder();
@@ -119,7 +119,7 @@ async function sendPushToEndpoint(
         Authorization: `vapid t=eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.${btoa(JSON.stringify({
           aud: new URL(subscription.endpoint).origin,
           exp: Math.floor(Date.now() / 1000) + 43200,
-          sub: "mailto:hello@artistrysynk.com"
+          sub: "mailto:hello@artistrysynk.app"
         })).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")}, k=${vapidPublicKey}`,
       },
       body: payload,
