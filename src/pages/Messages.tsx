@@ -98,7 +98,8 @@ const Messages = () => {
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
-          setMessages((prev) => [...prev, payload.new as Message]);
+          const incoming = payload.new as Message;
+          setMessages((prev) => (prev.some((m) => m.id === incoming.id) ? prev : [...prev, incoming]));
           scrollToBottom();
         }
       )
@@ -168,17 +169,23 @@ const Messages = () => {
     
     if (!newMessage.trim() || !currentUser) return;
 
-    const { error } = await supabase
+    const { data: inserted, error } = await supabase
       .from('messages')
       .insert({
         conversation_id: conversationId,
         sender_id: currentUser,
         content: newMessage.trim(),
-      });
+      })
+      .select('*')
+      .single();
 
     if (error) {
       toast.error("Failed to send message");
     } else {
+      if (inserted) {
+        setMessages((prev) => (prev.some((m) => m.id === inserted.id) ? prev : [...prev, inserted as Message]));
+        setTimeout(scrollToBottom, 50);
+      }
       setNewMessage("");
     }
   };
