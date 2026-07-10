@@ -18,7 +18,7 @@ const Index = () => {
       <PageSEO
         title="ArtistrySynk – Create, Connect, Collaborate"
         description="Connect with musicians, producers, dancers and actors worldwide. Match, collaborate, and bring your creative vision to life on ArtistrySynk."
-        canonicalUrl="https://artistrysynk.com/"
+        canonicalUrl="https://artistrysynk.app/"
         keywords="creative collaboration, artists, musicians, producers, dancers, actors, music, creative professionals, talent network"
       />
       <OrganizationSchema />

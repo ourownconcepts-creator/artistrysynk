@@ -272,7 +272,7 @@ const AdminSettings = () => {
                     type="email"
                     value={settings.contact_email}
                     onChange={(e) => updateSetting("contact_email", e.target.value)}
-                    placeholder="contact@artistrysynk.com"
+                    placeholder="contact@artistrysynk.app"
                   />
                 </div>
                 <div className="space-y-2">
@@ -281,7 +281,7 @@ const AdminSettings = () => {
                     type="email"
                     value={settings.support_email}
                     onChange={(e) => updateSetting("support_email", e.target.value)}
-                    placeholder="support@artistrysynk.com"
+                    placeholder="support@artistrysynk.app"
                   />
                 </div>
               </CardContent>

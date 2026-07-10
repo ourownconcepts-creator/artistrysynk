@@ -10,10 +10,10 @@ const Terms = () => {
       <PageSEO
         title="Terms of Service - ArtistrySynk Platform Rules"
         description="Read the ArtistrySynk terms of service. Understand the rules and guidelines for using our creative collaboration platform."
-        canonicalUrl="https://artistrysynk.com/terms"
+        canonicalUrl="https://artistrysynk.app/terms"
         breadcrumbs={[
-          { name: "Home", url: "https://artistrysynk.com" },
-          { name: "Terms of Service", url: "https://artistrysynk.com/terms" }
+          { name: "Home", url: "https://artistrysynk.app" },
+          { name: "Terms of Service", url: "https://artistrysynk.app/terms" }
         ]}
       />
       {/* Hero Section */}
@@ -232,7 +232,7 @@ const Terms = () => {
                   If you have questions about these Terms, contact us at:
                 </p>
                 <ul className="list-none space-y-2 text-muted-foreground mt-4">
-                  <li><strong>Email:</strong> legal@artistrysynk.com</li>
+                  <li><strong>Email:</strong> legal@artistrysynk.app</li>
                   <li><strong>Address:</strong> Lagos, Nigeria</li>
                 </ul>
               </CardContent>

@@ -130,11 +130,11 @@ const Blog = () => {
       <PageSEO
         title="Blog - Creative Collaboration Tips & Industry Insights"
         description="Read the latest articles on creative collaboration, music production tips, artist networking, and industry insights from ArtistrySynk."
-        canonicalUrl="https://artistrysynk.com/blog"
+        canonicalUrl="https://artistrysynk.app/blog"
         keywords="creative blog, music collaboration tips, artist networking, AfroBeats industry, creative professionals blog"
         breadcrumbs={[
-          { name: "Home", url: "https://artistrysynk.com" },
-          { name: "Blog", url: "https://artistrysynk.com/blog" }
+          { name: "Home", url: "https://artistrysynk.app" },
+          { name: "Blog", url: "https://artistrysynk.app/blog" }
         ]}
       />
       {/* Hero Section */}

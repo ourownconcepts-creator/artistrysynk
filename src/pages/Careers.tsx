@@ -136,11 +136,11 @@ const Careers = () => {
       <PageSEO
         title="Careers - Join Our Team | ArtistrySynk"
         description="Help us build the future of creative collaboration in Africa. Explore open positions in engineering, design, and marketing with competitive pay and remote-first culture."
-        canonicalUrl="https://artistrysynk.com/careers"
+        canonicalUrl="https://artistrysynk.app/careers"
         keywords="ArtistrySynk jobs, creative tech jobs Nigeria, African startup careers, remote jobs Africa, Lagos tech jobs"
         breadcrumbs={[
-          { name: "Home", url: "https://artistrysynk.com" },
-          { name: "Careers", url: "https://artistrysynk.com/careers" }
+          { name: "Home", url: "https://artistrysynk.app" },
+          { name: "Careers", url: "https://artistrysynk.app/careers" }
         ]}
       />
       

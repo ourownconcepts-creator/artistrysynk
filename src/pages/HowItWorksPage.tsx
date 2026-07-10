@@ -88,11 +88,11 @@ const HowItWorksPage = () => {
       <PageSEO
         title="How It Works - Find Your Creative Match | Artistry"
         description="Four simple steps to finding your perfect creative collaborator: Create profile, discover creatives, match & connect, and create together."
-        canonicalUrl="https://artistrysynk.com/how-it-works"
+        canonicalUrl="https://artistrysynk.app/how-it-works"
         keywords="how to find collaborators, creative matching process, artist networking, music collaboration steps, find producers"
         breadcrumbs={[
-          { name: "Home", url: "https://artistrysynk.com" },
-          { name: "How It Works", url: "https://artistrysynk.com/how-it-works" }
+          { name: "Home", url: "https://artistrysynk.app" },
+          { name: "How It Works", url: "https://artistrysynk.app/how-it-works" }
         ]}
       />
       

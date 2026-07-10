@@ -154,7 +154,7 @@ export const NewsletterPreviewDialog = ({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">ArtistrySynk</p>
-                    <p className="text-xs text-muted-foreground truncate">noreply@artistrysynk.com</p>
+                    <p className="text-xs text-muted-foreground truncate">noreply@artistrysynk.app</p>
                   </div>
                 </div>
                 <p className="text-sm font-semibold truncate">{subject || "(No subject)"}</p>

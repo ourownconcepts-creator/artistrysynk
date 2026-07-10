@@ -10,10 +10,10 @@ const Privacy = () => {
       <PageSEO
         title="Privacy Policy - How We Protect Your Data"
         description="Learn how ArtistrySynk collects, uses, and protects your personal information. Your privacy matters to us."
-        canonicalUrl="https://artistrysynk.com/privacy"
+        canonicalUrl="https://artistrysynk.app/privacy"
         breadcrumbs={[
-          { name: "Home", url: "https://artistrysynk.com" },
-          { name: "Privacy Policy", url: "https://artistrysynk.com/privacy" }
+          { name: "Home", url: "https://artistrysynk.app" },
+          { name: "Privacy Policy", url: "https://artistrysynk.app/privacy" }
         ]}
       />
       {/* Hero Section */}
@@ -153,7 +153,7 @@ const Privacy = () => {
                   <li>Object to certain data processing</li>
                 </ul>
                 <p className="text-muted-foreground mt-4">
-                  To exercise these rights, contact us at privacy@artistrysynk.com
+                  To exercise these rights, contact us at privacy@artistrysynk.app
                 </p>
               </CardContent>
             </Card>
@@ -192,7 +192,7 @@ const Privacy = () => {
                   If you have questions about this Privacy Policy, please contact us at:
                 </p>
                 <ul className="list-none space-y-2 text-muted-foreground mt-4">
-                  <li><strong>Email:</strong> privacy@artistrysynk.com</li>
+                  <li><strong>Email:</strong> privacy@artistrysynk.app</li>
                   <li><strong>Address:</strong> Lagos, Nigeria</li>
                 </ul>
               </CardContent>

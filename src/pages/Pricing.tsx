@@ -173,11 +173,11 @@ const Pricing = () => {
       <PageSEO
         title="Pricing - Simple & Transparent | ArtistrySynk"
         description="Start free and upgrade when you're ready. Connect with creatives, unlimited matches and messaging. Pro plans for verified badges and advanced features."
-        canonicalUrl="https://artistrysynk.com/pricing"
+        canonicalUrl="https://artistrysynk.app/pricing"
         keywords="ArtistrySynk pricing, creative collaboration cost, artist network pricing, free creative platform"
         breadcrumbs={[
-          { name: "Home", url: "https://artistrysynk.com" },
-          { name: "Pricing", url: "https://artistrysynk.com/pricing" }
+          { name: "Home", url: "https://artistrysynk.app" },
+          { name: "Pricing", url: "https://artistrysynk.app/pricing" }
         ]}
       />
       <FAQSchema faqs={faqs} />

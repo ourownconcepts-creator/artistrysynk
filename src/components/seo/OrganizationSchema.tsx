@@ -10,8 +10,8 @@ interface OrganizationSchemaProps {
 
 export const OrganizationSchema = ({
   name = "ArtistrySynk",
-  url = "https://artistrysynk.com",
-  logo = "https://artistrysynk.com/logo.png",
+  url = "https://artistrysynk.app",
+  logo = "https://artistrysynk.app/logo.png",
   description = "The ultimate platform connecting musicians, producers, dancers, actors, and creative professionals across Africa. Create, connect, and collaborate with talented creatives.",
   sameAs = [
     "https://instagram.com/artistrysynk",
@@ -34,7 +34,7 @@ export const OrganizationSchema = ({
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "customer service",
-      "email": "hello@artistrysynk.com",
+      "email": "hello@artistrysynk.app",
       "availableLanguage": ["English"]
     },
     "address": {

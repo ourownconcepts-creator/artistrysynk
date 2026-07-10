@@ -57,7 +57,7 @@ serve(async (req) => {
       
       if (user?.email) {
         await resend.emails.send({
-          from: 'Admin Reports <reports@artistrysynk.com>',
+          from: 'Admin Reports <reports@artistrysynk.app>',
           to: [user.email],
           subject: 'Weekly Analytics Report',
           html: `

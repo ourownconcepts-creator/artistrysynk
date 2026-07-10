@@ -61,7 +61,7 @@ serve(async (req) => {
       
       if (user?.email) {
         await resend.emails.send({
-          from: 'Admin Notifications <notifications@artistrysynk.com>',
+          from: 'Admin Notifications <notifications@artistrysynk.app>',
           to: [user.email],
           subject: 'New Match Created',
           html: `

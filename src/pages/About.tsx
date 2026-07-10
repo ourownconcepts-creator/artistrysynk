@@ -37,11 +37,11 @@ const About = () => {
       <PageSEO
         title="About Us - Our Story & Mission | ArtistrySynk"
         description="Building the home of global creativity, one connection at a time. Learn about our mission to empower creatives and connect talented professionals."
-        canonicalUrl="https://artistrysynk.com/about"
+        canonicalUrl="https://artistrysynk.app/about"
         keywords="about ArtistrySynk, global creative platform, creative networking, artist platform, creative community"
         breadcrumbs={[
-          { name: "Home", url: "https://artistrysynk.com" },
-          { name: "About", url: "https://artistrysynk.com/about" }
+          { name: "Home", url: "https://artistrysynk.app" },
+          { name: "About", url: "https://artistrysynk.app/about" }
         ]}
       />
       
