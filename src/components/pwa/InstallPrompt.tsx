@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { X, Download, Share } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { trackEvent } from '@/components/analytics/AnalyticsProvider';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -34,24 +35,36 @@ export const InstallPrompt = () => {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
+      trackEvent('pwa_install_prompt_available', { platform: ios ? 'ios' : 'other' });
     };
     window.addEventListener('beforeinstallprompt', handler);
+
+    // Fires once the app is actually installed (Android/desktop)
+    const installedHandler = () => {
+      trackEvent('pwa_installed', { platform: ios ? 'ios' : 'other' });
+      localStorage.setItem('pwa-installed', '1');
+    };
+    window.addEventListener('appinstalled', installedHandler);
 
     // Show after 20 seconds
     const timer = setTimeout(() => {
       setShowPrompt(true);
+      trackEvent('pwa_install_banner_shown', { platform: ios ? 'ios' : 'other' });
     }, 20000);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener('appinstalled', installedHandler);
       clearTimeout(timer);
     };
   }, []);
 
   const handleInstall = useCallback(async () => {
     if (deferredPrompt) {
+      trackEvent('pwa_install_clicked', { platform: 'android_desktop' });
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
+      trackEvent('pwa_install_choice', { outcome });
       if (outcome === 'accepted') {
         setShowPrompt(false);
       }
@@ -61,6 +74,7 @@ export const InstallPrompt = () => {
 
   const handleDismiss = () => {
     setShowPrompt(false);
+    trackEvent('pwa_install_dismissed', { platform: isIOS ? 'ios' : 'other' });
     localStorage.setItem('pwa-install-dismissed', Date.now().toString());
   };
 
@@ -88,7 +102,10 @@ export const InstallPrompt = () => {
           </div>
 
           {isIOS ? (
-            <div className="text-xs text-muted-foreground space-y-1">
+            <div
+              className="text-xs text-muted-foreground space-y-1"
+              onClick={() => trackEvent('pwa_ios_share_hint_viewed')}
+            >
               <p className="flex items-center gap-1">
                 Tap <Share className="w-3 h-3 inline" /> then <strong>"Add to Home Screen"</strong>
               </p>
