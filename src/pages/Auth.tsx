@@ -40,6 +40,9 @@ const Auth = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -239,6 +242,46 @@ const Auth = () => {
     }
   };
 
+  const phoneSchema = z
+    .string()
+    .regex(/^\+[1-9]\d{7,14}$/, "Enter phone in E.164 format, e.g. +14155551234");
+
+  const handleSendOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = phoneSchema.safeParse(phone);
+    if (!parsed.success) {
+      setErrors({ phone: parsed.error.errors[0].message });
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({ phone });
+    if (error) {
+      toast.error(error.message || "Failed to send code. SMS provider may not be configured.");
+      setLoading(false);
+      return;
+    }
+    setOtpSent(true);
+    toast.success("Verification code sent!");
+    setLoading(false);
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otp || otp.length < 6) {
+      setErrors({ otp: "Enter the 6-digit code" });
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.verifyOtp({ phone, token: otp, type: "sms" });
+    if (error) {
+      toast.error(error.message || "Invalid or expired code.");
+      setLoading(false);
+      return;
+    }
+    toast.success("Signed in!");
+    navigate("/discover");
+  };
+
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -397,9 +440,10 @@ const Auth = () => {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="signin" onValueChange={() => setErrors({})}>
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="signin">Sign In</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                <TabsTrigger value="phone">Phone</TabsTrigger>
               </TabsList>
               
               <TabsContent value="signin">
@@ -619,7 +663,79 @@ const Auth = () => {
                   </Button>
                 </form>
               </TabsContent>
+
+              <TabsContent value="phone">
+                {!otpSent ? (
+                  <form onSubmit={handleSendOtp} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone-number">Phone number</Label>
+                      <Input
+                        id="phone-number"
+                        type="tel"
+                        placeholder="+14155551234"
+                        value={phone}
+                        onChange={(e) => {
+                          setPhone(e.target.value);
+                          clearError("phone");
+                        }}
+                        className={errors.phone ? "border-destructive" : ""}
+                        autoComplete="tel"
+                        required
+                      />
+                      {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
+                      <p className="text-xs text-muted-foreground">
+                        Include country code (E.164 format). We'll text you a 6-digit code.
+                      </p>
+                    </div>
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? "Sending code..." : "Send verification code"}
+                    </Button>
+                  </form>
+                ) : (
+                  <form onSubmit={handleVerifyOtp} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="otp-code">Verification code</Label>
+                      <Input
+                        id="otp-code"
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        placeholder="123456"
+                        value={otp}
+                        onChange={(e) => {
+                          setOtp(e.target.value.replace(/\D/g, ""));
+                          clearError("otp");
+                        }}
+                        className={errors.otp ? "border-destructive" : ""}
+                        autoComplete="one-time-code"
+                        required
+                      />
+                      {errors.otp && <p className="text-sm text-destructive">{errors.otp}</p>}
+                      <p className="text-xs text-muted-foreground">
+                        Sent to {phone}
+                      </p>
+                    </div>
+                    <Button type="submit" variant="hero" className="w-full" disabled={loading}>
+                      {loading ? "Verifying..." : "Verify & Sign In"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="w-full"
+                      onClick={() => {
+                        setOtpSent(false);
+                        setOtp("");
+                        setErrors({});
+                      }}
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Use a different number
+                    </Button>
+                  </form>
+                )}
+              </TabsContent>
             </Tabs>
+
           </CardContent>
         </Card>
       </div>
