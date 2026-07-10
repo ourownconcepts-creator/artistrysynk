@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Send, ArrowLeft, FolderPlus, Flag, MoreVertical, CheckCheck } from "lucide-react";
+import { Send, ArrowLeft, FolderPlus, Flag, MoreVertical, CheckCheck, Check, Clock, AlertCircle, Loader2 } from "lucide-react";
 import { FlagContentDialog } from "@/components/FlagContentDialog";
 import {
   DropdownMenu,
@@ -31,6 +31,7 @@ interface Message {
   content: string;
   created_at: string;
   read: boolean;
+  status?: "sending" | "sent" | "failed";
 }
 
 interface OtherUser {
@@ -54,6 +55,10 @@ const Messages = () => {
   const [showProjectDialog, setShowProjectDialog] = useState(false);
   const [creatingProject, setCreatingProject] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [loadingOlder, setLoadingOlder] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const PAGE_SIZE = 30;
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -101,6 +106,21 @@ const Messages = () => {
           const incoming = payload.new as Message;
           setMessages((prev) => (prev.some((m) => m.id === incoming.id) ? prev : [...prev, incoming]));
           scrollToBottom();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'messages',
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) => {
+          const updated = payload.new as Message;
+          setMessages((prev) =>
+            prev.map((m) => (m.id === updated.id ? { ...m, ...updated, status: "sent" } : m))
+          );
         }
       )
       .subscribe();
@@ -157,37 +177,118 @@ const Messages = () => {
       .from('messages')
       .select('*')
       .eq('conversation_id', conversationId)
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: false })
+      .limit(PAGE_SIZE);
 
-    setMessages(messagesData || []);
+    const ordered = (messagesData || []).slice().reverse();
+    setMessages(ordered.map((m) => ({ ...m, status: "sent" as const })));
+    setHasMore((messagesData || []).length === PAGE_SIZE);
     setLoading(false);
     setTimeout(scrollToBottom, 100);
   };
 
+  const loadOlderMessages = async () => {
+    if (loadingOlder || !hasMore || messages.length === 0) return;
+    setLoadingOlder(true);
+    const container = scrollContainerRef.current;
+    const prevScrollHeight = container?.scrollHeight ?? 0;
+    const oldestCreatedAt = messages[0].created_at;
+
+    const { data } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('conversation_id', conversationId)
+      .lt('created_at', oldestCreatedAt)
+      .order('created_at', { ascending: false })
+      .limit(PAGE_SIZE);
+
+    const older = (data || []).slice().reverse().map((m) => ({ ...m, status: "sent" as const }));
+    if (older.length > 0) {
+      setMessages((prev) => [...older, ...prev]);
+      // preserve scroll position after prepending
+      requestAnimationFrame(() => {
+        if (container) {
+          const newScrollHeight = container.scrollHeight;
+          container.scrollTop = newScrollHeight - prevScrollHeight;
+        }
+      });
+    }
+    setHasMore((data || []).length === PAGE_SIZE);
+    setLoadingOlder(false);
+  };
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    if (e.currentTarget.scrollTop < 80) {
+      loadOlderMessages();
+    }
+  };
+
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!newMessage.trim() || !currentUser) return;
+
+    const content = newMessage.trim();
+    const tempId = `temp-${crypto.randomUUID()}`;
+    const optimistic: Message = {
+      id: tempId,
+      sender_id: currentUser,
+      content,
+      created_at: new Date().toISOString(),
+      read: false,
+      status: "sending",
+    };
+    setMessages((prev) => [...prev, optimistic]);
+    setNewMessage("");
+    setTimeout(scrollToBottom, 50);
 
     const { data: inserted, error } = await supabase
       .from('messages')
       .insert({
         conversation_id: conversationId,
         sender_id: currentUser,
-        content: newMessage.trim(),
+        content,
       })
       .select('*')
       .single();
 
-    if (error) {
-      toast.error("Failed to send message");
-    } else {
-      if (inserted) {
-        setMessages((prev) => (prev.some((m) => m.id === inserted.id) ? prev : [...prev, inserted as Message]));
-        setTimeout(scrollToBottom, 50);
-      }
-      setNewMessage("");
+    if (error || !inserted) {
+      setMessages((prev) =>
+        prev.map((m) => (m.id === tempId ? { ...m, status: "failed" } : m))
+      );
+      toast.error("Failed to send message. Tap to retry.");
+      return;
     }
+
+    setMessages((prev) => {
+      const withoutTemp = prev.filter((m) => m.id !== tempId);
+      if (withoutTemp.some((m) => m.id === inserted.id)) return withoutTemp;
+      return [...withoutTemp, { ...(inserted as Message), status: "sent" }];
+    });
+  };
+
+  const retryMessage = async (msg: Message) => {
+    if (!currentUser || msg.status !== "failed") return;
+    setMessages((prev) => prev.map((m) => (m.id === msg.id ? { ...m, status: "sending" } : m)));
+    const { data: inserted, error } = await supabase
+      .from('messages')
+      .insert({
+        conversation_id: conversationId,
+        sender_id: currentUser,
+        content: msg.content,
+      })
+      .select('*')
+      .single();
+    if (error || !inserted) {
+      setMessages((prev) => prev.map((m) => (m.id === msg.id ? { ...m, status: "failed" } : m)));
+      toast.error("Still failed to send");
+      return;
+    }
+    setMessages((prev) => {
+      const withoutTemp = prev.filter((m) => m.id !== msg.id);
+      if (withoutTemp.some((m) => m.id === inserted.id)) return withoutTemp;
+      return [...withoutTemp, { ...(inserted as Message), status: "sent" }];
+    });
   };
 
   const createProject = async () => {
@@ -329,7 +430,21 @@ const Messages = () => {
             </div>
           </CardHeader>
 
-          <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
+          <CardContent
+            ref={scrollContainerRef}
+            onScroll={handleScroll}
+            className="flex-1 overflow-y-auto p-4 space-y-4"
+          >
+            {loadingOlder && (
+              <div className="flex justify-center py-2">
+                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+              </div>
+            )}
+            {!hasMore && messages.length > 0 && (
+              <p className="text-center text-xs text-muted-foreground py-2">
+                Beginning of conversation
+              </p>
+            )}
             {messages.map((message) => {
               const isCurrentUser = message.sender_id === currentUser;
               const senderProfile = isCurrentUser ? currentUserProfile : otherUser;
@@ -352,11 +467,12 @@ const Messages = () => {
                       </p>
                       <div className={`flex items-start gap-1 ${isCurrentUser ? 'flex-row-reverse' : ''}`}>
                         <div
+                          onClick={() => message.status === "failed" && retryMessage(message)}
                           className={`rounded-lg p-3 ${
                             isCurrentUser
                               ? 'bg-primary text-primary-foreground'
                               : 'bg-muted'
-                          }`}
+                          } ${message.status === "failed" ? 'cursor-pointer ring-1 ring-destructive/60' : ''} ${message.status === "sending" ? 'opacity-70' : ''}`}
                         >
                           <p className="text-sm">{message.content}</p>
                           <div className={`flex items-center gap-1 mt-1 ${isCurrentUser ? 'justify-end' : ''}`}>
@@ -371,7 +487,21 @@ const Messages = () => {
                               })}
                             </p>
                             {isCurrentUser && (
-                              <CheckCheck className={`w-3.5 h-3.5 ${message.read ? 'text-primary-foreground' : 'text-primary-foreground/40'}`} />
+                              <span className="flex items-center" title={
+                                message.status === "sending" ? "Sending..." :
+                                message.status === "failed" ? "Failed — tap to retry" :
+                                message.read ? "Seen" : "Delivered"
+                              }>
+                                {message.status === "sending" ? (
+                                  <Clock className="w-3.5 h-3.5 text-primary-foreground/60 animate-pulse" />
+                                ) : message.status === "failed" ? (
+                                  <AlertCircle className="w-3.5 h-3.5 text-destructive" />
+                                ) : message.read ? (
+                                  <CheckCheck className="w-3.5 h-3.5 text-primary-foreground" />
+                                ) : (
+                                  <Check className="w-3.5 h-3.5 text-primary-foreground/60" />
+                                )}
+                              </span>
                             )}
                           </div>
                         </div>
