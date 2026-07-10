@@ -215,6 +215,30 @@ const Auth = () => {
     }
   };
 
+  const handleAppleSignIn = async () => {
+    setLoading(true);
+
+    try {
+      const result = await lovable.auth.signInWithOAuth("apple", {
+        redirect_uri: window.location.origin,
+      });
+
+      if (result?.error) {
+        toast.error(result.error.message || "Apple sign-in failed. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      if (result?.redirected) return;
+
+      toast.success("Signed in with Apple");
+      navigate("/discover");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Apple sign-in failed. Please try again.");
+      setLoading(false);
+    }
+  };
+
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     
