@@ -209,7 +209,7 @@ const WhoLikedYou = () => {
                     <div className="w-full h-full flex items-center justify-center">
                       <Avatar className="w-20 h-20">
                         <AvatarFallback className="text-2xl">
-                          {profile.full_name.charAt(0)}
+                          {profile.full_name?.charAt(0) ?? "?"}
                         </AvatarFallback>
                       </Avatar>
                     </div>
