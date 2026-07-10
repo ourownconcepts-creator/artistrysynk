@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { usePresence } from '@/hooks/usePresence';
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useRealtimeNotifications, useMatchOnlinePresence } from '@/hooks/useRealtimeNotifications';
 
 // GA4 Measurement ID - replace with your actual ID
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || '';
@@ -101,6 +102,8 @@ export const AnalyticsProvider = ({ children }: { children: React.ReactNode }) =
 
   usePageTracking();
   usePresence(userId);
+  useRealtimeNotifications(userId);
+  useMatchOnlinePresence(userId);
 
   return <>{children}</>;
 };
