@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -33,6 +34,7 @@ export const NotificationBell = ({ userId }: NotificationBellProps) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadNotifications();
@@ -83,6 +85,44 @@ export const NotificationBell = ({ userId }: NotificationBellProps) => {
       prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
     );
     setUnreadCount((prev) => Math.max(0, prev - 1));
+  };
+
+  const getNotificationLink = (n: Notification): string => {
+    const data = n.data || {};
+    switch (n.type) {
+      case "match":
+        return data.match_id ? `/matches` : "/matches";
+      case "message":
+        return data.conversation_id
+          ? `/messages?conversation=${data.conversation_id}`
+          : "/messages";
+      case "job_application":
+        return data.job_id ? `/jobs` : "/jobs";
+      case "collaboration_request":
+      case "project_application":
+        return data.project_id ? `/projects` : "/projects";
+      case "verification":
+        return "/profile";
+      case "content_status":
+      case "content_flag":
+        return "/settings";
+      case "order":
+        return "/marketplace";
+      case "like":
+      case "swipe":
+        return "/who-liked-you";
+      default:
+        if (data.url) return data.url as string;
+        if (data.profile_id) return `/profile/${data.profile_id}`;
+        return "/";
+    }
+  };
+
+  const handleNotificationClick = (n: Notification) => {
+    if (!n.is_read) markAsRead(n.id);
+    setOpen(false);
+    const to = getNotificationLink(n);
+    if (to) navigate(to);
   };
 
   const markAllAsRead = async () => {
@@ -137,7 +177,7 @@ export const NotificationBell = ({ userId }: NotificationBellProps) => {
                     className={`p-4 cursor-pointer hover:bg-muted/50 transition-colors ${
                       !notification.is_read ? "bg-primary/5" : ""
                     }`}
-                    onClick={() => markAsRead(notification.id)}
+                    onClick={() => handleNotificationClick(notification)}
                   >
                     <div className="flex gap-3">
                       <div className={`p-2 rounded-full ${
