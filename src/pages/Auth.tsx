@@ -663,6 +663,77 @@ const Auth = () => {
                   </Button>
                 </form>
               </TabsContent>
+
+              <TabsContent value="phone">
+                {!otpSent ? (
+                  <form onSubmit={handleSendOtp} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone-number">Phone number</Label>
+                      <Input
+                        id="phone-number"
+                        type="tel"
+                        placeholder="+14155551234"
+                        value={phone}
+                        onChange={(e) => {
+                          setPhone(e.target.value);
+                          clearError("phone");
+                        }}
+                        className={errors.phone ? "border-destructive" : ""}
+                        autoComplete="tel"
+                        required
+                      />
+                      {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
+                      <p className="text-xs text-muted-foreground">
+                        Include country code (E.164 format). We'll text you a 6-digit code.
+                      </p>
+                    </div>
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? "Sending code..." : "Send verification code"}
+                    </Button>
+                  </form>
+                ) : (
+                  <form onSubmit={handleVerifyOtp} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="otp-code">Verification code</Label>
+                      <Input
+                        id="otp-code"
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        placeholder="123456"
+                        value={otp}
+                        onChange={(e) => {
+                          setOtp(e.target.value.replace(/\D/g, ""));
+                          clearError("otp");
+                        }}
+                        className={errors.otp ? "border-destructive" : ""}
+                        autoComplete="one-time-code"
+                        required
+                      />
+                      {errors.otp && <p className="text-sm text-destructive">{errors.otp}</p>}
+                      <p className="text-xs text-muted-foreground">
+                        Sent to {phone}
+                      </p>
+                    </div>
+                    <Button type="submit" variant="hero" className="w-full" disabled={loading}>
+                      {loading ? "Verifying..." : "Verify & Sign In"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="w-full"
+                      onClick={() => {
+                        setOtpSent(false);
+                        setOtp("");
+                        setErrors({});
+                      }}
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Use a different number
+                    </Button>
+                  </form>
+                )}
+              </TabsContent>
             </Tabs>
 
           </CardContent>
