@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.send-match-activity-digest]
 verify_jwt = false
+
+[functions.notify-new-message-email]
+verify_jwt = false
