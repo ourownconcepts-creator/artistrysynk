@@ -51,6 +51,7 @@ const Discover = () => {
   const [aiMatchingEnabled, setAiMatchingEnabled] = useState(false);
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [genreFilter, setGenreFilter] = useState<string>("all");
+  const [skillFilter, setSkillFilter] = useState<string>("");
   const [locationFilter, setLocationFilter] = useState<string>("");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [lastSwipe, setLastSwipe] = useState<{ id: string; swipedId: string } | null>(null);
@@ -111,7 +112,8 @@ const Discover = () => {
       .select(`
         *,
         user_creative_roles(role),
-        user_genres(genre)
+        user_genres(genre),
+        user_skill_tags(skill)
       `)
       .not('id', 'in', `(${excludeIds.join(',')})`)
       .limit(20);
@@ -136,6 +138,15 @@ const Discover = () => {
       if (genreFilter && genreFilter !== "all") {
         filteredData = filteredData.filter(p => 
           p.user_genres.some((g: any) => g.genre === genreFilter)
+        );
+      }
+
+      if (skillFilter.trim()) {
+        const needle = skillFilter.trim().toLowerCase();
+        filteredData = filteredData.filter((p: any) =>
+          (p.user_skill_tags || []).some((s: any) =>
+            s.skill?.toLowerCase().includes(needle)
+          )
         );
       }
       
@@ -320,7 +331,7 @@ const Discover = () => {
               <Button variant="outline" size="sm" className="mt-4">
                 <Filter className="w-4 h-4 mr-2" />
                 Filters
-                {(( roleFilter && roleFilter !== "all") || (genreFilter && genreFilter !== "all") || locationFilter) && (
+                {((roleFilter && roleFilter !== "all") || (genreFilter && genreFilter !== "all") || skillFilter || locationFilter) && (
                   <Badge variant="secondary" className="ml-2">Active</Badge>
                 )}
               </Button>
@@ -330,6 +341,9 @@ const Discover = () => {
                 <SheetTitle>Filter Creatives</SheetTitle>
               </SheetHeader>
               <div className="space-y-4 mt-6">
+                <p className="text-xs text-muted-foreground">
+                  All filters are optional. Leave blank to browse everyone.
+                </p>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Role</label>
                   <Select value={roleFilter} onValueChange={setRoleFilter}>
@@ -359,6 +373,14 @@ const Discover = () => {
                   </Select>
                 </div>
                 <div className="space-y-2">
+                  <label className="text-sm font-medium">Skill</label>
+                  <Input
+                    placeholder="e.g. mixing, guitar, photoshop"
+                    value={skillFilter}
+                    onChange={(e) => setSkillFilter(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
                   <label className="text-sm font-medium">Location</label>
                   <Input
                     placeholder="Enter location"
@@ -375,6 +397,7 @@ const Discover = () => {
                   onClick={() => {
                     setRoleFilter("all");
                     setGenreFilter("all");
+                    setSkillFilter("");
                     setLocationFilter("");
                     if (currentUser) loadProfiles(currentUser);
                   }}
