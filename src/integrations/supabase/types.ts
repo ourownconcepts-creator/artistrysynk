@@ -959,6 +959,7 @@ export type Database = {
           is_featured: boolean | null
           is_hidden: boolean | null
           is_verified: boolean | null
+          last_seen_at: string | null
           latitude: number | null
           location: string | null
           longitude: number | null
@@ -982,6 +983,7 @@ export type Database = {
           is_featured?: boolean | null
           is_hidden?: boolean | null
           is_verified?: boolean | null
+          last_seen_at?: string | null
           latitude?: number | null
           location?: string | null
           longitude?: number | null
@@ -1005,6 +1007,7 @@ export type Database = {
           is_featured?: boolean | null
           is_hidden?: boolean | null
           is_verified?: boolean | null
+          last_seen_at?: string | null
           latitude?: number | null
           location?: string | null
           longitude?: number | null
@@ -1933,8 +1936,11 @@ export type Database = {
           email_notifications: boolean | null
           force_password_change: boolean | null
           id: string
+          last_digest_sent_at: string | null
           marketing_emails: boolean | null
+          match_activity_digest: boolean
           match_notifications: boolean | null
+          match_online_notifications: boolean
           message_notifications: boolean | null
           onboarding_completed: boolean | null
           profile_visibility: string | null
@@ -1951,8 +1957,11 @@ export type Database = {
           email_notifications?: boolean | null
           force_password_change?: boolean | null
           id?: string
+          last_digest_sent_at?: string | null
           marketing_emails?: boolean | null
+          match_activity_digest?: boolean
           match_notifications?: boolean | null
+          match_online_notifications?: boolean
           message_notifications?: boolean | null
           onboarding_completed?: boolean | null
           profile_visibility?: string | null
@@ -1969,8 +1978,11 @@ export type Database = {
           email_notifications?: boolean | null
           force_password_change?: boolean | null
           id?: string
+          last_digest_sent_at?: string | null
           marketing_emails?: boolean | null
+          match_activity_digest?: boolean
           match_notifications?: boolean | null
+          match_online_notifications?: boolean
           message_notifications?: boolean | null
           onboarding_completed?: boolean | null
           profile_visibility?: string | null
@@ -2123,6 +2135,19 @@ export type Database = {
       can_see_user: {
         Args: { _target_id: string; _viewer_id: string }
         Returns: boolean
+      }
+      get_match_activity_since: {
+        Args: { _since: string; _user_id: string }
+        Returns: {
+          avatar_url: string
+          came_online: boolean
+          full_name: string
+          last_seen_at: string
+          match_user_id: string
+          new_messages: number
+          new_portfolio_items: number
+          username: string
+        }[]
       }
       get_nearby_creators: {
         Args: {
