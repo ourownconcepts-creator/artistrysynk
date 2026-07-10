@@ -112,8 +112,7 @@ const Discover = () => {
       .select(`
         *,
         user_creative_roles(role),
-        user_genres(genre),
-        user_skill_tags(skill)
+        user_genres(genre)
       `)
       .not('id', 'in', `(${excludeIds.join(',')})`)
       .limit(20);
@@ -143,11 +142,16 @@ const Discover = () => {
 
       if (skillFilter.trim()) {
         const needle = skillFilter.trim().toLowerCase();
-        filteredData = filteredData.filter((p: any) =>
-          (p.user_skill_tags || []).some((s: any) =>
-            s.skill?.toLowerCase().includes(needle)
-          )
-        );
+        const ids = filteredData.map((p: any) => p.id);
+        if (ids.length > 0) {
+          const { data: skillRows } = await supabase
+            .from('user_skill_tags')
+            .select('user_id, skill')
+            .in('user_id', ids)
+            .ilike('skill', `%${needle}%`);
+          const matchedIds = new Set((skillRows || []).map((r: any) => r.user_id));
+          filteredData = filteredData.filter((p: any) => matchedIds.has(p.id));
+        }
       }
       
       // Apply AI matching if enabled and user has advanced matching
