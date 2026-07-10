@@ -1,5 +1,9 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { usePresence } from '@/hooks/usePresence';
+import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useRealtimeNotifications, useMatchOnlinePresence } from '@/hooks/useRealtimeNotifications';
 
 // GA4 Measurement ID - replace with your actual ID
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || '';
@@ -85,11 +89,21 @@ export const usePageTracking = () => {
 
 // Analytics Provider Component
 export const AnalyticsProvider = ({ children }: { children: React.ReactNode }) => {
+  const [userId, setUserId] = useState<string | null>(null);
+
   useEffect(() => {
     initializeAnalytics();
+    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user?.id ?? null);
+    });
+    return () => sub.subscription.unsubscribe();
   }, []);
 
   usePageTracking();
+  usePresence(userId);
+  useRealtimeNotifications(userId);
+  useMatchOnlinePresence(userId);
 
   return <>{children}</>;
 };

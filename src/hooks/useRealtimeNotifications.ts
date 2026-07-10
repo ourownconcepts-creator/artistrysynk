@@ -108,3 +108,85 @@ export const useRealtimeNotifications = (userId: string | null) => {
     };
   }, [userId, isSubscribed, sendLocalNotification]);
 };
+
+/**
+ * Notifies (push) when a matched user's `last_seen_at` becomes fresh (they came online).
+ * Throttled to one notification per match per hour to avoid spam.
+ */
+export const useMatchOnlinePresence = (userId: string | null) => {
+  const { isSubscribed, sendLocalNotification } = usePushNotifications();
+
+  useEffect(() => {
+    if (!userId || !isSubscribed) return;
+
+    let matchIds = new Set<string>();
+    const lastNotified = new Map<string, number>();
+    const ONLINE_WINDOW_MS = 2 * 60 * 1000; // 2 min
+    const THROTTLE_MS = 60 * 60 * 1000; // 1 hour
+
+    const loadMatches = async () => {
+      const { data } = await supabase
+        .from('matches')
+        .select('user_id_1, user_id_2')
+        .or(`user_id_1.eq.${userId},user_id_2.eq.${userId}`);
+      matchIds = new Set(
+        (data ?? []).map((m: any) => (m.user_id_1 === userId ? m.user_id_2 : m.user_id_1))
+      );
+    };
+
+    let cancelled = false;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    (async () => {
+      // Check user's preference
+      const { data: settings } = await supabase
+        .from('user_settings')
+        .select('match_online_notifications, push_notifications')
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (cancelled) return;
+      if (settings && (settings.match_online_notifications === false || settings.push_notifications === false)) return;
+
+      await loadMatches();
+      if (cancelled) return;
+
+      channel = supabase
+        .channel('realtime-presence')
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'profiles' },
+          (payload) => {
+            const newRow: any = payload.new;
+            const oldRow: any = payload.old;
+            if (!newRow?.id || !matchIds.has(newRow.id)) return;
+            if (!newRow.last_seen_at) return;
+
+            const newSeen = new Date(newRow.last_seen_at).getTime();
+            const oldSeen = oldRow?.last_seen_at ? new Date(oldRow.last_seen_at).getTime() : 0;
+            const now = Date.now();
+
+            // Fire only when transitioning from stale (or none) to fresh.
+            const wasStale = !oldSeen || now - oldSeen > ONLINE_WINDOW_MS;
+            const isFresh = now - newSeen < ONLINE_WINDOW_MS;
+            if (!wasStale || !isFresh) return;
+
+            const lastFired = lastNotified.get(newRow.id) ?? 0;
+            if (now - lastFired < THROTTLE_MS) return;
+            lastNotified.set(newRow.id, now);
+
+            sendLocalNotification(`${newRow.full_name || 'A match'} is online`, {
+              body: 'Say hi while they’re active!',
+              tag: `presence-${newRow.id}`,
+              data: { type: 'presence', userId: newRow.id },
+            });
+          }
+        )
+        .subscribe();
+    })();
+
+    return () => {
+      cancelled = true;
+      if (channel) supabase.removeChannel(channel);
+    };
+  }, [userId, isSubscribed, sendLocalNotification]);
+};

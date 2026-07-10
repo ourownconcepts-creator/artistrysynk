@@ -32,6 +32,8 @@ interface UserSettings {
   message_notifications: boolean;
   project_notifications: boolean;
   marketing_emails: boolean;
+  match_online_notifications: boolean;
+  match_activity_digest: boolean;
   profile_visibility: string;
   show_online_status: boolean;
   allow_messages_from: string;
@@ -45,6 +47,8 @@ const defaultSettings: UserSettings = {
   message_notifications: true,
   project_notifications: true,
   marketing_emails: false,
+  match_online_notifications: true,
+  match_activity_digest: true,
   profile_visibility: "public",
   show_online_status: true,
   allow_messages_from: "everyone",
@@ -84,6 +88,8 @@ const Settings = () => {
           message_notifications: data.message_notifications ?? true,
           project_notifications: data.project_notifications ?? true,
           marketing_emails: data.marketing_emails ?? false,
+          match_online_notifications: (data as any).match_online_notifications ?? true,
+          match_activity_digest: (data as any).match_activity_digest ?? true,
           profile_visibility: data.profile_visibility ?? "public",
           show_online_status: data.show_online_status ?? true,
           allow_messages_from: data.allow_messages_from ?? "everyone",
@@ -224,6 +230,28 @@ const Settings = () => {
                 <Switch
                   checked={settings.marketing_emails}
                   onCheckedChange={(v) => updateSetting("marketing_emails", v)}
+                />
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label>Match Activity Digest</Label>
+                  <p className="text-sm text-muted-foreground">Daily email summarizing what your matches have been up to</p>
+                </div>
+                <Switch
+                  checked={settings.match_activity_digest}
+                  onCheckedChange={(v) => updateSetting("match_activity_digest", v)}
+                />
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label>Match Online Alerts (Push)</Label>
+                  <p className="text-sm text-muted-foreground">Push notification when a match comes online (throttled to once per hour)</p>
+                </div>
+                <Switch
+                  checked={settings.match_online_notifications}
+                  onCheckedChange={(v) => updateSetting("match_online_notifications", v)}
                 />
               </div>
             </CardContent>
