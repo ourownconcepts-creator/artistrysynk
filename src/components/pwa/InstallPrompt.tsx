@@ -13,6 +13,7 @@ export const InstallPrompt = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
@@ -28,6 +29,8 @@ export const InstallPrompt = () => {
 
     const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(ios);
+    const android = /Android/i.test(navigator.userAgent);
+    setIsAndroid(android);
 
     const dismissed = localStorage.getItem('pwa-install-dismissed');
     if (dismissed && Date.now() - parseInt(dismissed) < 7 * 24 * 60 * 60 * 1000) return;
@@ -46,15 +49,21 @@ export const InstallPrompt = () => {
     };
     window.addEventListener('appinstalled', installedHandler);
 
-    // Show after 20 seconds
+    // Show after 6 seconds — mobile users bounce fast, and iOS never fires beforeinstallprompt
+    const delay = ios || android ? 6000 : 12000;
     const timer = setTimeout(() => {
       setShowPrompt(true);
-      trackEvent('pwa_install_banner_shown', { platform: ios ? 'ios' : 'other' });
-    }, 20000);
+      trackEvent('pwa_install_banner_shown', { platform: ios ? 'ios' : android ? 'android' : 'other' });
+    }, delay);
+
+    // Also listen for a manual trigger (e.g. after signup)
+    const manual = () => setShowPrompt(true);
+    window.addEventListener('show-install-prompt', manual);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handler);
       window.removeEventListener('appinstalled', installedHandler);
+      window.removeEventListener('show-install-prompt', manual);
       clearTimeout(timer);
     };
   }, []);
@@ -115,6 +124,10 @@ export const InstallPrompt = () => {
               <Download className="w-4 h-4 mr-2" />
               Install ArtistrySynk
             </Button>
+          ) : isAndroid ? (
+            <p className="text-xs text-muted-foreground">
+              Open your browser menu (⋮) and tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.
+            </p>
           ) : (
             <p className="text-xs text-muted-foreground">
               Use your browser menu to add ArtistrySynk to your home screen.
