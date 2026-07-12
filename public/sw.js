@@ -1,5 +1,5 @@
 // ArtistrySynk Service Worker - PWA + Push Notifications
-const CACHE_NAME = 'artistrysynk-cache-v3';
+const CACHE_NAME = 'artistrysynk-cache-v4';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
