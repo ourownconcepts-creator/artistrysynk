@@ -41,6 +41,7 @@ interface UserWithRole {
   username: string;
   email?: string;
   role: string;
+  created_at?: string | null;
 }
 
 const AdminDashboard = () => {
@@ -83,48 +84,33 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     setLoading(true);
-    
-    // First get user roles
-    const { data: userRoles, error: rolesError } = await supabase
-      .from('user_roles')
-      .select('user_id, role')
-      .eq('role', 'user');
 
-    if (rolesError) {
+    // Source from profiles so every account is visible, even without a role row
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, full_name, username, email, created_at')
+      .order('created_at', { ascending: false });
+
+    if (profilesError) {
       toast.error('Failed to fetch users');
       setLoading(false);
       return;
     }
 
-    if (!userRoles || userRoles.length === 0) {
-      setUsers([]);
-      setLoading(false);
-      return;
-    }
+    const ids = (profiles ?? []).map((p) => p.id);
+    const { data: roles } = await supabase
+      .from('user_roles')
+      .select('user_id, role')
+      .in('user_id', ids);
 
-    // Then get profiles for those users
-    const userIds = userRoles.map(ur => ur.user_id);
-    const { data: profiles, error: profilesError } = await supabase
-      .from('profiles')
-      .select('id, full_name, username')
-      .in('id', userIds);
-
-    if (profilesError) {
-      toast.error('Failed to fetch user profiles');
-      setLoading(false);
-      return;
-    }
-
-    // Combine the data
-    const formattedUsers = userRoles.map(ur => {
-      const profile = profiles?.find(p => p.id === ur.user_id);
-      return {
-        id: ur.user_id,
-        full_name: profile?.full_name || 'Unknown',
-        username: profile?.username || 'unknown',
-        role: ur.role,
-      };
-    });
+    const formattedUsers: UserWithRole[] = (profiles ?? []).map((p) => ({
+      id: p.id,
+      full_name: p.full_name || 'Unknown',
+      username: p.username || 'unknown',
+      email: (p as any).email ?? undefined,
+      role: roles?.find((r) => r.user_id === p.id)?.role ?? 'user',
+      created_at: p.created_at,
+    }));
 
     setUsers(formattedUsers);
     setLoading(false);
@@ -192,7 +178,8 @@ const AdminDashboard = () => {
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.username.toLowerCase().includes(searchTerm.toLowerCase());
+                         user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
     const matchesRole = roleFilter === "all" || user.role === roleFilter;
     return matchesSearch && matchesRole;
   });
@@ -266,7 +253,7 @@ const AdminDashboard = () => {
                   <div>
                     <CardTitle className="flex items-center gap-2">
                       <Users className="w-5 h-5" />
-                      User Management
+                      User Management ({filteredUsers.length})
                     </CardTitle>
                     <CardDescription>View and manage regular users</CardDescription>
                   </div>
@@ -305,6 +292,8 @@ const AdminDashboard = () => {
                       </TableHead>
                       <TableHead>Full Name</TableHead>
                       <TableHead>Username</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Joined</TableHead>
                       <TableHead>Role</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -320,6 +309,10 @@ const AdminDashboard = () => {
                         </TableCell>
                         <TableCell className="font-medium">{user.full_name}</TableCell>
                         <TableCell>@{user.username}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{user.email || '—'}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {user.created_at ? new Date(user.created_at).toLocaleDateString() : '—'}
+                        </TableCell>
                         <TableCell>
                           <Badge variant="secondary">{user.role}</Badge>
                         </TableCell>
@@ -358,7 +351,7 @@ const AdminDashboard = () => {
                       ))}
                     {filteredUsers.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center text-muted-foreground">
+                        <TableCell colSpan={7} className="text-center text-muted-foreground">
                           No users found
                         </TableCell>
                       </TableRow>
