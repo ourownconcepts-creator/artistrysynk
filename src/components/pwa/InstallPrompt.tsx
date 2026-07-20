@@ -129,9 +129,18 @@ export const InstallPrompt = () => {
               className="text-xs text-muted-foreground space-y-1"
               onClick={() => trackEvent('pwa_ios_share_hint_viewed')}
             >
-              <p className="flex items-center gap-1">
-                Tap <Share className="w-3 h-3 inline" /> then <strong>"Add to Home Screen"</strong>
-              </p>
+              {inAppBrowser ? (
+                <p>
+                  You're in the {inAppBrowser} in-app browser. Tap the menu (•••) and choose{' '}
+                  <strong>"Open in Safari"</strong>, then tap <Share className="w-3 h-3 inline" /> →{' '}
+                  <strong>"Add to Home Screen"</strong>.
+                </p>
+              ) : (
+                <p className="flex items-center gap-1 flex-wrap">
+                  In Safari, tap <Share className="w-3 h-3 inline" /> at the bottom, then{' '}
+                  <strong>"Add to Home Screen"</strong>.
+                </p>
+              )}
             </div>
           ) : deferredPrompt ? (
             <Button onClick={handleInstall} className="w-full" size="sm">
