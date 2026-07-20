@@ -15,6 +15,7 @@ export const InstallPrompt = () => {
   const [isIOS, setIsIOS] = useState(false);
   const [isAndroid, setIsAndroid] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [inAppBrowser, setInAppBrowser] = useState<string | null>(null);
 
   useEffect(() => {
     // Don't show in iframe/preview
@@ -27,10 +28,23 @@ export const InstallPrompt = () => {
     setIsStandalone(!!standalone);
     if (standalone) return;
 
-    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const ua = navigator.userAgent;
+    // iPadOS 13+ reports as MacIntel — detect via touch points
+    const isIPadOS = navigator.platform === 'MacIntel' && (navigator as any).maxTouchPoints > 1;
+    const ios = (/iPad|iPhone|iPod/.test(ua) || isIPadOS) && !(window as any).MSStream;
     setIsIOS(ios);
-    const android = /Android/i.test(navigator.userAgent);
+    const android = /Android/i.test(ua);
     setIsAndroid(android);
+
+    // Detect in-app browsers where Add to Home Screen is unavailable
+    if (ios) {
+      if (/FBAN|FBAV/i.test(ua)) setInAppBrowser('Facebook');
+      else if (/Instagram/i.test(ua)) setInAppBrowser('Instagram');
+      else if (/Line/i.test(ua)) setInAppBrowser('Line');
+      else if (/Twitter/i.test(ua)) setInAppBrowser('X (Twitter)');
+      else if (/TikTok/i.test(ua)) setInAppBrowser('TikTok');
+      else if (/CriOS|FxiOS|EdgiOS|OPiOS/i.test(ua)) setInAppBrowser('non-Safari');
+    }
 
     const dismissed = localStorage.getItem('pwa-install-dismissed');
     if (dismissed && Date.now() - parseInt(dismissed) < 7 * 24 * 60 * 60 * 1000) return;
