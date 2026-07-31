@@ -10,6 +10,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 // Lazy-loaded pages
 const Index = lazy(() => import('@/pages/Index'));
 const Auth = lazy(() => import('@/pages/Auth'));
+const AuthCallback = lazy(() => import('@/pages/AuthCallback'));
 const AdminAuth = lazy(() => import('@/pages/AdminAuth'));
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
 const ForcePasswordChange = lazy(() => import('@/pages/ForcePasswordChange'));
@@ -68,6 +69,7 @@ export const AnimatedRoutes = () => {
         {/* Public Routes */}
         <Route path="/" element={<SuspenseWrapper><PageTransition><Index /></PageTransition></SuspenseWrapper>} />
         <Route path="/auth" element={<SuspenseWrapper><PageTransition><Auth /></PageTransition></SuspenseWrapper>} />
+       <Route path="/auth/callback" element={<SuspenseWrapper><AuthCallback /></SuspenseWrapper>} />
         <Route path="/reset-password" element={<SuspenseWrapper><PageTransition><ResetPassword /></PageTransition></SuspenseWrapper>} />
         <Route path="/force-password-change" element={<SuspenseWrapper><PageTransition><ForcePasswordChange /></PageTransition></SuspenseWrapper>} />
         <Route path="/admin-auth" element={<SuspenseWrapper><PageTransition><AdminAuth /></PageTransition></SuspenseWrapper>} />
