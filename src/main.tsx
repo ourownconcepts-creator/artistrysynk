@@ -6,8 +6,13 @@ import "./index.css";
 // PWA: Register service worker (only in production, not in iframes/previews)
 const isInIframe = (() => { try { return window.self !== window.top; } catch { return true; } })();
 const isPreviewHost = window.location.hostname.includes("id-preview--") || window.location.hostname.includes("lovableproject.com");
+// Native (Capacitor) webviews must not register the service worker
+const isNativeApp =
+  typeof window !== "undefined" &&
+  (!!(window as any).Capacitor?.isNativePlatform?.() ||
+    /^(capacitor|ionic):$/.test(window.location.protocol));
 
-if ("serviceWorker" in navigator && !isInIframe && !isPreviewHost) {
+if ("serviceWorker" in navigator && !isInIframe && !isPreviewHost && !isNativeApp) {
   let hasReloadedForServiceWorker = false;
 
   window.addEventListener("load", async () => {
@@ -47,7 +52,7 @@ if ("serviceWorker" in navigator && !isInIframe && !isPreviewHost) {
       // Ignore service worker registration failures
     }
   });
-} else if (isPreviewHost || isInIframe) {
+} else if (isPreviewHost || isInIframe || isNativeApp) {
   navigator.serviceWorker?.getRegistrations().then((regs) => regs.forEach((r) => r.unregister()));
 }
 
