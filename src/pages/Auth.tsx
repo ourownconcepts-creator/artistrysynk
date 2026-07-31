@@ -196,7 +196,7 @@ const Auth = () => {
 
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+        redirect_uri: getOAuthRedirectUri(),
       });
 
       if (result?.error) {
@@ -220,7 +220,7 @@ const Auth = () => {
 
     try {
       const result = await lovable.auth.signInWithOAuth("apple", {
-        redirect_uri: window.location.origin,
+        redirect_uri: getOAuthRedirectUri(),
       });
 
       if (result?.error) {
