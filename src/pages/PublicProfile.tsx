@@ -1,3 +1,4 @@
+import { openExternalUrl } from "@/lib/nativeMedia";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -245,7 +246,7 @@ const PublicProfile = () => {
                         className="gap-1 capitalize"
                         onClick={() => {
                           const fullUrl = url.startsWith("http") ? url : `https://${url}`;
-                          window.open(fullUrl, "_blank");
+                          void openExternalUrl(fullUrl);
                         }}
                       >
                         <ExternalLink className="w-3 h-3" />

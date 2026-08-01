@@ -1,3 +1,4 @@
+import { openExternalUrl } from "@/lib/nativeMedia";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -165,7 +166,7 @@ export const PortfolioModeration = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => window.open(item.media_url, '_blank')}
+                        onClick={() => void openExternalUrl(item.media_url)}
                       >
                         <ExternalLink className="w-4 h-4 mr-1" />
                         View
