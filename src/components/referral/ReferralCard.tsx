@@ -1,3 +1,4 @@
+import { openExternalUrl } from "@/lib/nativeMedia";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -81,7 +82,7 @@ export const ReferralCard = () => {
       return;
     }
 
-    window.open(links[platform], "_blank");
+    void openExternalUrl(links[platform]);
   };
 
   if (loading) return null;

@@ -8,6 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Upload, Music, Video, Image, FileText, X, Loader2 } from "lucide-react";
+import { Camera as CameraIcon, Images } from "lucide-react";
+import { isNativeApp } from "@/lib/native";
+import { pickNativeImage } from "@/lib/nativeMedia";
 
 interface PortfolioUploadProps {
   userId: string;
@@ -42,6 +45,17 @@ export const PortfolioUpload = ({ userId, onUploadComplete }: PortfolioUploadPro
   const clearFile = () => {
     setFile(null);
     setPreview(null);
+  };
+
+  const handleNativePick = async (source: "camera" | "photos") => {
+    try {
+      const picked = await pickNativeImage(source);
+      if (!picked) return;
+      setFile(picked);
+      setPreview(URL.createObjectURL(picked));
+    } catch {
+      toast.error("Could not access your photos");
+    }
   };
 
   const handleUpload = async () => {
@@ -183,6 +197,18 @@ export const PortfolioUpload = ({ userId, onUploadComplete }: PortfolioUploadPro
                     Click to select {selectedType?.label.toLowerCase()} file
                   </span>
                 </label>
+                {isNativeApp() && mediaType === "image" && (
+                  <div className="flex gap-2 justify-center mt-4">
+                    <Button variant="outline" size="sm" onClick={() => handleNativePick("camera")}>
+                      <CameraIcon className="w-4 h-4 mr-2" />
+                      Camera
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleNativePick("photos")}>
+                      <Images className="w-4 h-4 mr-2" />
+                      Photos
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </div>

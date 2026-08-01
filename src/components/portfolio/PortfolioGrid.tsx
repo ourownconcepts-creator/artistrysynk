@@ -1,3 +1,4 @@
+import { openExternalUrl } from "@/lib/nativeMedia";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -139,7 +140,7 @@ export const PortfolioGrid = ({ userId, editable = false, onItemClick, showRepor
                         className="h-8 w-8 text-white hover:bg-white/20"
                         onClick={(e) => {
                           e.stopPropagation();
-                          window.open(item.media_url, "_blank");
+                          void openExternalUrl(item.media_url);
                         }}
                       >
                         <ExternalLink className="w-4 h-4" />
