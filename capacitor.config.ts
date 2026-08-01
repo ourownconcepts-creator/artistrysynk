@@ -11,6 +11,16 @@ const config: CapacitorConfig = {
   ios: {
     contentInset: 'always',
   },
+  plugins: {
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert'],
+    },
+    SplashScreen: {
+      launchAutoHide: false,
+      backgroundColor: '#0a0a0f',
+      showSpinner: false,
+    },
+  },
 };
 
 export default config;

@@ -9,6 +9,7 @@ import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { UpdateBanner } from "@/components/pwa/UpdateBanner";
 import { DeepLinkHandler } from "@/components/native/DeepLinkHandler";
+import { NativeShell } from "@/components/native/NativeShell";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
           <AnalyticsProvider>
             <AnimatedRoutes />
             <DeepLinkHandler />
+            <NativeShell />
             <InstallPrompt />
             <UpdateBanner />
           </AnalyticsProvider>
