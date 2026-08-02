@@ -1,0 +1,20 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": ["TEAMID.app.lovable.cd44e32346394b89b1bc3fc2b2e640de"],
+        "components": [
+          { "/": "/auth/callback", "comment": "OAuth deep link back into the app" },
+          { "/": "/profile/*", "comment": "Public profiles" },
+          { "/": "/discover", "comment": "Discovery" },
+          { "/": "/messages*", "comment": "Messaging" },
+          { "/": "/projects/*", "comment": "Project rooms" }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["TEAMID.app.lovable.cd44e32346394b89b1bc3fc2b2e640de"]
+  }
+}
