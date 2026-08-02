@@ -23,7 +23,7 @@ const Privacy = () => {
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
             Privacy Policy
           </h1>
-          <p className="text-muted-foreground mb-4">Last updated: January 2025</p>
+          <p className="text-muted-foreground mb-4">Last updated: August 2026</p>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Your privacy is important to us. This policy explains how we collect, use, and protect your information.
           </p>
@@ -163,6 +163,37 @@ const Privacy = () => {
                 <h2 className="text-2xl font-bold mb-4">6. Data Retention</h2>
                 <p className="text-muted-foreground">
                   We retain your information for as long as your account is active or as needed to provide services. When you delete your account, we delete your personal information within 30 days, except where we are required to retain it for legal purposes.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/50">
+              <CardContent className="pt-6 prose prose-lg max-w-none">
+                <h2 className="text-2xl font-bold mb-4">6a. Mobile App Permissions</h2>
+                <p className="text-muted-foreground mb-4">
+                  Our iOS and Android apps request the following device permissions. Each one is optional, requested only at the
+                  moment it is needed, and can be revoked in your device settings at any time:
+                </p>
+                <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                  <li><strong>Camera:</strong> to take a photo for your avatar or portfolio. Photos are uploaded only when you confirm.</li>
+                  <li><strong>Photo library:</strong> to select existing images for your avatar or portfolio.</li>
+                  <li><strong>Notifications:</strong> to send push alerts about matches, messages and collaboration requests. We store a device push token, which is deleted when you sign out or delete your account.</li>
+                  <li><strong>Approximate location (optional):</strong> only if you choose to enable nearby discovery, to show creatives close to you.</li>
+                </ul>
+                <p className="text-muted-foreground mt-4">
+                  The apps do not access your contacts, microphone, call logs, SMS, or precise background location, and we do not
+                  sell or share device data with advertisers or data brokers.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/50">
+              <CardContent className="pt-6 prose prose-lg max-w-none">
+                <h2 className="text-2xl font-bold mb-4">6b. Deleting Your Account and Data</h2>
+                <p className="text-muted-foreground">
+                  You can delete your account and personal data at any time from <strong>Settings → Account → Delete Account</strong>,
+                  or by emailing privacy@artistrysynk.app. Full details of what is deleted, what we must retain, and timelines are on
+                  our <a href="/data-deletion" className="text-primary hover:underline">Account &amp; Data Deletion</a> page.
                 </p>
               </CardContent>
             </Card>
