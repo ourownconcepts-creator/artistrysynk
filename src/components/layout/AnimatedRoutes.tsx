@@ -47,6 +47,7 @@ const Contact = lazy(() => import('@/pages/Contact'));
 const Privacy = lazy(() => import('@/pages/Privacy'));
 const Terms = lazy(() => import('@/pages/Terms'));
 const Cookies = lazy(() => import('@/pages/Cookies'));
+const DataDeletion = lazy(() => import('@/pages/DataDeletion'));
 const Settings = lazy(() => import('@/pages/Settings'));
 const CollaborationFeed = lazy(() => import('@/pages/CollaborationFeed'));
 const CreatorCredits = lazy(() => import('@/pages/CreatorCredits'));
@@ -85,6 +86,7 @@ export const AnimatedRoutes = () => {
         <Route path="/privacy" element={<SuspenseWrapper><PageTransition><Privacy /></PageTransition></SuspenseWrapper>} />
         <Route path="/terms" element={<SuspenseWrapper><PageTransition><Terms /></PageTransition></SuspenseWrapper>} />
         <Route path="/cookies" element={<SuspenseWrapper><PageTransition><Cookies /></PageTransition></SuspenseWrapper>} />
+        <Route path="/data-deletion" element={<SuspenseWrapper><PageTransition><DataDeletion /></PageTransition></SuspenseWrapper>} />
 
         {/* Protected Routes */}
         <Route path="/setup-profile" element={
