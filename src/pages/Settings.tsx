@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { Bell, Shield, User, Trash2, Moon, Sun, Monitor, Loader2 } from "lucide-react";
+import { Bell, Shield, User, Trash2, Moon, Sun, Monitor, Loader2, Scale, FileText, Cookie, Trash, ExternalLink } from "lucide-react";
 import { useTheme } from "next-themes";
 import { PushNotificationSettings } from "@/components/notifications/PushNotificationSettings";
 import { BlockedUsersList } from "@/components/settings/BlockedUsersList";
@@ -152,7 +152,7 @@ const Settings = () => {
       </div>
 
       <Tabs defaultValue="notifications" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="notifications" className="gap-2">
             <Bell className="w-4 h-4" />
             <span className="hidden sm:inline">Notifications</span>
@@ -168,6 +168,10 @@ const Settings = () => {
           <TabsTrigger value="account" className="gap-2">
             <User className="w-4 h-4" />
             <span className="hidden sm:inline">Account</span>
+          </TabsTrigger>
+          <TabsTrigger value="legal" className="gap-2">
+            <Scale className="w-4 h-4" />
+            <span className="hidden sm:inline">Legal</span>
           </TabsTrigger>
         </TabsList>
 
@@ -400,6 +404,9 @@ const Settings = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+        <TabsContent value="legal" className="space-y-6">
+        </TabsContent>
 
       <div className="mt-8 flex justify-end">
         <Button onClick={saveSettings} disabled={saving}>
