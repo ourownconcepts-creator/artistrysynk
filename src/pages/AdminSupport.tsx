@@ -26,10 +26,28 @@ type Ticket = {
   message: string;
   status: string;
   category: string | null;
+  reference_id: string | null;
   admin_response: string | null;
   responded_at: string | null;
   created_at: string;
 };
+
+type AuditEntry = {
+  id: string;
+  outcome: string;
+  reject_reason: string | null;
+  ip_hash: string | null;
+  user_agent: string | null;
+  captcha_required: boolean;
+  captcha_passed: boolean | null;
+  validation_results: unknown;
+  created_at: string;
+};
+
+const fallbackReference = (t: Ticket) =>
+  `AS-${(t.category ?? "support") === "privacy" ? "PRV" : "SUP"}-${t.id.replace(/-/g, "").slice(0, 8).toUpperCase()}`;
+
+const referenceOf = (t: Ticket) => t.reference_id ?? fallbackReference(t);
 
 const STATUSES = ["pending", "reviewed", "resolved", "spam"] as const;
 
@@ -59,6 +77,53 @@ const AdminSupport = () => {
   const [reply, setReply] = useState("");
   const [replyStatus, setReplyStatus] = useState<string>("resolved");
   const [sending, setSending] = useState(false);
+  const [audit, setAudit] = useState<AuditEntry[]>([]);
+  const [inboxes, setInboxes] = useState({ support: "", privacy: "" });
+  const [savingInboxes, setSavingInboxes] = useState(false);
+
+  const fetchInboxes = async () => {
+    const { data } = await supabase
+      .from("admin_settings")
+      .select("setting_key, setting_value")
+      .in("setting_key", ["support_inbox_email", "privacy_inbox_email"]);
+    const read = (key: string) => {
+      const value = data?.find((r) => r.setting_key === key)?.setting_value;
+      return typeof value === "string" ? value : "";
+    };
+    setInboxes({ support: read("support_inbox_email"), privacy: read("privacy_inbox_email") });
+  };
+
+  const saveInboxes = async () => {
+    const valid = (v: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.trim());
+    if (!valid(inboxes.support) || !valid(inboxes.privacy)) {
+      toast.error("Enter a valid email address for both inboxes");
+      return;
+    }
+    setSavingInboxes(true);
+    const { error } = await supabase.from("admin_settings").upsert(
+      [
+        { setting_key: "support_inbox_email", setting_value: inboxes.support.trim() as unknown as never },
+        { setting_key: "privacy_inbox_email", setting_value: inboxes.privacy.trim() as unknown as never },
+      ],
+      { onConflict: "setting_key" },
+    );
+    setSavingInboxes(false);
+    if (error) {
+      toast.error("Failed to save inbox routing", { description: error.message });
+      return;
+    }
+    toast.success("Inbox routing updated");
+  };
+
+  const fetchAudit = async (ticket: Ticket) => {
+    setAudit([]);
+    const { data } = await supabase
+      .from("contact_submission_audit")
+      .select("*")
+      .or(`submission_id.eq.${ticket.id},reference_id.eq.${referenceOf(ticket)}`)
+      .order("created_at", { ascending: false });
+    setAudit((data ?? []) as unknown as AuditEntry[]);
+  };
 
   const fetchTickets = async () => {
     setLoading(true);
@@ -77,6 +142,7 @@ const AdminSupport = () => {
 
   useEffect(() => {
     fetchTickets();
+    fetchInboxes();
   }, []);
 
   const counts = useMemo(() => {
@@ -93,7 +159,7 @@ const AdminSupport = () => {
       if (statusFilter !== "all" && t.status !== statusFilter) return false;
       if (categoryFilter !== "all" && (t.category ?? "support") !== categoryFilter) return false;
       if (!q) return true;
-      return [t.name, t.email, t.subject, t.message, t.phone ?? ""]
+      return [t.name, t.email, t.subject, t.message, t.phone ?? "", referenceOf(t)]
         .join(" ")
         .toLowerCase()
         .includes(q);
@@ -104,6 +170,7 @@ const AdminSupport = () => {
     setActive(ticket);
     setReply(ticket.admin_response ?? "");
     setReplyStatus(ticket.status === "pending" ? "resolved" : ticket.status);
+    fetchAudit(ticket);
   };
 
   const updateStatus = async (id: string, status: string) => {
@@ -177,6 +244,46 @@ const AdminSupport = () => {
           ))}
         </div>
 
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Inbox routing</CardTitle>
+            <CardDescription>
+              Where new submissions are forwarded. Support tickets go to the first address, privacy requests to the second.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
+              <div>
+                <label htmlFor="support-inbox" className="text-sm font-medium mb-2 block">Support inbox</label>
+                <Input
+                  id="support-inbox"
+                  type="email"
+                  placeholder="support@artistrysynk.app"
+                  value={inboxes.support}
+                  onChange={(e) => setInboxes((p) => ({ ...p, support: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label htmlFor="privacy-inbox" className="text-sm font-medium mb-2 block">Privacy inbox</label>
+                <Input
+                  id="privacy-inbox"
+                  type="email"
+                  placeholder="privacy@artistrysynk.app"
+                  value={inboxes.privacy}
+                  onChange={(e) => setInboxes((p) => ({ ...p, privacy: e.target.value }))}
+                />
+              </div>
+              <Button onClick={saveInboxes} disabled={savingInboxes}>
+                {savingInboxes ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" aria-hidden="true" />Saving…</>
+                ) : (
+                  "Save routing"
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <div className="flex flex-col lg:flex-row lg:items-end gap-3 lg:justify-between">
@@ -189,8 +296,8 @@ const AdminSupport = () => {
                   <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
                   <Input
                     className="pl-9 w-[240px]"
-                    placeholder="Search name, email, subject…"
-                    aria-label="Search tickets"
+                    placeholder="Search reference, name, email…"
+                    aria-label="Search tickets by reference ID, name, email or subject"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
@@ -233,6 +340,7 @@ const AdminSupport = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Date</TableHead>
+                      <TableHead>Reference</TableHead>
                       <TableHead>From</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>Subject</TableHead>
@@ -247,6 +355,7 @@ const AdminSupport = () => {
                         <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                           {format(new Date(t.created_at), "MMM d, yyyy")}
                         </TableCell>
+                        <TableCell className="font-mono text-xs whitespace-nowrap">{referenceOf(t)}</TableCell>
                         <TableCell>
                           <div className="font-medium">{t.name}</div>
                           <a href={`mailto:${t.email}`} className="text-xs text-primary hover:underline inline-flex items-center gap-1">
@@ -300,16 +409,35 @@ const AdminSupport = () => {
               <DialogHeader>
                 <DialogTitle>{active.subject}</DialogTitle>
                 <DialogDescription>
-                  {active.name} · {active.email}
+                  <span className="font-mono">{referenceOf(active)}</span> · {active.name} · {active.email}
                   {active.phone ? ` · ${active.phone}` : ""} ·{" "}
                   {format(new Date(active.created_at), "MMM d, yyyy HH:mm")}
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-[70vh] overflow-y-auto">
                 <div className="p-4 bg-muted rounded-lg max-h-48 overflow-y-auto">
                   <p className="whitespace-pre-wrap text-sm">{active.message}</p>
                 </div>
+
+                {audit.length > 0 && (
+                  <div className="rounded-lg border border-border p-4">
+                    <p className="text-sm font-medium mb-2">Submission audit trail</p>
+                    <ul className="space-y-2 text-xs text-muted-foreground">
+                      {audit.map((a) => (
+                        <li key={a.id} className="border-b border-border/50 pb-2 last:border-0 last:pb-0">
+                          <span className="font-medium text-foreground capitalize">{a.outcome.replace(/_/g, " ")}</span>
+                          {a.reject_reason ? ` · ${a.reject_reason}` : ""} · {format(new Date(a.created_at), "MMM d, yyyy HH:mm:ss")}
+                          <div className="font-mono break-all">IP hash: {a.ip_hash?.slice(0, 16) ?? "—"}…</div>
+                          <div className="break-all">UA: {a.user_agent || "—"}</div>
+                          <div>
+                            CAPTCHA: {a.captcha_required ? (a.captcha_passed ? "passed" : "failed/pending") : "not required"}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
                 {active.admin_response && (
                   <div className="p-4 rounded-lg border border-border">

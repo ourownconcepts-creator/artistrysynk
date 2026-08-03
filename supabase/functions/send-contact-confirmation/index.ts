@@ -1,7 +1,10 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const LOGO_URL = "https://lihctrhzsyjqnlzwwkzo.supabase.co/storage/v1/object/public/email-assets/logo.png";
 
 const corsHeaders = {
@@ -20,8 +23,28 @@ interface ContactConfirmationRequest {
   referenceId?: string;
 }
 
-const SUPPORT_INBOX = "support@artistrysynk.app";
-const PRIVACY_INBOX = "privacy@artistrysynk.app";
+const DEFAULT_SUPPORT_INBOX = "support@artistrysynk.app";
+const DEFAULT_PRIVACY_INBOX = "privacy@artistrysynk.app";
+
+/** Admin-configurable inbox routing, stored in admin_settings. */
+const resolveInbox = async (category: string): Promise<string> => {
+  const fallback = category === "privacy" ? DEFAULT_PRIVACY_INBOX : DEFAULT_SUPPORT_INBOX;
+  try {
+    const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+    const key = category === "privacy" ? "privacy_inbox_email" : "support_inbox_email";
+    const { data } = await admin
+      .from("admin_settings")
+      .select("setting_value")
+      .eq("setting_key", key)
+      .maybeSingle();
+    const value = data?.setting_value;
+    const address = typeof value === "string" ? value : (value as { email?: string } | null)?.email;
+    return address && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(address) ? address : fallback;
+  } catch (e) {
+    console.error("Failed to resolve inbox setting:", e);
+    return fallback;
+  }
+};
 
 const escapeHtml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -50,7 +73,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const referenceId = body.referenceId ?? `AS-SUP-${crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase()}`;
-    const supportTo = category === "privacy" ? PRIVACY_INBOX : SUPPORT_INBOX;
+    const supportTo = await resolveInbox(category);
 
     const emailResponse = await resend.emails.send({
       from: "ArtistrySynk <hello@artistrysynk.app>",

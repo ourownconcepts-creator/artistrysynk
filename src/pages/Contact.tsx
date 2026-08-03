@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Mail, MessageCircle, MapPin, Phone, Send } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
@@ -9,14 +9,23 @@ import { PageSEO, FAQSchema } from "@/components/seo";
 import logoImg from "@/assets/logo.png";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  contactSchema,
-  detectSpam,
-  checkRateLimit,
-  recordSubmission,
-  buildReferenceId,
-  MIN_FILL_MS,
-} from "@/lib/contactSpamGuard";
+import { contactSchema, detectSpam, checkRateLimit, recordSubmission } from "@/lib/contactSpamGuard";
+
+type SubmissionReceipt = {
+  referenceId: string;
+  category: string;
+  submittedAt: string;
+  emailQueued: boolean;
+};
+
+declare global {
+  interface Window {
+    hcaptcha?: {
+      render: (el: HTMLElement, opts: Record<string, unknown>) => string;
+      reset: (id?: string) => void;
+    };
+  }
+}
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -29,7 +38,50 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [honeypot, setHoneypot] = useState("");
   const mountedAt = useRef(Date.now());
-  const [reference, setReference] = useState<string | null>(null);
+  const [receipt, setReceipt] = useState<SubmissionReceipt | null>(null);
+  const [captcha, setCaptcha] = useState<{ siteKey: string } | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaBox = useRef<HTMLDivElement | null>(null);
+  const captchaWidget = useRef<string | null>(null);
+
+  // Load and render the hCaptcha widget only once the server asks for it.
+  useEffect(() => {
+    if (!captcha) return;
+    let cancelled = false;
+
+    const render = () => {
+      if (cancelled || !captchaBox.current || !window.hcaptcha || captchaWidget.current) return;
+      captchaWidget.current = window.hcaptcha.render(captchaBox.current, {
+        sitekey: captcha.siteKey,
+        callback: (token: string) => setCaptchaToken(token),
+        "expired-callback": () => setCaptchaToken(null),
+        "error-callback": () => setCaptchaToken(null),
+      });
+    };
+
+    if (window.hcaptcha) {
+      render();
+    } else if (!document.getElementById("hcaptcha-script")) {
+      const script = document.createElement("script");
+      script.id = "hcaptcha-script";
+      script.src = "https://js.hcaptcha.com/1/api.js?render=explicit";
+      script.async = true;
+      script.defer = true;
+      script.onload = render;
+      document.head.appendChild(script);
+    } else {
+      document.getElementById("hcaptcha-script")?.addEventListener("load", render);
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [captcha]);
+
+  const resetCaptcha = useCallback(() => {
+    setCaptchaToken(null);
+    if (window.hcaptcha && captchaWidget.current) window.hcaptcha.reset(captchaWidget.current);
+  }, []);
 
   const contactInfo = [
     {
@@ -84,16 +136,7 @@ const Contact = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Bot traps: hidden field must stay empty, form must not be filled instantly.
-    if (honeypot.trim() !== "") {
-      toast.error("Submission blocked.");
-      return;
-    }
-    if (Date.now() - mountedAt.current < MIN_FILL_MS) {
-      toast.error("That was too fast — please take a moment and try again.");
-      return;
-    }
-
+    // Client-side checks are a fast first pass; the server re-runs all of them.
     const parsed = contactSchema.safeParse(formData);
     if (!parsed.success) {
       toast.error(parsed.error.errors[0]?.message ?? "Please check your details");
@@ -112,57 +155,71 @@ const Contact = () => {
       return;
     }
 
+    if (captcha && !captchaToken) {
+      toast.error("Please complete the verification challenge before sending.");
+      return;
+    }
+
     setIsSubmitting(true);
-    
+
     try {
       const clean = parsed.data;
-      const haystack = `${clean.subject} ${clean.message}`.toLowerCase();
-      const category = /privacy|gdpr|data (deletion|request|export)|delete my (account|data)|personal data|cookie/.test(haystack)
-        ? "privacy"
-        : "support";
-
-      // Save to database
-      const { data: inserted, error } = await supabase
-        .from("contact_submissions")
-        .insert({
+      // All validation, rate limiting, bot protection and auditing happen server-side.
+      const { data, error } = await supabase.functions.invoke<{
+        success?: boolean;
+        referenceId?: string;
+        category?: string;
+        submittedAt?: string;
+        emailQueued?: boolean;
+        captchaRequired?: boolean;
+        siteKey?: string;
+        error?: string;
+      }>("submit-contact-support", {
+        body: {
           name: clean.name,
           email: clean.email,
           phone: clean.phone || null,
           subject: clean.subject,
           message: clean.message,
-          category,
-        } as any)
-        .select("id")
-        .single();
+          honeypot,
+          elapsedMs: Date.now() - mountedAt.current,
+          captchaToken: captchaToken ?? undefined,
+        },
+      });
 
-      if (error) throw error;
-
-      const referenceId = buildReferenceId(inserted!.id, category);
-      recordSubmission();
-
-      // Send confirmation to the sender + routed copy to the support inbox
-      try {
-        await supabase.functions.invoke("send-contact-confirmation", {
-          body: {
-            name: clean.name,
-            email: clean.email,
-            phone: clean.phone || null,
-            subject: clean.subject,
-            message: clean.message,
-            category,
-            referenceId,
-          },
-        });
-      } catch (emailError) {
-        console.error("Failed to send confirmation email:", emailError);
-        // Don't fail the submission if email fails
+      let payload = data ?? null;
+      if (error && !payload) {
+        const context = (error as { context?: Response }).context;
+        if (context) payload = await context.clone().json().catch(() => null);
       }
 
-      setReference(referenceId);
-      toast.success(`Message sent — reference ${referenceId}`, {
-        description: "We've emailed you a confirmation. We'll get back to you within 24 hours."
+      if (payload?.captchaRequired && payload.siteKey) {
+        setCaptcha({ siteKey: payload.siteKey });
+        resetCaptcha();
+        toast.error("Extra verification needed", {
+          description: payload.error ?? "Please complete the challenge and send again.",
+        });
+        return;
+      }
+
+      if (!payload?.success) {
+        toast.error(payload?.error ?? "Failed to send message. Please try again.");
+        return;
+      }
+
+      recordSubmission();
+      resetCaptcha();
+      setCaptcha(null);
+      setReceipt({
+        referenceId: payload.referenceId!,
+        category: payload.category ?? "support",
+        submittedAt: payload.submittedAt ?? new Date().toISOString(),
+        emailQueued: payload.emailQueued ?? false,
       });
-      
+      toast.success(`Message sent — reference ${payload.referenceId}`, {
+        description: "We've emailed you a confirmation. We'll get back to you within 24 hours.",
+      });
+
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
       mountedAt.current = Date.now();
     } catch (error) {
@@ -227,9 +284,21 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  {reference && (
-                    <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm">
-                      Your reference ID is <strong>{reference}</strong>. Quote it in any follow-up email.
+                  {receipt && (
+                    <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm space-y-1" role="status">
+                      <p className="font-semibold">Ticket created</p>
+                      <p>
+                        Reference ID: <strong>{receipt.referenceId}</strong>
+                      </p>
+                      <p className="text-muted-foreground">
+                        Type: {receipt.category === "privacy" ? "Privacy request" : "Support request"} · Logged{" "}
+                        {new Date(receipt.submittedAt).toLocaleString()}
+                      </p>
+                      <p className="text-muted-foreground">
+                        {receipt.emailQueued
+                          ? "A confirmation email is on its way — quote this reference in any follow-up."
+                          : "Save this reference — quote it in any follow-up email."}
+                      </p>
                     </div>
                   )}
                   {/* Honeypot: hidden from users, filled by bots */}
@@ -298,6 +367,14 @@ const Contact = () => {
                       </>
                     )}
                   </Button>
+                  {captcha && (
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">
+                        For security, please confirm you're human before sending.
+                      </p>
+                      <div ref={captchaBox} aria-label="Human verification challenge" />
+                    </div>
+                  )}
                 </form>
               </CardContent>
             </Card>
