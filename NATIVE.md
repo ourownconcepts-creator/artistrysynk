@@ -15,8 +15,17 @@ npm run build
 npx cap sync
 ```
 
-Run it: `npx cap run ios` or `npx cap run android`.
+Run it for development with hot-reload:
+
+```bash
+npx cap run ios --config capacitor.config.dev.ts
+npx cap run android --config capacitor.config.dev.ts
+```
+
 Re-run `git pull && npm install && npm run build && npx cap sync` after every Lovable change.
+
+**For store builds:** make sure `capacitor.config.ts` is the active config (it has **no** `server.url`). The `capacitor.config.dev.ts` file is only for sandbox testing and must not be used for App Store or Play Store submissions.
+
 
 ## 2. App icons & splash screens
 
