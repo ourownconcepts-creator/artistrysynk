@@ -403,10 +403,61 @@ const Settings = () => {
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
 
         <TabsContent value="legal" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Legal Center</CardTitle>
+              <CardDescription>Policies, terms and your data rights</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {[
+                { label: "Privacy Policy", desc: "How we collect, use and protect your data", to: "/privacy", icon: Shield },
+                { label: "Terms of Service", desc: "The rules for using ArtistrySynk", to: "/terms", icon: FileText },
+                { label: "Cookie Policy", desc: "Cookies and similar technologies we use", to: "/cookies", icon: Cookie },
+                { label: "Account & Data Deletion", desc: "Request deletion of your account and data", to: "/data-deletion", icon: Trash },
+                { label: "Open Source Licenses", desc: "Third-party software attributions", to: "/licenses", icon: Scale },
+              ].map((item) => (
+                <button
+                  key={item.to}
+                  type="button"
+                  onClick={() => navigate(item.to)}
+                  aria-label={`Open ${item.label}`}
+                  className="w-full flex items-center gap-3 rounded-lg border border-border p-4 text-left hover:bg-accent/10 hover:border-primary/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <item.icon className="w-5 h-5 text-primary shrink-0" aria-hidden="true" />
+                  <span className="flex-1">
+                    <span className="block font-medium">{item.label}</span>
+                    <span className="block text-sm text-muted-foreground">{item.desc}</span>
+                  </span>
+                  <ExternalLink className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+                </button>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Support & Privacy Requests</CardTitle>
+              <CardDescription>Need help or have a privacy question?</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={() => navigate("/contact")}>
+                Contact Support
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  localStorage.removeItem("as_cookie_consent");
+                  toast.success("Cookie preferences reset — the consent banner will reappear.");
+                }}
+              >
+                Reset Cookie Preferences
+              </Button>
+            </CardContent>
+          </Card>
         </TabsContent>
+      </Tabs>
 
       <div className="mt-8 flex justify-end">
         <Button onClick={saveSettings} disabled={saving}>
