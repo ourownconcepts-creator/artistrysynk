@@ -51,39 +51,40 @@ npx cap sync
 1. Replace `TEAMID` in that file with your Apple Developer Team ID, then republish.
 2. In Xcode → target → **Signing & Capabilities** → add **Associated Domains** →
    `applinks:artistrysynk.app` and `webcredentials:artistrysynk.app`.
+3. The entitlement files `Entitlements-Debug.plist` and `Entitlements-Release.plist`
+   are already in the project; point the Xcode build settings to them.
 
 ## 4. App Links (Android)
 
 `public/.well-known/assetlinks.json` is served from
 `https://artistrysynk.app/.well-known/assetlinks.json`.
 
-1. Get your signing fingerprint:
+1. Generate or use your upload keystore and get its SHA-256 fingerprint:
    ```bash
-   keytool -list -v -keystore <your.keystore> -alias <alias> | grep SHA256
+   keytool -list -v -keystore <your.keystore> -alias <alias> -storepass <pass> | grep SHA256
    ```
    (For Play App Signing, copy the SHA-256 from Play Console → Setup → App signing.)
-2. Paste it into `sha256_cert_fingerprints`, then republish.
-3. Add the verified intent filter to `android/app/src/main/AndroidManifest.xml`
-   inside the main `<activity>`:
-   ```xml
-   <intent-filter android:autoVerify="true">
-     <action android:name="android.intent.action.VIEW" />
-     <category android:name="android.intent.category.DEFAULT" />
-     <category android:name="android.intent.category.BROWSABLE" />
-     <data android:scheme="https" android:host="artistrysynk.app" />
-   </intent-filter>
-   ```
+2. Paste the fingerprint into `sha256_cert_fingerprints` in `public/.well-known/assetlinks.json`, then republish.
+3. The `AndroidManifest.xml` intent filter is already configured; verify it is present after `npx cap sync`.
 
-## 5. Before submitting to the stores
+## 5. Required accounts and certificates before submission
 
-Remove the live-reload block from `capacitor.config.ts` so the app ships the
-bundled build instead of the Lovable sandbox URL:
+- Apple Developer Program membership (paid).
+- Apple Developer Team ID for deep links and signing.
+- macOS + Xcode for the iOS build and upload.
+- Android Studio + a release keystore for the Android bundle (AAB).
+- Google Play Console account for the Android release.
+- App Store Connect listing with screenshots, description, keywords, and privacy details.
 
-```ts
-// delete this for store builds
-server: { url: '...', cleartext: true },
+## 6. Before submitting to the stores
+
+Use the production config (the default `capacitor.config.ts` has **no** live-reload server):
+
+```bash
+npm run build
+npx cap sync
+npx cap open ios      # build and archive in Xcode
+npx cap open android  # build signed release AAB in Android Studio
 ```
-
-Then `npm run build && npx cap sync`.
 
 Read more: https://lovable.dev/blog/2024-11-27-mobile-app-development-with-capacitor
