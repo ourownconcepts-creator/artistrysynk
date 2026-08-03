@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Mail, MessageCircle, MapPin, Phone, Send } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
@@ -9,6 +9,14 @@ import { PageSEO, FAQSchema } from "@/components/seo";
 import logoImg from "@/assets/logo.png";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  contactSchema,
+  detectSpam,
+  checkRateLimit,
+  recordSubmission,
+  buildReferenceId,
+  MIN_FILL_MS,
+} from "@/lib/contactSpamGuard";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -19,6 +27,9 @@ const Contact = () => {
     message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
+  const mountedAt = useRef(Date.now());
+  const [reference, setReference] = useState<string | null>(null);
 
   const contactInfo = [
     {
@@ -72,57 +83,88 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
-      toast.error("Please fill in all fields");
+
+    // Bot traps: hidden field must stay empty, form must not be filled instantly.
+    if (honeypot.trim() !== "") {
+      toast.error("Submission blocked.");
+      return;
+    }
+    if (Date.now() - mountedAt.current < MIN_FILL_MS) {
+      toast.error("That was too fast — please take a moment and try again.");
       return;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      toast.error("Please enter a valid email address");
+    const parsed = contactSchema.safeParse(formData);
+    if (!parsed.success) {
+      toast.error(parsed.error.errors[0]?.message ?? "Please check your details");
+      return;
+    }
+
+    const spamReason = detectSpam(parsed.data);
+    if (spamReason) {
+      toast.error(spamReason);
+      return;
+    }
+
+    const limited = checkRateLimit();
+    if (limited) {
+      toast.error(limited);
       return;
     }
 
     setIsSubmitting(true);
     
     try {
-      const haystack = `${formData.subject} ${formData.message}`.toLowerCase();
+      const clean = parsed.data;
+      const haystack = `${clean.subject} ${clean.message}`.toLowerCase();
       const category = /privacy|gdpr|data (deletion|request|export)|delete my (account|data)|personal data|cookie/.test(haystack)
         ? "privacy"
         : "support";
 
       // Save to database
-      const { error } = await supabase.from("contact_submissions").insert({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone || null,
-        subject: formData.subject,
-        message: formData.message,
-        category,
-      } as any);
+      const { data: inserted, error } = await supabase
+        .from("contact_submissions")
+        .insert({
+          name: clean.name,
+          email: clean.email,
+          phone: clean.phone || null,
+          subject: clean.subject,
+          message: clean.message,
+          category,
+        } as any)
+        .select("id")
+        .single();
 
       if (error) throw error;
-      
-      // Send confirmation email
+
+      const referenceId = buildReferenceId(inserted!.id, category);
+      recordSubmission();
+
+      // Send confirmation to the sender + routed copy to the support inbox
       try {
         await supabase.functions.invoke("send-contact-confirmation", {
           body: {
-            name: formData.name,
-            email: formData.email,
-            subject: formData.subject,
+            name: clean.name,
+            email: clean.email,
+            phone: clean.phone || null,
+            subject: clean.subject,
+            message: clean.message,
+            category,
+            referenceId,
           },
         });
-        console.log("Confirmation email sent");
       } catch (emailError) {
         console.error("Failed to send confirmation email:", emailError);
         // Don't fail the submission if email fails
       }
-      
-      toast.success("Message sent successfully!", {
-        description: "We've sent you a confirmation email. We'll get back to you within 24 hours."
+
+      setReference(referenceId);
+      toast.success(`Message sent — reference ${referenceId}`, {
+        description: "We've emailed you a confirmation. We'll get back to you within 24 hours."
       });
       
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+      mountedAt.current = Date.now();
     } catch (error) {
       console.error("Contact submission error:", error);
       toast.error("Failed to send message. Please try again.");
@@ -185,6 +227,22 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {reference && (
+                    <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm">
+                      Your reference ID is <strong>{reference}</strong>. Quote it in any follow-up email.
+                    </div>
+                  )}
+                  {/* Honeypot: hidden from users, filled by bots */}
+                  <input
+                    type="text"
+                    name="company_website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                    className="absolute left-[-9999px] h-0 w-0 opacity-0"
+                  />
                   <div>
                     <label className="text-sm font-medium mb-2 block">Full Name</label>
                     <Input 
@@ -224,9 +282,11 @@ const Contact = () => {
                     <Textarea 
                       placeholder="Tell us more about your inquiry..."
                       className="min-h-[150px]"
+                      maxLength={2000}
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     />
+                    <p className="mt-1 text-xs text-muted-foreground">{formData.message.length}/2000 characters</p>
                   </div>
                   <Button variant="hero" className="w-full" disabled={isSubmitting}>
                     {isSubmitting ? (
