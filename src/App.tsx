@@ -10,6 +10,7 @@ import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { UpdateBanner } from "@/components/pwa/UpdateBanner";
 import { DeepLinkHandler } from "@/components/native/DeepLinkHandler";
 import { NativeShell } from "@/components/native/NativeShell";
+import { CookieConsentBanner } from "@/components/legal/CookieConsentBanner";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
             <NativeShell />
             <InstallPrompt />
             <UpdateBanner />
+            <CookieConsentBanner />
           </AnalyticsProvider>
         </BrowserRouter>
       </TooltipProvider>
