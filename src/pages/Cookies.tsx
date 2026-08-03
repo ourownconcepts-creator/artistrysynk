@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { PageSEO } from "@/components/seo";
+import { toast } from "sonner";
 import logoImg from "@/assets/logo.png";
 
 const Cookies = () => {
@@ -183,7 +184,16 @@ const Cookies = () => {
                   Note: Blocking essential cookies may prevent you from using certain features of our service.
                 </p>
                 <div className="mt-6">
-                  <Button variant="hero">
+                  <Button
+                    variant="hero"
+                    onClick={() => {
+                      localStorage.removeItem("as_cookie_consent");
+                      toast.success("Cookie preferences reset", {
+                        description: "The consent banner will reappear so you can choose again.",
+                      });
+                      setTimeout(() => window.location.reload(), 800);
+                    }}
+                  >
                     Manage Cookie Preferences
                   </Button>
                 </div>
