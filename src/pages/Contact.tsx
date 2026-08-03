@@ -9,13 +9,7 @@ import { PageSEO, FAQSchema } from "@/components/seo";
 import logoImg from "@/assets/logo.png";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  contactSchema,
-  detectSpam,
-  checkRateLimit,
-  recordSubmission,
-  MIN_FILL_MS,
-} from "@/lib/contactSpamGuard";
+import { contactSchema, detectSpam, checkRateLimit, recordSubmission } from "@/lib/contactSpamGuard";
 
 type SubmissionReceipt = {
   referenceId: string;
