@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.notify-new-message-email]
 verify_jwt = false
+
+[functions.admin-captcha-keys]
+verify_jwt = true

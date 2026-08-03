@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Settings, Mail, Bell, Shield, Globe, ArrowLeft, Save } from "lucide-react";
 import { PushNotificationSettings } from "@/components/notifications/PushNotificationSettings";
+import { CaptchaKeysCard } from "@/components/admin/CaptchaKeysCard";
 
 interface AppSettings {
   site_name: string;
@@ -356,6 +357,10 @@ const AdminSettings = () => {
                 </div>
               </CardContent>
             </Card>
+
+            <div className="mt-6">
+              <CaptchaKeysCard />
+            </div>
           </TabsContent>
         </Tabs>
       </div>
