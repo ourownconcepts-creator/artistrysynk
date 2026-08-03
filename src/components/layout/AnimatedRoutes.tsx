@@ -54,6 +54,7 @@ const CollaborationFeed = lazy(() => import('@/pages/CollaborationFeed'));
 const CreatorCredits = lazy(() => import('@/pages/CreatorCredits'));
 const LocationDiscovery = lazy(() => import('@/pages/LocationDiscovery'));
 const Explore = lazy(() => import('@/pages/Explore'));
+const AdminSupport = lazy(() => import('@/pages/AdminSupport'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -179,6 +180,11 @@ export const AnimatedRoutes = () => {
         <Route path="/admin-settings" element={
           <AdminProtectedRoute allowedRoles={['super_admin']}>
             <SuspenseWrapper><PageTransition><AdminSettings /></PageTransition></SuspenseWrapper>
+          </AdminProtectedRoute>
+        } />
+        <Route path="/admin-support" element={
+          <AdminProtectedRoute allowedRoles={['admin', 'master_admin', 'super_admin']}>
+            <SuspenseWrapper><PageTransition><AdminSupport /></PageTransition></SuspenseWrapper>
           </AdminProtectedRoute>
         } />
 
