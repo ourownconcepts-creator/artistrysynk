@@ -380,7 +380,16 @@ const AdminDashboard = () => {
           <PortfolioModeration />
         </TabsContent>
 
-        <TabsContent value="leads">
+        <TabsContent value="leads" className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-4">
+            <div>
+              <p className="font-medium">Support &amp; Privacy Inbox</p>
+              <p className="text-sm text-muted-foreground">
+                Full inbox with search, status tracking and email replies.
+              </p>
+            </div>
+            <Button onClick={() => navigate("/admin-support")}>Open inbox</Button>
+          </div>
           <ContactSubmissionsManager />
         </TabsContent>
 
