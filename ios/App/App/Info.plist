@@ -45,7 +45,23 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<true/>
+  <key>UIViewControllerBasedStatusBarAppearance</key>
+  <true/>
+
+  <!-- Native app permissions -->
+  <key>NSCameraUsageDescription</key>
+  <string>ArtistrySynk uses your camera to add photos and videos to your portfolio.</string>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>ArtistrySynk accesses your photo library so you can upload portfolio work and profile pictures.</string>
+  <key>NSPhotoLibraryAddUsageDescription</key>
+  <string>ArtistrySynk can save captured photos to your library if you choose.</string>
+  <key>NSUserNotificationUsageDescription</key>
+  <string>ArtistrySynk sends notifications for matches, messages, project updates, and important account alerts.</string>
+
+  <!-- Push notifications -->
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>remote-notification</string>
+  </array>
 </dict>
 </plist>
