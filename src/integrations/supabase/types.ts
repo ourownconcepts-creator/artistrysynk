@@ -448,6 +448,59 @@ export type Database = {
           },
         ]
       }
+      contact_submission_audit: {
+        Row: {
+          captcha_passed: boolean | null
+          captcha_required: boolean
+          created_at: string
+          email: string | null
+          id: string
+          ip_hash: string | null
+          outcome: string
+          reference_id: string | null
+          reject_reason: string | null
+          submission_id: string | null
+          user_agent: string | null
+          validation_results: Json
+        }
+        Insert: {
+          captcha_passed?: boolean | null
+          captcha_required?: boolean
+          created_at?: string
+          email?: string | null
+          id?: string
+          ip_hash?: string | null
+          outcome: string
+          reference_id?: string | null
+          reject_reason?: string | null
+          submission_id?: string | null
+          user_agent?: string | null
+          validation_results?: Json
+        }
+        Update: {
+          captcha_passed?: boolean | null
+          captcha_required?: boolean
+          created_at?: string
+          email?: string | null
+          id?: string
+          ip_hash?: string | null
+          outcome?: string
+          reference_id?: string | null
+          reject_reason?: string | null
+          submission_id?: string | null
+          user_agent?: string | null
+          validation_results?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_submission_audit_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "contact_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_submissions: {
         Row: {
           admin_response: string | null
@@ -458,6 +511,7 @@ export type Database = {
           message: string
           name: string
           phone: string | null
+          reference_id: string | null
           responded_at: string | null
           responded_by: string | null
           status: string | null
@@ -472,6 +526,7 @@ export type Database = {
           message: string
           name: string
           phone?: string | null
+          reference_id?: string | null
           responded_at?: string | null
           responded_by?: string | null
           status?: string | null
@@ -486,6 +541,7 @@ export type Database = {
           message?: string
           name?: string
           phone?: string | null
+          reference_id?: string | null
           responded_at?: string | null
           responded_by?: string | null
           status?: string | null
