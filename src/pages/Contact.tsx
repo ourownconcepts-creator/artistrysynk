@@ -290,9 +290,21 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  {reference && (
-                    <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm">
-                      Your reference ID is <strong>{reference}</strong>. Quote it in any follow-up email.
+                  {receipt && (
+                    <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm space-y-1" role="status">
+                      <p className="font-semibold">Ticket created</p>
+                      <p>
+                        Reference ID: <strong>{receipt.referenceId}</strong>
+                      </p>
+                      <p className="text-muted-foreground">
+                        Type: {receipt.category === "privacy" ? "Privacy request" : "Support request"} · Logged{" "}
+                        {new Date(receipt.submittedAt).toLocaleString()}
+                      </p>
+                      <p className="text-muted-foreground">
+                        {receipt.emailQueued
+                          ? "A confirmation email is on its way — quote this reference in any follow-up."
+                          : "Save this reference — quote it in any follow-up email."}
+                      </p>
                     </div>
                   )}
                   {/* Honeypot: hidden from users, filled by bots */}
@@ -361,6 +373,14 @@ const Contact = () => {
                       </>
                     )}
                   </Button>
+                  {captcha && (
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">
+                        For security, please confirm you're human before sending.
+                      </p>
+                      <div ref={captchaBox} aria-label="Human verification challenge" />
+                    </div>
+                  )}
                 </form>
               </CardContent>
             </Card>
