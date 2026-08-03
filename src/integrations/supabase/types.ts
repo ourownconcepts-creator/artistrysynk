@@ -450,32 +450,44 @@ export type Database = {
       }
       contact_submissions: {
         Row: {
+          admin_response: string | null
+          category: string
           created_at: string
           email: string
           id: string
           message: string
           name: string
           phone: string | null
+          responded_at: string | null
+          responded_by: string | null
           status: string | null
           subject: string
         }
         Insert: {
+          admin_response?: string | null
+          category?: string
           created_at?: string
           email: string
           id?: string
           message: string
           name: string
           phone?: string | null
+          responded_at?: string | null
+          responded_by?: string | null
           status?: string | null
           subject: string
         }
         Update: {
+          admin_response?: string | null
+          category?: string
           created_at?: string
           email?: string
           id?: string
           message?: string
           name?: string
           phone?: string | null
+          responded_at?: string | null
+          responded_by?: string | null
           status?: string | null
           subject?: string
         }
