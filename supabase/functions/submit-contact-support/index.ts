@@ -3,8 +3,8 @@ import { z } from "https://esm.sh/zod@3.23.8";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const HCAPTCHA_SECRET_KEY = Deno.env.get("HCAPTCHA_SECRET_KEY") ?? "";
-const HCAPTCHA_SITE_KEY = Deno.env.get("HCAPTCHA_SITE_KEY") ?? "";
+const ENV_HCAPTCHA_SECRET_KEY = Deno.env.get("HCAPTCHA_SECRET_KEY") ?? "";
+const ENV_HCAPTCHA_SITE_KEY = Deno.env.get("HCAPTCHA_SITE_KEY") ?? "";
 const IP_SALT = Deno.env.get("CONTACT_IP_SALT") ?? "artistrysynk-contact";
 
 const corsHeaders = {
@@ -76,6 +76,23 @@ Deno.serve(async (req: Request): Promise<Response> => {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+
+  // CAPTCHA keys: admin-managed values in the private table win, env vars are the fallback.
+  let HCAPTCHA_SITE_KEY = ENV_HCAPTCHA_SITE_KEY;
+  let HCAPTCHA_SECRET_KEY = ENV_HCAPTCHA_SECRET_KEY;
+  {
+    const { data: keyRows } = await admin
+      .from("secure_integration_settings")
+      .select("setting_key, setting_value")
+      .in("setting_key", ["hcaptcha_site_key", "hcaptcha_secret_key"]);
+    for (const row of keyRows ?? []) {
+      const value = (row.setting_value ?? "").trim();
+      if (!value) continue;
+      if (row.setting_key === "hcaptcha_site_key") HCAPTCHA_SITE_KEY = value;
+      if (row.setting_key === "hcaptcha_secret_key") HCAPTCHA_SECRET_KEY = value;
+    }
+  }
+
   const ipHash = await sha256(`${IP_SALT}:${clientIp(req)}`);
   const userAgent = (req.headers.get("user-agent") ?? "").slice(0, 500);
 
