@@ -86,6 +86,11 @@ const Contact = () => {
     setIsSubmitting(true);
     
     try {
+      const haystack = `${formData.subject} ${formData.message}`.toLowerCase();
+      const category = /privacy|gdpr|data (deletion|request|export)|delete my (account|data)|personal data|cookie/.test(haystack)
+        ? "privacy"
+        : "support";
+
       // Save to database
       const { error } = await supabase.from("contact_submissions").insert({
         name: formData.name,
@@ -93,6 +98,7 @@ const Contact = () => {
         phone: formData.phone || null,
         subject: formData.subject,
         message: formData.message,
+        category,
       } as any);
 
       if (error) throw error;
