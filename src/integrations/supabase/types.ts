@@ -1703,6 +1703,7 @@ export type Database = {
           is_hidden: boolean | null
           price: number
           seller_id: string
+          subcategory: string | null
           title: string
           total_reviews: number | null
           updated_at: string
@@ -1719,6 +1720,7 @@ export type Database = {
           is_hidden?: boolean | null
           price: number
           seller_id: string
+          subcategory?: string | null
           title: string
           total_reviews?: number | null
           updated_at?: string
@@ -1735,6 +1737,7 @@ export type Database = {
           is_hidden?: boolean | null
           price?: number
           seller_id?: string
+          subcategory?: string | null
           title?: string
           total_reviews?: number | null
           updated_at?: string
