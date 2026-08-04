@@ -369,7 +369,7 @@ const Marketplace = () => {
                   <Label>Category *</Label>
                   <Select
                     value={newService.category}
-                    onValueChange={(v) => setNewService({ ...newService, category: v })}
+                    onValueChange={(v) => setNewService({ ...newService, category: v, subcategory: "" })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
@@ -377,6 +377,23 @@ const Marketplace = () => {
                     <SelectContent>
                       {CATEGORIES.map((cat) => (
                         <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Subcategory</Label>
+                  <Select
+                    value={newService.subcategory}
+                    onValueChange={(v) => setNewService({ ...newService, subcategory: v })}
+                    disabled={!newService.category}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={newService.category ? "Select subcategory" : "Pick a category first"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getSubcategories(newService.category).map((sub) => (
+                        <SelectItem key={sub} value={sub}>{sub}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
