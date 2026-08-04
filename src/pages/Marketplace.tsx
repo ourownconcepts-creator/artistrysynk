@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Search, Plus, ShoppingCart, Clock, DollarSign, Star, Package, MessageSquare } from "lucide-react";
 import { ServiceReviewDialog } from "@/components/marketplace/ServiceReviewDialog";
+import { SERVICE_CATEGORIES, CATEGORY_LABELS, getSubcategories } from "@/lib/serviceCategories";
 
 interface Service {
   id: string;
@@ -20,6 +21,7 @@ interface Service {
   title: string;
   description: string;
   category: string;
+  subcategory?: string | null;
   price: number;
   currency: string;
   delivery_days: number;
@@ -55,18 +57,7 @@ interface Order {
   };
 }
 
-const CATEGORIES = [
-  "Music Production",
-  "Mixing & Mastering",
-  "Songwriting",
-  "Video Production",
-  "Photography",
-  "Graphic Design",
-  "Social Media Management",
-  "Artist Management",
-  "Promotion",
-  "Other",
-];
+const CATEGORIES = CATEGORY_LABELS;
 
 const Marketplace = () => {
   const navigate = useNavigate();
@@ -78,6 +69,7 @@ const Marketplace = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [subcategoryFilter, setSubcategoryFilter] = useState<string>("all");
   
   // New service form
   const [newServiceOpen, setNewServiceOpen] = useState(false);
@@ -85,6 +77,7 @@ const Marketplace = () => {
     title: "",
     description: "",
     category: "",
+    subcategory: "",
     price: "",
     delivery_days: "7",
   });
@@ -204,16 +197,17 @@ const Marketplace = () => {
       title: newService.title,
       description: newService.description,
       category: newService.category,
+      subcategory: newService.subcategory || null,
       price: parseFloat(newService.price),
       delivery_days: parseInt(newService.delivery_days),
-    });
+    } as any);
 
     if (error) {
       toast.error("Failed to create service");
     } else {
       toast.success("Service created!");
       setNewServiceOpen(false);
-      setNewService({ title: "", description: "", category: "", price: "", delivery_days: "7" });
+      setNewService({ title: "", description: "", category: "", subcategory: "", price: "", delivery_days: "7" });
       loadMyServices(currentUser!);
       loadServices();
     }
@@ -305,8 +299,15 @@ const Marketplace = () => {
     const matchesSearch = s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       s.description?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter === "all" || s.category === categoryFilter;
-    return matchesSearch && matchesCategory && s.seller_id !== currentUser;
+    const matchesSubcategory = subcategoryFilter === "all" || s.subcategory === subcategoryFilter;
+    return matchesSearch && matchesCategory && matchesSubcategory && s.seller_id !== currentUser;
   });
+
+  const categoryCounts = services.reduce<Record<string, number>>((acc, s) => {
+    if (s.seller_id === currentUser) return acc;
+    acc[s.category] = (acc[s.category] || 0) + 1;
+    return acc;
+  }, {});
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -368,7 +369,7 @@ const Marketplace = () => {
                   <Label>Category *</Label>
                   <Select
                     value={newService.category}
-                    onValueChange={(v) => setNewService({ ...newService, category: v })}
+                    onValueChange={(v) => setNewService({ ...newService, category: v, subcategory: "" })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
@@ -376,6 +377,23 @@ const Marketplace = () => {
                     <SelectContent>
                       {CATEGORIES.map((cat) => (
                         <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Subcategory</Label>
+                  <Select
+                    value={newService.subcategory}
+                    onValueChange={(v) => setNewService({ ...newService, subcategory: v })}
+                    disabled={!newService.category}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={newService.category ? "Select subcategory" : "Pick a category first"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getSubcategories(newService.category).map((sub) => (
+                        <SelectItem key={sub} value={sub}>{sub}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -424,7 +442,13 @@ const Marketplace = () => {
                   className="pl-10"
                 />
               </div>
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <Select
+                value={categoryFilter}
+                onValueChange={(v) => {
+                  setCategoryFilter(v);
+                  setSubcategoryFilter("all");
+                }}
+              >
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
@@ -435,7 +459,86 @@ const Marketplace = () => {
                   ))}
                 </SelectContent>
               </Select>
+              <Select
+                value={subcategoryFilter}
+                onValueChange={setSubcategoryFilter}
+                disabled={categoryFilter === "all"}
+              >
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="All Subcategories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Subcategories</SelectItem>
+                  {getSubcategories(categoryFilter).map((sub) => (
+                    <SelectItem key={sub} value={sub}>{sub}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+
+            {/* Category → Subcategory browser */}
+            {categoryFilter === "all" ? (
+              <div className="flex flex-wrap gap-2">
+                {SERVICE_CATEGORIES.map((cat) => (
+                  <Badge
+                    key={cat.label}
+                    variant="outline"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Browse ${cat.label} services`}
+                    className="cursor-pointer px-3 py-1.5 hover:bg-accent"
+                    onClick={() => setCategoryFilter(cat.label)}
+                    onKeyDown={(e) => e.key === "Enter" && setCategoryFilter(cat.label)}
+                  >
+                    {cat.label}
+                    <span className="ml-2 text-xs text-muted-foreground">{categoryCounts[cat.label] || 0}</span>
+                  </Badge>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <button
+                    className="hover:text-foreground underline-offset-2 hover:underline"
+                    onClick={() => {
+                      setCategoryFilter("all");
+                      setSubcategoryFilter("all");
+                    }}
+                  >
+                    All Categories
+                  </button>
+                  <span>/</span>
+                  <button
+                    className="hover:text-foreground underline-offset-2 hover:underline"
+                    onClick={() => setSubcategoryFilter("all")}
+                  >
+                    {categoryFilter}
+                  </button>
+                  {subcategoryFilter !== "all" && (
+                    <>
+                      <span>/</span>
+                      <span className="text-foreground font-medium">{subcategoryFilter}</span>
+                    </>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {getSubcategories(categoryFilter).map((sub) => (
+                    <Badge
+                      key={sub}
+                      variant={subcategoryFilter === sub ? "default" : "outline"}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Filter by ${sub}`}
+                      className="cursor-pointer px-3 py-1.5 hover:bg-accent"
+                      onClick={() => setSubcategoryFilter(subcategoryFilter === sub ? "all" : sub)}
+                      onKeyDown={(e) => e.key === "Enter" && setSubcategoryFilter(subcategoryFilter === sub ? "all" : sub)}
+                    >
+                      {sub}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {filteredServices.length === 0 ? (
               <Card>
@@ -470,7 +573,10 @@ const Marketplace = () => {
                           {service.description}
                         </p>
                       )}
-                      <Badge variant="outline" className="mb-2">{service.category}</Badge>
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        <Badge variant="outline">{service.category}</Badge>
+                        {service.subcategory && <Badge variant="secondary">{service.subcategory}</Badge>}
+                      </div>
                       
                       {/* Star Rating Display */}
                       {(service.total_reviews || 0) > 0 && (
@@ -568,7 +674,10 @@ const Marketplace = () => {
                   <Card key={service.id}>
                     <CardHeader>
                       <CardTitle className="text-lg">{service.title}</CardTitle>
-                      <Badge variant="outline">{service.category}</Badge>
+                      <div className="flex flex-wrap gap-1">
+                        <Badge variant="outline">{service.category}</Badge>
+                        {service.subcategory && <Badge variant="secondary">{service.subcategory}</Badge>}
+                      </div>
                     </CardHeader>
                     <CardContent>
                       <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
