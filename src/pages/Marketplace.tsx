@@ -442,7 +442,13 @@ const Marketplace = () => {
                   className="pl-10"
                 />
               </div>
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <Select
+                value={categoryFilter}
+                onValueChange={(v) => {
+                  setCategoryFilter(v);
+                  setSubcategoryFilter("all");
+                }}
+              >
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
@@ -453,7 +459,86 @@ const Marketplace = () => {
                   ))}
                 </SelectContent>
               </Select>
+              <Select
+                value={subcategoryFilter}
+                onValueChange={setSubcategoryFilter}
+                disabled={categoryFilter === "all"}
+              >
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="All Subcategories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Subcategories</SelectItem>
+                  {getSubcategories(categoryFilter).map((sub) => (
+                    <SelectItem key={sub} value={sub}>{sub}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+
+            {/* Category → Subcategory browser */}
+            {categoryFilter === "all" ? (
+              <div className="flex flex-wrap gap-2">
+                {SERVICE_CATEGORIES.map((cat) => (
+                  <Badge
+                    key={cat.label}
+                    variant="outline"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Browse ${cat.label} services`}
+                    className="cursor-pointer px-3 py-1.5 hover:bg-accent"
+                    onClick={() => setCategoryFilter(cat.label)}
+                    onKeyDown={(e) => e.key === "Enter" && setCategoryFilter(cat.label)}
+                  >
+                    {cat.label}
+                    <span className="ml-2 text-xs text-muted-foreground">{categoryCounts[cat.label] || 0}</span>
+                  </Badge>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <button
+                    className="hover:text-foreground underline-offset-2 hover:underline"
+                    onClick={() => {
+                      setCategoryFilter("all");
+                      setSubcategoryFilter("all");
+                    }}
+                  >
+                    All Categories
+                  </button>
+                  <span>/</span>
+                  <button
+                    className="hover:text-foreground underline-offset-2 hover:underline"
+                    onClick={() => setSubcategoryFilter("all")}
+                  >
+                    {categoryFilter}
+                  </button>
+                  {subcategoryFilter !== "all" && (
+                    <>
+                      <span>/</span>
+                      <span className="text-foreground font-medium">{subcategoryFilter}</span>
+                    </>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {getSubcategories(categoryFilter).map((sub) => (
+                    <Badge
+                      key={sub}
+                      variant={subcategoryFilter === sub ? "default" : "outline"}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Filter by ${sub}`}
+                      className="cursor-pointer px-3 py-1.5 hover:bg-accent"
+                      onClick={() => setSubcategoryFilter(subcategoryFilter === sub ? "all" : sub)}
+                      onKeyDown={(e) => e.key === "Enter" && setSubcategoryFilter(subcategoryFilter === sub ? "all" : sub)}
+                    >
+                      {sub}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {filteredServices.length === 0 ? (
               <Card>
@@ -488,7 +573,10 @@ const Marketplace = () => {
                           {service.description}
                         </p>
                       )}
-                      <Badge variant="outline" className="mb-2">{service.category}</Badge>
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        <Badge variant="outline">{service.category}</Badge>
+                        {service.subcategory && <Badge variant="secondary">{service.subcategory}</Badge>}
+                      </div>
                       
                       {/* Star Rating Display */}
                       {(service.total_reviews || 0) > 0 && (
