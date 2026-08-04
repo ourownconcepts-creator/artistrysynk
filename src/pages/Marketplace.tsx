@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Search, Plus, ShoppingCart, Clock, DollarSign, Star, Package, MessageSquare } from "lucide-react";
 import { ServiceReviewDialog } from "@/components/marketplace/ServiceReviewDialog";
+import { SERVICE_CATEGORIES, CATEGORY_LABELS, getSubcategories } from "@/lib/serviceCategories";
 
 interface Service {
   id: string;
@@ -20,6 +21,7 @@ interface Service {
   title: string;
   description: string;
   category: string;
+  subcategory?: string | null;
   price: number;
   currency: string;
   delivery_days: number;
@@ -55,18 +57,7 @@ interface Order {
   };
 }
 
-const CATEGORIES = [
-  "Music Production",
-  "Mixing & Mastering",
-  "Songwriting",
-  "Video Production",
-  "Photography",
-  "Graphic Design",
-  "Social Media Management",
-  "Artist Management",
-  "Promotion",
-  "Other",
-];
+const CATEGORIES = CATEGORY_LABELS;
 
 const Marketplace = () => {
   const navigate = useNavigate();
@@ -78,6 +69,7 @@ const Marketplace = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [subcategoryFilter, setSubcategoryFilter] = useState<string>("all");
   
   // New service form
   const [newServiceOpen, setNewServiceOpen] = useState(false);
@@ -85,6 +77,7 @@ const Marketplace = () => {
     title: "",
     description: "",
     category: "",
+    subcategory: "",
     price: "",
     delivery_days: "7",
   });
@@ -204,16 +197,17 @@ const Marketplace = () => {
       title: newService.title,
       description: newService.description,
       category: newService.category,
+      subcategory: newService.subcategory || null,
       price: parseFloat(newService.price),
       delivery_days: parseInt(newService.delivery_days),
-    });
+    } as any);
 
     if (error) {
       toast.error("Failed to create service");
     } else {
       toast.success("Service created!");
       setNewServiceOpen(false);
-      setNewService({ title: "", description: "", category: "", price: "", delivery_days: "7" });
+      setNewService({ title: "", description: "", category: "", subcategory: "", price: "", delivery_days: "7" });
       loadMyServices(currentUser!);
       loadServices();
     }
@@ -305,8 +299,15 @@ const Marketplace = () => {
     const matchesSearch = s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       s.description?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter === "all" || s.category === categoryFilter;
-    return matchesSearch && matchesCategory && s.seller_id !== currentUser;
+    const matchesSubcategory = subcategoryFilter === "all" || s.subcategory === subcategoryFilter;
+    return matchesSearch && matchesCategory && matchesSubcategory && s.seller_id !== currentUser;
   });
+
+  const categoryCounts = services.reduce<Record<string, number>>((acc, s) => {
+    if (s.seller_id === currentUser) return acc;
+    acc[s.category] = (acc[s.category] || 0) + 1;
+    return acc;
+  }, {});
 
   const getStatusColor = (status: string) => {
     switch (status) {
