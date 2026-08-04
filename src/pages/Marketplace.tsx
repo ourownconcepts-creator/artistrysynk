@@ -674,7 +674,10 @@ const Marketplace = () => {
                   <Card key={service.id}>
                     <CardHeader>
                       <CardTitle className="text-lg">{service.title}</CardTitle>
-                      <Badge variant="outline">{service.category}</Badge>
+                      <div className="flex flex-wrap gap-1">
+                        <Badge variant="outline">{service.category}</Badge>
+                        {service.subcategory && <Badge variant="secondary">{service.subcategory}</Badge>}
+                      </div>
                     </CardHeader>
                     <CardContent>
                       <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
