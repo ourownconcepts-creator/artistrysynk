@@ -404,7 +404,7 @@ const Marketplace = () => {
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {CATEGORIES.map((cat) => (
+                      {categoryLabels.map((cat) => (
                         <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                       ))}
                     </SelectContent>
@@ -421,7 +421,7 @@ const Marketplace = () => {
                       <SelectValue placeholder={newService.category ? "Select subcategory" : "Pick a category first"} />
                     </SelectTrigger>
                     <SelectContent>
-                      {getSubcategories(newService.category).map((sub) => (
+                      {getSubcategoriesFor(newService.category).map((sub) => (
                         <SelectItem key={sub} value={sub}>{sub}</SelectItem>
                       ))}
                     </SelectContent>
@@ -483,7 +483,7 @@ const Marketplace = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {CATEGORIES.map((cat) => (
+                  {categoryLabels.map((cat) => (
                     <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                   ))}
                 </SelectContent>
@@ -498,7 +498,7 @@ const Marketplace = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Subcategories</SelectItem>
-                  {getSubcategories(categoryFilter).map((sub) => (
+                  {getSubcategoriesFor(categoryFilter).map((sub) => (
                     <SelectItem key={sub} value={sub}>{sub}</SelectItem>
                   ))}
                 </SelectContent>
@@ -508,7 +508,7 @@ const Marketplace = () => {
             {/* Category → Subcategory browser */}
             {categoryFilter === "all" ? (
               <div className="flex flex-wrap gap-2">
-                {SERVICE_CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <Badge
                     key={cat.label}
                     variant="outline"
@@ -551,7 +551,7 @@ const Marketplace = () => {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {getSubcategories(categoryFilter).map((sub) => (
+                  {getSubcategoriesFor(categoryFilter).map((sub) => (
                     <Badge
                       key={sub}
                       variant={subcategoryFilter === sub ? "default" : "outline"}
