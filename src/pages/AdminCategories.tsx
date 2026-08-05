@@ -26,7 +26,7 @@ const AdminCategories = () => {
     [subcategories, activeCategory]
   );
 
-  const run = async (fn: () => Promise<{ error: any }>, successMessage: string) => {
+  const run = async (fn: () => PromiseLike<{ error: any }>, successMessage: string) => {
     setBusy(true);
     const { error } = await fn();
     setBusy(false);
@@ -46,7 +46,7 @@ const AdminCategories = () => {
       () =>
         supabase.from("service_categories").insert({
           label,
-          sort_order: (categories.at(-1)?.sort_order ?? 0) + 1,
+          sort_order: (categories[categories.length - 1]?.sort_order ?? 0) + 1,
         }),
       "Category added"
     );
@@ -61,7 +61,7 @@ const AdminCategories = () => {
         supabase.from("service_subcategories").insert({
           category_label: activeCategory,
           label,
-          sort_order: (childSubcategories.at(-1)?.sort_order ?? 0) + 1,
+          sort_order: (childSubcategories[childSubcategories.length - 1]?.sort_order ?? 0) + 1,
         }),
       "Subcategory added"
     );
@@ -222,7 +222,7 @@ const AdminCategories = () => {
       <PageSEO
         title="Marketplace Taxonomy | ArtistrySynk Admin"
         description="Create, edit, and reorder marketplace categories and subcategories."
-        noindex
+        noIndex
       />
       <div className="max-w-6xl mx-auto py-8 space-y-6">
         <div>
