@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -11,9 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Search, Plus, ShoppingCart, Clock, DollarSign, Star, Package, MessageSquare } from "lucide-react";
+import { Search, Plus, ShoppingCart, Clock, DollarSign, Star, Package, MessageSquare, Link2, X } from "lucide-react";
 import { ServiceReviewDialog } from "@/components/marketplace/ServiceReviewDialog";
-import { SERVICE_CATEGORIES, CATEGORY_LABELS, getSubcategories } from "@/lib/serviceCategories";
+import { MarketplaceAutocomplete } from "@/components/marketplace/MarketplaceAutocomplete";
+import { useServiceTaxonomy } from "@/hooks/useServiceTaxonomy";
 
 interface Service {
   id: string;
@@ -57,19 +58,46 @@ interface Order {
   };
 }
 
-const CATEGORIES = CATEGORY_LABELS;
-
 const Marketplace = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { categories, subcategories, categoryLabels, getSubcategoriesFor } = useServiceTaxonomy();
   const [services, setServices] = useState<Service[]>([]);
   const [myServices, setMyServices] = useState<Service[]>([]);
   const [myOrders, setMyOrders] = useState<Order[]>([]);
   const [sellerOrders, setSellerOrders] = useState<Order[]>([]);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [subcategoryFilter, setSubcategoryFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") ?? "");
+  const [categoryFilter, setCategoryFilter] = useState<string>(searchParams.get("category") ?? "all");
+  const [subcategoryFilter, setSubcategoryFilter] = useState<string>(searchParams.get("subcategory") ?? "all");
+  const [serviceFilter, setServiceFilter] = useState<string | null>(searchParams.get("service"));
+
+  // Keep the URL in sync so filters are shareable / bookmarkable
+  useEffect(() => {
+    const next = new URLSearchParams(searchParams);
+    const apply = (key: string, value: string | null) => {
+      if (value && value !== "all") next.set(key, value);
+      else next.delete(key);
+    };
+    apply("q", searchQuery.trim());
+    apply("category", categoryFilter);
+    apply("subcategory", subcategoryFilter);
+    apply("service", serviceFilter);
+    if (next.toString() !== searchParams.toString()) {
+      setSearchParams(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, categoryFilter, subcategoryFilter, serviceFilter]);
+
+  const copyShareLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success("Filter link copied to clipboard");
+    } catch {
+      toast.error("Could not copy the link");
+    }
+  };
   
   // New service form
   const [newServiceOpen, setNewServiceOpen] = useState(false);
@@ -300,7 +328,8 @@ const Marketplace = () => {
       s.description?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter === "all" || s.category === categoryFilter;
     const matchesSubcategory = subcategoryFilter === "all" || s.subcategory === subcategoryFilter;
-    return matchesSearch && matchesCategory && matchesSubcategory && s.seller_id !== currentUser;
+    const matchesService = !serviceFilter || s.id === serviceFilter;
+    return matchesSearch && matchesCategory && matchesSubcategory && matchesService && s.seller_id !== currentUser;
   });
 
   const categoryCounts = services.reduce<Record<string, number>>((acc, s) => {
@@ -375,7 +404,7 @@ const Marketplace = () => {
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {CATEGORIES.map((cat) => (
+                      {categoryLabels.map((cat) => (
                         <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                       ))}
                     </SelectContent>
@@ -392,7 +421,7 @@ const Marketplace = () => {
                       <SelectValue placeholder={newService.category ? "Select subcategory" : "Pick a category first"} />
                     </SelectTrigger>
                     <SelectContent>
-                      {getSubcategories(newService.category).map((sub) => (
+                      {getSubcategoriesFor(newService.category).map((sub) => (
                         <SelectItem key={sub} value={sub}>{sub}</SelectItem>
                       ))}
                     </SelectContent>
@@ -433,20 +462,34 @@ const Marketplace = () => {
 
           <TabsContent value="browse" className="space-y-6">
             <div className="flex gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search services..."
-                  className="pl-10"
-                />
-              </div>
+              <MarketplaceAutocomplete
+                query={searchQuery}
+                onQueryChange={setSearchQuery}
+                categories={categoryLabels}
+                subcategories={subcategories}
+                services={services.filter((s) => s.seller_id !== currentUser)}
+                onSelectCategory={(cat) => {
+                  setCategoryFilter(cat);
+                  setSubcategoryFilter("all");
+                  setServiceFilter(null);
+                }}
+                onSelectSubcategory={(cat, sub) => {
+                  setCategoryFilter(cat);
+                  setSubcategoryFilter(sub);
+                  setServiceFilter(null);
+                }}
+                onSelectService={(svc) => {
+                  setCategoryFilter(svc.category);
+                  setSubcategoryFilter(svc.subcategory || "all");
+                  setServiceFilter(svc.id);
+                }}
+              />
               <Select
                 value={categoryFilter}
                 onValueChange={(v) => {
                   setCategoryFilter(v);
                   setSubcategoryFilter("all");
+                  setServiceFilter(null);
                 }}
               >
                 <SelectTrigger className="w-48">
@@ -454,14 +497,17 @@ const Marketplace = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {CATEGORIES.map((cat) => (
+                  {categoryLabels.map((cat) => (
                     <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <Select
                 value={subcategoryFilter}
-                onValueChange={setSubcategoryFilter}
+                onValueChange={(v) => {
+                  setSubcategoryFilter(v);
+                  setServiceFilter(null);
+                }}
                 disabled={categoryFilter === "all"}
               >
                 <SelectTrigger className="w-48">
@@ -469,17 +515,36 @@ const Marketplace = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Subcategories</SelectItem>
-                  {getSubcategories(categoryFilter).map((sub) => (
+                  {getSubcategoriesFor(categoryFilter).map((sub) => (
                     <SelectItem key={sub} value={sub}>{sub}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <Button variant="outline" size="icon" onClick={copyShareLink} aria-label="Copy shareable link with current filters">
+                <Link2 className="w-4 h-4" />
+              </Button>
             </div>
+
+            {serviceFilter && (
+              <Badge variant="secondary" className="px-3 py-1.5">
+                Showing a single service
+                <button
+                  className="ml-2"
+                  aria-label="Clear service filter"
+                  onClick={() => {
+                    setServiceFilter(null);
+                    setSearchQuery("");
+                  }}
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </Badge>
+            )}
 
             {/* Category → Subcategory browser */}
             {categoryFilter === "all" ? (
               <div className="flex flex-wrap gap-2">
-                {SERVICE_CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <Badge
                     key={cat.label}
                     variant="outline"
@@ -522,7 +587,7 @@ const Marketplace = () => {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {getSubcategories(categoryFilter).map((sub) => (
+                  {getSubcategoriesFor(categoryFilter).map((sub) => (
                     <Badge
                       key={sub}
                       variant={subcategoryFilter === sub ? "default" : "outline"}
