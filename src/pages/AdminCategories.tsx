@@ -320,7 +320,7 @@ const AdminCategories = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" onClick={() => window.open("/admin-dashboard", "_self")}>
+            <Button variant="outline" onClick={() => window.open("/admin", "_self")}>
               Manage services in the Marketplace tab
             </Button>
           </CardContent>
