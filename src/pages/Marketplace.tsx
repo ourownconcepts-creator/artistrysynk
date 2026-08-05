@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -11,9 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Search, Plus, ShoppingCart, Clock, DollarSign, Star, Package, MessageSquare } from "lucide-react";
+import { Search, Plus, ShoppingCart, Clock, DollarSign, Star, Package, MessageSquare, Link2, X } from "lucide-react";
 import { ServiceReviewDialog } from "@/components/marketplace/ServiceReviewDialog";
-import { SERVICE_CATEGORIES, CATEGORY_LABELS, getSubcategories } from "@/lib/serviceCategories";
+import { MarketplaceAutocomplete } from "@/components/marketplace/MarketplaceAutocomplete";
+import { useServiceTaxonomy } from "@/hooks/useServiceTaxonomy";
 
 interface Service {
   id: string;
@@ -57,19 +58,46 @@ interface Order {
   };
 }
 
-const CATEGORIES = CATEGORY_LABELS;
-
 const Marketplace = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { categories, subcategories, categoryLabels, getSubcategoriesFor } = useServiceTaxonomy();
   const [services, setServices] = useState<Service[]>([]);
   const [myServices, setMyServices] = useState<Service[]>([]);
   const [myOrders, setMyOrders] = useState<Order[]>([]);
   const [sellerOrders, setSellerOrders] = useState<Order[]>([]);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [subcategoryFilter, setSubcategoryFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") ?? "");
+  const [categoryFilter, setCategoryFilter] = useState<string>(searchParams.get("category") ?? "all");
+  const [subcategoryFilter, setSubcategoryFilter] = useState<string>(searchParams.get("subcategory") ?? "all");
+  const [serviceFilter, setServiceFilter] = useState<string | null>(searchParams.get("service"));
+
+  // Keep the URL in sync so filters are shareable / bookmarkable
+  useEffect(() => {
+    const next = new URLSearchParams(searchParams);
+    const apply = (key: string, value: string | null) => {
+      if (value && value !== "all") next.set(key, value);
+      else next.delete(key);
+    };
+    apply("q", searchQuery.trim());
+    apply("category", categoryFilter);
+    apply("subcategory", subcategoryFilter);
+    apply("service", serviceFilter);
+    if (next.toString() !== searchParams.toString()) {
+      setSearchParams(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, categoryFilter, subcategoryFilter, serviceFilter]);
+
+  const copyShareLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success("Filter link copied to clipboard");
+    } catch {
+      toast.error("Could not copy the link");
+    }
+  };
   
   // New service form
   const [newServiceOpen, setNewServiceOpen] = useState(false);
@@ -300,7 +328,8 @@ const Marketplace = () => {
       s.description?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter === "all" || s.category === categoryFilter;
     const matchesSubcategory = subcategoryFilter === "all" || s.subcategory === subcategoryFilter;
-    return matchesSearch && matchesCategory && matchesSubcategory && s.seller_id !== currentUser;
+    const matchesService = !serviceFilter || s.id === serviceFilter;
+    return matchesSearch && matchesCategory && matchesSubcategory && matchesService && s.seller_id !== currentUser;
   });
 
   const categoryCounts = services.reduce<Record<string, number>>((acc, s) => {
