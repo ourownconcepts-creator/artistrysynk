@@ -356,6 +356,10 @@ const MasterAdminDashboard = () => {
           </div>
           <div className="flex gap-2">
             <AdminNotifications />
+            <Button variant="outline" onClick={() => navigate('/admin-categories')}>
+              <FolderTree className="w-4 h-4 mr-2" />
+              Taxonomy
+            </Button>
             <Button variant="outline" onClick={handleSignOut}>
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out
