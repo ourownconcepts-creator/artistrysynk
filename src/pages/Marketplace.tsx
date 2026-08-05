@@ -462,20 +462,34 @@ const Marketplace = () => {
 
           <TabsContent value="browse" className="space-y-6">
             <div className="flex gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search services..."
-                  className="pl-10"
-                />
-              </div>
+              <MarketplaceAutocomplete
+                query={searchQuery}
+                onQueryChange={setSearchQuery}
+                categories={categoryLabels}
+                subcategories={subcategories}
+                services={services.filter((s) => s.seller_id !== currentUser)}
+                onSelectCategory={(cat) => {
+                  setCategoryFilter(cat);
+                  setSubcategoryFilter("all");
+                  setServiceFilter(null);
+                }}
+                onSelectSubcategory={(cat, sub) => {
+                  setCategoryFilter(cat);
+                  setSubcategoryFilter(sub);
+                  setServiceFilter(null);
+                }}
+                onSelectService={(svc) => {
+                  setCategoryFilter(svc.category);
+                  setSubcategoryFilter(svc.subcategory || "all");
+                  setServiceFilter(svc.id);
+                }}
+              />
               <Select
                 value={categoryFilter}
                 onValueChange={(v) => {
                   setCategoryFilter(v);
                   setSubcategoryFilter("all");
+                  setServiceFilter(null);
                 }}
               >
                 <SelectTrigger className="w-48">
@@ -490,7 +504,10 @@ const Marketplace = () => {
               </Select>
               <Select
                 value={subcategoryFilter}
-                onValueChange={setSubcategoryFilter}
+                onValueChange={(v) => {
+                  setSubcategoryFilter(v);
+                  setServiceFilter(null);
+                }}
                 disabled={categoryFilter === "all"}
               >
                 <SelectTrigger className="w-48">
@@ -503,7 +520,26 @@ const Marketplace = () => {
                   ))}
                 </SelectContent>
               </Select>
+              <Button variant="outline" size="icon" onClick={copyShareLink} aria-label="Copy shareable link with current filters">
+                <Link2 className="w-4 h-4" />
+              </Button>
             </div>
+
+            {serviceFilter && (
+              <Badge variant="secondary" className="px-3 py-1.5">
+                Showing a single service
+                <button
+                  className="ml-2"
+                  aria-label="Clear service filter"
+                  onClick={() => {
+                    setServiceFilter(null);
+                    setSearchQuery("");
+                  }}
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </Badge>
+            )}
 
             {/* Category → Subcategory browser */}
             {categoryFilter === "all" ? (
