@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { Suspense } from 'react';
 import { lazyWithRetry } from '@/lib/lazyWithRetry';
@@ -109,6 +109,7 @@ export const AnimatedRoutes = () => {
         <Route path="/messages/:conversationId" element={
           <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Messages /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
+        <Route path="/messages" element={<Navigate to="/matches" replace />} />
         <Route path="/profile" element={
           <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Profile /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />

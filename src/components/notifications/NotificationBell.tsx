@@ -94,13 +94,13 @@ export const NotificationBell = ({ userId }: NotificationBellProps) => {
         return data.match_id ? `/matches` : "/matches";
       case "message":
         return data.conversation_id
-          ? `/messages?conversation=${data.conversation_id}`
-          : "/messages";
+          ? `/messages/${data.conversation_id}`
+          : "/matches";
       case "job_application":
         return data.job_id ? `/jobs` : "/jobs";
       case "collaboration_request":
       case "project_application":
-        return data.project_id ? `/projects` : "/projects";
+        return data.project_id ? `/projects/${data.project_id}` : "/projects";
       case "verification":
         return "/profile";
       case "content_status":
