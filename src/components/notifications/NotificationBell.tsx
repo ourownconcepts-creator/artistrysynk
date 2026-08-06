@@ -111,6 +111,8 @@ export const NotificationBell = ({ userId }: NotificationBellProps) => {
       case "like":
       case "swipe":
         return "/who-liked-you";
+      case "match_online":
+        return "/matches";
       default:
         if (data.url) return data.url as string;
         if (data.profile_id) return `/profile/${data.profile_id}`;
@@ -206,6 +208,19 @@ export const NotificationBell = ({ userId }: NotificationBellProps) => {
             </div>
           )}
         </ScrollArea>
+        <div className="border-t p-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full"
+            onClick={() => {
+              setOpen(false);
+              navigate("/notifications");
+            }}
+          >
+            View all notifications
+          </Button>
+        </div>
       </PopoverContent>
     </Popover>
   );
