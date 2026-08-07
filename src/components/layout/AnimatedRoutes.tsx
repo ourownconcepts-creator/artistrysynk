@@ -103,13 +103,16 @@ export const AnimatedRoutes = () => {
         <Route path="/data-deletion" element={<SuspenseWrapper><PageTransition><DataDeletion /></PageTransition></SuspenseWrapper>} />
 
         {/* Public SEO landing pages */}
-        {DISCIPLINE_LANDINGS.map((d) => (
-          <Route
-            key={d.slug}
-            path={`/${d.slug}`}
-            element={<SuspenseWrapper><PageTransition><DisciplineLanding /></PageTransition></SuspenseWrapper>}
-          />
-        ))}
+        <Route path="/designers" element={<SuspenseWrapper><PageTransition><DisciplineLanding /></PageTransition></SuspenseWrapper>} />
+        <Route path="/photographers" element={<SuspenseWrapper><PageTransition><DisciplineLanding /></PageTransition></SuspenseWrapper>} />
+        <Route path="/music-producers" element={<SuspenseWrapper><PageTransition><DisciplineLanding /></PageTransition></SuspenseWrapper>} />
+        <Route path="/videographers" element={<SuspenseWrapper><PageTransition><DisciplineLanding /></PageTransition></SuspenseWrapper>} />
+        <Route path="/dancers" element={<SuspenseWrapper><PageTransition><DisciplineLanding /></PageTransition></SuspenseWrapper>} />
+        <Route path="/actors" element={<SuspenseWrapper><PageTransition><DisciplineLanding /></PageTransition></SuspenseWrapper>} />
+        <Route path="/software-developers" element={<SuspenseWrapper><PageTransition><DisciplineLanding /></PageTransition></SuspenseWrapper>} />
+        <Route path="/creative-directors" element={<SuspenseWrapper><PageTransition><DisciplineLanding /></PageTransition></SuspenseWrapper>} />
+        <Route path="/graphic-designers" element={<SuspenseWrapper><PageTransition><DisciplineLanding /></PageTransition></SuspenseWrapper>} />
+        <Route path="/songwriters" element={<SuspenseWrapper><PageTransition><DisciplineLanding /></PageTransition></SuspenseWrapper>} />
         <Route path="/locations" element={<SuspenseWrapper><PageTransition><LocationsIndex /></PageTransition></SuspenseWrapper>} />
         <Route path="/locations/:citySlug" element={<SuspenseWrapper><PageTransition><LocationLanding /></PageTransition></SuspenseWrapper>} />
 
