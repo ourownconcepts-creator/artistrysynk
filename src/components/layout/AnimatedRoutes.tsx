@@ -7,6 +7,7 @@ import { Navbar } from '@/components/Navbar';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { AdminProtectedRoute } from '@/components/AdminProtectedRoute';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { RouteSEO } from '@/components/seo/RouteSEO';
 
 // Lazy-loaded pages
 const Index = lazyWithRetry(() => import('@/pages/Index'));
@@ -71,6 +72,8 @@ export const AnimatedRoutes = () => {
   const location = useLocation();
 
   return (
+    <>
+    <RouteSEO />
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         {/* Public Routes */}
@@ -208,5 +211,6 @@ export const AnimatedRoutes = () => {
         <Route path="*" element={<SuspenseWrapper><PageTransition><NotFound /></PageTransition></SuspenseWrapper>} />
       </Routes>
     </AnimatePresence>
+    </>
   );
 };
