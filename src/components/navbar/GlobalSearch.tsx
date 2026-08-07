@@ -165,7 +165,7 @@ export const GlobalSearch = () => {
           <span className="text-xs">⌘</span>K
         </kbd>
       </Button>
-      <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandDialog open={open} onOpenChange={setOpen} shouldFilter={false}>
         <CommandInput
           placeholder="Search users, projects, services..."
           value={query}
@@ -180,14 +180,21 @@ export const GlobalSearch = () => {
           {!loading && query.length >= 2 && results.length === 0 && (
             <CommandEmpty>No results found.</CommandEmpty>
           )}
+          {!loading && query.length < 2 && (
+            <div className="py-6 text-center text-sm text-muted-foreground">
+              Type at least 2 characters to search.
+            </div>
+          )}
           {!loading && results.length > 0 && (
             <>
+              {results.some((r) => r.type === "user") && (
               <CommandGroup heading="Users">
                 {results
                   .filter((r) => r.type === "user")
                   .map((result) => (
                     <CommandItem
                       key={result.id}
+                      value={`user-${result.id}`}
                       onSelect={() => handleSelect(result)}
                       className="cursor-pointer"
                     >
@@ -202,12 +209,15 @@ export const GlobalSearch = () => {
                     </CommandItem>
                   ))}
               </CommandGroup>
+              )}
+              {results.some((r) => r.type === "project") && (
               <CommandGroup heading="Projects">
                 {results
                   .filter((r) => r.type === "project")
                   .map((result) => (
                     <CommandItem
                       key={result.id}
+                      value={`project-${result.id}`}
                       onSelect={() => handleSelect(result)}
                       className="cursor-pointer"
                     >
@@ -219,12 +229,15 @@ export const GlobalSearch = () => {
                     </CommandItem>
                   ))}
               </CommandGroup>
+              )}
+              {results.some((r) => r.type === "service") && (
               <CommandGroup heading="Services">
                 {results
                   .filter((r) => r.type === "service")
                   .map((result) => (
                     <CommandItem
                       key={result.id}
+                      value={`service-${result.id}`}
                       onSelect={() => handleSelect(result)}
                       className="cursor-pointer"
                     >
@@ -236,6 +249,7 @@ export const GlobalSearch = () => {
                     </CommandItem>
                   ))}
               </CommandGroup>
+              )}
             </>
           )}
         </CommandList>
