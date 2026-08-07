@@ -1,8 +1,28 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, User, FolderOpen, Store, Loader2 } from "lucide-react";
+import {
+  Search,
+  User,
+  FolderOpen,
+  Store,
+  Loader2,
+  SlidersHorizontal,
+  AlertCircle,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { allRoles, getRoleLabel } from "@/lib/creativeRoles";
 import {
   CommandDialog,
   CommandEmpty,
@@ -21,12 +41,33 @@ interface SearchResult {
   avatar?: string;
 }
 
+type Availability = "all" | "open" | "closed";
+
 export const GlobalSearch = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [locationFilter, setLocationFilter] = useState("");
+  const [availability, setAvailability] = useState<Availability>("all");
+
+  const activeFilterCount = useMemo(
+    () =>
+      (roleFilter !== "all" ? 1 : 0) +
+      (locationFilter.trim() ? 1 : 0) +
+      (availability !== "all" ? 1 : 0),
+    [roleFilter, locationFilter, availability],
+  );
+
+  const clearFilters = () => {
+    setRoleFilter("all");
+    setLocationFilter("");
+    setAvailability("all");
+  };
 
   // Keyboard shortcut
   useEffect(() => {
@@ -40,82 +81,128 @@ export const GlobalSearch = () => {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  const search = useCallback(async (searchQuery: string) => {
-    if (!searchQuery || searchQuery.length < 2) {
-      setResults([]);
-      return;
-    }
+  const search = useCallback(
+    async (searchQuery: string) => {
+      // Strip PostgREST-hostile characters so symbol queries still work
+      const escaped = searchQuery.replace(/[%,()*\\]/g, " ").trim();
+      const location = locationFilter.replace(/[%,()*\\]/g, " ").trim();
 
-    setLoading(true);
-    const searchResults: SearchResult[] = [];
-    const escaped = searchQuery.replace(/[%,()]/g, " ").trim();
-    if (!escaped) {
-      setResults([]);
+      if (escaped.length < 2) {
+        setResults([]);
+        setError(null);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+      const searchResults: SearchResult[] = [];
+      let failed = false;
+
+      // Search users
+      let usersQuery = supabase
+        .from("profiles")
+        .select(
+          roleFilter !== "all"
+            ? "id, full_name, username, avatar_url, location, user_creative_roles!inner(role)"
+            : "id, full_name, username, avatar_url, location",
+        )
+        .or(`full_name.ilike.%${escaped}%,username.ilike.%${escaped}%`);
+
+      if (roleFilter !== "all") {
+        usersQuery = usersQuery.eq("user_creative_roles.role", roleFilter as never);
+      }
+      if (location) {
+        usersQuery = usersQuery.or(
+          `location.ilike.%${location}%,city.ilike.%${location}%,country.ilike.%${location}%`,
+        );
+      }
+
+      const { data: users, error: usersError } = await usersQuery.limit(5);
+      if (usersError) {
+        failed = true;
+        console.error("Global search (users) failed:", usersError);
+      }
+
+      if (users) {
+        (users as any[]).forEach((user) => {
+          searchResults.push({
+            id: user.id,
+            type: "user",
+            title: user.full_name,
+            subtitle: user.location
+              ? `@${user.username} · ${user.location}`
+              : `@${user.username}`,
+            avatar: user.avatar_url || undefined,
+          });
+        });
+      }
+
+      // Search projects
+      let projectsQuery = supabase
+        .from("projects")
+        .select("id, title, description, is_open")
+        .eq("is_public", true)
+        .ilike("title", `%${escaped}%`);
+
+      if (availability !== "all") {
+        projectsQuery = projectsQuery.eq("is_open", availability === "open");
+      }
+      if (roleFilter !== "all") {
+        projectsQuery = projectsQuery.contains("looking_for", [roleFilter]);
+      }
+
+      const { data: projects, error: projectsError } = await projectsQuery.limit(5);
+      if (projectsError) {
+        failed = true;
+        console.error("Global search (projects) failed:", projectsError);
+      }
+
+      if (projects) {
+        (projects as any[]).forEach((project) => {
+          searchResults.push({
+            id: project.id,
+            type: "project",
+            title: project.title,
+            subtitle: project.description?.slice(0, 50) || "Open Project",
+          });
+        });
+      }
+
+      // Search services (skipped when creative-role or location filters are active)
+      if (roleFilter === "all" && !location) {
+        const { data: services, error: servicesError } = await supabase
+          .from("services")
+          .select("id, title, category")
+          .eq("is_active", true)
+          .ilike("title", `%${escaped}%`)
+          .limit(5);
+
+        if (servicesError) {
+          failed = true;
+          console.error("Global search (services) failed:", servicesError);
+        }
+
+        if (services) {
+          services.forEach((service) => {
+            searchResults.push({
+              id: service.id,
+              type: "service",
+              title: service.title,
+              subtitle: service.category,
+            });
+          });
+        }
+      }
+
+      if (failed && searchResults.length === 0) {
+        setError("Something went wrong while searching. Please try again.");
+      }
+      setResults(searchResults);
       setLoading(false);
-      return;
-    }
-
-    // Search users
-    const { data: users, error: usersError } = await supabase
-      .from("profiles")
-      .select("id, full_name, username, avatar_url")
-      .or(`full_name.ilike.%${escaped}%,username.ilike.%${escaped}%`)
-      .limit(5);
-    if (usersError) console.error("Global search (users) failed:", usersError);
-
-    if (users) {
-      users.forEach((user) => {
-        searchResults.push({
-          id: user.id,
-          type: "user",
-          title: user.full_name,
-          subtitle: `@${user.username}`,
-          avatar: user.avatar_url || undefined,
-        });
-      });
-    }
-
-    // Search projects
-    const { data: projects } = await supabase
-      .from("projects")
-      .select("id, title, description")
-      .eq("is_public", true)
-      .ilike("title", `%${escaped}%`)
-      .limit(5);
-
-    if (projects) {
-      projects.forEach((project) => {
-        searchResults.push({
-          id: project.id,
-          type: "project",
-          title: project.title,
-          subtitle: project.description?.slice(0, 50) || "Open Project",
-        });
-      });
-    }
-
-    // Search services
-    const { data: services } = await supabase
-      .from("services")
-      .select("id, title, category")
-      .eq("is_active", true)
-      .ilike("title", `%${escaped}%`)
-      .limit(5);
-
-    if (services) {
-      services.forEach((service) => {
-        searchResults.push({
-          id: service.id,
-          type: "service",
-          title: service.title,
-          subtitle: service.category,
-        });
-      });
-    }
-
-    setResults(searchResults);
-    setLoading(false);
-  }, []);
+    },
+    [roleFilter, locationFilter, availability],
+  );
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
@@ -158,6 +245,7 @@ export const GlobalSearch = () => {
         variant="outline"
         className="relative h-9 w-9 p-0 xl:h-10 xl:w-60 xl:justify-start xl:px-3 xl:py-2"
         onClick={() => setOpen(true)}
+        aria-label="Open search"
       >
         <Search className="h-4 w-4 xl:mr-2" />
         <span className="hidden xl:inline-flex">Search...</span>
@@ -171,21 +259,126 @@ export const GlobalSearch = () => {
           value={query}
           onValueChange={setQuery}
         />
+        <div className="flex items-center justify-between gap-2 border-b px-3 py-2">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-expanded={showFilters}
+            aria-controls="search-filters"
+            onClick={() => setShowFilters((s) => !s)}
+          >
+            <SlidersHorizontal className="mr-2 h-4 w-4" />
+            Filters
+            {activeFilterCount > 0 && (
+              <Badge variant="secondary" className="ml-2">
+                {activeFilterCount}
+              </Badge>
+            )}
+          </Button>
+          {activeFilterCount > 0 && (
+            <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>
+              <X className="mr-1 h-3 w-3" />
+              Clear
+            </Button>
+          )}
+        </div>
+        {showFilters && (
+          <div id="search-filters" className="grid gap-3 border-b p-3 sm:grid-cols-3">
+            <div className="space-y-1">
+              <Label htmlFor="search-role" className="text-xs">
+                Role
+              </Label>
+              <Select value={roleFilter} onValueChange={setRoleFilter}>
+                <SelectTrigger id="search-role" aria-label="Filter by role">
+                  <SelectValue placeholder="Any role" />
+                </SelectTrigger>
+                <SelectContent className="max-h-64">
+                  <SelectItem value="all">Any role</SelectItem>
+                  {allRoles.map((role) => (
+                    <SelectItem key={role.value} value={role.value}>
+                      {getRoleLabel(role.value)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="search-location" className="text-xs">
+                Location
+              </Label>
+              <Input
+                id="search-location"
+                aria-label="Filter by location"
+                placeholder="City or country"
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="search-availability" className="text-xs">
+                Project availability
+              </Label>
+              <Select
+                value={availability}
+                onValueChange={(v) => setAvailability(v as Availability)}
+              >
+                <SelectTrigger id="search-availability" aria-label="Filter by project availability">
+                  <SelectValue placeholder="Any" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any</SelectItem>
+                  <SelectItem value="open">Open to collaborators</SelectItem>
+                  <SelectItem value="closed">Closed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
         <CommandList>
           {loading && (
-            <div className="flex items-center justify-center py-6">
+            <div
+              className="flex flex-col items-center justify-center gap-2 py-8"
+              role="status"
+              aria-live="polite"
+            >
               <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">Searching…</p>
             </div>
           )}
-          {!loading && query.length >= 2 && results.length === 0 && (
-            <CommandEmpty>No results found.</CommandEmpty>
+          {!loading && error && (
+            <div className="flex flex-col items-center gap-2 py-8 text-center" role="alert">
+              <AlertCircle className="h-6 w-6 text-destructive" />
+              <p className="text-sm font-medium">{error}</p>
+              <Button size="sm" variant="outline" onClick={() => search(query)}>
+                Try again
+              </Button>
+            </div>
           )}
-          {!loading && query.length < 2 && (
+          {!loading && !error && query.trim().length >= 2 && results.length === 0 && (
+            <CommandEmpty>
+              <div className="flex flex-col items-center gap-1 py-6 text-center">
+                <Search className="h-6 w-6 text-muted-foreground" />
+                <p className="text-sm font-medium">No results for “{query.trim()}”</p>
+                <p className="text-xs text-muted-foreground">
+                  {activeFilterCount > 0
+                    ? "Try clearing your filters or searching a different term."
+                    : "Check your spelling or try a shorter term."}
+                </p>
+                {activeFilterCount > 0 && (
+                  <Button size="sm" variant="outline" className="mt-2" onClick={clearFilters}>
+                    Clear filters
+                  </Button>
+                )}
+              </div>
+            </CommandEmpty>
+          )}
+          {!loading && !error && query.trim().length < 2 && (
             <div className="py-6 text-center text-sm text-muted-foreground">
               Type at least 2 characters to search.
             </div>
           )}
-          {!loading && results.length > 0 && (
+          {!loading && !error && results.length > 0 && (
             <>
               {results.some((r) => r.type === "user") && (
               <CommandGroup heading="Users">
