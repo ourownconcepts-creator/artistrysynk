@@ -116,10 +116,11 @@ describe("GlobalSearch", () => {
     expect(screen.getByText("Beat 50% Off")).toBeInTheDocument();
     expect(screen.getByText("Mix & Master (Pro)")).toBeInTheDocument();
 
-    // the symbols are stripped before hitting the API
-    const profileCall = state.calls.find((c) => c.table === "profiles")!;
-    expect(profileCall.or[0]).not.toMatch(/[%(),]/g.source ? /\(|\)/ : /x/);
+    // the symbols are stripped before hitting the API, the term survives
+    const profileCall = [...state.calls].reverse().find((c) => c.table === "profiles")!;
     expect(profileCall.or[0]).toContain("50");
+    expect(profileCall.or[0]).not.toContain("(");
+    expect(profileCall.or[0]).not.toContain(")");
   });
 
   it("shows a friendly empty state when nothing matches", async () => {
