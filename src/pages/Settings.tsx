@@ -178,6 +178,21 @@ const Settings = () => {
         <TabsContent value="notifications" className="space-y-6">
           <Card>
             <CardHeader>
+              <CardTitle>Alerts by type</CardTitle>
+              <CardDescription>
+                Fine-tune email and in-app alerts for likes, discovery, matches, messages, online
+                status and project activity.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" onClick={() => navigate("/settings/notifications")}>
+                <Bell className="mr-2 h-4 w-4" />
+                Open notification settings
+              </Button>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
               <CardTitle>Email Notifications</CardTitle>
               <CardDescription>Choose what emails you want to receive</CardDescription>
             </CardHeader>
