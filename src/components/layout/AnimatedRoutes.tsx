@@ -58,6 +58,7 @@ const Explore = lazyWithRetry(() => import('@/pages/Explore'));
 const AdminSupport = lazyWithRetry(() => import('@/pages/AdminSupport'));
 const AdminCategories = lazyWithRetry(() => import('@/pages/AdminCategories'));
 const Notifications = lazyWithRetry(() => import('@/pages/Notifications'));
+const NotificationSettings = lazyWithRetry(() => import('@/pages/NotificationSettings'));
 const NotFound = lazyWithRetry(() => import('@/pages/NotFound'));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -113,6 +114,9 @@ export const AnimatedRoutes = () => {
         <Route path="/messages" element={<Navigate to="/matches" replace />} />
         <Route path="/notifications" element={
           <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Notifications /></PageTransition></SuspenseWrapper></ProtectedRoute>
+        } />
+        <Route path="/settings/notifications" element={
+          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><NotificationSettings /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/profile" element={
           <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Profile /></PageTransition></SuspenseWrapper></ProtectedRoute>

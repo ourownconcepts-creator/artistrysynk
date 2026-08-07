@@ -2252,6 +2252,18 @@ export type Database = {
           match_notifications: boolean | null
           match_online_notifications: boolean
           message_notifications: boolean | null
+          notify_email_discovery: boolean
+          notify_email_likes: boolean
+          notify_email_matches: boolean
+          notify_email_messages: boolean
+          notify_email_online: boolean
+          notify_email_projects: boolean
+          notify_inapp_discovery: boolean
+          notify_inapp_likes: boolean
+          notify_inapp_matches: boolean
+          notify_inapp_messages: boolean
+          notify_inapp_online: boolean
+          notify_inapp_projects: boolean
           onboarding_completed: boolean | null
           profile_visibility: string | null
           project_notifications: boolean | null
@@ -2273,6 +2285,18 @@ export type Database = {
           match_notifications?: boolean | null
           match_online_notifications?: boolean
           message_notifications?: boolean | null
+          notify_email_discovery?: boolean
+          notify_email_likes?: boolean
+          notify_email_matches?: boolean
+          notify_email_messages?: boolean
+          notify_email_online?: boolean
+          notify_email_projects?: boolean
+          notify_inapp_discovery?: boolean
+          notify_inapp_likes?: boolean
+          notify_inapp_matches?: boolean
+          notify_inapp_messages?: boolean
+          notify_inapp_online?: boolean
+          notify_inapp_projects?: boolean
           onboarding_completed?: boolean | null
           profile_visibility?: string | null
           project_notifications?: boolean | null
@@ -2294,6 +2318,18 @@ export type Database = {
           match_notifications?: boolean | null
           match_online_notifications?: boolean
           message_notifications?: boolean | null
+          notify_email_discovery?: boolean
+          notify_email_likes?: boolean
+          notify_email_matches?: boolean
+          notify_email_messages?: boolean
+          notify_email_online?: boolean
+          notify_email_projects?: boolean
+          notify_inapp_discovery?: boolean
+          notify_inapp_likes?: boolean
+          notify_inapp_matches?: boolean
+          notify_inapp_messages?: boolean
+          notify_inapp_online?: boolean
+          notify_inapp_projects?: boolean
           onboarding_completed?: boolean | null
           profile_visibility?: string | null
           project_notifications?: boolean | null
