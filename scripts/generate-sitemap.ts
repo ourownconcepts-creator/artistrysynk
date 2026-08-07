@@ -5,6 +5,7 @@
  */
 import { writeFileSync } from "fs";
 import { resolve } from "path";
+import { CITY_LANDINGS, DISCIPLINE_LANDINGS } from "../src/lib/seoLandings";
 
 const BASE_URL = "https://artistrysynk.app";
 const SUPABASE_URL = "https://lihctrhzsyjqnlzwwkzo.supabase.co";
@@ -41,10 +42,17 @@ const blogEntries: Entry[] = [
   { path: "/blog/how-to-find-a-music-producer", changefreq: "monthly", priority: "0.7" },
 ];
 
-async function query<T>(path: string): Promise<T[]> {
+async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<T[]> {
+  const path = `rpc/${fn}`;
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-      headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(args),
     });
     if (!res.ok) {
       console.warn(`sitemap: skipped ${path} (${res.status})`);
@@ -95,12 +103,15 @@ function write(file: string, xml: string, count: number) {
 }
 
 async function main() {
-  const profiles = await query<{ id: string; username: string | null; updated_at: string | null }>(
-    "profiles?select=id,username,updated_at&is_hidden=is.false&order=updated_at.desc&limit=45000",
-  );
+  const profiles = await rpc<{ id: string; username: string | null }>("list_public_profiles", {
+    _role: null,
+    _city: null,
+    _limit: 200,
+    _offset: 0,
+  });
+
   const userEntries: Entry[] = profiles.map((p) => ({
     path: `/profile/${p.username ?? p.id}`,
-    lastmod: day(p.updated_at),
     changefreq: "weekly",
     priority: "0.6",
   }));
@@ -109,6 +120,20 @@ async function main() {
   const projectEntries: Entry[] = [];
   const jobEntries: Entry[] = [];
   const eventEntries: Entry[] = [];
+
+  const landingEntries: Entry[] = [
+    ...DISCIPLINE_LANDINGS.map((d) => ({
+      path: `/${d.slug}`,
+      changefreq: "weekly" as Freq,
+      priority: "0.8",
+    })),
+    { path: "/locations", changefreq: "weekly" as Freq, priority: "0.7" },
+    ...CITY_LANDINGS.map((c) => ({
+      path: `/locations/${c.slug}`,
+      changefreq: "weekly" as Freq,
+      priority: "0.7",
+    })),
+  ];
 
   const files: string[] = [];
   const emit = (file: string, entries: Entry[], always = false) => {
@@ -119,6 +144,7 @@ async function main() {
 
   emit("sitemap-static.xml", staticEntries, true);
   emit("sitemap-blog.xml", blogEntries, true);
+  emit("sitemap-landing.xml", landingEntries, true);
   emit("sitemap-users.xml", userEntries);
   emit("sitemap-projects.xml", projectEntries);
   emit("sitemap-jobs.xml", jobEntries);
