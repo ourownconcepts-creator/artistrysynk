@@ -137,7 +137,7 @@ const NotificationSettings = () => {
       if (error) {
         toast.error("Failed to load notification settings");
       } else if (data) {
-        const row = data as Record<string, boolean | null>;
+        const row = data as unknown as Record<string, boolean | null>;
         setPrefs((prev) => {
           const next = { ...prev };
           (Object.keys(defaults) as Array<keyof Prefs>).forEach((k) => {
