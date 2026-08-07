@@ -48,13 +48,20 @@ export const GlobalSearch = () => {
 
     setLoading(true);
     const searchResults: SearchResult[] = [];
+    const escaped = searchQuery.replace(/[%,()]/g, " ").trim();
+    if (!escaped) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
 
     // Search users
-    const { data: users } = await supabase
+    const { data: users, error: usersError } = await supabase
       .from("profiles")
       .select("id, full_name, username, avatar_url")
-      .or(`full_name.ilike.%${searchQuery}%,username.ilike.%${searchQuery}%`)
+      .or(`full_name.ilike.%${escaped}%,username.ilike.%${escaped}%`)
       .limit(5);
+    if (usersError) console.error("Global search (users) failed:", usersError);
 
     if (users) {
       users.forEach((user) => {
@@ -73,7 +80,7 @@ export const GlobalSearch = () => {
       .from("projects")
       .select("id, title, description")
       .eq("is_public", true)
-      .ilike("title", `%${searchQuery}%`)
+      .ilike("title", `%${escaped}%`)
       .limit(5);
 
     if (projects) {
@@ -92,7 +99,7 @@ export const GlobalSearch = () => {
       .from("services")
       .select("id, title, category")
       .eq("is_active", true)
-      .ilike("title", `%${searchQuery}%`)
+      .ilike("title", `%${escaped}%`)
       .limit(5);
 
     if (services) {
