@@ -21,7 +21,6 @@ const PRIVATE_PREFIXES = [
   "/notifications",
   "/setup-profile",
   "/edit-profile",
-  "/profile",
   "/matches",
   "/who-liked-you",
   "/discover",
@@ -37,7 +36,11 @@ const PRIVATE_PREFIXES = [
   "/api",
 ];
 
+/** Exact paths that are private but whose children are public (e.g. /profile/:username). */
+const PRIVATE_EXACT = ["/profile"];
+
 export const isPrivatePath = (pathname: string) =>
+  PRIVATE_EXACT.includes(pathname) ||
   PRIVATE_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
 export const RouteSEO = () => {

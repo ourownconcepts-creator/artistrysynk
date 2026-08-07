@@ -6,4 +6,10 @@
   <sitemap>
     <loc>https://artistrysynk.app/sitemap-blog.xml</loc>
   </sitemap>
+  <sitemap>
+    <loc>https://artistrysynk.app/sitemap-landing.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://artistrysynk.app/sitemap-users.xml</loc>
+  </sitemap>
 </sitemapindex>
