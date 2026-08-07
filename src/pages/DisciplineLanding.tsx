@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Footer } from "@/components/Footer";
 import { PageSEO, CollectionPageSchema } from "@/components/seo";
@@ -11,8 +11,9 @@ import NotFound from "@/pages/NotFound";
 const BASE = "https://artistrysynk.app";
 
 const DisciplineLanding = () => {
-  const { slug } = useParams();
-  const discipline = slug ? getDisciplineBySlug(slug) : undefined;
+  const { pathname } = useLocation();
+  const slug = pathname.replace(/^\/+/, "").replace(/\/+$/, "");
+  const discipline = getDisciplineBySlug(slug);
   const [creators, setCreators] = useState<PublicCreator[]>([]);
   const [loading, setLoading] = useState(true);
 
