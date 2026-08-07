@@ -8,7 +8,6 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { AdminProtectedRoute } from '@/components/AdminProtectedRoute';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { RouteSEO } from '@/components/seo/RouteSEO';
-import { DISCIPLINE_LANDINGS } from '@/lib/seoLandings';
 
 // Lazy-loaded pages
 const Index = lazyWithRetry(() => import('@/pages/Index'));
