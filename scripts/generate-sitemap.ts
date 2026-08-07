@@ -98,31 +98,16 @@ async function main() {
   const profiles = await query<{ id: string; username: string | null; updated_at: string | null }>(
     "profiles?select=id,username,updated_at&is_hidden=is.false&order=updated_at.desc&limit=45000",
   );
-  const projects = await query<{ id: string; updated_at: string | null }>(
-    "projects?select=id,updated_at&is_public=is.true&is_hidden=is.false&order=updated_at.desc&limit=45000",
-  );
-  const jobs = await query<{ id: string; updated_at: string | null }>(
-    "job_postings?select=id,updated_at&order=created_at.desc&limit=45000",
-  );
-
   const userEntries: Entry[] = profiles.map((p) => ({
     path: `/profile/${p.username ?? p.id}`,
     lastmod: day(p.updated_at),
     changefreq: "weekly",
     priority: "0.6",
   }));
-  const projectEntries: Entry[] = projects.map((p) => ({
-    path: `/projects/${p.id}`,
-    lastmod: day(p.updated_at),
-    changefreq: "weekly",
-    priority: "0.6",
-  }));
-  const jobEntries: Entry[] = jobs.map((j) => ({
-    path: `/jobs/${j.id}`,
-    lastmod: day(j.updated_at),
-    changefreq: "daily",
-    priority: "0.6",
-  }));
+  // Projects, jobs and events have no public (non-authenticated) detail routes yet,
+  // so they are intentionally omitted rather than listed as crawl dead-ends.
+  const projectEntries: Entry[] = [];
+  const jobEntries: Entry[] = [];
   const eventEntries: Entry[] = [];
 
   const files: string[] = [];
