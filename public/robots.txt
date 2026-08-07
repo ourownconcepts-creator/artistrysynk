@@ -1,13 +1,14 @@
-# ArtistrySynk Robots.txt
-# Creative Collaboration Platform
+# ArtistrySynk – Creative Collaboration Platform
 
 User-agent: Googlebot
 Allow: /
-Crawl-delay: 1
 
 User-agent: Bingbot
 Allow: /
 Crawl-delay: 2
+
+User-agent: DuckDuckBot
+Allow: /
 
 User-agent: Twitterbot
 Allow: /
@@ -18,50 +19,66 @@ Allow: /
 User-agent: LinkedInBot
 Allow: /
 
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
 User-agent: *
 Allow: /
 Crawl-delay: 5
 
-# Allow public pages explicitly
-Allow: /features
-Allow: /how-it-works
-Allow: /pricing
-Allow: /about
-Allow: /blog
-Allow: /success-stories
-Allow: /careers
-Allow: /contact
-Allow: /auth
-Allow: /privacy
-Allow: /terms
-Allow: /cookies
-
-# Disallow admin and private/protected areas
+# Private / authenticated areas — never index
 Disallow: /admin
 Disallow: /admin-auth
 Disallow: /admin-reports
 Disallow: /admin-settings
+Disallow: /admin-support
+Disallow: /admin-categories
 Disallow: /master-admin
 Disallow: /super-admin
-Disallow: /profile
-Disallow: /edit-profile
-Disallow: /setup-profile
+Disallow: /dashboard
+Disallow: /settings
 Disallow: /messages
+Disallow: /notifications
+Disallow: /api
+Disallow: /api-access
+Disallow: /auth
+Disallow: /login
+Disallow: /signup
+Disallow: /billing
+Disallow: /reset-password
+Disallow: /force-password-change
+Disallow: /setup-profile
+Disallow: /edit-profile
 Disallow: /matches
 Disallow: /who-liked-you
-Disallow: /projects
-Disallow: /open-projects
-Disallow: /studio
 Disallow: /discover
 Disallow: /marketplace
 Disallow: /jobs
+Disallow: /projects
+Disallow: /open-projects
+Disallow: /studio
 Disallow: /teams
-Disallow: /api-access
-Disallow: /settings
-Disallow: /reset-password
+Disallow: /feed
+Disallow: /credits
+Disallow: /explore
 
 # Block non-existent assets (stale cached URLs)
 Disallow: /og-image.png
 
-# Sitemap location
+# Sitemaps
 Sitemap: https://artistrysynk.app/sitemap.xml
+Sitemap: https://artistrysynk.app/sitemap-static.xml
+Sitemap: https://artistrysynk.app/sitemap-blog.xml
+Sitemap: https://artistrysynk.app/sitemap-users.xml
