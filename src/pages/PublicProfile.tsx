@@ -198,7 +198,7 @@ const PublicProfile = () => {
                 </Avatar>
               </div>
               <div className="flex items-center justify-center gap-2 mt-4">
-                <CardTitle className="text-3xl">
+                <CardTitle asChild>
                   <h1 className="text-3xl font-bold">{profile.full_name}</h1>
                 </CardTitle>
                 {profile.is_verified && <BadgeCheck className="w-6 h-6 text-emerald-500" aria-label="Verified" />}
@@ -327,7 +327,7 @@ const PublicProfile = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>
+              <CardTitle asChild>
                 <h2 className="text-xl font-semibold">Portfolio highlights</h2>
               </CardTitle>
             </CardHeader>
