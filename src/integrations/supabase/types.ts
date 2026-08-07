@@ -2535,6 +2535,26 @@ export type Database = {
           id: string
         }[]
       }
+      get_public_profile: {
+        Args: { _identifier: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          city: string
+          country: string
+          cover_image_url: string
+          created_at: string
+          full_name: string
+          genres: string[]
+          id: string
+          is_verified: boolean
+          location: string
+          roles: string[]
+          skills: string[]
+          social_links: Json
+          username: string
+        }[]
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -2553,6 +2573,46 @@ export type Database = {
       is_project_member: {
         Args: { _project_id: string; _user_id: string }
         Returns: boolean
+      }
+      list_public_locations: {
+        Args: { _min_creators?: number }
+        Returns: {
+          city: string
+          country: string
+          creator_count: number
+        }[]
+      }
+      list_public_portfolio: {
+        Args: { _limit?: number; _user_id: string }
+        Returns: {
+          created_at: string
+          description: string
+          id: string
+          media_type: string
+          media_url: string
+          thumbnail_url: string
+          title: string
+        }[]
+      }
+      list_public_profiles: {
+        Args: {
+          _city?: string
+          _limit?: number
+          _offset?: number
+          _role?: string
+        }
+        Returns: {
+          avatar_url: string
+          bio: string
+          city: string
+          country: string
+          full_name: string
+          id: string
+          is_verified: boolean
+          location: string
+          roles: string[]
+          username: string
+        }[]
       }
       move_to_dlq: {
         Args: {
