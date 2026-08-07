@@ -82,3 +82,4 @@ Sitemap: https://artistrysynk.app/sitemap.xml
 Sitemap: https://artistrysynk.app/sitemap-static.xml
 Sitemap: https://artistrysynk.app/sitemap-blog.xml
 Sitemap: https://artistrysynk.app/sitemap-users.xml
+Sitemap: https://artistrysynk.app/sitemap-landing.xml

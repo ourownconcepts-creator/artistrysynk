@@ -8,6 +8,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { AdminProtectedRoute } from '@/components/AdminProtectedRoute';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { RouteSEO } from '@/components/seo/RouteSEO';
+import { DISCIPLINE_LANDINGS } from '@/lib/seoLandings';
 
 // Lazy-loaded pages
 const Index = lazyWithRetry(() => import('@/pages/Index'));
@@ -60,6 +61,9 @@ const AdminSupport = lazyWithRetry(() => import('@/pages/AdminSupport'));
 const AdminCategories = lazyWithRetry(() => import('@/pages/AdminCategories'));
 const Notifications = lazyWithRetry(() => import('@/pages/Notifications'));
 const NotificationSettings = lazyWithRetry(() => import('@/pages/NotificationSettings'));
+const DisciplineLanding = lazyWithRetry(() => import('@/pages/DisciplineLanding'));
+const LocationLanding = lazyWithRetry(() => import('@/pages/LocationLanding'));
+const LocationsIndex = lazyWithRetry(() => import('@/pages/LocationsIndex'));
 const NotFound = lazyWithRetry(() => import('@/pages/NotFound'));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -98,6 +102,20 @@ export const AnimatedRoutes = () => {
         <Route path="/licenses" element={<SuspenseWrapper><PageTransition><Licenses /></PageTransition></SuspenseWrapper>} />
         <Route path="/data-deletion" element={<SuspenseWrapper><PageTransition><DataDeletion /></PageTransition></SuspenseWrapper>} />
 
+        {/* Public SEO landing pages */}
+        {DISCIPLINE_LANDINGS.map((d) => (
+          <Route
+            key={d.slug}
+            path={`/${d.slug}`}
+            element={<SuspenseWrapper><PageTransition><DisciplineLanding /></PageTransition></SuspenseWrapper>}
+          />
+        ))}
+        <Route path="/locations" element={<SuspenseWrapper><PageTransition><LocationsIndex /></PageTransition></SuspenseWrapper>} />
+        <Route path="/locations/:citySlug" element={<SuspenseWrapper><PageTransition><LocationLanding /></PageTransition></SuspenseWrapper>} />
+
+        {/* Public creator profiles (indexable) */}
+        <Route path="/profile/:userId" element={<SuspenseWrapper><PageTransition><PublicProfile /></PageTransition></SuspenseWrapper>} />
+
         {/* Protected Routes */}
         <Route path="/setup-profile" element={
           <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><SetupProfile /></PageTransition></SuspenseWrapper></ProtectedRoute>
@@ -126,9 +144,6 @@ export const AnimatedRoutes = () => {
         } />
         <Route path="/edit-profile" element={
           <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><EditProfile /></PageTransition></SuspenseWrapper></ProtectedRoute>
-        } />
-        <Route path="/profile/:userId" element={
-          <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><PublicProfile /></PageTransition></SuspenseWrapper></ProtectedRoute>
         } />
         <Route path="/projects" element={
           <ProtectedRoute><Navbar /><SuspenseWrapper><PageTransition><Projects /></PageTransition></SuspenseWrapper></ProtectedRoute>
