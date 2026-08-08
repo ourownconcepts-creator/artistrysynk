@@ -311,7 +311,7 @@ export const ConnectionWeb = ({ query = '', isPro = true, highlightedCount = 1, 
                   href="/pricing?source=badge"
                   title="Upgrade to Pro to highlight all matches"
                   aria-label={`Showing ${highlightedCount} of ${Math.max(totalMatches, highlightedCount)} highlighted roles. Upgrade to Pro to unlock all matches.`}
-                  className="inline-flex items-center justify-center gap-0.5 rounded-full border bg-background/95 px-2 py-0.5 text-[9px] font-semibold text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 transition-colors cursor-pointer"
+                  className="inline-flex items-center justify-center gap-0.5 rounded-full border bg-background/95 px-2 py-0.5 text-[9px] font-semibold text-foreground shadow-xs hover:bg-primary hover:text-primary-foreground focus:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 transition-colors cursor-pointer"
                   style={{ borderColor: node.color }}
                 >
                   <AnimatePresence mode="popLayout" initial={false}>
@@ -355,13 +355,13 @@ export const ConnectionWeb = ({ query = '', isPro = true, highlightedCount = 1, 
               >
                 <div
                   role="tooltip"
-                  className="rounded-md border border-border/60 bg-popover/95 backdrop-blur-sm px-3 py-2 text-[11px] text-popover-foreground shadow-lg"
+                  className="rounded-md border border-border/60 bg-popover/95 backdrop-blur-xs px-3 py-2 text-[11px] text-popover-foreground shadow-lg"
                 >
                   <div>Free preview: only the top match highlights</div>
                   <a
                     href="/pricing?source=tooltip"
                     aria-label="Upgrade to Pro to highlight all matching roles"
-                    className="mt-1 inline-block text-primary font-semibold hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+                    className="mt-1 inline-block text-primary font-semibold hover:underline focus:outline-hidden focus-visible:ring-2 focus-visible:ring-ring rounded-xs"
                   >
                     Upgrade to Pro →
                   </a>

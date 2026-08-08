@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -438,7 +438,7 @@ const Settings = () => {
                   type="button"
                   onClick={() => navigate(item.to)}
                   aria-label={`Open ${item.label}`}
-                  className="w-full flex items-center gap-3 rounded-lg border border-border p-4 text-left hover:bg-accent/10 hover:border-primary/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="w-full flex items-center gap-3 rounded-lg border border-border p-4 text-left hover:bg-accent/10 hover:border-primary/40 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <item.icon className="w-5 h-5 text-primary shrink-0" aria-hidden="true" />
                   <span className="flex-1">

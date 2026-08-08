@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "@/lib/router-compat";
+import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { getOAuthRedirectUri } from "@/lib/native";
 import { Button } from "@/components/ui/button";

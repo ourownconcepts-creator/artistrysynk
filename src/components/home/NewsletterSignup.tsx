@@ -119,7 +119,7 @@ export const NewsletterSignup = () => {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-12 h-14 text-base bg-background/80 backdrop-blur-sm border-border/50 focus:border-primary"
+                  className="pl-12 h-14 text-base bg-background/80 backdrop-blur-xs border-border/50 focus:border-primary"
                   disabled={isLoading}
                   required
                 />

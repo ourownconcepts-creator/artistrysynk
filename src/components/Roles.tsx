@@ -35,7 +35,7 @@ export const Roles = () => {
               className="group hover:scale-105 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 hover:shadow-[0_0_20px_hsl(270,70%,55%/0.2)]"
             >
               <CardContent className="p-6 flex flex-col items-center gap-3 text-center">
-                <div className={`p-4 rounded-full bg-gradient-to-br ${role.color} group-hover:shadow-lg transition-shadow`}>
+                <div className={`p-4 rounded-full bg-gradient-to-br ${role.color} group-hover:shadow-lg transition-shadow-sm`}>
                   <role.icon className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="font-semibold text-sm">{role.name}</h3>

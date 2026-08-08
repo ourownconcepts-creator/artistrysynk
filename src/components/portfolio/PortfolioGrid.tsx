@@ -101,7 +101,7 @@ export const PortfolioGrid = ({ userId, editable = false, onItemClick, showRepor
         return (
           <Card 
             key={item.id} 
-            className="group cursor-pointer overflow-hidden hover:shadow-lg transition-shadow"
+            className="group cursor-pointer overflow-hidden hover:shadow-lg transition-shadow-sm"
             onClick={() => onItemClick?.(item)}
           >
             <div className="aspect-square relative bg-gradient-to-br from-primary/10 to-secondary/10">

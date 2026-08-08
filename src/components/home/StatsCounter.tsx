@@ -163,7 +163,7 @@ export const StatsCounter = () => {
               viewport={{ once: true }}
               className="group"
             >
-              <div className="relative p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 h-full">
+              <div className="relative p-6 rounded-2xl bg-card/50 backdrop-blur-xs border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 h-full">
                 <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
                 
                 <div className="relative z-10 flex flex-col items-center text-center">

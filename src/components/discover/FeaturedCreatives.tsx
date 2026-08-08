@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -207,8 +207,8 @@ export const FeaturedCreatives = () => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="hidden md:flex -left-4 h-8 w-8 bg-card/90 backdrop-blur-sm border-secondary/30 hover:bg-secondary hover:text-secondary-foreground" />
-        <CarouselNext className="hidden md:flex -right-4 h-8 w-8 bg-card/90 backdrop-blur-sm border-secondary/30 hover:bg-secondary hover:text-secondary-foreground" />
+        <CarouselPrevious className="hidden md:flex -left-4 h-8 w-8 bg-card/90 backdrop-blur-xs border-secondary/30 hover:bg-secondary hover:text-secondary-foreground" />
+        <CarouselNext className="hidden md:flex -right-4 h-8 w-8 bg-card/90 backdrop-blur-xs border-secondary/30 hover:bg-secondary hover:text-secondary-foreground" />
       </Carousel>
     </div>
   );

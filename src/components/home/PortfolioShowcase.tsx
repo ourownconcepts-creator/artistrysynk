@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "@/lib/router-compat";
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -190,7 +190,7 @@ export const PortfolioShowcase = () => {
                       transition={{ delay: index * 0.05 }}
                     >
                       <Card 
-                        className="group cursor-pointer overflow-hidden border-0 bg-card/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300"
+                        className="group cursor-pointer overflow-hidden border-0 bg-card/50 backdrop-blur-xs shadow-lg hover:shadow-xl transition-all duration-300"
                         onClick={() => navigate(`/profile/${item.user_id}`)}
                       >
                         {/* Media Preview */}
@@ -210,7 +210,7 @@ export const PortfolioShowcase = () => {
                                 playsInline
                               />
                               <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="p-4 rounded-full bg-background/80 backdrop-blur-sm group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
+                                <div className="p-4 rounded-full bg-background/80 backdrop-blur-xs group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
                                   <Play className="w-8 h-8 text-foreground group-hover:text-primary-foreground" />
                                 </div>
                               </div>
@@ -218,7 +218,7 @@ export const PortfolioShowcase = () => {
                           ) : (
                             <div className="w-full h-full bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 flex items-center justify-center">
                               <div className="text-center space-y-4">
-                                <div className="p-6 rounded-full bg-background/80 backdrop-blur-sm mx-auto w-fit">
+                                <div className="p-6 rounded-full bg-background/80 backdrop-blur-xs mx-auto w-fit">
                                   <Music className="w-12 h-12 text-primary" />
                                 </div>
                                 <p className="text-sm text-muted-foreground font-medium px-4">
@@ -232,13 +232,13 @@ export const PortfolioShowcase = () => {
                           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                           {/* Media Type Badge */}
-                          <div className="absolute top-3 right-3 p-2 rounded-full bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="absolute top-3 right-3 p-2 rounded-full bg-background/80 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity">
                             <MediaIcon className="w-4 h-4 text-foreground" />
                           </div>
 
                           {/* View Icon */}
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="p-3 rounded-full bg-primary/90 backdrop-blur-sm shadow-lg">
+                            <div className="p-3 rounded-full bg-primary/90 backdrop-blur-xs shadow-lg">
                               <Eye className="w-5 h-5 text-primary-foreground" />
                             </div>
                           </div>
@@ -278,8 +278,8 @@ export const PortfolioShowcase = () => {
                 );
               })}
             </CarouselContent>
-            <CarouselPrevious className="hidden md:flex -left-6 h-10 w-10 bg-card/90 backdrop-blur-sm border-primary/20 hover:bg-primary hover:text-primary-foreground" />
-            <CarouselNext className="hidden md:flex -right-6 h-10 w-10 bg-card/90 backdrop-blur-sm border-primary/20 hover:bg-primary hover:text-primary-foreground" />
+            <CarouselPrevious className="hidden md:flex -left-6 h-10 w-10 bg-card/90 backdrop-blur-xs border-primary/20 hover:bg-primary hover:text-primary-foreground" />
+            <CarouselNext className="hidden md:flex -right-6 h-10 w-10 bg-card/90 backdrop-blur-xs border-primary/20 hover:bg-primary hover:text-primary-foreground" />
           </Carousel>
 
           {/* Progress Dots */}

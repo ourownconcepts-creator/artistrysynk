@@ -3,7 +3,7 @@ import { UserPlus, Users, MessageCircle, Rocket, Play, Pause, Volume2, VolumeX }
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { PageSEO } from "@/components/seo";
 import logoImg from "@/assets/logo.png";
 import artistryTutorialVideo from "@/assets/artistry-tutorial.mp4";
@@ -170,7 +170,7 @@ const HowItWorksPage = () => {
                   <div className="absolute bottom-4 right-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={toggleMute}
-                      className="p-3 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-lg"
+                      className="p-3 rounded-full bg-background/80 backdrop-blur-xs border border-border shadow-lg"
                       aria-label={isMuted ? "Unmute video" : "Mute video"}
                     >
                       {isMuted ? (
@@ -181,7 +181,7 @@ const HowItWorksPage = () => {
                     </button>
                     <button
                       onClick={togglePlayPause}
-                      className="p-3 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-lg"
+                      className="p-3 rounded-full bg-background/80 backdrop-blur-xs border border-border shadow-lg"
                       aria-label={isPlaying ? "Pause video" : "Play video"}
                     >
                       {isPlaying ? (

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -230,7 +230,7 @@ export const DiscoverProfileCard = ({
         {profile.user_creative_roles.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {profile.user_creative_roles.slice(0, 3).map((r, i) => (
-              <Badge key={i} className="bg-white/15 text-white border-white/20 backdrop-blur-sm text-xs hover:bg-white/25">
+              <Badge key={i} className="bg-white/15 text-white border-white/20 backdrop-blur-xs text-xs hover:bg-white/25">
                 {getRoleLabel(r.role)}
               </Badge>
             ))}

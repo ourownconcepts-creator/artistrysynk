@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -78,7 +78,7 @@ const CreatorCredits = () => {
           </Card>
         ) : (
           credits.map(credit => (
-            <Card key={credit.id} className="cursor-pointer hover:shadow-md transition-shadow"
+            <Card key={credit.id} className="cursor-pointer hover:shadow-md transition-shadow-sm"
               onClick={() => credit.project && navigate(`/projects/${credit.project.id}`)}>
               <CardContent className="py-4">
                 <div className="flex items-start gap-4">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -94,8 +94,8 @@ export const TrendingCollaborations = () => {
           {[1, 2, 3].map((i) => (
             <Card key={i} className="min-w-[280px] animate-pulse">
               <CardContent className="p-4">
-                <div className="h-4 bg-muted rounded w-3/4 mb-2" />
-                <div className="h-3 bg-muted rounded w-1/2" />
+                <div className="h-4 bg-muted rounded-sm w-3/4 mb-2" />
+                <div className="h-3 bg-muted rounded-sm w-1/2" />
               </CardContent>
             </Card>
           ))}

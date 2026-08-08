@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Cookie } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { isNativeApp } from "@/lib/native";
@@ -36,7 +36,7 @@ export const CookieConsentBanner = () => {
       aria-label="Cookie consent"
       className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-in slide-in-from-bottom duration-300"
     >
-      <div className="container mx-auto max-w-4xl rounded-xl border border-border bg-card/95 backdrop-blur p-4 shadow-xl flex flex-col md:flex-row md:items-center gap-4">
+      <div className="container mx-auto max-w-4xl rounded-xl border border-border bg-card/95 backdrop-blur-sm p-4 shadow-xl flex flex-col md:flex-row md:items-center gap-4">
         <Cookie className="w-6 h-6 text-primary shrink-0" aria-hidden="true" />
         <p className="text-sm text-muted-foreground flex-1">
           We use essential cookies to keep you signed in, and optional cookies to understand how

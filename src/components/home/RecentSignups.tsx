@@ -102,7 +102,7 @@ export const RecentSignups = () => {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ duration: 0.4, delay: index * 0.08 }}
-                  className="flex items-center gap-2.5 px-4 py-2.5 bg-card/80 backdrop-blur-sm rounded-full border border-border/50 hover:border-primary/50 hover:shadow-md hover:shadow-primary/10 transition-all duration-300"
+                  className="flex items-center gap-2.5 px-4 py-2.5 bg-card/80 backdrop-blur-xs rounded-full border border-border/50 hover:border-primary/50 hover:shadow-md hover:shadow-primary/10 transition-all duration-300"
                 >
                   <Avatar className="w-7 h-7 border border-primary/20">
                     <AvatarImage
