@@ -12,4 +12,10 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    ssr: {
+      // CJS packages that need bundling so named exports resolve during SSR.
+      noExternal: ["react-helmet-async"],
+    },
+  },
 });
