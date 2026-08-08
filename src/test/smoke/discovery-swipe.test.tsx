@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { createSupabaseMock, routerCompatMock, renderUI } from "@/test/harness";
+import { renderUI } from "@/test/harness";
 
-const supabaseMock = createSupabaseMock({ userId: "me", tables: { portfolio_items: [], matches: [] } });
-vi.mock("@/integrations/supabase/client", () => ({ supabase: supabaseMock }));
-const router = routerCompatMock();
-vi.mock("@/lib/router-compat", () => router.module);
+vi.mock("@/integrations/supabase/client", async () => ({
+  supabase: (await import("@/test/mocks/supabase")).supabaseMock,
+}));
+vi.mock("@/lib/router-compat", async () => (await import("@/test/mocks/router")).routerCompatModule);
 
 import { DiscoverProfileCard } from "@/components/discover/DiscoverProfileCard";
 
