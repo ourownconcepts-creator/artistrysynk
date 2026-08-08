@@ -358,7 +358,7 @@ const Messages = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      <div className="flex min-h-dvh items-center justify-center bg-background">
         <div className="text-center space-y-3">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="text-muted-foreground">Loading conversation...</p>
@@ -368,15 +368,15 @@ const Messages = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
-      <div className="max-w-4xl mx-auto h-screen flex flex-col">
-        <Card className="flex-1 flex flex-col m-4">
-          <CardHeader className="border-b">
+    <div className="min-h-dvh bg-background">
+      <div className="mx-auto flex h-dvh max-w-3xl flex-col">
+        <Card className="flex flex-1 flex-col overflow-hidden rounded-none border-0 bg-transparent shadow-none">
+          <CardHeader className="app-blur sticky top-0 z-10 border-b border-border/40 py-3">
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => navigate("/matches")}
+                onClick={() => navigate("/messages")}
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>
@@ -484,7 +484,7 @@ const Messages = () => {
                       <div className={`flex items-start gap-1 ${isCurrentUser ? 'flex-row-reverse' : ''}`}>
                         <div
                           onClick={() => message.status === "failed" && retryMessage(message)}
-                          className={`rounded-lg p-3 ${
+                          className={`rounded-2xl px-3.5 py-2.5 ${
                             isCurrentUser
                               ? 'bg-primary text-primary-foreground'
                               : 'bg-muted'
@@ -551,13 +551,13 @@ const Messages = () => {
             <div ref={messagesEndRef} />
           </CardContent>
 
-          <div className="p-4 border-t">
+          <div className="app-blur border-t border-border/40 p-3 pb-[max(0.75rem,var(--safe-area-bottom))]">
             <form onSubmit={sendMessage} className="flex gap-2">
               <Input
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type a message..."
-                className="flex-1"
+                placeholder="Message..."
+                className="flex-1 rounded-full bg-surface-2 border-0"
               />
               <Button type="submit" variant="hero">
                 <Send className="w-4 h-4" />

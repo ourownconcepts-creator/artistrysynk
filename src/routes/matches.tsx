@@ -1,16 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { Navbar } from "@/components/Navbar";
-import { PageTransition } from "@/components/layout/PageTransition";
-import Matches from "@/pages/Matches";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/matches")({
-  component: () => (
-    <ProtectedRoute>
-      <Navbar />
-      <PageTransition>
-        <Matches />
-      </PageTransition>
-    </ProtectedRoute>
-  ),
+  beforeLoad: () => {
+    throw redirect({ to: "/messages", replace: true });
+  },
 });

@@ -114,7 +114,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      <div className="flex min-h-[60vh] items-center justify-center">
         <div className="text-center space-y-3">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="text-muted-foreground">Loading profile...</p>
@@ -124,10 +124,10 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+    <div>
       {/* Cover Image */}
       {profile?.cover_image_url && (
-        <div className="h-48 md:h-64 w-full overflow-hidden">
+        <div className="h-40 md:h-56 w-full overflow-hidden rounded-3xl">
           <img 
             src={profile.cover_image_url} 
             alt="Cover" 
@@ -136,7 +136,7 @@ const Profile = () => {
         </div>
       )}
       
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="mx-auto max-w-4xl">
 
         <Card className={profile?.cover_image_url ? "-mt-16 relative z-10" : ""}>
           <CardHeader className="text-center pb-2">
