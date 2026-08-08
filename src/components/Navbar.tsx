@@ -152,6 +152,10 @@ export const Navbar = () => {
                   <MapPin className="w-4 h-4 mr-2" />
                   Creators Near You
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/gallery")}>
+                  <LayoutGrid className="w-4 h-4 mr-2" />
+                  Portfolio Gallery
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/open-projects")}>
                   <Briefcase className="w-4 h-4 mr-2" />
                   Open Projects
