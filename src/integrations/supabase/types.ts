@@ -556,10 +556,12 @@ export type Database = {
           content_id: string
           content_type: string
           created_at: string
+          evidence_urls: string[]
           id: string
           reviewed_at: string | null
           reviewed_by: string | null
           status: string
+          supporting_info: string | null
           updated_at: string
           user_id: string
         }
@@ -569,10 +571,12 @@ export type Database = {
           content_id: string
           content_type: string
           created_at?: string
+          evidence_urls?: string[]
           id?: string
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: string
+          supporting_info?: string | null
           updated_at?: string
           user_id: string
         }
@@ -582,10 +586,12 @@ export type Database = {
           content_id?: string
           content_type?: string
           created_at?: string
+          evidence_urls?: string[]
           id?: string
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: string
+          supporting_info?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -1088,6 +1094,80 @@ export type Database = {
           },
         ]
       }
+      moderation_actions: {
+        Row: {
+          action: string
+          content_id: string
+          content_type: string
+          created_at: string
+          flag_id: string | null
+          id: string
+          is_bulk: boolean
+          moderator_id: string
+          new_status: string | null
+          notes: string | null
+          previous_status: string | null
+        }
+        Insert: {
+          action: string
+          content_id: string
+          content_type: string
+          created_at?: string
+          flag_id?: string | null
+          id?: string
+          is_bulk?: boolean
+          moderator_id: string
+          new_status?: string | null
+          notes?: string | null
+          previous_status?: string | null
+        }
+        Update: {
+          action?: string
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          flag_id?: string | null
+          id?: string
+          is_bulk?: boolean
+          moderator_id?: string
+          new_status?: string | null
+          notes?: string | null
+          previous_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_actions_flag_id_fkey"
+            columns: ["flag_id"]
+            isOneToOne: false
+            referencedRelation: "content_flags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      muted_users: {
+        Row: {
+          created_at: string
+          id: string
+          muted_id: string
+          muter_id: string
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          muted_id: string
+          muter_id: string
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          muted_id?: string
+          muter_id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           email: string
@@ -1454,6 +1534,7 @@ export type Database = {
       }
       project_role_changes: {
         Row: {
+          auto_resolved: boolean
           created_at: string
           id: string
           member_id: string
@@ -1464,10 +1545,14 @@ export type Database = {
           requested_role: string
           reviewed_at: string | null
           reviewed_by: string | null
+          sla_deadline: string | null
+          sla_fallback: string
+          sla_hours: number | null
           status: string
           updated_at: string
         }
         Insert: {
+          auto_resolved?: boolean
           created_at?: string
           id?: string
           member_id: string
@@ -1478,10 +1563,14 @@ export type Database = {
           requested_role: string
           reviewed_at?: string | null
           reviewed_by?: string | null
+          sla_deadline?: string | null
+          sla_fallback?: string
+          sla_hours?: number | null
           status?: string
           updated_at?: string
         }
         Update: {
+          auto_resolved?: boolean
           created_at?: string
           id?: string
           member_id?: string
@@ -1492,6 +1581,9 @@ export type Database = {
           requested_role?: string
           reviewed_at?: string | null
           reviewed_by?: string | null
+          sla_deadline?: string | null
+          sla_fallback?: string
+          sla_hours?: number | null
           status?: string
           updated_at?: string
         }
@@ -1568,6 +1660,8 @@ export type Database = {
           is_public: boolean | null
           looking_for: string[] | null
           project_category: string | null
+          role_approval_fallback: string
+          role_approval_sla_hours: number
           status: Database["public"]["Enums"]["collaboration_status"] | null
           title: string
           updated_at: string | null
@@ -1584,6 +1678,8 @@ export type Database = {
           is_public?: boolean | null
           looking_for?: string[] | null
           project_category?: string | null
+          role_approval_fallback?: string
+          role_approval_sla_hours?: number
           status?: Database["public"]["Enums"]["collaboration_status"] | null
           title: string
           updated_at?: string | null
@@ -1600,6 +1696,8 @@ export type Database = {
           is_public?: boolean | null
           looking_for?: string[] | null
           project_category?: string | null
+          role_approval_fallback?: string
+          role_approval_sla_hours?: number
           status?: Database["public"]["Enums"]["collaboration_status"] | null
           title?: string
           updated_at?: string | null
@@ -2825,6 +2923,7 @@ export type Database = {
           read_ct: number
         }[]
       }
+      resolve_overdue_role_changes: { Args: never; Returns: number }
     }
     Enums: {
       app_role: "user" | "admin" | "master_admin" | "super_admin"

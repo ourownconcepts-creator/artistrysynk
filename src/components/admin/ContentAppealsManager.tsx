@@ -24,6 +24,8 @@ interface ContentAppeal {
   reviewed_by: string | null;
   reviewed_at: string | null;
   admin_response: string | null;
+  supporting_info: string | null;
+  evidence_urls: string[] | null;
   created_at: string;
   user?: { id: string; full_name: string; email: string | null };
 }
@@ -342,6 +344,35 @@ export const ContentAppealsManager = () => {
                   <label className="text-sm font-medium">Appeal Reason</label>
                   <p className="text-sm bg-muted p-3 rounded-lg">{selectedAppeal.appeal_reason}</p>
                 </div>
+
+                {selectedAppeal.supporting_info && (
+                  <div>
+                    <label className="text-sm font-medium">Supporting Information</label>
+                    <p className="text-sm bg-muted p-3 rounded-lg whitespace-pre-wrap">
+                      {selectedAppeal.supporting_info}
+                    </p>
+                  </div>
+                )}
+
+                {selectedAppeal.evidence_urls && selectedAppeal.evidence_urls.length > 0 && (
+                  <div>
+                    <label className="text-sm font-medium">Evidence Links</label>
+                    <ul className="mt-1 space-y-1">
+                      {selectedAppeal.evidence_urls.map((url) => (
+                        <li key={url}>
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-primary underline break-all"
+                          >
+                            {url}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
                 {selectedAppeal.status === 'pending' && (
                   <div>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchHiddenUserIds } from "@/lib/hiddenUsers";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Sparkles, SlidersHorizontal, Zap, Users, RefreshCw } from "lucide-react";
@@ -100,7 +101,11 @@ const Discover = () => {
         .select("swiped_id")
         .eq("swiper_id", userId);
 
-      const excludeIds = [userId, ...(swipedIds?.map((s) => s.swiped_id) || [])];
+      const { all: hiddenIds } = await fetchHiddenUserIds(userId);
+
+      const excludeIds = [
+        ...new Set([userId, ...(swipedIds?.map((s) => s.swiped_id) || []), ...hiddenIds]),
+      ];
 
       let query = supabase
         .from("profiles")

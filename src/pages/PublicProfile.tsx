@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { ProfileSchema, PageSEO } from "@/components/seo";
 import { FlagContentDialog } from "@/components/FlagContentDialog";
 import { BlockUserButton } from "@/components/settings/BlockUserButton";
+import { MuteUserButton } from "@/components/settings/MuteUserButton";
 import { getRoleLabel } from "@/lib/creativeRoles";
 import NotFound from "@/pages/NotFound";
 
@@ -300,6 +301,11 @@ const PublicProfile = () => {
                         <Flag className="w-5 h-5" />
                       </Button>
                     }
+                  />
+                  <MuteUserButton
+                    userId={currentUserId}
+                    targetUserId={profile.id}
+                    targetUserName={profile.full_name}
                   />
                   <BlockUserButton
                     userId={currentUserId}

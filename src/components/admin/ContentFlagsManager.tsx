@@ -7,7 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Flag, Search, Eye, CheckCircle, XCircle, AlertTriangle, RefreshCw, Bell, Undo2 } from 'lucide-react';
+import { Flag, Search, Eye, CheckCircle, XCircle, AlertTriangle, RefreshCw, Bell, Undo2, History, Loader2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useServerFn } from '@tanstack/react-start';
 import { notifyContentStatus } from '@/lib/notify-content-status.functions';
@@ -29,6 +30,20 @@ interface ContentFlag {
   reporter?: { id: string; full_name: string; email: string | null };
 }
 
+interface ModerationAction {
+  id: string;
+  moderator_id: string;
+  content_type: string;
+  content_id: string;
+  action: string;
+  previous_status: string | null;
+  new_status: string | null;
+  notes: string | null;
+  is_bulk: boolean;
+  created_at: string;
+  moderator?: { full_name: string | null } | null;
+}
+
 export const ContentFlagsManager = () => {
   const sendContentStatusEmail = useServerFn(notifyContentStatus);
   const [flags, setFlags] = useState<ContentFlag[]>([]);
@@ -38,9 +53,14 @@ export const ContentFlagsManager = () => {
   const [selectedFlag, setSelectedFlag] = useState<ContentFlag | null>(null);
   const [adminNotes, setAdminNotes] = useState('');
   const [pendingCount, setPendingCount] = useState(0);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [auditLog, setAuditLog] = useState<ModerationAction[]>([]);
+  const [showAudit, setShowAudit] = useState(false);
 
   useEffect(() => {
     fetchFlags();
+    fetchAuditLog();
     setupRealtimeSubscription();
   }, [statusFilter]);
 
@@ -118,6 +138,95 @@ export const ContentFlagsManager = () => {
       toast.error('Failed to fetch content flags');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAuditLog = async () => {
+    const { data, error } = await supabase
+      .from('moderation_actions')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (error) return;
+    const moderatorIds = [...new Set((data || []).map((a) => a.moderator_id))];
+    const { data: mods } = await supabase
+      .from('profiles')
+      .select('id, full_name')
+      .in('id', moderatorIds);
+    const modMap = new Map((mods || []).map((m) => [m.id, m]));
+    setAuditLog(
+      (data || []).map((a) => ({ ...a, moderator: modMap.get(a.moderator_id) ?? null })) as ModerationAction[],
+    );
+  };
+
+  const logModerationAction = async (
+    flag: Pick<ContentFlag, 'id' | 'content_type' | 'content_id' | 'status'>,
+    newStatus: string,
+    action: string,
+    notes: string | null,
+    isBulk: boolean,
+  ) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from('moderation_actions').insert({
+      flag_id: flag.id,
+      moderator_id: user.id,
+      content_type: flag.content_type,
+      content_id: flag.content_id,
+      action,
+      previous_status: flag.status,
+      new_status: newStatus,
+      notes: notes || null,
+      is_bulk: isBulk,
+    });
+  };
+
+  const toggleSelected = (id: string) => {
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+
+  const handleBulkAction = async (newStatus: string, shouldUnhide: boolean) => {
+    if (selectedIds.length === 0) return;
+    setBulkBusy(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const targets = flags.filter((f) => selectedIds.includes(f.id));
+
+      if (shouldUnhide) {
+        for (const flag of targets) {
+          await unhideContent(flag.content_type, flag.content_id);
+        }
+      }
+
+      const { error } = await supabase
+        .from('content_flags')
+        .update({
+          status: newStatus,
+          reviewed_by: user?.id,
+          reviewed_at: new Date().toISOString(),
+        })
+        .in('id', selectedIds);
+      if (error) throw error;
+
+      for (const flag of targets) {
+        await logModerationAction(
+          flag,
+          newStatus,
+          shouldUnhide ? `bulk_${newStatus}_restored` : `bulk_${newStatus}`,
+          null,
+          true,
+        );
+      }
+
+      toast.success(`${targets.length} report(s) marked as ${newStatus}${shouldUnhide ? ' and restored' : ''}`);
+      setSelectedIds([]);
+      fetchFlags();
+      fetchAuditLog();
+    } catch (error) {
+      console.error('Bulk moderation failed:', error);
+      toast.error('Bulk action failed');
+    } finally {
+      setBulkBusy(false);
     }
   };
 
@@ -207,10 +316,21 @@ export const ContentFlagsManager = () => {
 
       if (error) throw error;
 
+      if (flag) {
+        await logModerationAction(
+          flag,
+          newStatus,
+          shouldUnhide ? `${newStatus}_restored` : newStatus,
+          adminNotes,
+          false,
+        );
+      }
+
       toast.success(`Flag marked as ${newStatus}${shouldUnhide ? ' and content restored' : ''}`);
       setSelectedFlag(null);
       setAdminNotes('');
       fetchFlags();
+      fetchAuditLog();
     } catch (error: any) {
       console.error('Error updating flag:', error);
       toast.error('Failed to update flag status');
@@ -294,10 +414,16 @@ export const ContentFlagsManager = () => {
             </CardTitle>
             <CardDescription>Review and moderate flagged content reported by users</CardDescription>
           </div>
-          <Button variant="outline" size="sm" onClick={fetchFlags}>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => setShowAudit((v) => !v)}>
+              <History className="h-4 w-4 mr-2" />
+              {showAudit ? 'Hide' : 'Audit'} trail
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => { fetchFlags(); fetchAuditLog(); }}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -325,6 +451,30 @@ export const ContentFlagsManager = () => {
           </Select>
         </div>
 
+        {selectedIds.length > 0 && (
+          <div className="mb-4 flex flex-wrap items-center gap-2 rounded-lg border bg-muted/40 p-3">
+            <span className="text-sm font-medium">{selectedIds.length} selected</span>
+            {bulkBusy && <Loader2 className="h-4 w-4 animate-spin" />}
+            <div className="ml-auto flex flex-wrap gap-2">
+              <Button size="sm" variant="secondary" disabled={bulkBusy} onClick={() => handleBulkAction('reviewed', false)}>
+                Mark reviewed
+              </Button>
+              <Button size="sm" disabled={bulkBusy} onClick={() => handleBulkAction('resolved', false)}>
+                Resolve
+              </Button>
+              <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => handleBulkAction('dismissed', false)}>
+                Dismiss
+              </Button>
+              <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => handleBulkAction('dismissed', true)}>
+                Dismiss &amp; restore
+              </Button>
+              <Button size="sm" variant="ghost" disabled={bulkBusy} onClick={() => setSelectedIds([])}>
+                Clear
+              </Button>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="text-center py-8 text-muted-foreground">Loading flags...</div>
         ) : filteredFlags.length === 0 ? (
@@ -336,6 +486,15 @@ export const ContentFlagsManager = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-10">
+                  <Checkbox
+                    aria-label="Select all reports"
+                    checked={selectedIds.length > 0 && selectedIds.length === filteredFlags.length}
+                    onCheckedChange={(checked) =>
+                      setSelectedIds(checked ? filteredFlags.map((f) => f.id) : [])
+                    }
+                  />
+                </TableHead>
                 <TableHead>Content</TableHead>
                 <TableHead>Reason</TableHead>
                 <TableHead>Reporter</TableHead>
@@ -347,6 +506,13 @@ export const ContentFlagsManager = () => {
             <TableBody>
               {filteredFlags.map((flag) => (
                 <TableRow key={flag.id}>
+                  <TableCell>
+                    <Checkbox
+                      aria-label={`Select ${flag.content_type} report`}
+                      checked={selectedIds.includes(flag.id)}
+                      onCheckedChange={() => toggleSelected(flag.id)}
+                    />
+                  </TableCell>
                   <TableCell>
                     <div className="font-medium capitalize">{flag.content_type}</div>
                     <div className="text-xs text-muted-foreground truncate max-w-[150px]">
@@ -379,6 +545,35 @@ export const ContentFlagsManager = () => {
               ))}
             </TableBody>
           </Table>
+        )}
+
+        {showAudit && (
+          <div className="mt-6 rounded-lg border p-4">
+            <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
+              <History className="h-4 w-4" />
+              Moderation audit trail
+            </h3>
+            {auditLog.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No moderation actions recorded yet.</p>
+            ) : (
+              <ul className="max-h-72 space-y-2 overflow-y-auto text-sm">
+                {auditLog.map((entry) => (
+                  <li key={entry.id} className="flex flex-wrap items-center gap-2 border-b pb-2 last:border-0">
+                    <Badge variant="outline" className="capitalize">{entry.content_type}</Badge>
+                    <span className="font-medium">{entry.moderator?.full_name || 'Admin'}</span>
+                    <span className="text-muted-foreground">
+                      {entry.previous_status || 'unknown'} → {entry.new_status || 'unknown'} ({entry.action})
+                      {entry.is_bulk ? ' · bulk' : ''}
+                    </span>
+                    <span className="ml-auto text-xs text-muted-foreground">
+                      {format(new Date(entry.created_at), 'MMM d, yyyy HH:mm')}
+                    </span>
+                    {entry.notes && <p className="w-full text-xs text-muted-foreground">{entry.notes}</p>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         )}
 
         {/* Review Dialog */}

@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { UserCog, ShieldCheck, Check, X, Loader2 } from "lucide-react";
+import { UserCog, ShieldCheck, Check, X, Loader2, Clock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface Member {
@@ -35,7 +35,17 @@ interface RoleChange {
   note: string | null;
   status: string;
   created_at: string;
+  sla_hours: number | null;
+  sla_deadline: string | null;
+  sla_fallback: string;
+  auto_resolved: boolean;
 }
+
+const FALLBACK_LABELS: Record<string, string> = {
+  none: "No automatic action",
+  auto_approve: "Auto-approve when overdue",
+  auto_decline: "Auto-decline when overdue",
+};
 
 interface Props {
   projectId: string;
@@ -56,20 +66,38 @@ export const RoleApprovals = ({ projectId, currentUserId, isCreator }: Props) =>
   const [memberId, setMemberId] = useState("");
   const [requestedRole, setRequestedRole] = useState("");
   const [note, setNote] = useState("");
+  const [slaHours, setSlaHours] = useState("48");
+  const [fallback, setFallback] = useState("none");
+  const [defaultHours, setDefaultHours] = useState("48");
+  const [defaultFallback, setDefaultFallback] = useState("none");
 
   const load = useCallback(async () => {
-    const [{ data: memberRows }, { data: changeRows }] = await Promise.all([
+    const [{ data: memberRows }, { data: changeRows }, { data: projectRow }] = await Promise.all([
       supabase
         .from("project_members")
         .select("user_id, role, can_approve_roles, profiles:user_id(full_name, avatar_url)")
         .eq("project_id", projectId),
       supabase
         .from("project_role_changes")
-        .select("id, member_id, requested_by, previous_role, requested_role, note, status, created_at")
+        .select(
+          "id, member_id, requested_by, previous_role, requested_role, note, status, created_at, sla_hours, sla_deadline, sla_fallback, auto_resolved",
+        )
         .eq("project_id", projectId)
         .order("created_at", { ascending: false })
         .limit(30),
+      supabase
+        .from("projects")
+        .select("role_approval_sla_hours, role_approval_fallback")
+        .eq("id", projectId)
+        .maybeSingle(),
     ]);
+
+    if (projectRow) {
+      setDefaultHours(String(projectRow.role_approval_sla_hours ?? 48));
+      setDefaultFallback(projectRow.role_approval_fallback ?? "none");
+      setSlaHours(String(projectRow.role_approval_sla_hours ?? 48));
+      setFallback(projectRow.role_approval_fallback ?? "none");
+    }
 
     setMembers(
       (memberRows ?? []).map((m: any) => ({
@@ -118,6 +146,8 @@ export const RoleApprovals = ({ projectId, currentUserId, isCreator }: Props) =>
       previous_role: previous,
       requested_role: requestedRole.trim(),
       note: note.trim() || null,
+      sla_hours: Math.min(720, Math.max(1, Number(slaHours) || 48)),
+      sla_fallback: fallback,
     });
     setSaving(null);
     if (error) {
@@ -144,6 +174,23 @@ export const RoleApprovals = ({ projectId, currentUserId, isCreator }: Props) =>
     }
     toast.success(status === "approved" ? "Role approved" : "Role declined");
     void load();
+  };
+
+  const saveDefaults = async () => {
+    setSaving("defaults");
+    const { error } = await supabase
+      .from("projects")
+      .update({
+        role_approval_sla_hours: Math.min(720, Math.max(1, Number(defaultHours) || 48)),
+        role_approval_fallback: defaultFallback,
+      })
+      .eq("id", projectId);
+    setSaving(null);
+    if (error) {
+      toast.error("Could not save room defaults");
+      return;
+    }
+    toast.success("Room approval defaults saved");
   };
 
   const toggleApprover = async (member: Member, value: boolean) => {
@@ -213,6 +260,34 @@ export const RoleApprovals = ({ projectId, currentUserId, isCreator }: Props) =>
                 placeholder="New role (e.g. Lead Producer)"
                 aria-label="Requested role"
               />
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <Label htmlFor="sla-hours" className="text-xs text-muted-foreground">
+                    Respond within (hours)
+                  </Label>
+                  <Input
+                    id="sla-hours"
+                    type="number"
+                    min={1}
+                    max={720}
+                    value={slaHours}
+                    onChange={(e) => setSlaHours(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">If nobody responds</Label>
+                  <Select value={fallback} onValueChange={setFallback}>
+                    <SelectTrigger aria-label="Fallback when the deadline passes">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No automatic action</SelectItem>
+                      <SelectItem value="auto_approve">Auto-approve</SelectItem>
+                      <SelectItem value="auto_decline">Auto-decline</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
               <Input
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
@@ -245,6 +320,20 @@ export const RoleApprovals = ({ projectId, currentUserId, isCreator }: Props) =>
                       {formatDistanceToNow(new Date(r.created_at), { addSuffix: true })}
                       {r.previous_role ? ` · currently ${r.previous_role}` : ""}
                     </p>
+                    {r.sla_deadline ? (
+                      <p
+                        className={`text-xs ${
+                          new Date(r.sla_deadline) < new Date()
+                            ? "text-destructive"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        <Clock className="mr-1 inline h-3 w-3" aria-hidden="true" />
+                        {new Date(r.sla_deadline) < new Date() ? "Overdue" : "Due"}{" "}
+                        {formatDistanceToNow(new Date(r.sla_deadline), { addSuffix: true })} ·{" "}
+                        {FALLBACK_LABELS[r.sla_fallback] ?? FALLBACK_LABELS.none}
+                      </p>
+                    ) : null}
                     {r.note ? <p className="mt-1 text-xs">{r.note}</p> : null}
                     {canApprove ? (
                       <div className="mt-2 flex gap-2">
@@ -285,8 +374,47 @@ export const RoleApprovals = ({ projectId, currentUserId, isCreator }: Props) =>
                     <span className={r.status === "approved" ? "text-emerald-600" : "text-destructive"}>
                       {r.status}
                     </span>
+                    {r.auto_resolved ? " (automatic)" : ""}
                   </p>
                 ))}
+              </div>
+            ) : null}
+
+            {isCreator ? (
+              <div className="space-y-2 rounded-xl border p-3">
+                <p className="flex items-center gap-2 text-sm font-semibold">
+                  <Clock className="h-4 w-4" />
+                  Room defaults
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    type="number"
+                    min={1}
+                    max={720}
+                    value={defaultHours}
+                    onChange={(e) => setDefaultHours(e.target.value)}
+                    aria-label="Default response window in hours"
+                  />
+                  <Select value={defaultFallback} onValueChange={setDefaultFallback}>
+                    <SelectTrigger aria-label="Default fallback">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No automatic action</SelectItem>
+                      <SelectItem value="auto_approve">Auto-approve</SelectItem>
+                      <SelectItem value="auto_decline">Auto-decline</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full"
+                  disabled={saving === "defaults"}
+                  onClick={() => void saveDefaults()}
+                >
+                  Save room defaults
+                </Button>
               </div>
             ) : null}
 

@@ -13,6 +13,7 @@ import { Bell, Shield, User, Trash2, Moon, Sun, Monitor, Loader2, Scale, FileTex
 import { useTheme } from "next-themes";
 import { PushNotificationSettings } from "@/components/notifications/PushNotificationSettings";
 import { BlockedUsersList } from "@/components/settings/BlockedUsersList";
+import { MutedUsersList } from "@/components/settings/MutedUsersList";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -334,6 +335,7 @@ const Settings = () => {
           </Card>
 
           {userId && <BlockedUsersList userId={userId} />}
+          {userId && <MutedUsersList userId={userId} />}
         </TabsContent>
 
         <TabsContent value="appearance" className="space-y-6">
