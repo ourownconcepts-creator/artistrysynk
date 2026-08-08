@@ -19,6 +19,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ExternalFileLinks } from "@/components/projects/ExternalFileLinks";
 import { ActivityFeed } from "@/components/projects/ActivityFeed";
 import { ProjectInvites } from "@/components/projects/ProjectInvites";
+import { RoleApprovals } from "@/components/projects/RoleApprovals";
 import { ProjectFiles } from "@/components/projects/ProjectFiles";
 
 interface Project {
@@ -394,6 +395,14 @@ const CollaborationRoom = () => {
                 projectId={projectId!}
                 currentUserId={currentUser}
                 canInvite={project?.created_by === currentUser}
+              />
+            )}
+
+            {currentUser && (
+              <RoleApprovals
+                projectId={projectId!}
+                currentUserId={currentUser}
+                isCreator={project?.created_by === currentUser}
               />
             )}
 

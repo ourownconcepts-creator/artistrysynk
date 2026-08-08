@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface FlagContentDialogProps {
-  contentType: 'message' | 'portfolio' | 'profile' | 'service' | 'project';
+  contentType: 'message' | 'portfolio' | 'profile' | 'service' | 'project' | 'project_file';
   contentId: string;
   trigger?: React.ReactNode;
 }
@@ -19,6 +19,7 @@ const REASONS = [
   { value: 'harassment', label: 'Harassment', description: 'Bullying or threatening behavior' },
   { value: 'inappropriate', label: 'Inappropriate Content', description: 'Offensive or explicit material' },
   { value: 'scam', label: 'Scam/Fraud', description: 'Deceptive or fraudulent activity' },
+  { value: 'copyright', label: 'Copyright / takedown', description: 'Uses my work or IP without permission' },
   { value: 'other', label: 'Other', description: 'Other violation not listed above' },
 ];
 

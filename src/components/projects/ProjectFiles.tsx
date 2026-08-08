@@ -14,8 +14,10 @@ import {
   Clock,
   RotateCcw,
   Trash2,
+  Flag,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { FlagContentDialog } from "@/components/FlagContentDialog";
 
 type UploadStatus = "queued" | "uploading" | "processing" | "ready" | "failed";
 
@@ -292,6 +294,22 @@ export const ProjectFiles = ({
                       <Icon className={`h-3 w-3 ${spinning ? "animate-spin" : ""}`} />
                       {meta.label}
                     </Badge>
+                    {file.uploaded_by !== currentUserId && isReady ? (
+                      <FlagContentDialog
+                        contentType="project_file"
+                        contentId={file.id}
+                        trigger={
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                            aria-label={`Report ${file.file_name}`}
+                          >
+                            <Flag className="h-4 w-4" />
+                          </Button>
+                        }
+                      />
+                    ) : null}
                     {file.uploaded_by === currentUserId ? (
                       <div className="flex items-center gap-1">
                         {file.upload_status === "failed" ? (
