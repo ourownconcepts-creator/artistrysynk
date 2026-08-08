@@ -302,6 +302,11 @@ const PublicProfile = () => {
                       </Button>
                     }
                   />
+                  <MuteUserButton
+                    userId={currentUserId}
+                    targetUserId={profile.id}
+                    targetUserName={profile.full_name}
+                  />
                   <BlockUserButton
                     userId={currentUserId}
                     targetUserId={profile.id}
