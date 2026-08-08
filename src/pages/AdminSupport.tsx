@@ -191,17 +191,18 @@ const AdminSupport = () => {
       return;
     }
     setSending(true);
-    const { data, error } = await supabase.functions.invoke("send-support-reply", {
-      body: { submissionId: active.id, reply: reply.trim(), status: replyStatus },
-    });
-    setSending(false);
-
-    if (error || (data as { error?: string } | null)?.error) {
-      const details = (data as { error?: string } | null)?.error ?? error?.message;
+    try {
+      await sendSupportReply({
+        data: { submissionId: active.id, reply: reply.trim(), status: replyStatus },
+      });
+    } catch (error) {
+      const details = error instanceof Error ? error.message : "Unknown error";
       console.error("send-support-reply failed:", details);
       toast.error("Failed to send reply", { description: details });
+      setSending(false);
       return;
     }
+    setSending(false);
 
     toast.success(`Reply sent to ${active.email}`);
     const now = new Date().toISOString();
