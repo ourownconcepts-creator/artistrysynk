@@ -23,6 +23,8 @@ import { CreatorsNearYou } from "@/components/discover/CreatorsNearYou";
 import { OpenProjectsPreview } from "@/components/discover/OpenProjectsPreview";
 import { useSubscription } from "@/hooks/useSubscription";
 import { PageSEO } from "@/components/seo";
+import { useServerFn } from "@tanstack/react-start";
+import { scoreMatches } from "@/lib/ai-match-scoring.functions";
 
 interface Profile {
   id: string;
@@ -42,6 +44,7 @@ interface Profile {
 
 const Discover = () => {
   const navigate = useNavigate();
+  const scoreMatchesFn = useServerFn(scoreMatches);
   const { canRewindSwipes, hasAdvancedMatching } = useSubscription();
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [currentUserProfile, setCurrentUserProfile] = useState<any>(null);
@@ -167,13 +170,13 @@ const Discover = () => {
             skills: [],
           }));
 
-          const response = await supabase.functions.invoke('ai-match-scoring', {
-            body: { currentUser: currentUserProfile, candidates }
+          const response = await scoreMatchesFn({
+            data: { currentUser: currentUserProfile, candidates }
           });
 
-          if (response.data?.scoredProfiles) {
+          if (response?.scoredProfiles) {
             // Map scored profiles back to original data with scores
-            const scoredMap = new Map(response.data.scoredProfiles.map((p: any) => [p.id, p]));
+            const scoredMap = new Map(response.scoredProfiles.map((p: any) => [p.id, p]));
             filteredData = filteredData.map(p => ({
               ...p,
               synergyScore: (scoredMap.get(p.id) as any)?.synergyScore || 50,

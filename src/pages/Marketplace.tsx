@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyOrderStatus } from "@/lib/notify-order-status.functions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -299,9 +300,9 @@ const Marketplace = () => {
         const buyerEmail = buyerEmailRows?.[0]?.email;
         
         if (buyerEmail) {
-          // Call the edge function with buyer email
-          await supabase.functions.invoke("notify-order-status", {
-            body: {
+          // Call the server function with buyer email
+          await notifyOrderStatus({
+            data: {
               orderId,
               serviceTitle: order.services?.title || "Service",
               buyerEmail: buyerEmail,

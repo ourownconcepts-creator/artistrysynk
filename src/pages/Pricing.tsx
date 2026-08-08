@@ -10,6 +10,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { useServerFn } from "@tanstack/react-start";
+import { initializePaystackTransaction } from "@/lib/paystack-initialize.functions";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ const Pricing = () => {
   const { subscription, loading: subLoading } = useSubscription();
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
+  const initializePaystackTransactionFn = useServerFn(initializePaystackTransaction);
 
   useEffect(() => {
     // Check for success callback
@@ -43,15 +46,13 @@ const Pricing = () => {
     setProcessingPlan(plan);
 
     try {
-      const { data, error } = await supabase.functions.invoke("paystack-initialize", {
-        body: {
+      const data = await initializePaystackTransactionFn({
+        data: {
           email: user.email,
           plan,
           userId: user.id,
         },
       });
-
-      if (error) throw error;
 
       if (data?.data?.authorization_url) {
         window.location.href = data.data.authorization_url;

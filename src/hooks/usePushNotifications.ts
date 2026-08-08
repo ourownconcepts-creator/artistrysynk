@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { getOrGenerateVapidKeys } from '@/lib/generate-vapid-keys.functions';
 
 interface PushNotificationState {
   isSupported: boolean;
@@ -27,12 +28,10 @@ export const usePushNotifications = () => {
 
   const fetchVapidKey = async () => {
     try {
-      // Try to get VAPID key from edge function (which checks for stored keys)
-      const { data, error } = await supabase.functions.invoke('generate-vapid-keys', {
-        method: 'POST'
-      });
-      
-      if (!error && data?.publicKey) {
+      // Try to get VAPID key from server function (which checks for stored keys)
+      const data = await getOrGenerateVapidKeys();
+
+      if (data?.publicKey) {
         setVapidPublicKey(data.publicKey);
         console.log('Using VAPID public key from server:', data.alreadyExists ? 'existing' : 'newly generated');
       }
