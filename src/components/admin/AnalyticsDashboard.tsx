@@ -56,7 +56,7 @@ export const AnalyticsDashboard = () => {
       // Calculate stats
       const now = new Date();
       const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      const newThisMonth = profiles.filter(p => new Date(p.created_at) > monthAgo).length;
+      const newThisMonth = profiles.filter(p => new Date(p.created_at!) > monthAgo).length;
 
       setStats({
         totalUsers: profiles.length,
@@ -72,7 +72,7 @@ export const AnalyticsDashboard = () => {
         const dayEnd = new Date(date.setHours(23, 59, 59, 999));
         
         const count = profiles.filter(p => {
-          const created = new Date(p.created_at);
+          const created = new Date(p.created_at!);
           return created >= dayStart && created <= dayEnd;
         }).length;
 
