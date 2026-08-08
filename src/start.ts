@@ -33,6 +33,8 @@ const createCsrf = (
 ).createCsrfMiddleware;
 
 const fallbackCsrfMiddleware = createMiddleware().server(async ({ next, request }) => {
+  const method = request.method.toUpperCase();
+  if (method === "GET" || method === "HEAD" || method === "OPTIONS") return next();
   const site = request.headers.get("Sec-Fetch-Site");
   if (site && site !== "same-origin" && site !== "none") {
     return new Response("Forbidden", { status: 403 });
