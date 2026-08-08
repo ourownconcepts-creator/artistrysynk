@@ -22,6 +22,7 @@ import { NativeShell } from "@/components/native/NativeShell";
 import { CookieConsentBanner } from "@/components/legal/CookieConsentBanner";
 import NotFound from "@/pages/NotFound";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
+import { installClientErrorMonitor, captureClientError } from "@/lib/client-error-monitor";
 import appCss from "../styles.css?url";
 
 const ORGANIZATION_JSONLD = JSON.stringify({
@@ -181,6 +182,9 @@ function RootDocument({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useEffect(() => {
+    installClientErrorMonitor();
+  }, []);
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <HelmetProvider>
@@ -209,6 +213,7 @@ function RootErrorComponent({ error, reset }: { error: Error; reset: () => void 
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    captureClientError(error, "react_error_boundary");
   }, [error]);
 
   return (
