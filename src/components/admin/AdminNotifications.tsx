@@ -11,8 +11,8 @@ interface Notification {
   id: string;
   title: string;
   message: string;
-  is_read: boolean;
-  created_at: string;
+  is_read: boolean | null;
+  created_at: string | null;
 }
 
 export const AdminNotifications = () => {
@@ -121,7 +121,7 @@ export const AdminNotifications = () => {
                         {notification.message}
                       </p>
                       <p className="text-xs text-muted-foreground mt-2">
-                        {format(new Date(notification.created_at), 'MMM dd, yyyy HH:mm')}
+                        {format(new Date(notification.created_at!), 'MMM dd, yyyy HH:mm')}
                       </p>
                     </div>
                     {!notification.is_read && (

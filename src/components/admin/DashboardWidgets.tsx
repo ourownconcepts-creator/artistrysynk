@@ -49,11 +49,11 @@ export const DashboardWidgets = () => {
     const last7days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
     const recentSignups = profilesRes.data?.filter(p => 
-      new Date(p.created_at) > last24h
+      new Date(p.created_at!) > last24h
     ).length || 0;
 
     const weeklySignups = profilesRes.data?.filter(p => 
-      new Date(p.created_at) > last7days
+      new Date(p.created_at!) > last7days
     ).length || 0;
 
     setStats({

@@ -15,12 +15,12 @@ interface Creator {
   id: string;
   full_name: string;
   username: string;
-  avatar_url: string;
-  location: string;
+  avatar_url: string | null;
+  location: string | null;
   city: string;
   country: string;
-  bio: string;
-  is_verified: boolean;
+  bio: string | null;
+  is_verified: boolean | null;
   distance_km: number;
   roles: string[];
 }

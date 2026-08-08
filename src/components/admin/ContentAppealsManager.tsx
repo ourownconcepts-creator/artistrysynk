@@ -23,7 +23,7 @@ interface ContentAppeal {
   reviewed_at: string | null;
   admin_response: string | null;
   created_at: string;
-  user?: { full_name: string; email: string };
+  user?: { id: string; full_name: string; email: string | null };
 }
 
 export const ContentAppealsManager = () => {

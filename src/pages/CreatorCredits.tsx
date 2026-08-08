@@ -10,13 +10,13 @@ import { getRoleLabel } from "@/lib/creativeRoles";
 interface Credit {
   id: string;
   role_title: string;
-  is_verified: boolean;
+  is_verified: boolean | null;
   created_at: string;
   project?: {
     id: string;
     title: string;
-    description: string;
-    project_category: string;
+    description: string | null;
+    project_category: string | null;
   };
 }
 

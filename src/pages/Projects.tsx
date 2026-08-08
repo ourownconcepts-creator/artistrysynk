@@ -16,9 +16,9 @@ import { formatDistanceToNow } from "date-fns";
 interface Project {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   status: string;
-  created_at: string;
+  created_at: string | null;
   project_members: { count: number }[];
 }
 

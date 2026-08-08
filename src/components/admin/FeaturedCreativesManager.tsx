@@ -17,10 +17,11 @@ interface FeaturedCreative {
   id: string;
   user_id: string;
   reason: string | null;
-  is_active: boolean;
+  is_active: boolean | null;
   start_date: string | null;
   end_date: string | null;
-  created_at: string;
+  created_at: string | null;
+  featured_by: string | null;
   profile?: {
     full_name: string;
     username: string;
@@ -344,7 +345,7 @@ export const FeaturedCreativesManager = () => {
                     <Badge
                       variant={item.is_active ? "default" : "secondary"}
                       className="cursor-pointer"
-                      onClick={() => handleToggleActive(item.id, item.is_active)}
+                      onClick={() => handleToggleActive(item.id, !!item.is_active)}
                     >
                       {item.is_active ? "Active" : "Inactive"}
                     </Badge>

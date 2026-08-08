@@ -71,7 +71,7 @@ const CACHE_TTL = 60_000; // 1 minute
 export const StatsCounter = () => {
   const [stats, setStats] = useState<StatItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const buildStats = useCallback((d: Record<string, unknown>) => {
     const items: StatItem[] = [

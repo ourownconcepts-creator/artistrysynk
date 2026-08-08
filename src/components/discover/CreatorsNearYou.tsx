@@ -11,10 +11,10 @@ interface NearbyCreator {
   id: string;
   full_name: string;
   username: string;
-  avatar_url: string;
-  location: string;
-  city: string;
-  country: string;
+  avatar_url: string | null;
+  location: string | null;
+  city: string | null;
+  country: string | null;
   distance_km: number;
   roles: string[];
 }
@@ -182,7 +182,7 @@ export const CreatorsNearYou = ({ currentUserId }: { currentUserId: string }) =>
           >
             <CardContent className="p-3 text-center">
               <Avatar className="w-12 h-12 mx-auto mb-2">
-                <AvatarImage src={creator.avatar_url} />
+                <AvatarImage src={creator.avatar_url || undefined} />
                 <AvatarFallback>{creator.full_name?.charAt(0)}</AvatarFallback>
               </Avatar>
               <p className="text-xs font-medium truncate">{creator.full_name}</p>

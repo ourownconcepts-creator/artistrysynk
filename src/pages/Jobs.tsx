@@ -87,6 +87,8 @@ const Jobs = () => {
 
     const jobsWithProfiles = (jobsData || []).map(job => ({
       ...job,
+      required_roles: job.required_roles || [],
+      required_skills: job.required_skills || [],
       profiles: profilesData?.find(p => p.id === job.user_id) || undefined,
     }));
 
@@ -102,7 +104,11 @@ const Jobs = () => {
       .order("created_at", { ascending: false });
 
     if (!error) {
-      setMyJobs(data || []);
+      setMyJobs((data || []).map(job => ({
+        ...job,
+        required_roles: job.required_roles || [],
+        required_skills: job.required_skills || [],
+      })));
     }
   };
 

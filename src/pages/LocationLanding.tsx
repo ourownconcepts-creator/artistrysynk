@@ -21,7 +21,7 @@ const LocationLanding = () => {
     let active = true;
     setLoading(true);
     supabase
-      .rpc("list_public_profiles", { _role: null, _city: city.city, _limit: 48, _offset: 0 })
+      .rpc("list_public_profiles", { _role: undefined, _city: city.city, _limit: 48, _offset: 0 })
       .then(({ data }) => {
         if (!active) return;
         setCreators((data as PublicCreator[]) ?? []);

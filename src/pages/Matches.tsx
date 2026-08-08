@@ -14,13 +14,13 @@ import { getRoleLabel } from "@/lib/creativeRoles";
 
 interface Match {
   id: string;
-  matched_at: string;
+  matched_at: string | null;
   profile: {
     id: string;
     full_name: string;
     username: string;
-    avatar_url: string;
-    bio: string;
+    avatar_url: string | null;
+    bio: string | null;
     user_creative_roles: { role: string }[];
   };
   conversation_id: string;

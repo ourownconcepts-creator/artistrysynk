@@ -84,7 +84,7 @@ export const RevenueAnalytics = () => {
     }
 
     currentData?.forEach((t) => {
-      const date = format(new Date(t.created_at), "yyyy-MM-dd");
+      const date = format(new Date(t.created_at!), "yyyy-MM-dd");
       const current = dailyMap.get(date) || { amount: 0, count: 0 };
       dailyMap.set(date, {
         amount: current.amount + Number(t.amount),

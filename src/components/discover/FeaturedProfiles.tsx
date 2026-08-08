@@ -13,7 +13,7 @@ interface FeaturedProfile {
   username: string;
   avatar_url: string | null;
   location: string | null;
-  is_verified: boolean;
+  is_verified: boolean | null;
   bio: string | null;
   user_creative_roles: { role: string }[];
 }
@@ -56,7 +56,7 @@ export const FeaturedProfiles = () => {
     if (error) {
       console.error("Error loading featured profiles:", error);
     } else {
-      setProfiles(profilesData || []);
+      setProfiles((profilesData as unknown as FeaturedProfile[]) || []);
     }
     setLoading(false);
   };

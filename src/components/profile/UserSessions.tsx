@@ -11,11 +11,11 @@ import { format, formatDistanceToNow } from "date-fns";
 interface Session {
   id: string;
   session_id: string;
-  ip_address: string;
-  user_agent: string;
-  is_active: boolean;
-  last_active: string;
-  created_at: string;
+  ip_address: string | null;
+  user_agent: string | null;
+  is_active: boolean | null;
+  last_active: string | null;
+  created_at: string | null;
 }
 
 interface UserSessionsProps {
@@ -167,7 +167,7 @@ export const UserSessions = ({ userId }: UserSessionsProps) => {
                       </div>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="w-3 h-3" />
-                        Last active {formatDistanceToNow(new Date(session.last_active))} ago
+                        Last active {formatDistanceToNow(new Date(session.last_active || Date.now()))} ago
                       </div>
                     </div>
                   </div>

@@ -10,9 +10,12 @@ import { Activity } from "lucide-react";
 interface ActivityLog {
   id: string;
   action_type: string;
-  target_user_name: string;
+  admin_id: string;
+  target_user_id: string | null;
+  target_user_name: string | null;
+  ip_address: string | null;
   details: any;
-  created_at: string;
+  created_at: string | null;
 }
 
 export const ActivityLogsViewer = () => {
@@ -95,7 +98,7 @@ export const ActivityLogsViewer = () => {
                       {log.details?.reason || log.details?.from_role || '-'}
                     </TableCell>
                     <TableCell className="text-sm">
-                      {format(new Date(log.created_at), 'MMM dd, yyyy HH:mm')}
+                      {format(new Date(log.created_at!), 'MMM dd, yyyy HH:mm')}
                     </TableCell>
                   </TableRow>
                 ))}

@@ -22,20 +22,20 @@ import { ActivityFeed } from "@/components/projects/ActivityFeed";
 interface Project {
   id: string;
   title: string;
-  description: string;
-  status: string;
+  description: string | null;
+  status: string | null;
   created_by: string;
 }
 
 interface Task {
   id: string;
   title: string;
-  description: string;
-  status: string;
-  priority: string;
+  description: string | null;
+  status: string | null;
+  priority: string | null;
   due_date: string | null;
   assigned_to: string | null;
-  created_at: string;
+  created_at: string | null;
 }
 
 interface Member {
@@ -51,8 +51,8 @@ interface ProjectFile {
   id: string;
   file_name: string;
   file_url: string;
-  file_type: string;
-  created_at: string;
+  file_type: string | null;
+  created_at: string | null;
 }
 
 const CollaborationRoom = () => {
@@ -101,6 +101,7 @@ const CollaborationRoom = () => {
   }, [projectId]);
 
   const loadProject = async () => {
+    if (!projectId) return;
     const { data, error } = await supabase
       .from("projects")
       .select("*")
@@ -119,6 +120,7 @@ const CollaborationRoom = () => {
   };
 
   const loadTasks = async () => {
+    if (!projectId) return;
     const { data } = await supabase
       .from("project_tasks")
       .select("*")
@@ -129,6 +131,7 @@ const CollaborationRoom = () => {
   };
 
   const loadMembers = async () => {
+    if (!projectId) return;
     const { data } = await supabase
       .from("project_members")
       .select(`
@@ -142,6 +145,7 @@ const CollaborationRoom = () => {
   };
 
   const loadFiles = async () => {
+    if (!projectId) return;
     const { data } = await supabase
       .from("project_files")
       .select("*")
@@ -157,6 +161,7 @@ const CollaborationRoom = () => {
       return;
     }
 
+    if (!projectId || !currentUser) return;
     const { error } = await supabase.from("project_tasks").insert({
       project_id: projectId,
       title: newTask.title,
@@ -201,6 +206,7 @@ const CollaborationRoom = () => {
       .from("portfolios")
       .getPublicUrl(fileName);
 
+    if (!projectId || !currentUser) return;
     const { error } = await supabase.from("project_files").insert({
       project_id: projectId,
       uploaded_by: currentUser,
@@ -331,7 +337,7 @@ const CollaborationRoom = () => {
                           task.id, 
                           task.status === "completed" ? "pending" : "completed"
                         )}>
-                          {getStatusIcon(task.status)}
+                          {getStatusIcon(task.status || "pending")}
                         </button>
                         <div className="flex-1 min-w-0">
                           <p className={`font-medium ${task.status === "completed" ? "line-through text-muted-foreground" : ""}`}>
@@ -341,16 +347,16 @@ const CollaborationRoom = () => {
                             <p className="text-sm text-muted-foreground truncate">{task.description}</p>
                           )}
                           <div className="flex items-center gap-2 mt-2">
-                            <Badge variant={getPriorityColor(task.priority) as any} className="text-xs">
+                            <Badge variant={getPriorityColor(task.priority || "") as any} className="text-xs">
                               {task.priority}
                             </Badge>
                             <span className="text-xs text-muted-foreground">
-                              {formatDistanceToNow(new Date(task.created_at), { addSuffix: true })}
+                              {formatDistanceToNow(new Date(task.created_at || Date.now()), { addSuffix: true })}
                             </span>
                           </div>
                         </div>
                         <Select
-                          value={task.status}
+                          value={task.status || "pending"}
                           onValueChange={(v) => updateTaskStatus(task.id, v)}
                         >
                           <SelectTrigger className="w-32">
@@ -410,7 +416,7 @@ const CollaborationRoom = () => {
                         <FileText className="w-8 h-8 mb-2 text-muted-foreground" />
                         <p className="text-sm font-medium truncate">{file.file_name}</p>
                         <p className="text-xs text-muted-foreground">
-                          {formatDistanceToNow(new Date(file.created_at), { addSuffix: true })}
+                          {formatDistanceToNow(new Date(file.created_at || Date.now()), { addSuffix: true })}
                         </p>
                       </a>
                     ))}

@@ -12,12 +12,12 @@ interface TrendingProject {
   title: string;
   description: string;
   looking_for: string[];
-  created_at: string;
+  created_at: string | null;
   member_count: number;
   creator: {
     full_name: string;
-    avatar_url: string;
-    is_verified: boolean;
+    avatar_url: string | null;
+    is_verified: boolean | null;
   };
 }
 
@@ -168,7 +168,7 @@ export const TrendingCollaborations = () => {
                   <Users className="w-3 h-3" />
                   <span>{project.member_count} members</span>
                 </div>
-                <span>{formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}</span>
+                <span>{formatDistanceToNow(new Date(project.created_at || Date.now()), { addSuffix: true })}</span>
               </div>
             </CardContent>
           </Card>

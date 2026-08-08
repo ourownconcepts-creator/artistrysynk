@@ -20,20 +20,20 @@ interface Service {
   id: string;
   seller_id: string;
   title: string;
-  description: string;
+  description: string | null;
   category: string;
   subcategory?: string | null;
   price: number;
-  currency: string;
-  delivery_days: number;
+  currency: string | null;
+  delivery_days: number | null;
   created_at: string;
   average_rating: number | null;
   total_reviews: number | null;
   profiles?: {
     full_name: string;
     username: string;
-    avatar_url: string;
-    is_verified: boolean;
+    avatar_url: string | null;
+    is_verified: boolean | null;
   };
 }
 
@@ -45,7 +45,7 @@ interface Order {
   status: string;
   amount: number;
   created_at: string;
-  delivery_date: string;
+  delivery_date: string | null;
   services: {
     title: string;
     seller_id?: string;

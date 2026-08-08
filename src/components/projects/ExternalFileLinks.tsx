@@ -15,7 +15,7 @@ interface ExternalLink {
   provider: string;
   file_name: string;
   file_url: string;
-  file_type: string;
+  file_type: string | null;
   created_at: string;
   added_by: string;
 }

@@ -41,7 +41,7 @@ export const ConnectionWeb = ({ query = '', isPro = true, highlightedCount = 1, 
   const [connections, setConnections] = useState<Connection[]>([]);
   const [activeNode, setActiveNode] = useState<number | null>(null);
   const [hoveredMatch, setHoveredMatch] = useState<number | null>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
 
   const normalizedQuery = query.trim().toLowerCase();
   const isMatch = (label: string) =>

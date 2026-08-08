@@ -29,7 +29,7 @@ export const SearchBar = ({
   multiRoleSelect = false
 }: SearchBarProps) => {
   const roles = ['user', 'admin', 'master_admin', 'super_admin'];
-  const selectedRoles = Array.isArray(roleFilter) ? roleFilter : roleFilter === 'all' ? [] : [roleFilter];
+  const selectedRoles = Array.isArray(roleFilter) ? roleFilter : (roleFilter === 'all' || !roleFilter) ? [] : [roleFilter];
 
   const handleRoleToggle = (role: string) => {
     if (!multiRoleSelect) {

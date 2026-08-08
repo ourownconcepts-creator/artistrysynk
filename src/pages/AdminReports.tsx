@@ -50,7 +50,7 @@ export default function AdminReports() {
 
       // Process user growth data
       const usersByDay = profiles?.reduce((acc: any, profile) => {
-        const date = format(new Date(profile.created_at), 'MMM dd');
+        const date = format(new Date(profile.created_at!), 'MMM dd');
         acc[date] = (acc[date] || 0) + 1;
         return acc;
       }, {});
@@ -62,7 +62,7 @@ export default function AdminReports() {
 
       // Process match stats
       const matchesByDay = matches?.reduce((acc: any, match) => {
-        const date = format(new Date(match.matched_at), 'MMM dd');
+        const date = format(new Date(match.matched_at!), 'MMM dd');
         acc[date] = (acc[date] || 0) + 1;
         return acc;
       }, {});

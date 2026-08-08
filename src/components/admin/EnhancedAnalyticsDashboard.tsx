@@ -87,7 +87,7 @@ export const EnhancedAnalyticsDashboard = () => {
     ]);
 
     const totalUsers = profiles.data?.length || 0;
-    const newThisMonth = profiles.data?.filter(p => new Date(p.created_at) > monthAgo).length || 0;
+    const newThisMonth = profiles.data?.filter(p => new Date(p.created_at!) > monthAgo).length || 0;
     const previousMonthCount = previousMonthProfiles.data?.length || 1;
     const growthRate = Math.round(((newThisMonth - previousMonthCount) / previousMonthCount) * 100);
 
@@ -117,8 +117,8 @@ export const EnhancedAnalyticsDashboard = () => {
     if (!sessions || sessions.length === 0) return 0;
 
     const durations = sessions.map(s => {
-      const start = new Date(s.created_at).getTime();
-      const end = new Date(s.last_active).getTime();
+      const start = new Date(s.created_at!).getTime();
+      const end = new Date(s.last_active!).getTime();
       return (end - start) / 1000 / 60; // Convert to minutes
     }).filter(d => d > 0 && d < 480); // Filter out invalid durations (more than 8 hours)
 
@@ -141,11 +141,11 @@ export const EnhancedAnalyticsDashboard = () => {
       const dayEnd = endOfDay(date);
       
       const newUsers = profiles.filter(p => {
-        const created = new Date(p.created_at);
+        const created = new Date(p.created_at!);
         return created >= dayStart && created <= dayEnd;
       }).length;
 
-      const cumulativeUsers = profiles.filter(p => new Date(p.created_at) <= dayEnd).length;
+      const cumulativeUsers = profiles.filter(p => new Date(p.created_at!) <= dayEnd).length;
 
       return {
         date: format(date, 'MMM dd'),
@@ -181,15 +181,15 @@ export const EnhancedAnalyticsDashboard = () => {
       return {
         date: format(date, 'MMM dd'),
         matches: matches?.filter(m => {
-          const created = new Date(m.matched_at);
+          const created = new Date(m.matched_at!);
           return created >= dayStart && created <= dayEnd;
         }).length || 0,
         messages: messages?.filter(m => {
-          const created = new Date(m.created_at);
+          const created = new Date(m.created_at!);
           return created >= dayStart && created <= dayEnd;
         }).length || 0,
         swipes: swipes?.filter(s => {
-          const created = new Date(s.created_at);
+          const created = new Date(s.created_at!);
           return created >= dayStart && created <= dayEnd;
         }).length || 0
       };
@@ -266,7 +266,7 @@ export const EnhancedAnalyticsDashboard = () => {
     // Count sessions by hour
     const hourCounts: Record<number, number> = {};
     sessions.forEach(s => {
-      const hour = new Date(s.last_active).getHours();
+      const hour = new Date(s.last_active!).getHours();
       hourCounts[hour] = (hourCounts[hour] || 0) + 1;
     });
 

@@ -32,7 +32,7 @@ interface PortfolioItem {
   media_type: string;
   media_url: string;
   user_id: string;
-  created_at: string;
+  created_at: string | null;
   profile: {
     id: string;
     full_name: string;
