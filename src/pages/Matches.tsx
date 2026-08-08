@@ -124,7 +124,11 @@ const Matches = () => {
             .single();
 
           if (lastMsg) {
-            last_message = lastMsg;
+            last_message = {
+              ...lastMsg,
+              created_at: lastMsg.created_at ?? new Date().toISOString(),
+              read: lastMsg.read ?? false,
+            };
           }
 
           const { count } = await supabase
@@ -230,7 +234,7 @@ const Matches = () => {
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
                     <Avatar className="w-16 h-16">
-                      <AvatarImage src={match.profile.avatar_url} />
+                      <AvatarImage src={match.profile.avatar_url ?? undefined} />
                       <AvatarFallback>
                         {match.profile.full_name.charAt(0)}
                       </AvatarFallback>
