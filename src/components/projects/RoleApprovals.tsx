@@ -68,9 +68,11 @@ export const RoleApprovals = ({ projectId, currentUserId, isCreator }: Props) =>
   const [note, setNote] = useState("");
   const [slaHours, setSlaHours] = useState("48");
   const [fallback, setFallback] = useState("none");
+  const [defaultHours, setDefaultHours] = useState("48");
+  const [defaultFallback, setDefaultFallback] = useState("none");
 
   const load = useCallback(async () => {
-    const [{ data: memberRows }, { data: changeRows }] = await Promise.all([
+    const [{ data: memberRows }, { data: changeRows }, { data: projectRow }] = await Promise.all([
       supabase
         .from("project_members")
         .select("user_id, role, can_approve_roles, profiles:user_id(full_name, avatar_url)")
@@ -83,7 +85,19 @@ export const RoleApprovals = ({ projectId, currentUserId, isCreator }: Props) =>
         .eq("project_id", projectId)
         .order("created_at", { ascending: false })
         .limit(30),
+      supabase
+        .from("projects")
+        .select("role_approval_sla_hours, role_approval_fallback")
+        .eq("id", projectId)
+        .maybeSingle(),
     ]);
+
+    if (projectRow) {
+      setDefaultHours(String(projectRow.role_approval_sla_hours ?? 48));
+      setDefaultFallback(projectRow.role_approval_fallback ?? "none");
+      setSlaHours(String(projectRow.role_approval_sla_hours ?? 48));
+      setFallback(projectRow.role_approval_fallback ?? "none");
+    }
 
     setMembers(
       (memberRows ?? []).map((m: any) => ({
@@ -160,6 +174,23 @@ export const RoleApprovals = ({ projectId, currentUserId, isCreator }: Props) =>
     }
     toast.success(status === "approved" ? "Role approved" : "Role declined");
     void load();
+  };
+
+  const saveDefaults = async () => {
+    setSaving("defaults");
+    const { error } = await supabase
+      .from("projects")
+      .update({
+        role_approval_sla_hours: Math.min(720, Math.max(1, Number(defaultHours) || 48)),
+        role_approval_fallback: defaultFallback,
+      })
+      .eq("id", projectId);
+    setSaving(null);
+    if (error) {
+      toast.error("Could not save room defaults");
+      return;
+    }
+    toast.success("Room approval defaults saved");
   };
 
   const toggleApprover = async (member: Member, value: boolean) => {
@@ -346,6 +377,44 @@ export const RoleApprovals = ({ projectId, currentUserId, isCreator }: Props) =>
                     {r.auto_resolved ? " (automatic)" : ""}
                   </p>
                 ))}
+              </div>
+            ) : null}
+
+            {isCreator ? (
+              <div className="space-y-2 rounded-xl border p-3">
+                <p className="flex items-center gap-2 text-sm font-semibold">
+                  <Clock className="h-4 w-4" />
+                  Room defaults
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    type="number"
+                    min={1}
+                    max={720}
+                    value={defaultHours}
+                    onChange={(e) => setDefaultHours(e.target.value)}
+                    aria-label="Default response window in hours"
+                  />
+                  <Select value={defaultFallback} onValueChange={setDefaultFallback}>
+                    <SelectTrigger aria-label="Default fallback">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No automatic action</SelectItem>
+                      <SelectItem value="auto_approve">Auto-approve</SelectItem>
+                      <SelectItem value="auto_decline">Auto-decline</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full"
+                  disabled={saving === "defaults"}
+                  onClick={() => void saveDefaults()}
+                >
+                  Save room defaults
+                </Button>
               </div>
             ) : null}
 
