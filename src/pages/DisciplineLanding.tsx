@@ -22,7 +22,7 @@ const DisciplineLanding = () => {
     let active = true;
     setLoading(true);
     supabase
-      .rpc("list_public_profiles", { _role: discipline.role, _city: null, _limit: 48, _offset: 0 })
+      .rpc("list_public_profiles", { _role: discipline.role, _city: undefined, _limit: 48, _offset: 0 })
       .then(({ data }) => {
         if (!active) return;
         setCreators((data as PublicCreator[]) ?? []);
