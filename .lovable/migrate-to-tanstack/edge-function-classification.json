@@ -1,0 +1,30 @@
+{
+  "functions": [
+    { "name": "admin-captcha-keys", "classification": "internal-only", "signal": "called from src/pages/AdminSettings.tsx; keeps working via functions.invoke", "outcome": "left" },
+    { "name": "ai-match-scoring", "classification": "internal-only", "signal": "called from src (Discover swipe flow)", "outcome": "left" },
+    { "name": "check-notification-preferences", "classification": "unknown", "signal": "no internal call sites found; URL treated as load-bearing", "outcome": "left" },
+    { "name": "generate-vapid-keys", "classification": "internal-only", "signal": "called from admin push settings", "outcome": "left" },
+    { "name": "notify-content-status", "classification": "internal-only", "signal": "called from 2 src files", "outcome": "left" },
+    { "name": "notify-critical-action", "classification": "cron target", "signal": "called by DB trigger trigger_notify_suspension via net.http_post", "outcome": "left" },
+    { "name": "notify-job-application", "classification": "internal-only", "signal": "called from src job application flow", "outcome": "left" },
+    { "name": "notify-new-match", "classification": "cron target", "signal": "called by DB trigger trigger_notify_new_match via net.http_post", "outcome": "left" },
+    { "name": "notify-new-message-email", "classification": "cron target", "signal": "called by DB trigger trigger_notify_new_message_email", "outcome": "left" },
+    { "name": "notify-order-status", "classification": "internal-only", "signal": "called from src marketplace flow", "outcome": "left" },
+    { "name": "notify-user-notification-email", "classification": "cron target", "signal": "called by DB trigger trigger_notification_email", "outcome": "left" },
+    { "name": "notify-verification-request", "classification": "cron target", "signal": "called by DB trigger trigger_notify_verification_request", "outcome": "left" },
+    { "name": "notify-verification-status", "classification": "internal-only", "signal": "called from admin verification flow", "outcome": "left" },
+    { "name": "paystack-initialize", "classification": "internal-only", "signal": "called from src pricing/checkout", "outcome": "left" },
+    { "name": "paystack-webhook", "classification": "webhook receiver", "signal": "verifies x-paystack-signature; external caller with fixed URL", "outcome": "left" },
+    { "name": "process-email-queue", "classification": "cron target", "signal": "called by DB functions email_queue_dispatch / email_queue_wake", "outcome": "left" },
+    { "name": "process-scheduled-newsletters", "classification": "cron target", "signal": "pg_cron job process-scheduled-newsletters", "outcome": "left" },
+    { "name": "send-admin-notification", "classification": "internal-only", "signal": "called from src admin flows; also referenced by submit-contact-support", "outcome": "left" },
+    { "name": "send-contact-confirmation", "classification": "cron target", "signal": "called by submit-contact-support edge function (cross-function caller)", "outcome": "left" },
+    { "name": "send-match-activity-digest", "classification": "cron target", "signal": "pg_cron job send-match-activity-digest-daily", "outcome": "left" },
+    { "name": "send-newsletter-campaign", "classification": "internal-only", "signal": "called from admin newsletter UI", "outcome": "left" },
+    { "name": "send-push-notification", "classification": "unknown", "signal": "no internal call sites found; URL treated as load-bearing", "outcome": "left" },
+    { "name": "send-support-reply", "classification": "internal-only", "signal": "called from AdminSupport UI", "outcome": "left" },
+    { "name": "send-weekly-report", "classification": "internal-only", "signal": "called from admin reports UI", "outcome": "left" },
+    { "name": "send-welcome-email", "classification": "internal-only", "signal": "called from src signup flow", "outcome": "left" },
+    { "name": "submit-contact-support", "classification": "internal-only", "signal": "called from src/pages/Contact.tsx; custom response + hCaptcha + cross-calls other edge functions", "outcome": "left" }
+  ]
+}

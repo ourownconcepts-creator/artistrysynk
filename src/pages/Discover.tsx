@@ -440,7 +440,7 @@ const Discover = () => {
           </div>
         ) : (
           <DiscoverProfileCard
-            profile={currentProfile}
+            profile={currentProfile as any}
             currentUserId={currentUser!}
             onSwipe={handleSwipe}
             onRewind={handleRewind}
