@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { supabase } from "@/integrations/supabase/client";
 import { isNativeApp, nativePlatform } from "@/lib/native";
+import { resolveNotificationUrl } from "@/lib/notificationLinks";
 
 /**
  * Native (APNs/FCM) push notifications for the Capacitor shell.
@@ -70,8 +71,9 @@ export const useNativePush = () => {
     }).then((h) => handles.push(h));
 
     PushNotifications.addListener("pushNotificationActionPerformed", ({ notification }) => {
-      const url = (notification.data as Record<string, string> | undefined)?.url;
-      if (url && url.startsWith("/")) window.location.assign(url);
+      const data = notification.data as Record<string, unknown> | undefined;
+      const url = resolveNotificationUrl(data, typeof data?.["type"] === "string" ? (data["type"] as string) : null);
+      if (url.startsWith("/")) window.location.assign(url);
     }).then((h) => handles.push(h));
 
     void register();
