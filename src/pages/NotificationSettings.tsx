@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import {
   Bell,
+  BellRing,
   Heart,
   Sparkles,
   MessageCircle,
@@ -28,7 +29,13 @@ type PrefKey =
   | "notify_email_online" | "notify_inapp_online"
   | "notify_email_projects" | "notify_inapp_projects";
 
-type Prefs = Record<PrefKey, boolean> & {
+type PushKey =
+  | "notify_push_invites"
+  | "notify_push_invite_responses"
+  | "notify_push_role_requests"
+  | "notify_push_room_activity";
+
+type Prefs = Record<PrefKey, boolean> & Record<PushKey, boolean> & {
   email_notifications: boolean;
   push_notifications: boolean;
 };
@@ -48,7 +55,34 @@ const defaults: Prefs = {
   notify_inapp_online: true,
   notify_email_projects: true,
   notify_inapp_projects: true,
+  notify_push_invites: true,
+  notify_push_invite_responses: true,
+  notify_push_role_requests: true,
+  notify_push_room_activity: true,
 };
+
+const PUSH_TYPES: Array<{ key: PushKey; label: string; description: string }> = [
+  {
+    key: "notify_push_invites",
+    label: "Project invites",
+    description: "Push alert when someone invites you to a project room.",
+  },
+  {
+    key: "notify_push_invite_responses",
+    label: "Invite responses",
+    description: "Push alert when a creative accepts or declines your invite.",
+  },
+  {
+    key: "notify_push_role_requests",
+    label: "Role approvals",
+    description: "Push alert for role change requests and decisions.",
+  },
+  {
+    key: "notify_push_room_activity",
+    label: "Room activity",
+    description: "Push alert for milestones, uploads and member updates.",
+  },
+];
 
 const TYPES: Array<{
   id: string;
@@ -312,6 +346,39 @@ const NotificationSettings = () => {
                   </div>
                 );
               })}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <BellRing className="h-5 w-5" aria-hidden="true" />
+                Device push alerts
+              </CardTitle>
+              <CardDescription>
+                Control which project-room events reach your phone or desktop as push
+                notifications.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-1">
+              {PUSH_TYPES.map((t, i) => (
+                <div key={t.key}>
+                  {i > 0 && <Separator className="my-1" />}
+                  <div className="flex items-center justify-between gap-4 py-3">
+                    <div className="min-w-0 space-y-0.5">
+                      <Label htmlFor={t.key}>{t.label}</Label>
+                      <p className="text-sm text-muted-foreground">{t.description}</p>
+                    </div>
+                    <Switch
+                      id={t.key}
+                      aria-label={`Push alerts for ${t.label}`}
+                      checked={prefs[t.key] && prefs.push_notifications}
+                      disabled={!prefs.push_notifications}
+                      onCheckedChange={(v) => toggle(t.key, v)}
+                    />
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
 
