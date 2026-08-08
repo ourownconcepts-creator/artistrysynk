@@ -3,11 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertTriangle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface ContentAppealsFormProps {
-  contentType: 'message' | 'portfolio' | 'profile' | 'service' | 'project';
+  contentType: 'message' | 'portfolio' | 'profile' | 'service' | 'project' | 'project_file';
   contentId: string;
   trigger?: React.ReactNode;
 }
@@ -15,7 +16,14 @@ interface ContentAppealsFormProps {
 export const ContentAppealsForm = ({ contentType, contentId, trigger }: ContentAppealsFormProps) => {
   const [open, setOpen] = useState(false);
   const [appealReason, setAppealReason] = useState('');
+  const [supportingInfo, setSupportingInfo] = useState('');
+  const [evidenceInput, setEvidenceInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const evidenceUrls = evidenceInput
+    .split(/[\s,]+/)
+    .map((u) => u.trim())
+    .filter((u) => /^https?:\/\//i.test(u));
 
   const handleSubmit = async () => {
     if (!appealReason.trim()) {
@@ -53,6 +61,8 @@ export const ContentAppealsForm = ({ contentType, contentId, trigger }: ContentA
           content_type: contentType,
           content_id: contentId,
           appeal_reason: appealReason.trim(),
+          supporting_info: supportingInfo.trim() || null,
+          evidence_urls: evidenceUrls,
         });
 
       if (error) throw error;
@@ -62,6 +72,8 @@ export const ContentAppealsForm = ({ contentType, contentId, trigger }: ContentA
       });
       setOpen(false);
       setAppealReason('');
+      setSupportingInfo('');
+      setEvidenceInput('');
     } catch (error: any) {
       console.error('Error submitting appeal:', error);
       toast.error('Failed to submit appeal');
@@ -102,6 +114,36 @@ export const ContentAppealsForm = ({ contentType, contentId, trigger }: ContentA
               rows={4}
               className="mt-2"
             />
+          </div>
+          <div>
+            <label className="text-sm font-medium" htmlFor="appeal-supporting">
+              Supporting information (optional)
+            </label>
+            <Textarea
+              id="appeal-supporting"
+              value={supportingInfo}
+              onChange={(e) => setSupportingInfo(e.target.value)}
+              placeholder="Licence details, ownership proof, context about the report..."
+              rows={3}
+              className="mt-2"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium" htmlFor="appeal-evidence">
+              Evidence links (optional)
+            </label>
+            <Input
+              id="appeal-evidence"
+              value={evidenceInput}
+              onChange={(e) => setEvidenceInput(e.target.value)}
+              placeholder="https://... (separate multiple links with spaces or commas)"
+              className="mt-2"
+            />
+            {evidenceInput.trim() && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                {evidenceUrls.length} valid link{evidenceUrls.length === 1 ? '' : 's'} detected
+              </p>
+            )}
           </div>
           <p className="text-xs text-muted-foreground">
             Your appeal will be reviewed by an administrator. 
