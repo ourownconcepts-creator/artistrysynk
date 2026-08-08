@@ -12,6 +12,25 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
       throw error;
     }
     console.error(error);
+    // Production error monitoring: log the crash and alert ops.
+    try {
+      const { reportError } = await import("./lib/error-monitoring.server");
+      await reportError({
+        source: "server",
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? (error.stack ?? null) : null,
+        route: (() => {
+          try {
+            return new URL(request.url).pathname;
+          } catch {
+            return null;
+          }
+        })(),
+        mechanism: "request_middleware",
+      });
+    } catch (monitorError) {
+      console.error("[error-monitoring] failed to record server crash", monitorError);
+    }
     return new Response(renderErrorPage(), {
       status: 500,
       headers: { "content-type": "text/html; charset=utf-8" },
