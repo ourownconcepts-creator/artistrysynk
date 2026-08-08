@@ -19,6 +19,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ExternalFileLinks } from "@/components/projects/ExternalFileLinks";
 import { ActivityFeed } from "@/components/projects/ActivityFeed";
 import { ProjectInvites } from "@/components/projects/ProjectInvites";
+import { ProjectFiles } from "@/components/projects/ProjectFiles";
 
 interface Project {
   id: string;
@@ -406,55 +407,7 @@ const CollaborationRoom = () => {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="w-5 h-5" />
-                  Files
-                </CardTitle>
-                <div>
-                  <input
-                    type="file"
-                    id="file-upload"
-                    className="hidden"
-                    onChange={uploadFile}
-                  />
-                  <label htmlFor="file-upload">
-                    <Button size="sm" asChild>
-                      <span>
-                        <Upload className="w-4 h-4 mr-2" />
-                        Upload
-                      </span>
-                    </Button>
-                  </label>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {files.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">
-                    No files uploaded yet
-                  </p>
-                ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {files.map((file) => (
-                      <a
-                        key={file.id}
-                        href={file.file_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-3 border rounded-lg hover:bg-muted/50 transition-colors"
-                      >
-                        <FileText className="w-8 h-8 mb-2 text-muted-foreground" />
-                        <p className="text-sm font-medium truncate">{file.file_name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDistanceToNow(new Date(file.created_at || Date.now()), { addSuffix: true })}
-                        </p>
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {currentUser && <ProjectFiles projectId={projectId!} currentUserId={currentUser} />}
 
             {currentUser && <ExternalFileLinks projectId={projectId!} currentUserId={currentUser} />}
           </div>
