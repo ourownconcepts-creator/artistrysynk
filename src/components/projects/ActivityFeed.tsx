@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
-import { Activity, FileText, CheckCircle2, Circle, Upload, UserPlus } from "lucide-react";
+import { Activity, CheckCircle2, Circle, Upload, UserPlus, Flag, UserCog } from "lucide-react";
 
 interface ActivityLog {
   id: string;
@@ -36,7 +36,7 @@ export const ActivityFeed = ({ projectId }: ActivityFeedProps) => {
       .on(
         "postgres_changes",
         {
-          event: "INSERT",
+          event: "*",
           schema: "public",
           table: "project_activity_logs",
           filter: `project_id=eq.${projectId}`,
@@ -56,7 +56,7 @@ export const ActivityFeed = ({ projectId }: ActivityFeedProps) => {
       .select("*")
       .eq("project_id", projectId)
       .order("created_at", { ascending: false })
-      .limit(20);
+      .limit(50);
 
     if (error) {
       console.error("Failed to load activities:", error);
@@ -90,6 +90,10 @@ export const ActivityFeed = ({ projectId }: ActivityFeedProps) => {
         return <Upload className="w-4 h-4 text-purple-500" />;
       case "member_joined":
         return <UserPlus className="w-4 h-4 text-orange-500" />;
+      case "role_changed":
+        return <UserCog className="w-4 h-4 text-sky-500" />;
+      case "milestone":
+        return <Flag className="w-4 h-4 text-pink-500" />;
       default:
         return <Activity className="w-4 h-4 text-muted-foreground" />;
     }
@@ -103,6 +107,12 @@ export const ActivityFeed = ({ projectId }: ActivityFeedProps) => {
         return <Badge variant="secondary" className="text-xs">Status</Badge>;
       case "file_uploaded":
         return <Badge className="bg-purple-500/20 text-purple-600 text-xs">File</Badge>;
+      case "member_joined":
+        return <Badge className="bg-orange-500/20 text-orange-600 text-xs">Joined</Badge>;
+      case "role_changed":
+        return <Badge className="bg-sky-500/20 text-sky-600 text-xs">Role</Badge>;
+      case "milestone":
+        return <Badge className="bg-pink-500/20 text-pink-600 text-xs">Milestone</Badge>;
       default:
         return null;
     }
@@ -114,7 +124,7 @@ export const ActivityFeed = ({ projectId }: ActivityFeedProps) => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Activity className="w-5 h-5" />
-            Activity
+            Activity log
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -131,16 +141,16 @@ export const ActivityFeed = ({ projectId }: ActivityFeedProps) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Activity className="w-5 h-5" />
-          Activity
+          Activity log
         </CardTitle>
       </CardHeader>
       <CardContent>
         {activities.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">
-            No activity yet. Create tasks or upload files to get started!
+            No activity yet. Milestones, uploads, joins and role changes will show up here.
           </p>
         ) : (
-          <div className="space-y-4 max-h-96 overflow-y-auto">
+          <div className="space-y-4 max-h-96 overflow-y-auto pr-1">
             {activities.map((activity) => (
               <div key={activity.id} className="flex gap-3">
                 <div className="flex-shrink-0 mt-1">
