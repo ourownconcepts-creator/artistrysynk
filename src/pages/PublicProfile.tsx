@@ -403,7 +403,7 @@ const PublicProfile = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </main>
     </>
   );
 };
