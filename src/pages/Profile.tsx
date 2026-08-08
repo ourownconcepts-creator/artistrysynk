@@ -46,8 +46,8 @@ import {
 type Tab = "portfolio" | "about" | "insights" | "account";
 
 const TABS = [
-  { key: "portfolio", label: "Work", icon: <ImageIcon className="h-3.5 w-3.5" /> },
   { key: "about", label: "About", icon: <UserRound className="h-3.5 w-3.5" /> },
+  { key: "portfolio", label: "Work", icon: <ImageIcon className="h-3.5 w-3.5" /> },
   { key: "insights", label: "Insights", icon: <BarChart3 className="h-3.5 w-3.5" /> },
   { key: "account", label: "Account", icon: <SettingsIcon className="h-3.5 w-3.5" /> },
 ];
@@ -62,7 +62,7 @@ const Profile = () => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [counts, setCounts] = useState({ portfolio: 0, matches: 0 });
-  const [tab, setTab] = useState<Tab>("portfolio");
+  const [tab, setTab] = useState<Tab>("about");
   const [loading, setLoading] = useState(true);
 
   const loadProfile = useCallback(async (uid: string) => {
