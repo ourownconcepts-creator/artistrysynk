@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@/lib/router-compat";
 import { listFunctionRuns as listFunctionRunsFn } from "@/lib/function-run-logs.functions";
+import type { FunctionRunSummary } from "@/lib/function-run-logs.server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +20,7 @@ type RunRow = {
   status: string;
   duration_ms: number | null;
   error_message: string | null;
-  context: unknown;
+  context: Record<string, string | number | boolean | null>;
   created_at: string;
 };
 
@@ -51,7 +52,7 @@ export default function AdminFunctionLogs() {
       }),
   });
 
-  const summaries = data?.summaries ?? [];
+  const summaries = (data?.summaries ?? []) as FunctionRunSummary[];
   const runs = (data?.runs ?? []) as RunRow[];
 
   const filteredRuns = useMemo(() => {

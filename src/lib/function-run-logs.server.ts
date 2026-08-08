@@ -6,7 +6,7 @@ export interface FunctionRunLogRow {
   status: string;
   duration_ms: number | null;
   error_message: string | null;
-  context: unknown;
+  context: Record<string, string | number | boolean | null>;
   created_at: string;
 }
 
