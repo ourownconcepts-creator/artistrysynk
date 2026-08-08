@@ -102,12 +102,12 @@ export async function submitContactSupport(
   const userAgent = (getRequestHeader("user-agent") ?? "").slice(0, 500);
 
   const log = async (row: AuditRow) => {
-    const { error } = await admin.from("contact_submission_audit").insert({
+    const payload = {
       ip_hash: ipHash,
       user_agent: userAgent,
       ...row,
-      ...(row.validation_results ? { validation_results: row.validation_results as never } : {}),
-    });
+    } as never;
+    const { error } = await admin.from("contact_submission_audit").insert(payload);
     if (error) console.error("audit log insert failed:", error.message);
   };
 
