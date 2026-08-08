@@ -13,6 +13,7 @@ import { formatDistanceToNow } from "date-fns";
 import { allRoles, getRoleLabel } from "@/lib/creativeRoles";
 import { PostReactions } from "@/components/feed/PostReactions";
 import { PostRatingReview } from "@/components/feed/PostRatingReview";
+import { CollabTabs } from "@/components/collab/CollabTabs";
 
 interface FeedPost {
   id: string;
