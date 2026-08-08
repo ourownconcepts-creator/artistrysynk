@@ -1319,6 +1319,7 @@ export type Database = {
           file_type: string | null
           file_url: string
           id: string
+          is_hidden: boolean
           project_id: string
           updated_at: string
           upload_progress: number
@@ -1333,6 +1334,7 @@ export type Database = {
           file_type?: string | null
           file_url: string
           id?: string
+          is_hidden?: boolean
           project_id: string
           updated_at?: string
           upload_progress?: number
@@ -1347,6 +1349,7 @@ export type Database = {
           file_type?: string | null
           file_url?: string
           id?: string
+          is_hidden?: boolean
           project_id?: string
           updated_at?: string
           upload_progress?: number
@@ -1409,6 +1412,7 @@ export type Database = {
       }
       project_members: {
         Row: {
+          can_approve_roles: boolean
           id: string
           joined_at: string | null
           project_id: string
@@ -1416,6 +1420,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          can_approve_roles?: boolean
           id?: string
           joined_at?: string | null
           project_id: string
@@ -1423,6 +1428,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          can_approve_roles?: boolean
           id?: string
           joined_at?: string | null
           project_id?: string
@@ -1442,6 +1448,59 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_role_changes: {
+        Row: {
+          created_at: string
+          id: string
+          member_id: string
+          note: string | null
+          previous_role: string | null
+          project_id: string
+          requested_by: string
+          requested_role: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          member_id: string
+          note?: string | null
+          previous_role?: string | null
+          project_id: string
+          requested_by: string
+          requested_role: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          member_id?: string
+          note?: string | null
+          previous_role?: string | null
+          project_id?: string
+          requested_by?: string
+          requested_role?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_role_changes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -2380,6 +2439,11 @@ export type Database = {
           notify_inapp_messages: boolean
           notify_inapp_online: boolean
           notify_inapp_projects: boolean
+          notify_inapp_room_activity: boolean
+          notify_push_invite_responses: boolean
+          notify_push_invites: boolean
+          notify_push_role_requests: boolean
+          notify_push_room_activity: boolean
           onboarding_completed: boolean | null
           profile_visibility: string | null
           project_notifications: boolean | null
@@ -2413,6 +2477,11 @@ export type Database = {
           notify_inapp_messages?: boolean
           notify_inapp_online?: boolean
           notify_inapp_projects?: boolean
+          notify_inapp_room_activity?: boolean
+          notify_push_invite_responses?: boolean
+          notify_push_invites?: boolean
+          notify_push_role_requests?: boolean
+          notify_push_room_activity?: boolean
           onboarding_completed?: boolean | null
           profile_visibility?: string | null
           project_notifications?: boolean | null
@@ -2446,6 +2515,11 @@ export type Database = {
           notify_inapp_messages?: boolean
           notify_inapp_online?: boolean
           notify_inapp_projects?: boolean
+          notify_inapp_room_activity?: boolean
+          notify_push_invite_responses?: boolean
+          notify_push_invites?: boolean
+          notify_push_role_requests?: boolean
+          notify_push_room_activity?: boolean
           onboarding_completed?: boolean | null
           profile_visibility?: string | null
           project_notifications?: boolean | null
@@ -2594,6 +2668,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_approve_project_roles: {
+        Args: { _project_id: string; _user_id: string }
+        Returns: boolean
+      }
       can_see_user: {
         Args: { _target_id: string; _viewer_id: string }
         Returns: boolean
