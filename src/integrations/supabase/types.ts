@@ -1313,32 +1313,44 @@ export type Database = {
       project_files: {
         Row: {
           created_at: string | null
+          error_message: string | null
           file_name: string
           file_size: number | null
           file_type: string | null
           file_url: string
           id: string
           project_id: string
+          updated_at: string
+          upload_progress: number
+          upload_status: string
           uploaded_by: string
         }
         Insert: {
           created_at?: string | null
+          error_message?: string | null
           file_name: string
           file_size?: number | null
           file_type?: string | null
           file_url: string
           id?: string
           project_id: string
+          updated_at?: string
+          upload_progress?: number
+          upload_status?: string
           uploaded_by: string
         }
         Update: {
           created_at?: string | null
+          error_message?: string | null
           file_name?: string
           file_size?: number | null
           file_type?: string | null
           file_url?: string
           id?: string
           project_id?: string
+          updated_at?: string
+          upload_progress?: number
+          upload_status?: string
           uploaded_by?: string
         }
         Relationships: [
