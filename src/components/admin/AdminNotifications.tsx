@@ -121,7 +121,7 @@ export const AdminNotifications = () => {
                         {notification.message}
                       </p>
                       <p className="text-xs text-muted-foreground mt-2">
-                        {format(new Date(notification.created_at), 'MMM dd, yyyy HH:mm')}
+                        {format(new Date(notification.created_at!), 'MMM dd, yyyy HH:mm')}
                       </p>
                     </div>
                     {!notification.is_read && (

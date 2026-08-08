@@ -209,7 +209,7 @@ export const NewsletterSubscribersManager = () => {
                         variant="outline"
                         size="sm"
                         onClick={() =>
-                          toggleSubscriberStatus(subscriber.id, subscriber.is_active)
+                          toggleSubscriberStatus(subscriber.id, !!subscriber.is_active)
                         }
                       >
                         {subscriber.is_active ? "Deactivate" : "Reactivate"}

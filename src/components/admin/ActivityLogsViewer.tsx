@@ -98,7 +98,7 @@ export const ActivityLogsViewer = () => {
                       {log.details?.reason || log.details?.from_role || '-'}
                     </TableCell>
                     <TableCell className="text-sm">
-                      {format(new Date(log.created_at), 'MMM dd, yyyy HH:mm')}
+                      {format(new Date(log.created_at!), 'MMM dd, yyyy HH:mm')}
                     </TableCell>
                   </TableRow>
                 ))}

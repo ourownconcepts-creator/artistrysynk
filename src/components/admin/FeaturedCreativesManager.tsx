@@ -345,7 +345,7 @@ export const FeaturedCreativesManager = () => {
                     <Badge
                       variant={item.is_active ? "default" : "secondary"}
                       className="cursor-pointer"
-                      onClick={() => handleToggleActive(item.id, item.is_active)}
+                      onClick={() => handleToggleActive(item.id, !!item.is_active)}
                     >
                       {item.is_active ? "Active" : "Inactive"}
                     </Badge>
