@@ -159,7 +159,9 @@ export default function Inbox() {
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold">
-                {likesCount > 0 ? `${likesCount} creatives liked you` : "Likes you get land here"}
+                {likesCount > 0
+                  ? `${likesCount} ${likesCount === 1 ? "creative" : "creatives"} liked you`
+                  : "Likes you get land here"}
               </p>
               <p className="truncate text-xs text-muted-foreground">
                 {canSeeWhoLikedYou ? "Tap to see who they are" : "Unlock with Pro to see who"}
