@@ -23,9 +23,12 @@ interface JobPosting {
   location: string | null;
   job_type: string;
   budget_range: string | null;
-  required_roles: string[];
-  required_skills: string[];
+  required_roles: string[] | null;
+  required_skills: string[] | null;
   created_at: string;
+  updated_at?: string;
+  is_active?: boolean;
+  expires_at?: string | null;
   user_id: string;
   profiles?: {
     full_name: string;

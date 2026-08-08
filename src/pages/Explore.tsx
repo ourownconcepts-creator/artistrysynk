@@ -14,8 +14,8 @@ interface TrendingCreator {
   id: string;
   full_name: string;
   username: string;
-  avatar_url: string;
-  is_verified: boolean;
+  avatar_url: string | null;
+  is_verified: boolean | null;
   roles: string[];
   engagement: number;
 }
