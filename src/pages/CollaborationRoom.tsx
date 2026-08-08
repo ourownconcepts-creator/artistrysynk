@@ -93,6 +93,36 @@ const CollaborationRoom = () => {
         },
         () => loadTasks()
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "project_files",
+          filter: `project_id=eq.${projectId}`,
+        },
+        () => loadFiles()
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "project_members",
+          filter: `project_id=eq.${projectId}`,
+        },
+        () => loadMembers()
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "projects",
+          filter: `id=eq.${projectId}`,
+        },
+        () => loadProject()
+      )
       .subscribe();
 
     return () => {
