@@ -1,16 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { Navbar } from "@/components/Navbar";
-import { PageTransition } from "@/components/layout/PageTransition";
+import { AppShell } from "@/components/app-shell/AppShell";
 import CollaborationFeed from "@/pages/CollaborationFeed";
 
 export const Route = createFileRoute("/feed")({
   component: () => (
     <ProtectedRoute>
-      <Navbar />
-      <PageTransition>
+      <AppShell title="Collaborate">
         <CollaborationFeed />
-      </PageTransition>
+      </AppShell>
     </ProtectedRoute>
   ),
 });

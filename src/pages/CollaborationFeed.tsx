@@ -13,6 +13,7 @@ import { formatDistanceToNow } from "date-fns";
 import { allRoles, getRoleLabel } from "@/lib/creativeRoles";
 import { PostReactions } from "@/components/feed/PostReactions";
 import { PostRatingReview } from "@/components/feed/PostRatingReview";
+import { CollabTabs } from "@/components/collab/CollabTabs";
 
 interface FeedPost {
   id: string;
@@ -260,21 +261,16 @@ const CollaborationFeed = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-[60vh] items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
-      <div className="max-w-2xl mx-auto py-8 space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Collaboration Feed
-          </h1>
-          <p className="text-muted-foreground">Post what you're working on and find collaborators</p>
-        </div>
+    <div>
+      <div className="space-y-4">
+        <CollabTabs />
 
         {/* Create Post */}
         <Card>

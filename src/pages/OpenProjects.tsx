@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { CollabTabs } from "@/components/collab/CollabTabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -172,22 +173,20 @@ const OpenProjects = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-[60vh] items-center justify-center">
         <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
-      <div className="max-w-6xl mx-auto py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Open Projects
-            </h1>
-            <p className="text-muted-foreground">Discover collaboration opportunities and apply to join</p>
-          </div>
+    <div>
+      <div>
+        <CollabTabs />
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <p className="text-xs text-muted-foreground">
+            Live opportunities from creatives looking for collaborators.
+          </p>
           
           {/* Direct Project Posting for Studio users */}
           {canPostPublicProjects ? (

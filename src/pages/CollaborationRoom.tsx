@@ -242,7 +242,7 @@ const CollaborationRoom = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-[60vh] items-center justify-center">
         <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -251,8 +251,8 @@ const CollaborationRoom = () => {
   if (!project) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
-      <div className="max-w-7xl mx-auto p-4 py-8">
+    <div>
+      <div>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Button variant="ghost" onClick={() => navigate("/projects")}>

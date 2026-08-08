@@ -1,17 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, FolderOpen, Users, Calendar } from "lucide-react";
+import { Plus, FolderOpen, Users, Calendar, FolderKanban } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import {
+  BottomSheet,
+  Chip,
+  EmptyState,
+  HScroll,
+  Pressable,
+  SectionHeader,
+  SkeletonList,
+  Surface,
+} from "@/components/native-ui";
+import { CollabTabs } from "@/components/collab/CollabTabs";
 
 interface Project {
   id: string;
@@ -19,253 +28,280 @@ interface Project {
   description: string | null;
   status: string | null;
   created_at: string | null;
-  project_members: { count: number }[];
+  member_count: number;
 }
+
+const STATUS_FILTERS = [
+  { key: "all", label: "All" },
+  { key: "active", label: "Active" },
+  { key: "on_hold", label: "On hold" },
+  { key: "completed", label: "Completed" },
+];
 
 const Projects = () => {
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState("all");
   const [newProjectOpen, setNewProjectOpen] = useState(false);
-  const [newProject, setNewProject] = useState({ title: "", description: "", project_category: "other", compensation_type: "open_collaboration" });
+  const [creating, setCreating] = useState(false);
+  const [newProject, setNewProject] = useState({
+    title: "",
+    description: "",
+    project_category: "other",
+    compensation_type: "open_collaboration",
+  });
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) {
         navigate("/auth");
-      } else {
-        setCurrentUser(user.id);
-        loadProjects(user.id);
+        return;
       }
+      setCurrentUser(user.id);
+      void loadProjects(user.id);
     });
   }, [navigate]);
 
   const loadProjects = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*")
-        .eq("created_by", userId)
-        .order("created_at", { ascending: false });
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("created_by", userId)
+      .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Projects load error:", error);
-        toast.error("Failed to load projects");
-        setProjects([]);
-      } else {
-        // Fetch member counts separately
-        const projectIds = data?.map(p => p.id) || [];
-        if (projectIds.length > 0) {
-          const { data: memberCounts } = await supabase
-            .from("project_members")
-            .select("project_id")
-            .in("project_id", projectIds);
-          
-          const countMap = (memberCounts || []).reduce((acc, m) => {
-            acc[m.project_id] = (acc[m.project_id] || 0) + 1;
-            return acc;
-          }, {} as Record<string, number>);
-
-          const projectsWithCounts = (data || []).map(p => ({
-            ...p,
-            project_members: [{ count: countMap[p.id] || 0 }]
-          }));
-          setProjects(projectsWithCounts);
-        } else {
-          setProjects([]);
-        }
-      }
-    } catch (err) {
-      console.error("Projects fetch error:", err);
+    if (error) {
       toast.error("Failed to load projects");
       setProjects([]);
+      setLoading(false);
+      return;
     }
+
+    const ids = (data ?? []).map((p) => p.id);
+    let counts: Record<string, number> = {};
+    if (ids.length) {
+      const { data: members } = await supabase
+        .from("project_members")
+        .select("project_id")
+        .in("project_id", ids);
+      counts = (members ?? []).reduce<Record<string, number>>((acc, m) => {
+        acc[m.project_id] = (acc[m.project_id] ?? 0) + 1;
+        return acc;
+      }, {});
+    }
+
+    setProjects(
+      (data ?? []).map((p) => ({ ...p, member_count: counts[p.id] ?? 0 })) as Project[],
+    );
     setLoading(false);
   };
+
+  const filtered = useMemo(
+    () => (status === "all" ? projects : projects.filter((p) => (p.status ?? "active") === status)),
+    [projects, status],
+  );
 
   const createProject = async () => {
     if (!newProject.title.trim()) {
       toast.error("Project title is required");
       return;
     }
-
     if (!currentUser) {
-      toast.error("You must be logged in to create a project");
+      toast.error("You must be signed in to create a project");
       return;
     }
 
-    try {
-      const { data, error } = await supabase
-        .from("projects")
-        .insert({
-          title: newProject.title,
-          description: newProject.description || null,
-          created_by: currentUser,
-          project_category: newProject.project_category,
-          compensation_type: newProject.compensation_type,
-        } as any)
-        .select()
-        .single();
+    setCreating(true);
+    const { data, error } = await supabase
+      .from("projects")
+      .insert({
+        title: newProject.title,
+        description: newProject.description || null,
+        created_by: currentUser,
+        project_category: newProject.project_category,
+        compensation_type: newProject.compensation_type,
+      } as never)
+      .select()
+      .single();
+    setCreating(false);
 
-      if (error) {
-        console.error("Project creation error:", error);
-        toast.error(error.message || "Failed to create project");
-        return;
-      }
-      
-      toast.success("Project created");
-      setNewProjectOpen(false);
-      setNewProject({ title: "", description: "", project_category: "other", compensation_type: "open_collaboration" });
-      navigate(`/projects/${data.id}`);
-    } catch (err: any) {
-      console.error("Project creation exception:", err);
-      toast.error("Failed to create project");
+    if (error || !data) {
+      toast.error(error?.message ?? "Failed to create project");
+      return;
     }
-  };
 
-  const getStatusColor = (status: string | null) => {
-    switch (status) {
-      case "active": return "default";
-      case "completed": return "secondary";
-      case "on_hold": return "outline";
-      default: return "secondary";
-    }
+    toast.success("Project created");
+    setNewProjectOpen(false);
+    setNewProject({
+      title: "",
+      description: "",
+      project_category: "other",
+      compensation_type: "open_collaboration",
+    });
+    navigate(`/projects/${data.id}`);
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
-      <div className="max-w-6xl mx-auto py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Collaboration Projects
-            </h1>
-            <p className="text-muted-foreground">Manage your creative collaborations</p>
-          </div>
-          <Dialog open={newProjectOpen} onOpenChange={setNewProjectOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                New Project
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Project</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Project Title</Label>
-                  <Input
-                    value={newProject.title}
-                    onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
-                    placeholder="Enter project title"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Description</Label>
-                  <Textarea
-                    value={newProject.description}
-                    onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                    placeholder="Describe your project"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Category</Label>
-                  <Select value={newProject.project_category} onValueChange={(v) => setNewProject({ ...newProject, project_category: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="music">Music</SelectItem>
-                      <SelectItem value="film">Film</SelectItem>
-                      <SelectItem value="tech">Tech</SelectItem>
-                      <SelectItem value="startup">Startup</SelectItem>
-                      <SelectItem value="content_creation">Content Creation</SelectItem>
-                      <SelectItem value="design">Design</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Compensation</Label>
-                  <Select value={newProject.compensation_type} onValueChange={(v) => setNewProject({ ...newProject, compensation_type: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="paid">Paid</SelectItem>
-                      <SelectItem value="revenue_share">Revenue Share</SelectItem>
-                      <SelectItem value="equity">Equity</SelectItem>
-                      <SelectItem value="open_collaboration">Open Collaboration</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button onClick={createProject} className="w-full">
-                  Create Project
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+    <div className="space-y-4">
+      <CollabTabs />
 
-        {projects.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <FolderOpen className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <h2 className="text-xl font-semibold mb-2">No projects yet</h2>
-              <p className="text-muted-foreground mb-4">
-                Start a new collaboration project with your matches
-              </p>
-              <Button onClick={() => setNewProjectOpen(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Create Your First Project
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {projects.map((project) => (
-              <Card
-                key={project.id}
-                className="cursor-pointer hover:shadow-lg transition-shadow-sm"
-                onClick={() => navigate(`/projects/${project.id}`)}
-              >
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg">{project.title}</CardTitle>
-                    <Badge variant={getStatusColor(project.status) as any}>
-                      {project.status}
-                    </Badge>
+      <SectionHeader
+        title="My projects"
+        subtitle={`${projects.length} collaboration${projects.length === 1 ? "" : "s"}`}
+        action={
+          <Pressable
+            onClick={() => setNewProjectOpen(true)}
+            aria-label="New project"
+            className="flex items-center gap-1 rounded-full bg-surface-2 px-3 py-1.5 text-xs font-semibold text-primary"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            New
+          </Pressable>
+        }
+      />
+
+      <HScroll className="flex gap-2">
+        {STATUS_FILTERS.map((f) => (
+          <Chip key={f.key} active={status === f.key} onClick={() => setStatus(f.key)}>
+            {f.label}
+          </Chip>
+        ))}
+      </HScroll>
+
+      {loading ? (
+        <SkeletonList />
+      ) : filtered.length === 0 ? (
+        <EmptyState
+          icon={<FolderOpen className="h-6 w-6" />}
+          title={projects.length ? "Nothing here yet" : "No projects yet"}
+          description={
+            projects.length
+              ? "Try a different status filter to see your other collaborations."
+              : "Spin up a room, invite your matches and keep briefs, files and chat in one place."
+          }
+          action={
+            <Button onClick={() => setNewProjectOpen(true)} className="rounded-full">
+              <Plus className="mr-1.5 h-4 w-4" />
+              Create a project
+            </Button>
+          }
+        />
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {filtered.map((project) => (
+            <Pressable
+              key={project.id}
+              lift
+              onClick={() => navigate(`/projects/${project.id}`)}
+              aria-label={`Open ${project.title}`}
+              className="text-left"
+            >
+              <Surface inset className="h-full space-y-3">
+                <div className="flex items-start gap-3">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary">
+                    <FolderKanban className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold">{project.title}</p>
+                    {project.description ? (
+                      <p className="line-clamp-2 text-xs text-muted-foreground">
+                        {project.description}
+                      </p>
+                    ) : null}
                   </div>
-                </CardHeader>
-                <CardContent>
-                  {project.description && (
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                      {project.description}
-                    </p>
-                  )}
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      <span>{project.project_members?.[0]?.count || 1} members</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>{formatDistanceToNow(new Date(project.created_at ?? Date.now()), { addSuffix: true })}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  <Badge variant="secondary" className="shrink-0 capitalize">
+                    {(project.status ?? "active").replace("_", " ")}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Users className="h-3.5 w-3.5" />
+                    {project.member_count} member{project.member_count === 1 ? "" : "s"}
+                  </span>
+                  {project.created_at ? (
+                    <span className="flex items-center gap-1">
+                      <Calendar className="h-3.5 w-3.5" />
+                      {formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}
+                    </span>
+                  ) : null}
+                </div>
+              </Surface>
+            </Pressable>
+          ))}
+        </div>
+      )}
+
+      <BottomSheet
+        open={newProjectOpen}
+        onOpenChange={setNewProjectOpen}
+        title="New project"
+        description="Create a private room for your collaboration."
+      >
+        <div className="space-y-4 px-5 pb-2">
+          <div className="space-y-2">
+            <Label>Project title</Label>
+            <Input
+              value={newProject.title}
+              onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
+              placeholder="e.g. Midnight EP — visuals"
+              className="rounded-2xl"
+            />
           </div>
-        )}
-      </div>
+          <div className="space-y-2">
+            <Label>Description</Label>
+            <Textarea
+              value={newProject.description}
+              onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+              placeholder="What are you making, and who do you need?"
+              className="rounded-2xl"
+            />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Category</Label>
+              <Select
+                value={newProject.project_category}
+                onValueChange={(v) => setNewProject({ ...newProject, project_category: v })}
+              >
+                <SelectTrigger className="rounded-2xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="music">Music</SelectItem>
+                  <SelectItem value="film">Film</SelectItem>
+                  <SelectItem value="tech">Tech</SelectItem>
+                  <SelectItem value="startup">Startup</SelectItem>
+                  <SelectItem value="content_creation">Content creation</SelectItem>
+                  <SelectItem value="design">Design</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Compensation</Label>
+              <Select
+                value={newProject.compensation_type}
+                onValueChange={(v) => setNewProject({ ...newProject, compensation_type: v })}
+              >
+                <SelectTrigger className="rounded-2xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="paid">Paid</SelectItem>
+                  <SelectItem value="revenue_share">Revenue share</SelectItem>
+                  <SelectItem value="equity">Equity</SelectItem>
+                  <SelectItem value="open_collaboration">Open collaboration</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <Button onClick={createProject} disabled={creating} className="w-full rounded-full">
+            {creating ? "Creating..." : "Create project"}
+          </Button>
+        </div>
+      </BottomSheet>
     </div>
   );
 };

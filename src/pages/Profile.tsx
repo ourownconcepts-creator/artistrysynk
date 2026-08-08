@@ -1,16 +1,32 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Calendar, Edit, Shield, Instagram, Twitter, Youtube, Link as LinkIcon, ExternalLink, Image, Monitor, Settings, BarChart3, BadgeCheck, Award, Users as UsersIcon, Code, Github } from "lucide-react";
+import { toast } from "sonner";
+import {
+  MapPin,
+  Calendar,
+  Edit,
+  Shield,
+  Instagram,
+  Twitter,
+  Youtube,
+  Link as LinkIcon,
+  Github,
+  Image as ImageIcon,
+  BarChart3,
+  Settings as SettingsIcon,
+  BadgeCheck,
+  Users as UsersIcon,
+  Share2,
+  Monitor,
+  UserRound,
+} from "lucide-react";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { PortfolioUpload } from "@/components/portfolio/PortfolioUpload";
 import { VerificationRequestButton } from "@/components/profile/VerificationRequestButton";
-
 import { UserSessions } from "@/components/profile/UserSessions";
 import { ProfileAnalytics } from "@/components/profile/ProfileAnalytics";
 import { ProfileCompletionProgress } from "@/components/profile/ProfileCompletionProgress";
@@ -18,6 +34,23 @@ import { useSessionTracking } from "@/hooks/useSessionTracking";
 import { MyAppeals } from "@/components/content/MyAppeals";
 import { ReferralCard } from "@/components/referral/ReferralCard";
 import { getRoleLabel } from "@/lib/creativeRoles";
+import {
+  SegmentedControl,
+  SectionHeader,
+  StatBlock,
+  Surface,
+  Pressable,
+  SkeletonTiles,
+} from "@/components/native-ui";
+
+type Tab = "portfolio" | "about" | "insights" | "account";
+
+const TABS = [
+  { key: "portfolio", label: "Work", icon: <ImageIcon className="h-3.5 w-3.5" /> },
+  { key: "about", label: "About", icon: <UserRound className="h-3.5 w-3.5" /> },
+  { key: "insights", label: "Insights", icon: <BarChart3 className="h-3.5 w-3.5" /> },
+  { key: "account", label: "Account", icon: <SettingsIcon className="h-3.5 w-3.5" /> },
+];
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -25,410 +58,372 @@ const Profile = () => {
   const [profile, setProfile] = useState<any>(null);
   const [roles, setRoles] = useState<any[]>([]);
   const [genres, setGenres] = useState<any[]>([]);
-  const [userRole, setUserRole] = useState<string | null>(null);
   const [allRoles, setAllRoles] = useState<string[]>([]);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  
+  const [counts, setCounts] = useState({ portfolio: 0, matches: 0 });
+  const [tab, setTab] = useState<Tab>("portfolio");
   const [loading, setLoading] = useState(true);
+
+  const loadProfile = useCallback(async (uid: string) => {
+    const [{ data: profileData }, { data: rolesData }, { data: genresData }] = await Promise.all([
+      supabase.from("profiles").select("*").eq("id", uid).single(),
+      supabase.from("user_creative_roles").select("role").eq("user_id", uid),
+      supabase.from("user_genres").select("genre").eq("user_id", uid),
+    ]);
+    setProfile(profileData);
+    setRoles(rolesData ?? []);
+    setGenres(genresData ?? []);
+    setLoading(false);
+  }, []);
+
+  const loadCounts = useCallback(async (uid: string) => {
+    const [{ count: portfolio }, { count: matches }] = await Promise.all([
+      supabase.from("portfolio_items").select("id", { count: "exact", head: true }).eq("user_id", uid),
+      supabase
+        .from("matches")
+        .select("id", { count: "exact", head: true })
+        .or(`user_id_1.eq.${uid},user_id_2.eq.${uid}`),
+    ]);
+    setCounts({ portfolio: portfolio ?? 0, matches: matches ?? 0 });
+  }, []);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) {
         navigate("/auth");
-      } else {
-        setUserId(user.id);
-        loadProfile(user.id);
-        loadUserRole(user.id);
-        
+        return;
       }
+      setUserId(user.id);
+      void loadProfile(user.id);
+      void loadCounts(user.id);
+      void supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .then(({ data }) => {
+          const list = data?.map((r) => r.role as string) ?? ["user"];
+          const priority = ["super_admin", "master_admin", "admin", "user"];
+          setAllRoles(list);
+          setUserRole(priority.find((p) => list.includes(p)) ?? "user");
+        });
     });
-  }, [navigate]);
+  }, [navigate, loadProfile, loadCounts]);
 
-  const loadProfile = async (userId: string) => {
-    setLoading(true);
+  const socialLinks = (profile?.social_links ?? {}) as Record<string, string>;
 
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+  const adminLink =
+    userRole === "super_admin"
+      ? "/super-admin"
+      : userRole === "master_admin"
+        ? "/master-admin"
+        : userRole === "admin"
+          ? "/admin"
+          : null;
 
-    const { data: rolesData } = await supabase
-      .from('user_creative_roles')
-      .select('role')
-      .eq('user_id', userId);
-
-    const { data: genresData } = await supabase
-      .from('user_genres')
-      .select('genre')
-      .eq('user_id', userId);
-
-    setProfile(profileData);
-    setRoles(rolesData || []);
-    setGenres(genresData || []);
-    setLoading(false);
-  };
-
-
-  const loadUserRole = async (userId: string) => {
-    const { data } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId);
-    
-    // Get highest role
-    const roles = data?.map(r => r.role) || ['user'];
-    const priority = ['super_admin', 'master_admin', 'admin', 'user'];
-    const highest = priority.find(p => roles.includes(p as any)) || 'user';
-    setUserRole(highest);
-    setAllRoles(roles);
-  };
-
-  const socialLinks = profile?.social_links as any;
-
-  const getAdminLink = () => {
-    switch (userRole) {
-      case 'super_admin':
-        return '/super-admin';
-      case 'master_admin':
-        return '/master-admin';
-      case 'admin':
-        return '/admin';
-      default:
-        return null;
-    }
-  };
-
-  const getRoleBadgeColor = () => {
-    switch (userRole) {
-      case 'super_admin':
-        return 'bg-destructive text-destructive-foreground';
-      case 'master_admin':
-        return 'bg-primary text-primary-foreground';
-      case 'admin':
-        return 'bg-secondary text-secondary-foreground';
-      default:
-        return '';
+  const share = async () => {
+    const url = `${window.location.origin}/profile/${profile?.username ?? userId}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: profile?.full_name ?? "ArtistrySynk", url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast.success("Profile link copied");
+      }
+    } catch {
+      /* user dismissed */
     }
   };
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="text-center space-y-3">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-muted-foreground">Loading profile...</p>
-        </div>
+      <div className="space-y-4 pt-2">
+        <Surface className="h-36 animate-pulse" level={2} />
+        <SkeletonTiles />
       </div>
     );
   }
 
+  const socialEntries: { key: string; href: string; icon: typeof Instagram }[] = [
+    socialLinks.instagram && {
+      key: "instagram",
+      href: `https://instagram.com/${socialLinks.instagram}`,
+      icon: Instagram,
+    },
+    socialLinks.twitter && {
+      key: "twitter",
+      href: `https://twitter.com/${socialLinks.twitter}`,
+      icon: Twitter,
+    },
+    socialLinks.youtube && {
+      key: "youtube",
+      href: `https://youtube.com/${socialLinks.youtube}`,
+      icon: Youtube,
+    },
+    socialLinks.github && {
+      key: "github",
+      href: `https://github.com/${socialLinks.github}`,
+      icon: Github,
+    },
+    socialLinks.website && {
+      key: "website",
+      href: socialLinks.website.startsWith("http")
+        ? socialLinks.website
+        : `https://${socialLinks.website}`,
+      icon: LinkIcon,
+    },
+  ].filter(Boolean) as { key: string; href: string; icon: typeof Instagram }[];
+
   return (
-    <div>
-      {/* Cover Image */}
-      {profile?.cover_image_url && (
-        <div className="h-40 md:h-56 w-full overflow-hidden rounded-3xl">
-          <img 
-            src={profile.cover_image_url} 
-            alt="Cover" 
-            className="w-full h-full object-cover"
-          />
+    <div className="space-y-5">
+      {/* Native profile header */}
+      <Surface className="overflow-hidden" level={1}>
+        <div className="relative h-28 w-full sm:h-36">
+          {profile?.cover_image_url ? (
+            <img
+              src={profile.cover_image_url}
+              alt=""
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <div className="h-full w-full" style={{ backgroundImage: "var(--gradient-primary)" }} />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-surface-1 via-surface-1/20 to-transparent" />
         </div>
-      )}
-      
-      <div className="mx-auto max-w-4xl">
 
-        <Card className={profile?.cover_image_url ? "-mt-16 relative z-10" : ""}>
-          <CardHeader className="text-center pb-2">
-            <div className="flex justify-center mb-4">
-              <Avatar className="w-28 h-28 border-4 border-background shadow-lg">
-                <AvatarImage src={profile?.avatar_url} />
-                <AvatarFallback className="text-4xl">
-                  {profile?.full_name?.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
+        <div className="-mt-10 px-4 pb-4">
+          <div className="flex items-end gap-3">
+            <Avatar className="h-20 w-20 border-4 border-surface-1 shadow-app">
+              <AvatarImage src={profile?.avatar_url} />
+              <AvatarFallback className="text-2xl">{profile?.full_name?.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className="min-w-0 flex-1 pb-1">
+              <h1 className="flex items-center gap-1.5 truncate text-lg font-bold tracking-tight">
+                {profile?.full_name}
+                {profile?.is_verified ? (
+                  <BadgeCheck className="h-4 w-4 shrink-0 text-primary" />
+                ) : null}
+              </h1>
+              <p className="truncate text-xs text-muted-foreground">@{profile?.username}</p>
             </div>
-            <CardTitle className="text-3xl flex items-center justify-center gap-2">
-              {profile?.full_name}
-              {profile?.is_verified && (
-                <BadgeCheck className="w-6 h-6 text-emerald-500" />
-              )}
-            </CardTitle>
-            <p className="text-muted-foreground">@{profile?.username}</p>
-            
-            {/* Verification Request */}
-            {userId && (
-              <div className="flex justify-center mt-2">
-                <VerificationRequestButton 
-                  userId={userId} 
-                  isVerified={profile?.is_verified || false} 
-                />
-              </div>
-            )}
-            
-            {/* Admin Badge & Links */}
-            {allRoles.length > 0 && allRoles.some(r => r !== 'user') && (
-              <div className="flex flex-col items-center gap-3 mt-4 p-4 bg-muted/50 rounded-lg">
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {allRoles.filter(r => r !== 'user').map(role => (
-                    <Badge key={role} className={`gap-1 ${
-                      role === 'super_admin' ? 'bg-destructive text-destructive-foreground' :
-                      role === 'master_admin' ? 'bg-primary text-primary-foreground' :
-                      'bg-secondary text-secondary-foreground'
-                    }`}>
-                      <Shield className="w-3 h-3" />
-                      {role.replace('_', ' ').toUpperCase()}
-                    </Badge>
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  You have admin privileges
-                </p>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {allRoles.includes('super_admin') && (
-                    <Link to="/super-admin">
-                      <Button variant="destructive" size="sm" className="gap-1">
-                        <ExternalLink className="w-3 h-3" />
-                        Super Admin
-                      </Button>
-                    </Link>
-                  )}
-                  {allRoles.includes('master_admin') && (
-                    <Link to="/master-admin">
-                      <Button variant="default" size="sm" className="gap-1">
-                        <ExternalLink className="w-3 h-3" />
-                        Master Admin
-                      </Button>
-                    </Link>
-                  )}
-                  {allRoles.includes('admin') && (
-                    <Link to="/admin">
-                      <Button variant="secondary" size="sm" className="gap-1">
-                        <ExternalLink className="w-3 h-3" />
-                        Admin Panel
-                      </Button>
-                    </Link>
-                  )}
-                </div>
-              </div>
-            )}
-          </CardHeader>
-
-          <CardContent className="space-y-6">
-            {profile?.location && (
-              <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                <MapPin className="w-4 h-4" />
-                {profile.location}
-              </div>
-            )}
-
-            {/* Social Links */}
-            {socialLinks && Object.values(socialLinks).some(v => v) && (
-              <div className="flex items-center justify-center gap-4">
-                {socialLinks.instagram && (
-                  <a 
-                    href={`https://instagram.com/${socialLinks.instagram}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    <Instagram className="w-5 h-5" />
-                  </a>
-                )}
-                {socialLinks.twitter && (
-                  <a 
-                    href={`https://twitter.com/${socialLinks.twitter}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    <Twitter className="w-5 h-5" />
-                  </a>
-                )}
-                {socialLinks.youtube && (
-                  <a 
-                    href={`https://youtube.com/${socialLinks.youtube}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    <Youtube className="w-5 h-5" />
-                  </a>
-                )}
-                {socialLinks.website && (
-                  <a 
-                    href={socialLinks.website.startsWith('http') ? socialLinks.website : `https://${socialLinks.website}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    <LinkIcon className="w-5 h-5" />
-                  </a>
-                )}
-              </div>
-            )}
-
-            {roles.length > 0 && (
-              <div>
-                <h3 className="font-semibold mb-2 text-center">Creative Roles</h3>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {roles.map((r, i) => (
-                    <Badge key={i} variant="secondary">
-                      {getRoleLabel(r.role)}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Looking For */}
-            {(profile as any)?.looking_for && (profile as any).looking_for.length > 0 && (
-              <div>
-                <h3 className="font-semibold mb-2 text-center flex items-center justify-center gap-1">
-                  <UsersIcon className="w-4 h-4" /> Looking For
-                </h3>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {(profile as any).looking_for.map((r: string, i: number) => (
-                    <Badge key={i} variant="outline">
-                      {getRoleLabel(r)}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {genres.length > 0 && (
-              <div>
-                <h3 className="font-semibold mb-2 text-center">Genres</h3>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {genres.map((g, i) => (
-                    <Badge key={i} variant="outline">
-                      {g.genre.replace('_', ' ')}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {profile?.bio && (
-              <div className="text-center">
-                <h3 className="font-semibold mb-2">Bio</h3>
-                <p className="text-sm text-muted-foreground max-w-lg mx-auto">{profile.bio}</p>
-              </div>
-            )}
-
-            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-              <Calendar className="w-3 h-3" />
-              Joined {new Date(profile?.created_at).toLocaleDateString()}
-            </div>
-
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => navigate("/edit-profile")}
+            <Pressable
+              onClick={share}
+              aria-label="Share profile"
+              className="mb-1 grid h-10 w-10 place-items-center rounded-full bg-surface-2 text-foreground"
             >
-              <Edit className="w-4 h-4 mr-2" />
-              Edit Profile
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Profile Completion */}
-        {userId && (
-          <div className="mt-8">
-            <ProfileCompletionProgress userId={userId} />
+              <Share2 className="h-4 w-4" />
+            </Pressable>
           </div>
-        )}
 
-        {/* Tabbed Content */}
-        {userId && (
-          <Tabs defaultValue="portfolio" className="mt-8">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="portfolio" className="gap-2">
-                <Image className="w-4 h-4" />
-                Portfolio
-              </TabsTrigger>
-              <TabsTrigger value="analytics" className="gap-2">
-                <BarChart3 className="w-4 h-4" />
-                Analytics
-              </TabsTrigger>
-              <TabsTrigger value="sessions" className="gap-2">
-                <Monitor className="w-4 h-4" />
-                Sessions
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="gap-2">
-                <Settings className="w-4 h-4" />
-                Settings
-              </TabsTrigger>
-            </TabsList>
+          <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+            {profile?.location ? (
+              <span className="flex items-center gap-1">
+                <MapPin className="h-3.5 w-3.5" />
+                {profile.location}
+              </span>
+            ) : null}
+            {profile?.created_at ? (
+              <span className="flex items-center gap-1">
+                <Calendar className="h-3.5 w-3.5" />
+                Joined {new Date(profile.created_at).toLocaleDateString()}
+              </span>
+            ) : null}
+          </div>
 
-            <TabsContent value="portfolio" className="mt-6 space-y-6">
-              <PortfolioUpload userId={userId} onUploadComplete={() => loadProfile(userId)} />
-              <PortfolioGrid userId={userId} editable />
-            </TabsContent>
+          {profile?.bio ? (
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{profile.bio}</p>
+          ) : null}
 
-            <TabsContent value="analytics" className="mt-6">
-              <ProfileAnalytics userId={userId} />
-            </TabsContent>
+          <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl bg-surface-2 py-3">
+            <StatBlock label="Work" value={counts.portfolio} />
+            <StatBlock label="Matches" value={counts.matches} onClick={() => navigate("/messages")} />
+            <StatBlock label="Roles" value={roles.length} onClick={() => setTab("about")} />
+          </div>
 
-            <TabsContent value="sessions" className="mt-6">
-              <UserSessions userId={userId} />
-            </TabsContent>
+          <div className="mt-3 flex gap-2">
+            <Button
+              onClick={() => navigate("/edit-profile")}
+              className="flex-1 rounded-full"
+              variant="default"
+            >
+              <Edit className="mr-1.5 h-4 w-4" />
+              Edit profile
+            </Button>
+            {userId ? (
+              <VerificationRequestButton userId={userId} isVerified={profile?.is_verified ?? false} />
+            ) : null}
+          </div>
 
-            <TabsContent value="settings" className="mt-6 space-y-6">
-              <ReferralCard />
-              <MyAppeals />
-              <Card>
-                <CardHeader>
-                  <CardTitle>Account Settings</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <p className="font-medium">Account Type</p>
-                      <p className="text-sm text-muted-foreground">
-                        {userRole ? userRole.replace('_', ' ').charAt(0).toUpperCase() + userRole.replace('_', ' ').slice(1) : 'User'}
-                      </p>
-                    </div>
-                    <Badge variant="outline">{userRole || 'user'}</Badge>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <p className="font-medium">Verification Status</p>
-                      <p className="text-sm text-muted-foreground">
-                        {profile?.is_verified ? 'Your account is verified' : 'Account not yet verified'}
-                      </p>
-                    </div>
-                    <Badge variant={profile?.is_verified ? "default" : "secondary"}>
-                      {profile?.is_verified ? 'Verified' : 'Unverified'}
-                    </Badge>
-                  </div>
+          {socialEntries.length ? (
+            <div className="mt-3 flex items-center gap-2">
+              {socialEntries.map(({ key, href, icon: Icon }) => (
+                <a
+                  key={key}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={key}
+                  className="grid h-9 w-9 place-items-center rounded-full bg-surface-2 text-muted-foreground transition-colors hover:text-primary"
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      </Surface>
 
-                  {getAdminLink() && (
-                    <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
-                      <div>
-                        <p className="font-medium">Admin Access</p>
-                        <p className="text-sm text-muted-foreground">
-                          Access the admin dashboard
-                        </p>
-                      </div>
-                      <Link to={getAdminLink()!}>
-                        <Button size="sm" className="gap-1">
-                          <Shield className="w-4 h-4" />
-                          Admin Panel
-                        </Button>
-                      </Link>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        )}
+      {userId ? <ProfileCompletionProgress userId={userId} /> : null}
+
+      <div className="sticky top-0 z-20 -mx-4 bg-background/0 px-4 py-1">
+        <SegmentedControl
+          ariaLabel="Profile sections"
+          layoutId="profile-tabs"
+          segments={TABS}
+          value={tab}
+          onChange={(key) => setTab(key as Tab)}
+        />
       </div>
+
+      {tab === "portfolio" && userId ? (
+        <div className="space-y-4">
+          <PortfolioUpload userId={userId} onUploadComplete={() => { void loadProfile(userId); void loadCounts(userId); }} />
+          <PortfolioGrid userId={userId} editable />
+        </div>
+      ) : null}
+
+      {tab === "about" ? (
+        <div className="space-y-4">
+          {roles.length ? (
+            <Surface inset className="space-y-2">
+              <SectionHeader title="Creative roles" className="px-0" />
+              <div className="flex flex-wrap gap-2">
+                {roles.map((r, i) => (
+                  <Badge key={i} variant="secondary">
+                    {getRoleLabel(r.role)}
+                  </Badge>
+                ))}
+              </div>
+            </Surface>
+          ) : null}
+
+          {profile?.looking_for?.length ? (
+            <Surface inset className="space-y-2">
+              <SectionHeader
+                title="Looking for"
+                className="px-0"
+                action={<UsersIcon className="h-4 w-4 text-muted-foreground" />}
+              />
+              <div className="flex flex-wrap gap-2">
+                {profile.looking_for.map((r: string, i: number) => (
+                  <Badge key={i} variant="outline">
+                    {getRoleLabel(r)}
+                  </Badge>
+                ))}
+              </div>
+            </Surface>
+          ) : null}
+
+          {genres.length ? (
+            <Surface inset className="space-y-2">
+              <SectionHeader title="Genres" className="px-0" />
+              <div className="flex flex-wrap gap-2">
+                {genres.map((g, i) => (
+                  <Badge key={i} variant="outline">
+                    {g.genre.replace("_", " ")}
+                  </Badge>
+                ))}
+              </div>
+            </Surface>
+          ) : null}
+
+          {!roles.length && !genres.length && !profile?.looking_for?.length ? (
+            <Surface inset className="text-center text-sm text-muted-foreground">
+              Add your roles, genres and what you're looking for so we can match you better.
+              <Button
+                variant="outline"
+                className="mt-3 w-full rounded-full"
+                onClick={() => navigate("/edit-profile")}
+              >
+                Complete your profile
+              </Button>
+            </Surface>
+          ) : null}
+        </div>
+      ) : null}
+
+      {tab === "insights" && userId ? (
+        <div className="space-y-4">
+          <ProfileAnalytics userId={userId} />
+          <Surface inset className="space-y-3">
+            <SectionHeader
+              title="Devices & sessions"
+              className="px-0"
+              action={<Monitor className="h-4 w-4 text-muted-foreground" />}
+            />
+            <UserSessions userId={userId} />
+          </Surface>
+        </div>
+      ) : null}
+
+      {tab === "account" ? (
+        <div className="space-y-4">
+          <ReferralCard />
+          <MyAppeals />
+
+          <Surface className="divide-y divide-border/40">
+            <Row label="Account type" value={(userRole ?? "user").replace("_", " ")} />
+            <Row
+              label="Verification"
+              value={profile?.is_verified ? "Verified" : "Not verified"}
+            />
+            <Pressable
+              onClick={() => navigate("/settings")}
+              className="flex w-full items-center justify-between p-4 text-left"
+              aria-label="Open settings"
+            >
+              <span className="text-sm font-medium">Settings & privacy</span>
+              <SettingsIcon className="h-4 w-4 text-muted-foreground" />
+            </Pressable>
+          </Surface>
+
+          {allRoles.some((r) => r !== "user") ? (
+            <Surface inset className="space-y-3">
+              <SectionHeader title="Admin access" className="px-0" />
+              <div className="flex flex-wrap gap-2">
+                {allRoles
+                  .filter((r) => r !== "user")
+                  .map((role) => (
+                    <Badge key={role} className="gap-1">
+                      <Shield className="h-3 w-3" />
+                      {role.replace("_", " ").toUpperCase()}
+                    </Badge>
+                  ))}
+              </div>
+              {adminLink ? (
+                <Link to={adminLink}>
+                  <Button size="sm" className="w-full rounded-full">
+                    <Shield className="mr-1.5 h-4 w-4" />
+                    Open admin panel
+                  </Button>
+                </Link>
+              ) : null}
+            </Surface>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 };
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between p-4">
+      <span className="text-sm font-medium">{label}</span>
+      <span className="text-xs capitalize text-muted-foreground">{value}</span>
+    </div>
+  );
+}
 
 export default Profile;

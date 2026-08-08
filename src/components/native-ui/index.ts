@@ -11,4 +11,6 @@ export { ListRow } from "./ListRow";
 export { PullToRefresh } from "./PullToRefresh";
 export { MediaTile } from "./MediaTile";
 export { StatBlock } from "./StatBlock";
+export { SegmentedControl } from "./SegmentedControl";
+export type { Segment } from "./SegmentedControl";
 export { haptic, useReducedMotion, springSoft, springSnappy, listItemVariants } from "./motion";
