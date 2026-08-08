@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { sendAdminNotification } from "@/lib/send-admin-notification.functions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -149,8 +150,8 @@ const SuperAdminDashboard = () => {
 
   const sendEmailNotification = async (action: string, targetName: string, details?: string) => {
     try {
-      await supabase.functions.invoke('send-admin-notification', {
-        body: {
+      await sendAdminNotification({
+        data: {
           recipientEmail: 'admin@example.com', // Replace with actual admin email
           adminName: 'Super Admin',
           action,

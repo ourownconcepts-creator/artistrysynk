@@ -1,14 +1,6 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { sendEmail, LOGO_URL } from "@/lib/email/resend.server";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const LOGO_URL = "https://lihctrhzsyjqnlzwwkzo.supabase.co/storage/v1/object/public/email-assets/logo.png";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
-
-interface OrderStatusNotificationRequest {
+export interface NotifyOrderStatusInput {
   orderId: string;
   serviceTitle: string;
   buyerEmail: string;
@@ -31,23 +23,21 @@ const getStatusMessage = (status: string) => {
   }
 };
 
-const handler = async (req: Request): Promise<Response> => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+export async function notifyOrderStatus({
+  serviceTitle,
+  buyerEmail,
+  buyerName,
+  sellerName,
+  newStatus,
+  amount,
+}: NotifyOrderStatusInput) {
+  if (!process.env["RESEND_API_KEY"]) {
+    throw new Error("Email service not configured");
   }
 
-  try {
-    if (!RESEND_API_KEY) {
-      return new Response(
-        JSON.stringify({ error: "Email service not configured" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
+  const statusInfo = getStatusMessage(newStatus);
 
-    const { orderId, serviceTitle, buyerEmail, buyerName, sellerName, newStatus, amount }: OrderStatusNotificationRequest = await req.json();
-    const statusInfo = getStatusMessage(newStatus);
-
-    const emailHtml = `
+  const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="text-align: center; padding: 30px 0 20px 0; background: linear-gradient(135deg, #c026d3 0%, #7c3aed 50%, #f97316 100%); border-radius: 12px 12px 0 0;">
           <img src="${LOGO_URL}" alt="ArtistrySynk" style="height: 80px; width: auto;" />
@@ -82,27 +72,17 @@ const handler = async (req: Request): Promise<Response> => {
       </div>
     `;
 
-    const emailResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from: "ArtistrySynk <notifications@artistrysynk.app>",
-        to: [buyerEmail],
-        subject: `${statusInfo.subject} - ${serviceTitle}`,
-        html: emailHtml,
-      }),
+  try {
+    const emailResult = await sendEmail({
+      from: "ArtistrySynk <notifications@artistrysynk.app>",
+      to: buyerEmail,
+      subject: `${statusInfo.subject} - ${serviceTitle}`,
+      html,
     });
 
-    const emailResult = await emailResponse.json();
-    if (!emailResponse.ok) {
-      return new Response(JSON.stringify({ error: "Failed to send notification email", details: emailResult }), { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } });
-    }
-
-    return new Response(JSON.stringify({ success: true, messageId: emailResult.id }), { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } });
+    return { success: true as const, messageId: emailResult.id };
   } catch (error: any) {
     console.error("Error in notify-order-status:", error);
-    return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } });
+    throw new Error(error.message);
   }
-};
-
-serve(handler);
+}

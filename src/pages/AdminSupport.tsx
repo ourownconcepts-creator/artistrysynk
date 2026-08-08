@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { sendSupportReply as sendSupportReplyFn } from "@/lib/send-support-reply.functions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -68,6 +70,7 @@ const statusBadge = (status: string) => {
 
 const AdminSupport = () => {
   const navigate = useNavigate();
+  const sendSupportReply = useServerFn(sendSupportReplyFn);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -75,7 +78,7 @@ const AdminSupport = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [active, setActive] = useState<Ticket | null>(null);
   const [reply, setReply] = useState("");
-  const [replyStatus, setReplyStatus] = useState<string>("resolved");
+  const [replyStatus, setReplyStatus] = useState<"pending" | "reviewed" | "resolved" | "spam">("resolved");
   const [sending, setSending] = useState(false);
   const [audit, setAudit] = useState<AuditEntry[]>([]);
   const [inboxes, setInboxes] = useState({ support: "", privacy: "" });
@@ -169,7 +172,7 @@ const AdminSupport = () => {
   const openTicket = (ticket: Ticket) => {
     setActive(ticket);
     setReply(ticket.admin_response ?? "");
-    setReplyStatus(ticket.status === "pending" ? "resolved" : ticket.status);
+    setReplyStatus(ticket.status === "pending" ? "resolved" : (ticket.status as "reviewed" | "resolved" | "spam"));
     fetchAudit(ticket);
   };
 
@@ -191,17 +194,18 @@ const AdminSupport = () => {
       return;
     }
     setSending(true);
-    const { data, error } = await supabase.functions.invoke("send-support-reply", {
-      body: { submissionId: active.id, reply: reply.trim(), status: replyStatus },
-    });
-    setSending(false);
-
-    if (error || (data as { error?: string } | null)?.error) {
-      const details = (data as { error?: string } | null)?.error ?? error?.message;
+    try {
+      await sendSupportReply({
+        data: { submissionId: active.id, reply: reply.trim(), status: replyStatus as "pending" | "resolved" | "reviewed" | "spam" },
+      });
+    } catch (error) {
+      const details = error instanceof Error ? error.message : "Unknown error";
       console.error("send-support-reply failed:", details);
       toast.error("Failed to send reply", { description: details });
+      setSending(false);
       return;
     }
+    setSending(false);
 
     toast.success(`Reply sent to ${active.email}`);
     const now = new Date().toISOString();
@@ -466,7 +470,7 @@ const AdminSupport = () => {
                 <div className="flex flex-wrap items-center gap-3 justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-muted-foreground">Set status after sending:</span>
-                    <Select value={replyStatus} onValueChange={setReplyStatus}>
+                    <Select value={replyStatus} onValueChange={(v) => setReplyStatus(v as typeof replyStatus)}>
                       <SelectTrigger className="w-[140px]" aria-label="Status after sending reply">
                         <SelectValue />
                       </SelectTrigger>

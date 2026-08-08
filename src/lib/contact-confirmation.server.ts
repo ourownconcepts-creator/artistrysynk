@@ -1,19 +1,6 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Resend } from "https://esm.sh/resend@2.0.0";
+import { sendEmail, LOGO_URL, DEFAULT_FROM } from "@/lib/email/resend.server";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const LOGO_URL = "https://lihctrhzsyjqnlzwwkzo.supabase.co/storage/v1/object/public/email-assets/logo.png";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
-
-interface ContactConfirmationRequest {
+export interface SendContactConfirmationInput {
   name: string;
   email: string;
   subject: string;
@@ -27,60 +14,45 @@ const DEFAULT_SUPPORT_INBOX = "support@artistrysynk.app";
 const DEFAULT_PRIVACY_INBOX = "privacy@artistrysynk.app";
 
 /** Admin-configurable inbox routing, stored in admin_settings. */
-const resolveInbox = async (category: string): Promise<string> => {
+async function resolveInbox(category: string): Promise<string> {
   const fallback = category === "privacy" ? DEFAULT_PRIVACY_INBOX : DEFAULT_SUPPORT_INBOX;
   try {
-    const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const key = category === "privacy" ? "privacy_inbox_email" : "support_inbox_email";
-    const { data } = await admin
+    const { data } = await supabaseAdmin
       .from("admin_settings")
       .select("setting_value")
       .eq("setting_key", key)
       .maybeSingle();
-    const value = data?.setting_value;
+    const value = (data as { setting_value?: unknown } | null)?.setting_value;
     const address = typeof value === "string" ? value : (value as { email?: string } | null)?.email;
     return address && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(address) ? address : fallback;
   } catch (e) {
     console.error("Failed to resolve inbox setting:", e);
     return fallback;
   }
-};
+}
 
 const escapeHtml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-const handler = async (req: Request): Promise<Response> => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+export async function sendContactConfirmation(input: SendContactConfirmationInput) {
+  const { name, email, subject, message = "", phone, category = "support" } = input;
+
+  if (!name || !email || !subject) {
+    throw new Error("name, email and subject are required");
   }
 
-  try {
-    if (!RESEND_API_KEY) {
-      return new Response(
-        JSON.stringify({ error: "Email service not configured" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
+  const referenceId =
+    input.referenceId ?? `AS-SUP-${crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase()}`;
+  const supportTo = await resolveInbox(category);
 
-    const resend = new Resend(RESEND_API_KEY);
-    const body: ContactConfirmationRequest = await req.json();
-    const { name, email, subject, message = "", phone, category = "support" } = body;
-
-    if (!name || !email || !subject) {
-      return new Response(JSON.stringify({ error: "name, email and subject are required" }), {
-        status: 400, headers: { "Content-Type": "application/json", ...corsHeaders },
-      });
-    }
-
-    const referenceId = body.referenceId ?? `AS-SUP-${crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase()}`;
-    const supportTo = await resolveInbox(category);
-
-    const emailResponse = await resend.emails.send({
-      from: "ArtistrySynk <hello@artistrysynk.app>",
-      to: [email],
-      replyTo: supportTo,
-      subject: `We received your message [${referenceId}] - ArtistrySynk`,
-      html: `
+  const emailResponse = await sendEmail({
+    from: DEFAULT_FROM,
+    to: email,
+    replyTo: supportTo,
+    subject: `We received your message [${referenceId}] - ArtistrySynk`,
+    html: `
         <!DOCTYPE html>
         <html>
         <head>
@@ -129,15 +101,15 @@ const handler = async (req: Request): Promise<Response> => {
         </body>
         </html>
       `,
-    });
+  });
 
-    // Routed copy to the correct support inbox
-    const internalResponse = await resend.emails.send({
-      from: "ArtistrySynk <hello@artistrysynk.app>",
-      to: [supportTo],
-      replyTo: email,
-      subject: `[${referenceId}] ${category === "privacy" ? "Privacy" : "Support"}: ${subject}`,
-      html: `
+  // Routed copy to the correct support inbox
+  const internalResponse = await sendEmail({
+    from: DEFAULT_FROM,
+    to: supportTo,
+    replyTo: email,
+    subject: `[${referenceId}] ${category === "privacy" ? "Privacy" : "Support"}: ${subject}`,
+    html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color:#1f2937;">
           <h2 style="margin:0 0 12px 0;">New ${escapeHtml(category)} submission</h2>
           <p style="margin:0 0 4px 0;"><strong>Reference:</strong> ${referenceId}</p>
@@ -148,18 +120,7 @@ const handler = async (req: Request): Promise<Response> => {
           <div style="background:#f9fafb; border-left:4px solid #7c3aed; padding:12px 16px; white-space:pre-wrap;">${escapeHtml(message)}</div>
         </div>
       `,
-    });
+  });
 
-    return new Response(JSON.stringify({ success: true, referenceId, data: emailResponse, internal: internalResponse }), {
-      status: 200, headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
-  } catch (error: any) {
-    console.error("Error in send-contact-confirmation:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
-  }
-};
-
-serve(handler);
+  return { success: true as const, referenceId, data: emailResponse, internal: internalResponse };
+}

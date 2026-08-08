@@ -9,6 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Flag, Search, Eye, CheckCircle, XCircle, AlertTriangle, RefreshCw, Bell, Undo2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useServerFn } from '@tanstack/react-start';
+import { notifyContentStatus } from '@/lib/notify-content-status.functions';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -28,6 +30,7 @@ interface ContentFlag {
 }
 
 export const ContentFlagsManager = () => {
+  const sendContentStatusEmail = useServerFn(notifyContentStatus);
   const [flags, setFlags] = useState<ContentFlag[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -169,8 +172,8 @@ export const ContentFlagsManager = () => {
             }
 
             if (ownerId) {
-              await supabase.functions.invoke('notify-content-status', {
-                body: {
+              await sendContentStatusEmail({
+                data: {
                   userId: ownerId,
                   contentType: flagData.content_type,
                   action: 'restored',

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyJobApplication } from "@/lib/notify-job-application.functions";
 import { toast } from "sonner";
 import { Send, Briefcase, MapPin, DollarSign } from "lucide-react";
 
@@ -78,10 +79,10 @@ export const JobApplicationDialog = ({
       // Get job poster's email from auth
       const { data: posterData } = await supabase.auth.admin?.getUserById?.(job.user_id) || {};
       
-      // Send email notification via edge function
+      // Send email notification via server function
       try {
-        const { error: emailError } = await supabase.functions.invoke("notify-job-application", {
-          body: {
+        await notifyJobApplication({
+          data: {
             jobTitle: job.title,
             jobPosterEmail: posterData?.user?.email || "unknown@example.com",
             jobPosterName: job.profiles?.full_name || "Creative",
@@ -90,10 +91,6 @@ export const JobApplicationDialog = ({
             applicationId: application.id,
           },
         });
-
-        if (emailError) {
-          console.log("Email notification failed (non-blocking):", emailError);
-        }
       } catch (emailErr) {
         // Non-blocking - application was still submitted
         console.log("Email notification error (non-blocking):", emailErr);

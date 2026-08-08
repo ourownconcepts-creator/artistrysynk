@@ -1,49 +1,21 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "https://esm.sh/resend@2.0.0";
+import { sendEmail, LOGO_URL } from "@/lib/email/resend.server";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const LOGO_URL = "https://lihctrhzsyjqnlzwwkzo.supabase.co/storage/v1/object/public/email-assets/logo.png";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
-
-interface WelcomeEmailRequest {
+export interface SendWelcomeEmailInput {
   email: string;
   fullName: string;
   username: string;
 }
 
-const handler = async (req: Request): Promise<Response> => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+export async function sendWelcomeEmail({ email, fullName, username }: SendWelcomeEmailInput) {
+  if (!process.env["RESEND_API_KEY"]) {
+    throw new Error("Email service not configured");
   }
 
-  try {
-    if (!RESEND_API_KEY) {
-      return new Response(
-        JSON.stringify({ error: "Email service not configured" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
+  if (!email || !fullName) {
+    throw new Error("Email and fullName are required");
+  }
 
-    const resend = new Resend(RESEND_API_KEY);
-    const { email, fullName, username }: WelcomeEmailRequest = await req.json();
-
-    if (!email || !fullName) {
-      return new Response(
-        JSON.stringify({ error: "Email and fullName are required" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
-    const emailResponse = await resend.emails.send({
-      from: "ArtistrySynk <hello@artistrysynk.app>",
-      to: [email],
-      subject: `Welcome to ArtistrySynk, ${fullName}! 🎨`,
-      html: `
+  const html = `
         <!DOCTYPE html>
         <html>
         <head>
@@ -117,20 +89,18 @@ const handler = async (req: Request): Promise<Response> => {
           </table>
         </body>
         </html>
-      `,
-    });
+      `;
 
-    return new Response(
-      JSON.stringify({ success: true, data: emailResponse }),
-      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+  try {
+    const data = await sendEmail({
+      from: "ArtistrySynk <hello@artistrysynk.app>",
+      to: email,
+      subject: `Welcome to ArtistrySynk, ${fullName}! 🎨`,
+      html,
+    });
+    return { success: true as const, data };
   } catch (error: any) {
     console.error("Error sending welcome email:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+    throw new Error(error.message);
   }
-};
-
-serve(handler);
+}

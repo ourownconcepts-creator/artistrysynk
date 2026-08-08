@@ -1,34 +1,31 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { z } from "https://esm.sh/zod@3.23.8";
+import { getRequestIP, getRequestHeader } from "@tanstack/react-start/server";
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const ENV_HCAPTCHA_SECRET_KEY = Deno.env.get("HCAPTCHA_SECRET_KEY") ?? "";
-const ENV_HCAPTCHA_SITE_KEY = Deno.env.get("HCAPTCHA_SITE_KEY") ?? "";
-const IP_SALT = Deno.env.get("CONTACT_IP_SALT") ?? "artistrysynk-contact";
+export interface SubmitContactSupportInput {
+  name: string;
+  email: string;
+  phone?: string | null;
+  subject: string;
+  message: string;
+  honeypot?: string;
+  elapsedMs?: number;
+  captchaToken?: string;
+}
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+export interface SubmitContactSupportResult {
+  success?: boolean;
+  error?: string;
+  fields?: Record<string, string[] | undefined>;
+  referenceId?: string;
+  category?: string;
+  submittedAt?: string;
+  emailQueued?: boolean;
+  captchaRequired?: boolean;
+  siteKey?: string;
+  retryAfter?: number;
+  status: number;
+}
 
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json", ...corsHeaders },
-  });
-
-const BodySchema = z.object({
-  name: z.string().trim().min(2).max(100),
-  email: z.string().trim().email().max(255),
-  phone: z.string().trim().max(30).optional().nullable(),
-  subject: z.string().trim().min(3).max(150),
-  message: z.string().trim().min(20).max(2000),
-  honeypot: z.string().max(200).optional(),
-  elapsedMs: z.number().int().nonnegative().max(86_400_000).optional(),
-  captchaToken: z.string().max(5000).optional(),
-});
+const IP_SALT = process.env["CONTACT_IP_SALT"] ?? "artistrysynk-contact";
 
 const SPAM_PATTERNS = [
   /\b(seo services|guest post|backlinks?|crypto investment|forex signals|viagra|casino|loan offer)\b/i,
@@ -45,11 +42,6 @@ const MAX_PER_EMAIL_DAY = 5;
 async function sha256(value: string) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
   return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-function clientIp(req: Request) {
-  const fwd = req.headers.get("x-forwarded-for") ?? "";
-  return fwd.split(",")[0].trim() || req.headers.get("cf-connecting-ip") || "unknown";
 }
 
 function heuristics(subject: string, message: string, name: string) {
@@ -71,13 +63,25 @@ function referenceId(category: string) {
   return `AS-${category === "privacy" ? "PRV" : "SUP"}-${rand}`;
 }
 
-Deno.serve(async (req: Request): Promise<Response> => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
+type AuditRow = {
+  outcome: string;
+  reject_reason?: string;
+  email?: string;
+  reference_id?: string;
+  submission_id?: string;
+  captcha_required?: boolean;
+  captcha_passed?: boolean | null;
+  validation_results?: Record<string, unknown>;
+};
 
-  const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+export async function submitContactSupport(
+  data: SubmitContactSupportInput,
+): Promise<SubmitContactSupportResult> {
+  const { supabaseAdmin: admin } = await import("@/integrations/supabase/client.server");
 
-  // CAPTCHA keys: admin-managed values in the private table win, env vars are the fallback.
+  const ENV_HCAPTCHA_SECRET_KEY = process.env["HCAPTCHA_SECRET_KEY"] ?? "";
+  const ENV_HCAPTCHA_SITE_KEY = process.env["HCAPTCHA_SITE_KEY"] ?? "";
+
   let HCAPTCHA_SITE_KEY = ENV_HCAPTCHA_SITE_KEY;
   let HCAPTCHA_SECRET_KEY = ENV_HCAPTCHA_SECRET_KEY;
   {
@@ -93,37 +97,31 @@ Deno.serve(async (req: Request): Promise<Response> => {
     }
   }
 
-  const ipHash = await sha256(`${IP_SALT}:${clientIp(req)}`);
-  const userAgent = (req.headers.get("user-agent") ?? "").slice(0, 500);
+  const ip = getRequestIP({ xForwardedFor: true }) || "unknown";
+  const ipHash = await sha256(`${IP_SALT}:${ip}`);
+  const userAgent = (getRequestHeader("user-agent") ?? "").slice(0, 500);
 
-  const log = async (row: Record<string, unknown>) => {
-    const { error } = await admin.from("contact_submission_audit").insert({
+  const log = async (row: AuditRow) => {
+    const payload = {
       ip_hash: ipHash,
       user_agent: userAgent,
       ...row,
-    });
+    } as never;
+    const { error } = await admin.from("contact_submission_audit").insert(payload);
     if (error) console.error("audit log insert failed:", error.message);
   };
 
   try {
-    const raw = await req.json().catch(() => null);
-    const parsed = BodySchema.safeParse(raw);
-    if (!parsed.success) {
-      await log({ outcome: "rejected", reject_reason: "validation_failed", validation_results: parsed.error.flatten().fieldErrors });
-      return json({ error: "Please check your details and try again.", fields: parsed.error.flatten().fieldErrors }, 400);
-    }
-
-    const data = parsed.data;
     const email = data.email.toLowerCase();
 
     // --- bot traps -----------------------------------------------------------
     if ((data.honeypot ?? "").trim() !== "") {
       await log({ outcome: "blocked", reject_reason: "honeypot", email, validation_results: { honeypot: true } });
-      return json({ error: "Submission blocked." }, 400);
+      return { error: "Submission blocked.", status: 400 };
     }
     if (typeof data.elapsedMs === "number" && data.elapsedMs < MIN_FILL_MS) {
       await log({ outcome: "blocked", reject_reason: "too_fast", email, validation_results: { elapsedMs: data.elapsedMs } });
-      return json({ error: "That was too fast — please take a moment and try again." }, 400);
+      return { error: "That was too fast — please take a moment and try again.", status: 400 };
     }
 
     // --- content heuristics --------------------------------------------------
@@ -131,7 +129,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const spamFlags = Object.entries(checks).filter(([k, v]) => k !== "links" && v === true).map(([k]) => k);
     if (spamFlags.length > 0) {
       await log({ outcome: "blocked", reject_reason: `spam:${spamFlags.join(",")}`, email, validation_results: checks });
-      return json({ error: "Your message was flagged as spam. Please rephrase and try again." }, 400);
+      return { error: "Your message was flagged as spam. Please rephrase and try again.", status: 400 };
     }
 
     // --- server-side rate limiting -----------------------------------------
@@ -160,11 +158,11 @@ Deno.serve(async (req: Request): Promise<Response> => {
     if (lastAccepted && nowMs - lastAccepted < MIN_GAP_MS) {
       const wait = Math.ceil((MIN_GAP_MS - (nowMs - lastAccepted)) / 1000);
       await log({ outcome: "rate_limited", reject_reason: "min_gap", email, validation_results: limitInfo });
-      return json({ error: `Please wait ${wait}s before sending another message.`, retryAfter: wait }, 429);
+      return { error: `Please wait ${wait}s before sending another message.`, retryAfter: wait, status: 429 };
     }
     if (acceptedLastHour >= MAX_PER_HOUR || accepted.length >= MAX_PER_DAY || emailAcceptedToday >= MAX_PER_EMAIL_DAY) {
       await log({ outcome: "rate_limited", reject_reason: "quota_exceeded", email, validation_results: limitInfo });
-      return json({ error: "You've reached the submission limit. Please try again later or email us directly." }, 429);
+      return { error: "You've reached the submission limit. Please try again later or email us directly.", status: 429 };
     }
 
     // --- adaptive CAPTCHA ----------------------------------------------------
@@ -176,7 +174,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     if (captchaRequired) {
       if (!data.captchaToken) {
         await log({ outcome: "captcha_required", reject_reason: "captcha_missing", email, captcha_required: true, validation_results: limitInfo });
-        return json({ captchaRequired: true, siteKey: HCAPTCHA_SITE_KEY, error: "Please complete the verification challenge." }, 428);
+        return { captchaRequired: true, siteKey: HCAPTCHA_SITE_KEY, error: "Please complete the verification challenge.", status: 428 };
       }
       const verifyRes = await fetch("https://api.hcaptcha.com/siteverify", {
         method: "POST",
@@ -188,7 +186,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       if (!captchaPassed) {
         console.error(`hCaptcha verification failed [${verifyRes.status}]:`, JSON.stringify(verifyBody));
         await log({ outcome: "blocked", reject_reason: "captcha_failed", email, captcha_required: true, captcha_passed: false, validation_results: { ...limitInfo, verify: verifyBody } });
-        return json({ captchaRequired: true, siteKey: HCAPTCHA_SITE_KEY, error: "Verification failed. Please try the challenge again." }, 400);
+        return { captchaRequired: true, siteKey: HCAPTCHA_SITE_KEY, error: "Verification failed. Please try the challenge again.", status: 400 };
       }
     }
 
@@ -216,7 +214,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     if (insertErr) {
       await log({ outcome: "error", reject_reason: insertErr.message, email, reference_id: reference, validation_results: limitInfo });
-      return json({ error: "Failed to save your message. Please try again." }, 500);
+      return { error: "Failed to save your message. Please try again.", status: 500 };
     }
 
     await log({
@@ -232,35 +230,32 @@ Deno.serve(async (req: Request): Promise<Response> => {
     // --- notify (non-fatal) --------------------------------------------------
     let emailQueued = false;
     try {
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/send-contact-confirmation`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE_KEY}` },
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          phone: data.phone || null,
-          subject: data.subject,
-          message: data.message,
-          category,
-          referenceId: reference,
-        }),
+      const { sendContactConfirmation } = await import("@/lib/contact-confirmation.server");
+      await sendContactConfirmation({
+        name: data.name,
+        email: data.email,
+        phone: data.phone || null,
+        subject: data.subject,
+        message: data.message,
+        category,
+        referenceId: reference,
       });
-      emailQueued = res.ok;
-      if (!res.ok) console.error(`send-contact-confirmation failed [${res.status}]:`, await res.text());
+      emailQueued = true;
     } catch (e) {
       console.error("send-contact-confirmation invoke error:", e);
     }
 
-    return json({
+    return {
       success: true,
       referenceId: reference,
       category,
       submittedAt: inserted.created_at,
       emailQueued,
-    });
+      status: 200,
+    };
   } catch (error) {
     console.error("submit-contact-support error:", error);
     await log({ outcome: "error", reject_reason: error instanceof Error ? error.message : "unknown" });
-    return json({ error: "Unexpected error. Please try again." }, 500);
+    return { error: "Unexpected error. Please try again.", status: 500 };
   }
-});
+}

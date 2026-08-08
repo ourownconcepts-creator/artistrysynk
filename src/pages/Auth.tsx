@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "@/lib/router-compat";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { sendWelcomeEmail } from "@/lib/send-welcome-email.functions";
 import { getOAuthRedirectUri } from "@/lib/native";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -182,9 +183,7 @@ const Auth = () => {
     }
 
     // Send welcome email (fire-and-forget, never block signup)
-    supabase.functions.invoke("send-welcome-email", {
-      body: { email, fullName, username },
-    }).catch(() => {});
+    sendWelcomeEmail({ data: { email, fullName, username } }).catch(() => {});
 
     toast.success("Account created! Complete your profile to get started.");
     navigate("/setup-profile");
