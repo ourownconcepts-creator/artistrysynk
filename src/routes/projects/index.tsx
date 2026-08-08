@@ -1,16 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { Navbar } from "@/components/Navbar";
-import { PageTransition } from "@/components/layout/PageTransition";
+import { AppShell } from "@/components/app-shell/AppShell";
 import Projects from "@/pages/Projects";
 
 export const Route = createFileRoute("/projects/")({
   component: () => (
     <ProtectedRoute>
-      <Navbar />
-      <PageTransition>
+      <AppShell title="Projects">
         <Projects />
-      </PageTransition>
+      </AppShell>
     </ProtectedRoute>
   ),
 });
