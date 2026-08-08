@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, ArrowLeft, BadgeCheck, Heart, Flag, ExternalLink } from "lucide-react";
@@ -173,125 +173,158 @@ const PublicProfile = () => {
         location={profile.location ?? undefined}
         sameAs={socialLinks.map(([, url]) => (url.startsWith("http") ? url : `https://${url}`))}
       />
-      <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
-        <div className="max-w-4xl mx-auto py-8">
-          <Button variant="ghost" className="mb-4" onClick={() => navigate(-1)}>
+      <div className="min-h-screen bg-background">
+        <div className="mx-auto max-w-3xl px-4 pb-16">
+          <Button variant="ghost" className="my-3" onClick={() => navigate(-1)}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
 
-          <Card className="mb-6">
-            {profile.cover_image_url && (
-              <div className="h-48 w-full overflow-hidden rounded-t-lg">
+          <div className="overflow-hidden rounded-4xl border border-border bg-card">
+            {/* Editorial cover */}
+            <div className="relative h-56 w-full bg-gradient-to-br from-primary/40 via-secondary/25 to-accent/25">
+              {profile.cover_image_url && (
                 <img
                   src={profile.cover_image_url}
                   alt={`${profile.full_name} cover image`}
                   loading="lazy"
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover opacity-70"
                 />
-              </div>
-            )}
-            <CardHeader className="text-center relative">
-              <div className={`flex justify-center ${profile.cover_image_url ? "-mt-16" : ""}`}>
-                <Avatar className="w-32 h-32 border-4 border-background shadow-lg">
-                  <AvatarImage src={profile.avatar_url ?? undefined} alt={`${profile.full_name} profile photo`} />
-                  <AvatarFallback className="text-4xl bg-secondary/20">{profile.full_name?.charAt(0)}</AvatarFallback>
-                </Avatar>
-              </div>
-              <div className="flex items-center justify-center gap-2 mt-4">
-                <h1 className="text-3xl font-bold leading-none tracking-tight">{profile.full_name}</h1>
-                {profile.is_verified && <BadgeCheck className="w-6 h-6 text-emerald-500" aria-label="Verified" />}
-              </div>
-              <p className="text-muted-foreground text-lg">@{profile.username}</p>
-            </CardHeader>
-
-            <CardContent className="space-y-6">
-              {profile.location && (
-                <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                  <MapPin className="w-4 h-4" />
-                  {profile.location}
-                </div>
               )}
+              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+            </div>
 
+            <div className="relative z-10 -mt-20 px-6 pb-8">
+              {/* Asymmetric header */}
+              <div className="flex items-end justify-between">
+                <div className="overflow-hidden rounded-2xl border-2 border-secondary shadow-[4px_4px_0_0_hsl(var(--accent))]">
+                  <Avatar className="h-28 w-28 rounded-none">
+                    <AvatarImage
+                      src={profile.avatar_url ?? undefined}
+                      alt={`${profile.full_name} profile photo`}
+                      className="object-cover"
+                    />
+                    <AvatarFallback className="rounded-none bg-primary/20 text-4xl">
+                      {profile.full_name?.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+                {profile.is_verified && (
+                  <div className="flex flex-col items-end pb-2">
+                    <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.3em] text-accent">
+                      <BadgeCheck className="h-3.5 w-3.5" aria-label="Verified" />
+                      Verified Synk
+                    </span>
+                    <div className="mt-1 h-1 w-8 bg-secondary" />
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-6">
+                <h1
+                  className="text-5xl font-extrabold uppercase leading-[0.85] tracking-tighter"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  {profile.full_name}
+                </h1>
+                <p className="mt-2 font-mono text-sm uppercase tracking-tight text-primary">@{profile.username}</p>
+              </div>
+
+              {/* Roles as editorial rail */}
               {roles.length > 0 && (
-                <div className="text-center">
-                  <h2 className="font-semibold mb-3">Creative Roles</h2>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {roles.map((r) => (
-                      <Badge key={r} variant="secondary" className="text-sm px-3 py-1">
-                        {getRoleLabel(r as never)}
-                      </Badge>
-                    ))}
-                  </div>
+                <div className="mt-8 flex w-full max-w-full items-baseline gap-4 overflow-x-auto pb-1">
+                  <h2 className="sr-only">Creative roles</h2>
+                  {roles.map((r, i) => (
+                    <span
+                      key={r}
+                      className={`flex-shrink-0 pb-1 text-[10px] font-bold uppercase tracking-widest ${
+                        i === 0
+                          ? "border-b-2 border-secondary text-secondary"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      {getRoleLabel(r as never)}
+                    </span>
+                  ))}
                 </div>
               )}
 
-              {skills.length > 0 && (
-                <div className="text-center">
-                  <h2 className="font-semibold mb-3">Skills</h2>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {skills.map((s) => (
-                      <Badge key={s} variant="outline" className="text-sm px-3 py-1">
-                        {s}
-                      </Badge>
-                    ))}
-                  </div>
+              {/* Metadata grid */}
+              <div className="mt-8 grid grid-cols-2 gap-px border border-border bg-border">
+                <div className="bg-card p-4">
+                  <p className="mb-1 text-[9px] uppercase tracking-widest text-muted-foreground">Genres</p>
+                  <p className="text-xs font-medium">
+                    {genres.length ? genres.map((g) => g.replace(/_/g, " ")).join(", ") : "—"}
+                  </p>
                 </div>
-              )}
-
-              {genres.length > 0 && (
-                <div className="text-center">
-                  <h2 className="font-semibold mb-3">Genres</h2>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {genres.map((g) => (
-                      <Badge key={g} variant="outline" className="text-sm px-3 py-1">
-                        {g}
-                      </Badge>
-                    ))}
+                <div className="bg-card p-4">
+                  <p className="mb-1 text-[9px] uppercase tracking-widest text-muted-foreground">Active in</p>
+                  <p className="flex items-center gap-1 text-xs font-medium">
+                    <MapPin className="h-3 w-3 text-accent" />
+                    {profile.location || "Remote"}
+                  </p>
+                </div>
+                {skills.length > 0 && (
+                  <div className="col-span-2 bg-card p-4">
+                    <p className="mb-2 text-[9px] uppercase tracking-widest text-muted-foreground">Skills</p>
+                    <div className="flex flex-wrap gap-2">
+                      {skills.map((s) => (
+                        <Badge key={s} variant="outline" className="text-[10px] uppercase tracking-widest">
+                          {s}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
+                )}
+              </div>
+
+              {/* Brief */}
+              {profile.bio && (
+                <div className="mt-8">
+                  <div className="mb-3 flex items-center gap-2">
+                    <div className="h-1 w-1 rounded-full bg-accent" />
+                    <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                      Profile brief
+                    </h2>
+                  </div>
+                  <p className="text-sm font-light leading-relaxed text-foreground/80">{profile.bio}</p>
                 </div>
               )}
 
               {socialLinks.length > 0 && (
-                <div className="text-center">
-                  <h2 className="font-semibold mb-3">Links</h2>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {socialLinks.map(([platform, url]) => (
-                      <Button
-                        key={platform}
-                        variant="outline"
-                        size="sm"
-                        className="gap-1 capitalize"
-                        onClick={() => {
-                          const fullUrl = url.startsWith("http") ? url : `https://${url}`;
-                          void openExternalUrl(fullUrl);
-                        }}
-                      >
-                        <ExternalLink className="w-3 h-3" />
-                        {platform}
-                      </Button>
-                    ))}
-                  </div>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <h2 className="sr-only">Links</h2>
+                  {socialLinks.map(([platform, url]) => (
+                    <Button
+                      key={platform}
+                      variant="outline"
+                      size="sm"
+                      className="gap-1 rounded-xl text-[10px] font-bold uppercase tracking-widest"
+                      onClick={() => {
+                        const fullUrl = url.startsWith("http") ? url : `https://${url}`;
+                        void openExternalUrl(fullUrl);
+                      }}
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      {platform}
+                    </Button>
+                  ))}
                 </div>
               )}
 
-              {profile.bio && (
-                <div className="text-center max-w-xl mx-auto">
-                  <h2 className="font-semibold mb-3">About</h2>
-                  <p className="text-muted-foreground">{profile.bio}</p>
-                </div>
-              )}
-
-              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                <Calendar className="w-3 h-3" />
+              <div className="mt-6 flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground">
+                <Calendar className="h-3 w-3" />
                 Joined {new Date(profile.created_at).toLocaleDateString()}
               </div>
 
               {currentUserId && !isOwner && (
-                <div className="flex justify-center gap-3 pt-4">
-                  <Button onClick={handleLike} className="gap-2">
-                    <Heart className="w-5 h-5" />
-                    Like Profile
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <Button
+                    onClick={handleLike}
+                    className="h-12 min-w-[220px] flex-1 gap-2 rounded-xl text-[11px] font-bold uppercase tracking-widest"
+                  >
+                    <Heart className="h-4 w-4" />
+                    Request collaboration
                   </Button>
                   <FlagContentDialog
                     contentType="profile"
@@ -317,21 +350,29 @@ const PublicProfile = () => {
               )}
 
               {!currentUserId && (
-                <div className="flex flex-col items-center gap-2 pt-4">
-                  <Button asChild>
+                <div className="mt-8 flex flex-col gap-2">
+                  <Button asChild className="h-12 rounded-xl text-[11px] font-bold uppercase tracking-widest">
                     <Link to="/auth">Join ArtistrySynk to collaborate</Link>
                   </Button>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-center text-xs text-muted-foreground">
                     Create a free account to message, match and collaborate with {profile.full_name}.
                   </p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card>
+            <div className="flex h-1 w-full">
+              <div className="h-full flex-1 bg-secondary" />
+              <div className="h-full flex-1 bg-primary" />
+              <div className="h-full flex-1 bg-accent" />
+            </div>
+          </div>
+
+          <Card className="mt-6 rounded-3xl">
             <CardHeader>
-              <h2 className="text-xl font-semibold leading-none tracking-tight">Portfolio highlights</h2>
+              <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground">
+                Portfolio highlights
+              </h2>
             </CardHeader>
             <CardContent>
               {currentUserId ? (
