@@ -9,6 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertTriangle, Search, Eye, CheckCircle, XCircle, RefreshCw, Undo2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useServerFn } from '@tanstack/react-start';
+import { notifyContentStatus } from '@/lib/notify-content-status.functions';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -27,6 +29,7 @@ interface ContentAppeal {
 }
 
 export const ContentAppealsManager = () => {
+  const sendContentStatusEmail = useServerFn(notifyContentStatus);
   const [appeals, setAppeals] = useState<ContentAppeal[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -159,8 +162,8 @@ export const ContentAppealsManager = () => {
 
       // Send email notification
       try {
-        await supabase.functions.invoke('notify-content-status', {
-          body: {
+        await sendContentStatusEmail({
+          data: {
             userId: appeal.user_id,
             contentType: appeal.content_type,
             action: approved ? 'restored' : 'appeal_rejected',

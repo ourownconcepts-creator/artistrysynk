@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { notifyVerificationStatus } from "@/lib/notify-verification-status.functions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -18,6 +20,7 @@ interface VerificationRequest {
 }
 
 export const VerificationRequests = () => {
+  const sendVerificationStatusEmail = useServerFn(notifyVerificationStatus);
   const [requests, setRequests] = useState<VerificationRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -109,8 +112,8 @@ export const VerificationRequests = () => {
       const userEmail = emailRows?.[0]?.email;
 
       if (userEmail && userProfile?.full_name) {
-        await supabase.functions.invoke('notify-verification-status', {
-          body: {
+        await sendVerificationStatusEmail({
+          data: {
             email: userEmail,
             fullName: userProfile.full_name,
             status,
