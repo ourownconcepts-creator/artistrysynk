@@ -53,6 +53,7 @@ import { Route as SoftwareDevelopersRouteImport } from './routes/software-develo
 import { Route as SongwritersRouteImport } from './routes/songwriters'
 import { Route as SuccessStoriesRouteImport } from './routes/success-stories'
 import { Route as SuperAdminRouteImport } from './routes/super-admin'
+import { Route as SynkAiRouteImport } from './routes/synk-ai'
 import { Route as TeamsRouteImport } from './routes/teams'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VideographersRouteImport } from './routes/videographers'
@@ -295,6 +296,11 @@ const SuperAdminRoute = SuperAdminRouteImport.update({
   path: '/super-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SynkAiRoute = SynkAiRouteImport.update({
+  id: '/synk-ai',
+  path: '/synk-ai',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TeamsRoute = TeamsRouteImport.update({
   id: '/teams',
   path: '/teams',
@@ -447,6 +453,7 @@ export interface FileRoutesByFullPath {
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/super-admin': typeof SuperAdminRoute
+  '/synk-ai': typeof SynkAiRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
   '/videographers': typeof VideographersRoute
@@ -514,6 +521,7 @@ export interface FileRoutesByTo {
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/super-admin': typeof SuperAdminRoute
+  '/synk-ai': typeof SynkAiRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
   '/videographers': typeof VideographersRoute
@@ -582,6 +590,7 @@ export interface FileRoutesById {
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/super-admin': typeof SuperAdminRoute
+  '/synk-ai': typeof SynkAiRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
   '/videographers': typeof VideographersRoute
@@ -651,6 +660,7 @@ export interface FileRouteTypes {
     | '/songwriters'
     | '/success-stories'
     | '/super-admin'
+    | '/synk-ai'
     | '/teams'
     | '/terms'
     | '/videographers'
@@ -718,6 +728,7 @@ export interface FileRouteTypes {
     | '/songwriters'
     | '/success-stories'
     | '/super-admin'
+    | '/synk-ai'
     | '/teams'
     | '/terms'
     | '/videographers'
@@ -785,6 +796,7 @@ export interface FileRouteTypes {
     | '/songwriters'
     | '/success-stories'
     | '/super-admin'
+    | '/synk-ai'
     | '/teams'
     | '/terms'
     | '/videographers'
@@ -853,6 +865,7 @@ export interface RootRouteChildren {
   SongwritersRoute: typeof SongwritersRoute
   SuccessStoriesRoute: typeof SuccessStoriesRoute
   SuperAdminRoute: typeof SuperAdminRoute
+  SynkAiRoute: typeof SynkAiRoute
   TeamsRoute: typeof TeamsRoute
   TermsRoute: typeof TermsRoute
   VideographersRoute: typeof VideographersRoute
@@ -1186,6 +1199,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuperAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/synk-ai': {
+      id: '/synk-ai'
+      path: '/synk-ai'
+      fullPath: '/synk-ai'
+      preLoaderRoute: typeof SynkAiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/teams': {
       id: '/teams'
       path: '/teams'
@@ -1381,6 +1401,7 @@ const rootRouteChildren: RootRouteChildren = {
   SongwritersRoute: SongwritersRoute,
   SuccessStoriesRoute: SuccessStoriesRoute,
   SuperAdminRoute: SuperAdminRoute,
+  SynkAiRoute: SynkAiRoute,
   TeamsRoute: TeamsRoute,
   TermsRoute: TermsRoute,
   VideographersRoute: VideographersRoute,
