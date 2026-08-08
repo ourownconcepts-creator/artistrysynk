@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.resolve_overdue_role_changes() FROM anon, authenticated, public;
