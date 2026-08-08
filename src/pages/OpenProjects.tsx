@@ -359,7 +359,7 @@ const OpenProjects = () => {
                     </div>
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
-                      <span>{formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}</span>
+                      <span>{formatDistanceToNow(new Date(project.created_at ?? Date.now()), { addSuffix: true })}</span>
                     </div>
                   </div>
                 </CardContent>

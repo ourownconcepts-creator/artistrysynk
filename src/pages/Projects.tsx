@@ -17,7 +17,7 @@ interface Project {
   id: string;
   title: string;
   description: string | null;
-  status: string;
+  status: string | null;
   created_at: string | null;
   project_members: { count: number }[];
 }
@@ -124,7 +124,7 @@ const Projects = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string | null) => {
     switch (status) {
       case "active": return "default";
       case "completed": return "secondary";
@@ -257,7 +257,7 @@ const Projects = () => {
                     </div>
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
-                      <span>{formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}</span>
+                      <span>{formatDistanceToNow(new Date(project.created_at ?? Date.now()), { addSuffix: true })}</span>
                     </div>
                   </div>
                 </CardContent>

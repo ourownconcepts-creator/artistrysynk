@@ -68,6 +68,11 @@ const SetupProfile = () => {
       return;
     }
 
+    if (!userId) {
+      toast.error("You must be signed in to set up your profile");
+      return;
+    }
+
     setLoading(true);
 
     try {

@@ -81,6 +81,7 @@ const Studio = () => {
   }, [itemId]);
 
   const loadItem = async () => {
+    if (!itemId) return;
     const { data, error } = await supabase
       .from("portfolio_items")
       .select(`
@@ -102,6 +103,7 @@ const Studio = () => {
   };
 
   const loadFeedback = async () => {
+    if (!itemId) return;
     const { data } = await supabase
       .from("studio_feedback")
       .select(`
@@ -115,7 +117,7 @@ const Studio = () => {
   };
 
   const submitFeedback = async () => {
-    if (!newFeedback.trim() || !currentUser) return;
+    if (!newFeedback.trim() || !currentUser || !itemId) return;
 
     const { error } = await supabase.from("studio_feedback").insert({
       portfolio_item_id: itemId,

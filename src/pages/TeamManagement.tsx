@@ -78,6 +78,10 @@ const TeamManagement = () => {
       toast.error("Team name is required");
       return;
     }
+    if (!currentUser) {
+      toast.error("You must be signed in");
+      return;
+    }
 
     const { data, error } = await supabase
       .from("teams")
