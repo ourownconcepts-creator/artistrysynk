@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { adminCaptchaKeys } from "@/lib/admin-captcha-keys.functions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ interface KeyStatus {
 }
 
 export const CaptchaKeysCard = () => {
+  const callAdminCaptchaKeys = useServerFn(adminCaptchaKeys);
   const [status, setStatus] = useState<KeyStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -25,11 +27,8 @@ export const CaptchaKeysCard = () => {
   const [siteKey, setSiteKey] = useState("");
   const [secretKey, setSecretKey] = useState("");
 
-  const call = async (payload: Record<string, unknown>) => {
-    const { data, error } = await supabase.functions.invoke("admin-captcha-keys", { body: payload });
-    if (error) throw new Error(error.message);
-    if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
-    return data as KeyStatus;
+  const call = async (payload: { action: "status" | "save" | "clear"; siteKey?: string; secretKey?: string }) => {
+    return (await callAdminCaptchaKeys({ data: payload })) as KeyStatus;
   };
 
   const load = async () => {
