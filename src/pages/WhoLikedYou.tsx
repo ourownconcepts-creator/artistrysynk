@@ -197,7 +197,7 @@ const WhoLikedYou = () => {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {likedProfiles.map((profile) => (
-              <Card key={profile.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <Card key={profile.id} className="overflow-hidden hover:shadow-lg transition-shadow-sm">
                 <div className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 relative">
                   {profile.avatar_url ? (
                     <img

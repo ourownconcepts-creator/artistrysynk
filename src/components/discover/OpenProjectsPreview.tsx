@@ -57,7 +57,7 @@ export const OpenProjectsPreview = () => {
         {projects.map(project => (
           <Card
             key={project.id}
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            className="cursor-pointer hover:shadow-md transition-shadow-sm"
             onClick={() => navigate(`/projects/${project.id}`)}
           >
             <CardContent className="p-3">

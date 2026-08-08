@@ -185,7 +185,7 @@ export const QuickActionsWidget = ({ onTabChange }: QuickActionsWidgetProps) => 
             >
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-2">
-                  <div className={`p-1.5 rounded ${priorityColors[item.priority]}`}>
+                  <div className={`p-1.5 rounded-sm ${priorityColors[item.priority]}`}>
                     {item.icon}
                   </div>
                   <span className="font-medium text-sm">{item.label}</span>

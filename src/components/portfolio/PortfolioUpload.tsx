@@ -164,9 +164,9 @@ export const PortfolioUpload = ({ userId, onUploadComplete }: PortfolioUploadPro
                 {preview && (mediaType === "image" || mediaType === "video") && (
                   <div className="mb-4">
                     {mediaType === "image" ? (
-                      <img src={preview} alt="Preview" className="max-h-48 mx-auto rounded" />
+                      <img src={preview} alt="Preview" className="max-h-48 mx-auto rounded-sm" />
                     ) : (
-                      <video src={preview} controls className="max-h-48 mx-auto rounded" />
+                      <video src={preview} controls className="max-h-48 mx-auto rounded-sm" />
                     )}
                   </div>
                 )}

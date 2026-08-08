@@ -276,7 +276,7 @@ export const Testimonials = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute left-0 md:-left-16 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-card/80 backdrop-blur-sm border border-border/50 hover:bg-primary hover:text-primary-foreground transition-all z-10"
+            className="absolute left-0 md:-left-16 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-card/80 backdrop-blur-xs border border-border/50 hover:bg-primary hover:text-primary-foreground transition-all z-10"
             onClick={() => paginate(-1)}
           >
             <ArrowLeft className="w-5 h-5" />
@@ -284,7 +284,7 @@ export const Testimonials = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-0 md:-right-16 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-card/80 backdrop-blur-sm border border-border/50 hover:bg-primary hover:text-primary-foreground transition-all z-10"
+            className="absolute right-0 md:-right-16 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-card/80 backdrop-blur-xs border border-border/50 hover:bg-primary hover:text-primary-foreground transition-all z-10"
             onClick={() => paginate(1)}
           >
             <ArrowRight className="w-5 h-5" />

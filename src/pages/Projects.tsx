@@ -233,7 +233,7 @@ const Projects = () => {
             {projects.map((project) => (
               <Card
                 key={project.id}
-                className="cursor-pointer hover:shadow-lg transition-shadow"
+                className="cursor-pointer hover:shadow-lg transition-shadow-sm"
                 onClick={() => navigate(`/projects/${project.id}`)}
               >
                 <CardHeader>

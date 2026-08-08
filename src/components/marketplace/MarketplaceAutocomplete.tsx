@@ -155,7 +155,7 @@ export const MarketplaceAutocomplete = ({
                   type="button"
                   role="option"
                   aria-selected={i === activeIndex}
-                  className={`flex w-full items-center gap-2 rounded-sm px-2 py-2 text-left text-sm ${
+                  className={`flex w-full items-center gap-2 rounded-xs px-2 py-2 text-left text-sm ${
                     i === activeIndex ? "bg-accent text-accent-foreground" : "hover:bg-accent/60"
                   }`}
                   onMouseEnter={() => setActiveIndex(i)}

@@ -182,7 +182,7 @@ const Matches = () => {
         
         {/* Who Liked You Card */}
         <Card 
-          className="mb-6 cursor-pointer hover:shadow-lg transition-shadow border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5"
+          className="mb-6 cursor-pointer hover:shadow-lg transition-shadow-sm border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5"
           onClick={() => navigate("/who-liked-you")}
         >
           <CardContent className="p-6">
@@ -224,7 +224,7 @@ const Matches = () => {
             {matches.map((match) => (
               <Card
                 key={match.id}
-                className="cursor-pointer hover:shadow-lg transition-shadow relative"
+                className="cursor-pointer hover:shadow-lg transition-shadow-sm relative"
                 onClick={() => navigate(`/messages/${match.conversation_id}`)}
               >
                 <CardContent className="p-6">

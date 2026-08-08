@@ -100,7 +100,7 @@ export const PartnersCarousel = () => {
           {[...countries, ...countries, ...countries].map((country, index) => (
             <motion.div
               key={`${country}-${index}`}
-              className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-card/50 backdrop-blur-sm rounded-lg border border-border/50 hover:border-primary/50 transition-colors"
+              className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-card/50 backdrop-blur-xs rounded-lg border border-border/50 hover:border-primary/50 transition-colors"
               whileHover={{ scale: 1.05 }}
             >
               <MapPin className="w-4 h-4 text-primary" />

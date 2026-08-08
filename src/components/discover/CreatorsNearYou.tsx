@@ -177,7 +177,7 @@ export const CreatorsNearYou = ({ currentUserId }: { currentUserId: string }) =>
         {creators.map((creator) => (
           <Card
             key={creator.id}
-            className="shrink-0 w-36 cursor-pointer hover:shadow-md transition-shadow"
+            className="shrink-0 w-36 cursor-pointer hover:shadow-md transition-shadow-sm"
             onClick={() => navigate(`/profile/${creator.id}`)}
           >
             <CardContent className="p-3 text-center">

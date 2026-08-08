@@ -35,7 +35,7 @@ const Blob = ({ className, color, delay = 0, duration = 8 }: BlobProps) => {
       <svg 
         viewBox="0 0 560 560" 
         className="w-full h-full"
-        style={{ filter: 'blur(60px)' }}
+        style={{ filter: 'blur-sm(60px)' }}
       >
         <path
           fill={color}

@@ -85,7 +85,7 @@ export const SkillTagsInput = ({ userId, editable = true }: SkillTagsInputProps)
   };
 
   if (loading) {
-    return <div className="animate-pulse h-8 bg-muted rounded" />;
+    return <div className="animate-pulse h-8 bg-muted rounded-sm" />;
   }
 
   return (

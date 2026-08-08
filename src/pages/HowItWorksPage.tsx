@@ -170,7 +170,7 @@ const HowItWorksPage = () => {
                   <div className="absolute bottom-4 right-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={toggleMute}
-                      className="p-3 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-lg"
+                      className="p-3 rounded-full bg-background/80 backdrop-blur-xs border border-border shadow-lg"
                       aria-label={isMuted ? "Unmute video" : "Mute video"}
                     >
                       {isMuted ? (
@@ -181,7 +181,7 @@ const HowItWorksPage = () => {
                     </button>
                     <button
                       onClick={togglePlayPause}
-                      className="p-3 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-lg"
+                      className="p-3 rounded-full bg-background/80 backdrop-blur-xs border border-border shadow-lg"
                       aria-label={isPlaying ? "Pause video" : "Play video"}
                     >
                       {isPlaying ? (

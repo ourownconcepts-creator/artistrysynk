@@ -78,7 +78,7 @@ const CreatorCredits = () => {
           </Card>
         ) : (
           credits.map(credit => (
-            <Card key={credit.id} className="cursor-pointer hover:shadow-md transition-shadow"
+            <Card key={credit.id} className="cursor-pointer hover:shadow-md transition-shadow-sm"
               onClick={() => credit.project && navigate(`/projects/${credit.project.id}`)}>
               <CardContent className="py-4">
                 <div className="flex items-start gap-4">
