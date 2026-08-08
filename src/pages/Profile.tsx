@@ -83,7 +83,7 @@ const Profile = () => {
       supabase
         .from("matches")
         .select("id", { count: "exact", head: true })
-        .or(`user1_id.eq.${uid},user2_id.eq.${uid}`),
+        .or(`user_id_1.eq.${uid},user_id_2.eq.${uid}`),
     ]);
     setCounts({ portfolio: portfolio ?? 0, matches: matches ?? 0 });
   }, []);
