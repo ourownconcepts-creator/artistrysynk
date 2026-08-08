@@ -156,8 +156,8 @@ export function HomeScreen() {
             {nearby.data.map((p: Record<string, unknown>) => (
               <Link
                 key={String(p.id)}
-                to="/profile/$username"
-                params={{ username: String(p.username ?? p.id) }}
+                to="/profile/$userId"
+                params={{ userId: String(p.username ?? p.id) }}
                 className="w-40 shrink-0"
               >
                 <Surface level={1} className="h-full p-3">
@@ -348,8 +348,8 @@ export function HomeScreen() {
             {(signups.data ?? []).map((p) => (
               <Link
                 key={p.id}
-                to="/profile/$username"
-                params={{ username: p.username ?? p.id }}
+                to="/profile/$userId"
+                params={{ userId: p.username ?? p.id }}
                 className="w-20 shrink-0 text-center"
               >
                 <PresenceAvatar src={p.avatar_url} name={p.full_name ?? "Creative"} size="lg" />
