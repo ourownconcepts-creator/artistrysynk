@@ -1,3 +1,4 @@
+import { PUBLIC_ORIGIN } from "@/lib/native";
 import { openExternalUrl } from "@/lib/nativeMedia";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,7 +60,7 @@ export const ReferralCard = () => {
     setLoading(false);
   };
 
-  const referralLink = `${window.location.origin}/auth?ref=${referralCode}`;
+  const referralLink = `${PUBLIC_ORIGIN}/auth?ref=${referralCode}`;
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
