@@ -169,6 +169,14 @@ export const ContentFlagsManager = () => {
                   .single();
                 ownerId = project?.created_by || null;
                 break;
+              case 'project_file':
+                const { data: projectFile } = await supabase
+                  .from('project_files')
+                  .select('uploaded_by')
+                  .eq('id', flagData.content_id)
+                  .single();
+                ownerId = projectFile?.uploaded_by || null;
+                break;
             }
 
             if (ownerId) {
@@ -227,6 +235,9 @@ export const ContentFlagsManager = () => {
           break;
         case 'project':
           ({ error } = await supabase.from('projects').update({ is_hidden: false }).eq('id', contentId));
+          break;
+        case 'project_file':
+          ({ error } = await supabase.from('project_files').update({ is_hidden: false }).eq('id', contentId));
           break;
       }
       if (error) throw error;
