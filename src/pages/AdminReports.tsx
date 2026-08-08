@@ -12,6 +12,8 @@ import { ExportData } from "@/components/admin/ExportData";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { cn } from "@/lib/utils";
 import { EnhancedAnalyticsDashboard } from "@/components/admin/EnhancedAnalyticsDashboard";
+import { useServerFn } from "@tanstack/react-start";
+import { sendWeeklyReport as sendWeeklyReportFn } from "@/lib/send-weekly-report.functions";
 
 export default function AdminReports() {
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
@@ -97,10 +99,11 @@ export default function AdminReports() {
     setScheduledReports(data || []);
   };
 
+  const sendWeeklyReportFnBound = useServerFn(sendWeeklyReportFn);
+
   const sendWeeklyReport = async () => {
     try {
-      const { error } = await supabase.functions.invoke('send-weekly-report');
-      if (error) throw error;
+      await sendWeeklyReportFnBound();
       toast.success("Weekly report sent successfully");
     } catch (error) {
       console.error("Error sending report:", error);

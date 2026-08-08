@@ -63,6 +63,17 @@ function referenceId(category: string) {
   return `AS-${category === "privacy" ? "PRV" : "SUP"}-${rand}`;
 }
 
+type AuditRow = {
+  outcome: string;
+  reject_reason?: string;
+  email?: string;
+  reference_id?: string;
+  submission_id?: string;
+  captcha_required?: boolean;
+  captcha_passed?: boolean | null;
+  validation_results?: Record<string, unknown>;
+};
+
 export async function submitContactSupport(
   data: SubmitContactSupportInput,
 ): Promise<SubmitContactSupportResult> {
@@ -90,7 +101,7 @@ export async function submitContactSupport(
   const ipHash = await sha256(`${IP_SALT}:${ip}`);
   const userAgent = (getRequestHeader("user-agent") ?? "").slice(0, 500);
 
-  const log = async (row: Record<string, unknown>) => {
+  const log = async (row: AuditRow) => {
     const { error } = await admin.from("contact_submission_audit").insert({
       ip_hash: ipHash,
       user_agent: userAgent,

@@ -18,9 +18,9 @@ export async function sendWeeklyReport() {
 
   const now = new Date();
   const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const newUsers = profiles?.filter((p) => new Date(p.created_at) > lastWeek).length || 0;
+  const newUsers = profiles?.filter((p) => p.created_at != null && new Date(p.created_at) > lastWeek).length || 0;
   const totalUsers = profiles?.length || 0;
-  const recentActivity = activityLogs?.filter((a) => new Date(a.created_at) > lastWeek).length || 0;
+  const recentActivity = activityLogs?.filter((a) => a.created_at != null && new Date(a.created_at) > lastWeek).length || 0;
 
   const { data: superAdmins } = await supabase.from("user_roles").select("user_id").eq("role", "super_admin");
 

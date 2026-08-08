@@ -40,7 +40,7 @@ export async function sendNewsletterCampaign({
     throw new Error("No recipients found");
   }
 
-  const results: Array<{ email: string; success: boolean; data?: unknown; error?: string }> = [];
+  const results: Array<{ email: string; success: boolean; id?: string; error?: string }> = [];
 
   for (const email of uniqueEmails) {
     try {
@@ -85,7 +85,7 @@ export async function sendNewsletterCampaign({
               </html>
             `,
       });
-      results.push({ email, success: true, data: emailResponse });
+      results.push({ email, success: true, ...(emailResponse?.id ? { id: emailResponse.id } : {}) });
     } catch (emailError: any) {
       results.push({ email, success: false, error: emailError.message });
     }

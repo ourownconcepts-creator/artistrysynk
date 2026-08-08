@@ -14,9 +14,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScheduledNewsletters } from "./ScheduledNewsletters";
 import { NewsletterPreviewDialog } from "./NewsletterPreviewDialog";
+import { useServerFn } from "@tanstack/react-start";
+import { sendNewsletterCampaign as sendNewsletterCampaignFn } from "@/lib/send-newsletter-campaign.functions";
 
 export const NewsletterCampaign = () => {
   const queryClient = useQueryClient();
+  const sendNewsletterCampaign = useServerFn(sendNewsletterCampaignFn);
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
   const [previewText, setPreviewText] = useState("");
@@ -48,22 +51,14 @@ export const NewsletterCampaign = () => {
         ? template.generateHtml(content.trim(), subject.trim())
         : content.trim();
 
-      const { data, error } = await supabase.functions.invoke("send-newsletter-campaign", {
-        body: {
+      const data = await sendNewsletterCampaign({
+        data: {
           subject: subject.trim(),
           content: htmlContent,
           previewText: previewText.trim() || undefined,
           audience,
-          useRawHtml: true,
         },
       });
-
-      if (error) throw error;
-
-      if (data.error) {
-        toast.error(data.error);
-        return;
-      }
 
       setLastResult({
         sent: data.sent,

@@ -10,6 +10,8 @@ import logoImg from "@/assets/logo.png";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { contactSchema, detectSpam, checkRateLimit, recordSubmission } from "@/lib/contactSpamGuard";
+import { useServerFn } from "@tanstack/react-start";
+import { submitContactSupport } from "@/lib/submit-contact-support.functions";
 
 type SubmissionReceipt = {
   referenceId: string;
@@ -133,6 +135,8 @@ const Contact = () => {
     }
   ];
 
+  const submitContactSupportFn = useServerFn(submitContactSupport);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -165,17 +169,8 @@ const Contact = () => {
     try {
       const clean = parsed.data;
       // All validation, rate limiting, bot protection and auditing happen server-side.
-      const { data, error } = await supabase.functions.invoke<{
-        success?: boolean;
-        referenceId?: string;
-        category?: string;
-        submittedAt?: string;
-        emailQueued?: boolean;
-        captchaRequired?: boolean;
-        siteKey?: string;
-        error?: string;
-      }>("submit-contact-support", {
-        body: {
+      const payload = await submitContactSupportFn({
+        data: {
           name: clean.name,
           email: clean.email,
           phone: clean.phone || null,
@@ -186,12 +181,6 @@ const Contact = () => {
           captchaToken: captchaToken ?? undefined,
         },
       });
-
-      let payload = data ?? null;
-      if (error && !payload) {
-        const context = (error as { context?: Response }).context;
-        if (context) payload = await context.clone().json().catch(() => null);
-      }
 
       if (payload?.captchaRequired && payload.siteKey) {
         setCaptcha({ siteKey: payload.siteKey });

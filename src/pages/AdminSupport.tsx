@@ -78,7 +78,7 @@ const AdminSupport = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [active, setActive] = useState<Ticket | null>(null);
   const [reply, setReply] = useState("");
-  const [replyStatus, setReplyStatus] = useState<string>("resolved");
+  const [replyStatus, setReplyStatus] = useState<"pending" | "reviewed" | "resolved" | "spam">("resolved");
   const [sending, setSending] = useState(false);
   const [audit, setAudit] = useState<AuditEntry[]>([]);
   const [inboxes, setInboxes] = useState({ support: "", privacy: "" });
@@ -196,7 +196,7 @@ const AdminSupport = () => {
     setSending(true);
     try {
       await sendSupportReply({
-        data: { submissionId: active.id, reply: reply.trim(), status: replyStatus },
+        data: { submissionId: active.id, reply: reply.trim(), status: replyStatus as "pending" | "resolved" | "reviewed" | "spam" },
       });
     } catch (error) {
       const details = error instanceof Error ? error.message : "Unknown error";
@@ -470,7 +470,7 @@ const AdminSupport = () => {
                 <div className="flex flex-wrap items-center gap-3 justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-muted-foreground">Set status after sending:</span>
-                    <Select value={replyStatus} onValueChange={setReplyStatus}>
+                    <Select value={replyStatus} onValueChange={(v) => setReplyStatus(v as typeof replyStatus)}>
                       <SelectTrigger className="w-[140px]" aria-label="Status after sending reply">
                         <SelectValue />
                       </SelectTrigger>
