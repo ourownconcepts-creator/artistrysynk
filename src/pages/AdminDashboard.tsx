@@ -390,6 +390,17 @@ const AdminDashboard = () => {
             </div>
             <Button onClick={() => navigate("/admin-support")}>Open inbox</Button>
           </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-4">
+            <div>
+              <p className="font-medium">Function Run History</p>
+              <p className="text-sm text-muted-foreground">
+                Runs, statuses and recent errors for support &amp; notification jobs.
+              </p>
+            </div>
+            <Button variant="outline" onClick={() => navigate("/admin-function-logs")}>
+              View run history
+            </Button>
+          </div>
           <ContactSubmissionsManager />
         </TabsContent>
 

@@ -11,5 +11,6 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
   .inputValidator(sendWelcomeEmailSchema)
   .handler(async ({ data }) => {
     const { sendWelcomeEmail } = await import("@/lib/send-welcome-email.server");
-    return sendWelcomeEmail(data);
+    const { withRunLog } = await import("@/lib/functionRunLog.server");
+    return withRunLog("send-welcome-email", { email: data.email }, () => sendWelcomeEmail(data));
   });

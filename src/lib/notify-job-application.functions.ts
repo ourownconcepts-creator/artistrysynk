@@ -16,5 +16,8 @@ export const notifyJobApplication = createServerFn({ method: "POST" })
   .inputValidator(notifyJobApplicationSchema)
   .handler(async ({ data }) => {
     const { notifyJobApplication } = await import("@/lib/notify-job-application.server");
-    return notifyJobApplication(data);
+    const { withRunLog } = await import("@/lib/functionRunLog.server");
+    return withRunLog("notify-job-application", { applicationId: data.applicationId }, () =>
+      notifyJobApplication(data),
+    );
   });

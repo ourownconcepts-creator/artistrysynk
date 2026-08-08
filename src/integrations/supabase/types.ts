@@ -891,6 +891,36 @@ export type Database = {
         }
         Relationships: []
       }
+      function_run_logs: {
+        Row: {
+          context: Json
+          created_at: string
+          duration_ms: number | null
+          error_message: string | null
+          function_name: string
+          id: string
+          status: string
+        }
+        Insert: {
+          context?: Json
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          function_name: string
+          id?: string
+          status?: string
+        }
+        Update: {
+          context?: Json
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          function_name?: string
+          id?: string
+          status?: string
+        }
+        Relationships: []
+      }
       job_applications: {
         Row: {
           applicant_id: string

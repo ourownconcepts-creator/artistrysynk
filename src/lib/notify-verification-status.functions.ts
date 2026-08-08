@@ -18,5 +18,8 @@ export const notifyVerificationStatus = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase, context.userId);
 
     const { notifyVerificationStatus: impl } = await import("@/lib/notify-verification-status.server");
-    return impl(data);
+    const { withRunLog } = await import("@/lib/functionRunLog.server");
+    return withRunLog("notify-verification-status", { status: data.status, requestType: data.requestType }, () =>
+      impl(data),
+    );
   });

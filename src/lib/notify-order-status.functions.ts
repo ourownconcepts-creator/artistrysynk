@@ -15,5 +15,8 @@ export const notifyOrderStatus = createServerFn({ method: "POST" })
   .inputValidator(notifyOrderStatusSchema)
   .handler(async ({ data }) => {
     const { notifyOrderStatus } = await import("@/lib/notify-order-status.server");
-    return notifyOrderStatus(data);
+    const { withRunLog } = await import("@/lib/functionRunLog.server");
+    return withRunLog("notify-order-status", { orderId: data.orderId, newStatus: data.newStatus }, () =>
+      notifyOrderStatus(data),
+    );
   });
