@@ -63,7 +63,7 @@ describe("smoke: project room collaboration", () => {
   });
 
   it.each(PROJECT_ROOM_SECTIONS)("opens the %s section from a push deep link", async (section) => {
-    const scrollIntoView = vi.spyOn(Element.prototype, "scrollIntoView").mockImplementation(() => {});
+    const scrollIntoView = vi.spyOn(window.HTMLElement.prototype, "scrollIntoView").mockImplementation(() => {});
     window.location.hash = `#${section}`;
 
     renderUI(<CollaborationRoom />);
