@@ -18,6 +18,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { ExternalFileLinks } from "@/components/projects/ExternalFileLinks";
 import { ActivityFeed } from "@/components/projects/ActivityFeed";
+import { ProjectInvites } from "@/components/projects/ProjectInvites";
 
 interface Project {
   id: string;
