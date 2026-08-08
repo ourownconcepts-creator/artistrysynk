@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@/lib/router-compat";
 import { listFunctionRuns as listFunctionRunsFn } from "@/lib/function-run-logs.functions";
-import type { FunctionRunSummary } from "@/lib/function-run-logs.server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +12,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PageSEO } from "@/components/seo";
 import { format } from "date-fns";
 import { ArrowLeft, Activity, AlertTriangle, CheckCircle2, RefreshCw, Timer, Search } from "lucide-react";
+
+type FunctionRunSummary = {
+  functionName: string;
+  total: number;
+  errors: number;
+  avgDurationMs: number | null;
+  lastRunAt: string | null;
+  lastStatus: string | null;
+};
 
 type RunRow = {
   id: string;
