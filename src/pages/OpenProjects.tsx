@@ -19,15 +19,15 @@ import { getRoleLabel } from "@/lib/creativeRoles";
 interface OpenProject {
   id: string;
   title: string;
-  description: string;
-  looking_for: string[];
-  budget: string;
-  created_at: string;
+  description: string | null;
+  looking_for: string[] | null;
+  budget: string | null;
+  created_at: string | null;
   created_by: string;
   profiles: {
     full_name: string;
     username: string;
-    avatar_url: string;
+    avatar_url: string | null;
   };
   project_members: { count: number }[];
   hasApplied?: boolean;
