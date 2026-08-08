@@ -15,11 +15,12 @@ export const CookieConsentBanner = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (isNativeApp()) return;
+    if (isNativeApp()) return undefined;
     if (!getCookieConsent()) {
       const timer = setTimeout(() => setVisible(true), 800);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, []);
 
   const decide = (choice: CookieConsent) => {

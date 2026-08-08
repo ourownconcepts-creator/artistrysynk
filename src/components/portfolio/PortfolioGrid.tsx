@@ -11,10 +11,10 @@ import { FlagContentDialog } from "@/components/FlagContentDialog";
 interface PortfolioItem {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   media_type: string;
   media_url: string;
-  created_at: string;
+  created_at: string | null;
 }
 
 interface PortfolioGridProps {

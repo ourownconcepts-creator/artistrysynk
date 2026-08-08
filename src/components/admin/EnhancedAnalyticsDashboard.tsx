@@ -141,11 +141,11 @@ export const EnhancedAnalyticsDashboard = () => {
       const dayEnd = endOfDay(date);
       
       const newUsers = profiles.filter(p => {
-        const created = new Date(p.created_at);
+        const created = new Date(p.created_at!);
         return created >= dayStart && created <= dayEnd;
       }).length;
 
-      const cumulativeUsers = profiles.filter(p => new Date(p.created_at) <= dayEnd).length;
+      const cumulativeUsers = profiles.filter(p => new Date(p.created_at!) <= dayEnd).length;
 
       return {
         date: format(date, 'MMM dd'),

@@ -11,11 +11,11 @@ import { format, formatDistanceToNow } from "date-fns";
 interface Session {
   id: string;
   session_id: string;
-  ip_address: string;
-  user_agent: string;
-  is_active: boolean;
-  last_active: string;
-  created_at: string;
+  ip_address: string | null;
+  user_agent: string | null;
+  is_active: boolean | null;
+  last_active: string | null;
+  created_at: string | null;
 }
 
 interface UserSessionsProps {

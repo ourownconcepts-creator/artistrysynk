@@ -12,12 +12,12 @@ interface TrendingProject {
   title: string;
   description: string;
   looking_for: string[];
-  created_at: string;
+  created_at: string | null;
   member_count: number;
   creator: {
     full_name: string;
-    avatar_url: string;
-    is_verified: boolean;
+    avatar_url: string | null;
+    is_verified: boolean | null;
   };
 }
 

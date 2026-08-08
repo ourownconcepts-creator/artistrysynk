@@ -11,10 +11,10 @@ interface NearbyCreator {
   id: string;
   full_name: string;
   username: string;
-  avatar_url: string;
-  location: string;
-  city: string;
-  country: string;
+  avatar_url: string | null;
+  location: string | null;
+  city: string | null;
+  country: string | null;
   distance_km: number;
   roles: string[];
 }
