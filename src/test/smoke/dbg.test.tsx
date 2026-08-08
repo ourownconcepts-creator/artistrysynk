@@ -9,6 +9,8 @@ import { setParams } from "@/test/mocks/router";
 describe("dbg", () => { it("dump", async () => {
   setParams({ conversationId: "conv-1" }); setUser("me");
   setTables({ conversations: [{ id: "conv-1", match_id: "m1", matches: { user_id_1: "me", user_id_2: "them" } }], profiles: [{ id: "them", full_name: "Ada Beats", username: "ada", avatar_url: null }], messages: [{ id: "msg-1", conversation_id: "conv-1", sender_id: "them", content: "hello world", read: false, created_at: new Date().toISOString() }] });
+  window.addEventListener("error", (e) => console.log("WERR", e.message));
+  process.on("unhandledRejection", (r) => console.log("UNHANDLED", r));
   renderUI(<Messages />);
   await new Promise(r => setTimeout(r, 500));
   console.log("BODY:", document.body.textContent?.slice(0, 600));
