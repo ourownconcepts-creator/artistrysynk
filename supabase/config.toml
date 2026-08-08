@@ -1,21 +1,6 @@
 project_id = "lihctrhzsyjqnlzwwkzo"
 
-[functions.notify-order-status]
-verify_jwt = false
-
-[functions.generate-vapid-keys]
-verify_jwt = false
-
-[functions.send-contact-confirmation]
-verify_jwt = false
-
-[functions.send-newsletter-campaign]
-verify_jwt = false
-
 [functions.send-push-notification]
-verify_jwt = false
-
-[functions.send-welcome-email]
 verify_jwt = false
 
 [functions.send-match-activity-digest]
@@ -23,9 +8,6 @@ verify_jwt = false
 
 [functions.notify-new-message-email]
 verify_jwt = false
-
-[functions.admin-captcha-keys]
-verify_jwt = true
 
 [functions.process-email-queue]
 verify_jwt = true
