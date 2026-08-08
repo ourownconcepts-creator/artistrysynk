@@ -152,7 +152,7 @@ const PublicProfile = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-background">
+      <main className="min-h-dvh bg-background">
         <div className="mx-auto w-full max-w-3xl px-3 pb-16 sm:px-4">
           <Button variant="ghost" className="my-3" onClick={() => navigate(-1)} aria-label="Go back">
             <ArrowLeft className="w-4 h-4 mr-2" aria-hidden="true" />
