@@ -37,7 +37,7 @@ export function BottomNav({
       <div className="app-blur border-t border-border/40">
         <ul className="mx-auto grid max-w-lg grid-cols-5 items-center px-2">
           {TABS.slice(0, 2).map((tab) => (
-            <TabItem key={tab.key} {...tab} active={isActive(pathname, tab.to)} reduced={reduced} />
+            <TabItem key={tab.key} label={tab.label} to={tab.to} icon={tab.icon} active={isActive(pathname, tab.to)} reduced={reduced} />
           ))}
           <li className="flex justify-center">
             <button
@@ -56,7 +56,9 @@ export function BottomNav({
           {TABS.slice(2).map((tab) => (
             <TabItem
               key={tab.key}
-              {...tab}
+              label={tab.label}
+              to={tab.to}
+              icon={tab.icon}
               badge={tab.key === "inbox" ? unread : 0}
               active={isActive(pathname, tab.to)}
               reduced={reduced}
