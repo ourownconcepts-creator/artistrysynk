@@ -384,7 +384,7 @@ const Messages = () => {
               {otherUser && (
                 <div className="flex items-center gap-3 flex-1">
                   <Avatar>
-                    <AvatarImage src={otherUser.avatar_url} />
+                    <AvatarImage src={otherUser.avatar_url ?? undefined} />
                     <AvatarFallback>
                       {otherUser.full_name.charAt(0)}
                     </AvatarFallback>
@@ -471,7 +471,7 @@ const Messages = () => {
                 >
                   <div className={`flex items-start gap-2 max-w-[70%] ${isCurrentUser ? 'flex-row-reverse' : ''}`}>
                     <Avatar className="w-8 h-8 mt-1 shrink-0">
-                      <AvatarImage src={senderProfile?.avatar_url} />
+                      <AvatarImage src={senderProfile?.avatar_url ?? undefined} />
                       <AvatarFallback className="text-xs">
                         {senderProfile?.full_name?.charAt(0) || '?'}
                       </AvatarFallback>
