@@ -28,11 +28,11 @@ interface Profile {
   id: string;
   full_name: string;
   username: string;
-  bio: string;
-  location: string;
-  avatar_url: string;
-  is_verified?: boolean;
-  is_featured?: boolean;
+  bio: string | null;
+  location: string | null;
+  avatar_url: string | null;
+  is_verified?: boolean | null;
+  is_featured?: boolean | null;
   user_creative_roles: { role: string }[];
   user_genres: { genre: string }[];
   user_skill_tags?: { skill: string }[];
@@ -270,10 +270,12 @@ const Discover = () => {
     }
 
     // Record the rewind
-    await supabase.from('swipe_rewinds').insert({
-      user_id: currentUser,
-      swipe_id: lastSwipe.id,
-    });
+    if (currentUser) {
+      await supabase.from('swipe_rewinds').insert({
+        user_id: currentUser,
+        swipe_id: lastSwipe.id,
+      });
+    }
 
     toast.success("Swipe undone!");
     setCurrentIndex(prev => Math.max(0, prev - 1));
