@@ -38,7 +38,7 @@ interface OtherUser {
   id: string;
   full_name: string;
   username: string;
-  avatar_url: string;
+  avatar_url: string | null;
 }
 
 const Messages = () => {
@@ -144,6 +144,10 @@ const Messages = () => {
   };
 
   const loadConversation = async (userId: string) => {
+    if (!conversationId) {
+      navigate("/matches");
+      return;
+    }
     setLoading(true);
 
     const { data: conversation, error: convError } = await supabase
@@ -181,14 +185,21 @@ const Messages = () => {
       .limit(PAGE_SIZE);
 
     const ordered = (messagesData || []).slice().reverse();
-    setMessages(ordered.map((m) => ({ ...m, status: "sent" as const })));
+    setMessages(
+      ordered.map((m) => ({
+        ...m,
+        created_at: m.created_at ?? new Date().toISOString(),
+        read: m.read ?? false,
+        status: "sent" as const,
+      }))
+    );
     setHasMore((messagesData || []).length === PAGE_SIZE);
     setLoading(false);
     setTimeout(scrollToBottom, 100);
   };
 
   const loadOlderMessages = async () => {
-    if (loadingOlder || !hasMore || messages.length === 0) return;
+    if (loadingOlder || !hasMore || messages.length === 0 || !conversationId) return;
     setLoadingOlder(true);
     const container = scrollContainerRef.current;
     const prevScrollHeight = container?.scrollHeight ?? 0;
@@ -202,7 +213,12 @@ const Messages = () => {
       .order('created_at', { ascending: false })
       .limit(PAGE_SIZE);
 
-    const older = (data || []).slice().reverse().map((m) => ({ ...m, status: "sent" as const }));
+    const older = (data || []).slice().reverse().map((m) => ({
+      ...m,
+      created_at: m.created_at ?? new Date().toISOString(),
+      read: m.read ?? false,
+      status: "sent" as const,
+    }));
     if (older.length > 0) {
       setMessages((prev) => [...older, ...prev]);
       // preserve scroll position after prepending
@@ -226,7 +242,7 @@ const Messages = () => {
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!newMessage.trim() || !currentUser) return;
+    if (!newMessage.trim() || !currentUser || !conversationId) return;
 
     const content = newMessage.trim();
     const tempId = `temp-${crypto.randomUUID()}`;
@@ -268,7 +284,7 @@ const Messages = () => {
   };
 
   const retryMessage = async (msg: Message) => {
-    if (!currentUser || msg.status !== "failed") return;
+    if (!currentUser || !conversationId || msg.status !== "failed") return;
     setMessages((prev) => prev.map((m) => (m.id === msg.id ? { ...m, status: "sending" } : m)));
     const { data: inserted, error } = await supabase
       .from('messages')
