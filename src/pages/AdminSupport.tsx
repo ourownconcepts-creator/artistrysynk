@@ -172,7 +172,7 @@ const AdminSupport = () => {
   const openTicket = (ticket: Ticket) => {
     setActive(ticket);
     setReply(ticket.admin_response ?? "");
-    setReplyStatus(ticket.status === "pending" ? "resolved" : ticket.status);
+    setReplyStatus(ticket.status === "pending" ? "resolved" : (ticket.status as "reviewed" | "resolved" | "spam"));
     fetchAudit(ticket);
   };
 

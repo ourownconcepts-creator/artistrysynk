@@ -106,6 +106,7 @@ export async function submitContactSupport(
       ip_hash: ipHash,
       user_agent: userAgent,
       ...row,
+      ...(row.validation_results ? { validation_results: row.validation_results as never } : {}),
     });
     if (error) console.error("audit log insert failed:", error.message);
   };
