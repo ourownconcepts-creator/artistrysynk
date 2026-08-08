@@ -316,6 +316,7 @@ export const DiscoverProfileCard = ({
             className="h-14 w-14 rounded-full bg-white/15 backdrop-blur-md border border-white/20 hover:bg-destructive/80 hover:border-destructive/50 transition-all shadow-lg"
             onClick={() => onSwipe(false)}
             disabled={isTransitioning}
+            aria-label={`Pass on ${profile.full_name}`}
           >
             <X className="w-7 h-7 text-white" />
           </Button>
@@ -325,6 +326,7 @@ export const DiscoverProfileCard = ({
             onClick={onRewind}
             disabled={!hasLastSwipe || isTransitioning}
             title={canRewind ? "Undo last swipe" : "Pro feature"}
+            aria-label="Undo last swipe"
           >
             <RotateCcw className="w-4 h-4 text-white/80" />
             {!canRewind && <Crown className="w-3 h-3 absolute -top-1 -right-1 text-amber-400" />}
@@ -334,6 +336,7 @@ export const DiscoverProfileCard = ({
             className="h-14 w-14 rounded-full bg-primary/80 backdrop-blur-md border border-primary/50 hover:bg-primary transition-all shadow-lg shadow-primary/30"
             onClick={() => onSwipe(true)}
             disabled={isTransitioning}
+            aria-label={`Like ${profile.full_name}`}
           >
             <Heart className="w-7 h-7 text-white" />
           </Button>
