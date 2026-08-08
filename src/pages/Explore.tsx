@@ -128,7 +128,7 @@ const Explore = () => {
             <CardContent className="p-4 text-center">
               <div className="relative inline-block mb-3">
                 <Avatar className="w-16 h-16">
-                  <AvatarImage src={creator.avatar_url} />
+                  <AvatarImage src={creator.avatar_url ?? undefined} />
                   <AvatarFallback className="text-xl">{creator.full_name?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 {idx < 3 && (
