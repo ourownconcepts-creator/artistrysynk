@@ -7,6 +7,7 @@ import { Pressable } from "@/components/native-ui";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { ThemeToggle } from "@/components/navbar/ThemeToggle";
 import { GlobalSearch } from "@/components/navbar/GlobalSearch";
+import { useAppUser } from "@/hooks/useAppUser";
 
 export function AppTopBar({
   title,
@@ -20,6 +21,7 @@ export function AppTopBar({
   transparent?: boolean;
 }) {
   const router = useRouter();
+  const { user } = useAppUser();
 
   return (
     <header
@@ -59,7 +61,7 @@ export function AppTopBar({
           >
             <Sparkles className="h-5 w-5" />
           </Link>
-          <NotificationBell />
+          {user ? <NotificationBell userId={user.id} /> : null}
           <ThemeToggle />
         </div>
       </div>
