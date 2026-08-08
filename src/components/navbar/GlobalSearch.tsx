@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { allRoles, getRoleLabel } from "@/lib/creativeRoles";
+import { rankScore, rankSort } from "@/lib/searchRanking";
 import {
   CommandDialog,
   CommandEmpty,
@@ -104,8 +105,8 @@ export const GlobalSearch = () => {
         .from("profiles")
         .select(
           roleFilter !== "all"
-            ? "id, full_name, username, avatar_url, location, user_creative_roles!inner(role)"
-            : "id, full_name, username, avatar_url, location",
+            ? "id, full_name, username, avatar_url, location, is_verified, is_featured, synergy_boost_score, user_creative_roles!inner(role)"
+            : "id, full_name, username, avatar_url, location, is_verified, is_featured, synergy_boost_score",
         )
         .or(`full_name.ilike.%${escaped}%,username.ilike.%${escaped}%`);
 
@@ -118,14 +119,30 @@ export const GlobalSearch = () => {
         );
       }
 
-      const { data: users, error: usersError } = await usersQuery.limit(5);
+      // Fetch a wider slate than we show so ranking can pick the best 5.
+      const { data: users, error: usersError } = await usersQuery.limit(20);
       if (usersError) {
         failed = true;
         console.error("Global search (users) failed:", usersError);
       }
 
       if (users) {
-        (users as any[]).forEach((user) => {
+        // Filters already ran server-side; ranking only reorders the matches.
+        const rankedUsers = rankSort(users as any[], (user) =>
+          rankScore({
+            query: escaped,
+            roles: (user.user_creative_roles ?? []).map((r: any) => r.role),
+            text: [user.full_name, user.username, user.location],
+            activeRoles: roleFilter !== "all" ? [roleFilter] : [],
+            popularity: {
+              isVerified: user.is_verified,
+              isFeatured: user.is_featured,
+              synergy: user.synergy_boost_score,
+            },
+          }),
+        ).slice(0, 5);
+
+        rankedUsers.forEach((user) => {
           searchResults.push({
             id: user.id,
             type: "user",
