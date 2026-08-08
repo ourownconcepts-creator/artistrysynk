@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Heart, MessageCircle, CheckCircle, Info } from "lucide-react";
+import { Bell, Heart, MessageCircle, CheckCircle, Info, FolderKanban } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface Notification {
@@ -26,6 +26,9 @@ const getNotificationIcon = (type: string) => {
   switch (type) {
     case "match": return Heart;
     case "message": return MessageCircle;
+    case "project":
+    case "project_application":
+    case "application_status": return FolderKanban;
     default: return Info;
   }
 };
@@ -99,6 +102,8 @@ export const NotificationBell = ({ userId }: NotificationBellProps) => {
       case "job_application":
         return data.job_id ? `/jobs` : "/jobs";
       case "collaboration_request":
+      case "project":
+      case "application_status":
       case "project_application":
         return data.project_id ? `/projects/${data.project_id}` : "/projects";
       case "verification":

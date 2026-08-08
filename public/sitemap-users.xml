@@ -6,12 +6,12 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://artistrysynk.app/profile/admin_artistry</loc>
+    <loc>https://artistrysynk.app/profile/lomodogs</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://artistrysynk.app/profile/lomodogs</loc>
+    <loc>https://artistrysynk.app/profile/admin_artistry</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>

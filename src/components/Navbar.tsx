@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code, Settings, Rss, Award, MapPin, TrendingUp } from "lucide-react";
+import { Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code, Settings, Rss, Award, MapPin, TrendingUp, LayoutGrid } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { ThemeToggle } from "@/components/navbar/ThemeToggle";
@@ -151,6 +151,10 @@ export const Navbar = () => {
                 <DropdownMenuItem onClick={() => navigate("/explore/nearby")}>
                   <MapPin className="w-4 h-4 mr-2" />
                   Creators Near You
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/gallery")}>
+                  <LayoutGrid className="w-4 h-4 mr-2" />
+                  Portfolio Gallery
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/open-projects")}>
                   <Briefcase className="w-4 h-4 mr-2" />

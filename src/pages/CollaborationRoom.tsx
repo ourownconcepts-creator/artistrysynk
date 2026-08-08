@@ -19,6 +19,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ExternalFileLinks } from "@/components/projects/ExternalFileLinks";
 import { ActivityFeed } from "@/components/projects/ActivityFeed";
 import { ProjectInvites } from "@/components/projects/ProjectInvites";
+import { ProjectFiles } from "@/components/projects/ProjectFiles";
 
 interface Project {
   id: string;
@@ -62,7 +63,6 @@ const CollaborationRoom = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
-  const [files, setFiles] = useState<ProjectFile[]>([]);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [newTaskOpen, setNewTaskOpen] = useState(false);
@@ -93,16 +93,6 @@ const CollaborationRoom = () => {
           filter: `project_id=eq.${projectId}`,
         },
         () => loadTasks()
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "project_files",
-          filter: `project_id=eq.${projectId}`,
-        },
-        () => loadFiles()
       )
       .on(
         "postgres_changes",
@@ -146,7 +136,7 @@ const CollaborationRoom = () => {
     }
 
     setProject(data);
-    await Promise.all([loadTasks(), loadMembers(), loadFiles()]);
+    await Promise.all([loadTasks(), loadMembers()]);
     setLoading(false);
   };
 
@@ -173,17 +163,6 @@ const CollaborationRoom = () => {
       .eq("project_id", projectId);
 
     setMembers((data as any) || []);
-  };
-
-  const loadFiles = async () => {
-    if (!projectId) return;
-    const { data } = await supabase
-      .from("project_files")
-      .select("*")
-      .eq("project_id", projectId)
-      .order("created_at", { ascending: false });
-
-    setFiles(data || []);
   };
 
   const createTask = async () => {
@@ -215,44 +194,6 @@ const CollaborationRoom = () => {
       .from("project_tasks")
       .update({ status })
       .eq("id", taskId);
-  };
-
-  const uploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${projectId}/${Date.now()}.${fileExt}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("portfolios")
-      .upload(fileName, file);
-
-    if (uploadError) {
-      toast.error("Failed to upload file");
-      return;
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from("portfolios")
-      .getPublicUrl(fileName);
-
-    if (!projectId || !currentUser) return;
-    const { error } = await supabase.from("project_files").insert({
-      project_id: projectId,
-      uploaded_by: currentUser,
-      file_name: file.name,
-      file_url: publicUrl,
-      file_type: file.type,
-      file_size: file.size,
-    });
-
-    if (error) {
-      toast.error("Failed to save file");
-    } else {
-      toast.success("File uploaded");
-      loadFiles();
-    }
   };
 
   const getStatusIcon = (status: string) => {
@@ -406,55 +347,7 @@ const CollaborationRoom = () => {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="w-5 h-5" />
-                  Files
-                </CardTitle>
-                <div>
-                  <input
-                    type="file"
-                    id="file-upload"
-                    className="hidden"
-                    onChange={uploadFile}
-                  />
-                  <label htmlFor="file-upload">
-                    <Button size="sm" asChild>
-                      <span>
-                        <Upload className="w-4 h-4 mr-2" />
-                        Upload
-                      </span>
-                    </Button>
-                  </label>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {files.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">
-                    No files uploaded yet
-                  </p>
-                ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {files.map((file) => (
-                      <a
-                        key={file.id}
-                        href={file.file_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-3 border rounded-lg hover:bg-muted/50 transition-colors"
-                      >
-                        <FileText className="w-8 h-8 mb-2 text-muted-foreground" />
-                        <p className="text-sm font-medium truncate">{file.file_name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDistanceToNow(new Date(file.created_at || Date.now()), { addSuffix: true })}
-                        </p>
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {currentUser && <ProjectFiles projectId={projectId!} currentUserId={currentUser} />}
 
             {currentUser && <ExternalFileLinks projectId={projectId!} currentUserId={currentUser} />}
           </div>
