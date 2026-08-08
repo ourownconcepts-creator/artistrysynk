@@ -33,6 +33,7 @@ import { Route as EditProfileRouteImport } from './routes/edit-profile'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as ForcePasswordChangeRouteImport } from './routes/force-password-change'
+import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as GraphicDesignersRouteImport } from './routes/graphic-designers'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
@@ -194,6 +195,11 @@ const FeedRoute = FeedRouteImport.update({
 const ForcePasswordChangeRoute = ForcePasswordChangeRouteImport.update({
   id: '/force-password-change',
   path: '/force-password-change',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GraphicDesignersRoute = GraphicDesignersRouteImport.update({
@@ -433,6 +439,7 @@ export interface FileRoutesByFullPath {
   '/features': typeof FeaturesRoute
   '/feed': typeof FeedRoute
   '/force-password-change': typeof ForcePasswordChangeRoute
+  '/gallery': typeof GalleryRoute
   '/graphic-designers': typeof GraphicDesignersRoute
   '/home': typeof HomeRoute
   '/how-it-works': typeof HowItWorksRoute
@@ -501,6 +508,7 @@ export interface FileRoutesByTo {
   '/features': typeof FeaturesRoute
   '/feed': typeof FeedRoute
   '/force-password-change': typeof ForcePasswordChangeRoute
+  '/gallery': typeof GalleryRoute
   '/graphic-designers': typeof GraphicDesignersRoute
   '/home': typeof HomeRoute
   '/how-it-works': typeof HowItWorksRoute
@@ -570,6 +578,7 @@ export interface FileRoutesById {
   '/features': typeof FeaturesRoute
   '/feed': typeof FeedRoute
   '/force-password-change': typeof ForcePasswordChangeRoute
+  '/gallery': typeof GalleryRoute
   '/graphic-designers': typeof GraphicDesignersRoute
   '/home': typeof HomeRoute
   '/how-it-works': typeof HowItWorksRoute
@@ -640,6 +649,7 @@ export interface FileRouteTypes {
     | '/features'
     | '/feed'
     | '/force-password-change'
+    | '/gallery'
     | '/graphic-designers'
     | '/home'
     | '/how-it-works'
@@ -708,6 +718,7 @@ export interface FileRouteTypes {
     | '/features'
     | '/feed'
     | '/force-password-change'
+    | '/gallery'
     | '/graphic-designers'
     | '/home'
     | '/how-it-works'
@@ -776,6 +787,7 @@ export interface FileRouteTypes {
     | '/features'
     | '/feed'
     | '/force-password-change'
+    | '/gallery'
     | '/graphic-designers'
     | '/home'
     | '/how-it-works'
@@ -845,6 +857,7 @@ export interface RootRouteChildren {
   FeaturesRoute: typeof FeaturesRoute
   FeedRoute: typeof FeedRoute
   ForcePasswordChangeRoute: typeof ForcePasswordChangeRoute
+  GalleryRoute: typeof GalleryRoute
   GraphicDesignersRoute: typeof GraphicDesignersRoute
   HomeRoute: typeof HomeRoute
   HowItWorksRoute: typeof HowItWorksRoute
@@ -1057,6 +1070,13 @@ declare module '@tanstack/react-router' {
       path: '/force-password-change'
       fullPath: '/force-password-change'
       preLoaderRoute: typeof ForcePasswordChangeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/graphic-designers': {
@@ -1381,6 +1401,7 @@ const rootRouteChildren: RootRouteChildren = {
   FeaturesRoute: FeaturesRoute,
   FeedRoute: FeedRoute,
   ForcePasswordChangeRoute: ForcePasswordChangeRoute,
+  GalleryRoute: GalleryRoute,
   GraphicDesignersRoute: GraphicDesignersRoute,
   HomeRoute: HomeRoute,
   HowItWorksRoute: HowItWorksRoute,
