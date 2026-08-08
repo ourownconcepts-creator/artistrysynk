@@ -46,6 +46,7 @@ export function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
       }}
     >
       <motion.div
+        initial={{ height: 0 }}
         animate={{ height: busy ? 44 : pull }}
         transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 500, damping: 40 }}
         className="flex items-end justify-center overflow-hidden"
