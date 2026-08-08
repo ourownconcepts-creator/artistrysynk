@@ -19,10 +19,8 @@ export function createSupabaseMock(options: {
   const inserts: { table: string; values: unknown }[] = [];
   const updates: { table: string; values: unknown }[] = [];
   const deletes: string[] = [];
-  const tables = options.tables ?? {};
-
   const makeBuilder = (table: string) => {
-    const rows = () => (tables[table] ?? []) as Record<string, unknown>[];
+    const rows = () => ((options.tables ?? {})[table] ?? []) as Record<string, unknown>[];
     const builder: Record<string, unknown> = {};
     const chain = () => builder;
     const result = () => Promise.resolve({ data: rows(), error: null, count: rows().length });
@@ -84,7 +82,8 @@ export function createSupabaseMock(options: {
     send: vi.fn(() => Promise.resolve("ok")),
   };
 
-  const user = options.userId ? { id: options.userId, email: "smoke@artistrysynk.app" } : null;
+  const getUser = () =>
+    options.userId ? { id: options.userId, email: "smoke@artistrysynk.app" } : null;
 
   const client = {
     from: vi.fn((table: string) => makeBuilder(table)),
@@ -94,13 +93,17 @@ export function createSupabaseMock(options: {
     channel: vi.fn(() => channel),
     removeChannel: vi.fn(),
     auth: {
-      getUser: vi.fn(() => Promise.resolve({ data: { user }, error: null })),
-      getSession: vi.fn(() =>
-        Promise.resolve({ data: { session: user ? { user, access_token: "t" } : null }, error: null }),
-      ),
+      getUser: vi.fn(() => Promise.resolve({ data: { user: getUser() }, error: null })),
+      getSession: vi.fn(() => {
+        const user = getUser();
+        return Promise.resolve({
+          data: { session: user ? { user, access_token: "t" } : null },
+          error: null,
+        });
+      }),
       onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
-      signInWithPassword: vi.fn(() => Promise.resolve({ data: { user }, error: null })),
-      signUp: vi.fn(() => Promise.resolve({ data: { user }, error: null })),
+      signInWithPassword: vi.fn(() => Promise.resolve({ data: { user: getUser() }, error: null })),
+      signUp: vi.fn(() => Promise.resolve({ data: { user: getUser() }, error: null })),
       signOut: vi.fn(() => Promise.resolve({ error: null })),
     },
     storage: {

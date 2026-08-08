@@ -23,8 +23,8 @@ describe("smoke: role selection", () => {
 
   it("saves selected creative roles and profile details", async () => {
     renderUI(<SetupProfile />);
-    const producer = await screen.findByText(getRoleLabel("producer"));
-    await userEvent.click(producer);
+    const producers = await screen.findAllByText(getRoleLabel("producer"));
+    await userEvent.click(producers[0]);
 
     await userEvent.type(screen.getByPlaceholderText(/Tell the community about yourself/i), "Beatmaker");
     await userEvent.click(screen.getByRole("button", { name: /complete|continue|save|finish/i }));
