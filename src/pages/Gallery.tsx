@@ -5,8 +5,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, X, Music2, Video as VideoIcon, ImageIcon, FileText, LayoutGrid } from "lucide-react";
+import { Search, X, Music2, Video as VideoIcon, ImageIcon, FileText, LayoutGrid, Flag } from "lucide-react";
 import { allRoles, getRoleLabel } from "@/lib/creativeRoles";
+import { rankScore, rankSort } from "@/lib/searchRanking";
+import { FlagContentDialog } from "@/components/FlagContentDialog";
 import {
   BottomSheet,
   Chip,
@@ -31,6 +33,10 @@ type Tile = {
   owner_avatar: string | null;
   roles: string[];
   skills: string[];
+  is_verified: boolean;
+  is_featured: boolean;
+  synergy: number;
+  works: number;
 };
 
 const MEDIA_TYPES = [
@@ -40,6 +46,8 @@ const MEDIA_TYPES = [
   { key: "audio", label: "Audio" },
   { key: "document", label: "Docs" },
 ];
+
+const REPORTABLE = true;
 
 const mediaIcon = (type: string) =>
   type === "audio" ? Music2 : type === "video" ? VideoIcon : type === "image" ? ImageIcon : FileText;
@@ -55,6 +63,7 @@ const Gallery = () => {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [roleQuery, setRoleQuery] = useState("");
   const [skillQuery, setSkillQuery] = useState("");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -74,7 +83,10 @@ const Gallery = () => {
       }
 
       const [{ data: profiles }, { data: roles }, { data: skills }] = await Promise.all([
-        supabase.from("profiles").select("id, full_name, username, avatar_url").in("id", ownerIds),
+        supabase
+          .from("profiles")
+          .select("id, full_name, username, avatar_url, is_verified, is_featured, synergy_boost_score")
+          .in("id", ownerIds),
         supabase.from("user_creative_roles").select("user_id, role").in("user_id", ownerIds),
         supabase.from("user_skill_tags").select("user_id, skill").in("user_id", ownerIds),
       ]);
@@ -88,6 +100,9 @@ const Gallery = () => {
       (skills ?? []).forEach((s) => {
         skillMap.set(s.user_id, [...(skillMap.get(s.user_id) ?? []), s.skill]);
       });
+
+      const workCount = new Map<string, number>();
+      visible.forEach((i) => workCount.set(i.user_id, (workCount.get(i.user_id) ?? 0) + 1));
 
       setTiles(
         visible.map((i) => {
@@ -105,6 +120,10 @@ const Gallery = () => {
             owner_avatar: owner?.avatar_url ?? null,
             roles: roleMap.get(i.user_id) ?? [],
             skills: skillMap.get(i.user_id) ?? [],
+            is_verified: Boolean(owner?.is_verified),
+            is_featured: Boolean(owner?.is_featured),
+            synergy: owner?.synergy_boost_score ?? 0,
+            works: workCount.get(i.user_id) ?? 0,
           };
         }),
       );
@@ -112,6 +131,7 @@ const Gallery = () => {
     };
 
     void load();
+    void supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
   }, []);
 
   const allSkills = useMemo(
@@ -121,7 +141,7 @@ const Gallery = () => {
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return tiles.filter((t) => {
+    const filtered = tiles.filter((t) => {
       if (mediaType !== "all" && t.media_type !== mediaType) return false;
       if (roleFilters.length && !roleFilters.some((r) => t.roles.includes(r))) return false;
       if (
@@ -139,6 +159,24 @@ const Gallery = () => {
         t.roles.some((r) => getRoleLabel(r).toLowerCase().includes(q))
       );
     });
+
+    // Filters decide what shows; ranking only decides the order.
+    return rankSort(filtered, (t) =>
+      rankScore({
+        query,
+        roles: t.roles,
+        skills: t.skills,
+        text: [t.title, t.description, t.owner_name, t.owner_username],
+        activeRoles: roleFilters,
+        activeSkills: skillFilters,
+        popularity: {
+          isVerified: t.is_verified,
+          isFeatured: t.is_featured,
+          synergy: t.synergy,
+          works: t.works,
+        },
+      }),
+    );
   }, [tiles, query, mediaType, roleFilters, skillFilters]);
 
   const toggle = (list: string[], value: string) =>
@@ -275,6 +313,28 @@ const Gallery = () => {
                     <Badge variant="secondary" className="absolute left-2 top-2 text-[10px] capitalize">
                       {tile.media_type}
                     </Badge>
+                    {REPORTABLE && currentUserId && currentUserId !== tile.user_id ? (
+                      <div
+                        className="absolute right-1 top-1"
+                        onClick={(e) => e.stopPropagation()}
+                        role="presentation"
+                      >
+                        <FlagContentDialog
+                          contentType="portfolio"
+                          contentId={tile.id}
+                          trigger={
+                            <Button
+                              size="icon"
+                              variant="secondary"
+                              className="h-7 w-7 rounded-full bg-background/70 backdrop-blur"
+                              aria-label={`Report ${tile.title}`}
+                            >
+                              <Flag className="h-3.5 w-3.5" />
+                            </Button>
+                          }
+                        />
+                      </div>
+                    ) : null}
                   </div>
                   <div className="space-y-2 p-3">
                     <p className="truncate text-sm font-medium">{tile.title}</p>
