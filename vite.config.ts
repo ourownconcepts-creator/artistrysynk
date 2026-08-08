@@ -17,5 +17,12 @@ export default defineConfig({
       // CJS packages that need bundling so named exports resolve during SSR.
       noExternal: ["react-helmet-async"],
     },
+    build: {
+      // Rolldown splits @tanstack/start-server-core and start-client-core into
+      // two circular chunks, so `createCsrfMiddleware` is undefined when the
+      // server entry evaluates → every SSR request 500s. Disabling tree-shaking
+      // keeps the declarations in one initialization order.
+      rollupOptions: { treeshake: false },
+    },
   },
 });
