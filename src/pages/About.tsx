@@ -2,7 +2,7 @@ import { Heart, Target, Users, Globe } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { PageSEO } from "@/components/seo";
 import logoImg from "@/assets/logo.png";
 

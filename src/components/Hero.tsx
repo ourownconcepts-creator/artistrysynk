@@ -5,7 +5,7 @@ import { ArrowRight, Zap, Users, Sparkles, Search, X, Lock } from "lucide-react"
 import { Input } from "@/components/ui/input";
 import { allRoles } from "@/lib/creativeRoles";
 import { useSubscription } from "@/hooks/useSubscription";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import logoImg from "@/assets/logo.png";
 import { MorphingBlobs } from './hero/MorphingBlobs';
 import { SyncPulse } from './hero/SyncPulse';

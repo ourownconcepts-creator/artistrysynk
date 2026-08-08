@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "@/lib/router-compat";
 import { usePresence } from '@/hooks/usePresence';
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';

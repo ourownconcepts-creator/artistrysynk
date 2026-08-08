@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Footer } from "@/components/Footer";
 import { PageSEO, CollectionPageSchema } from "@/components/seo";
 import { CITY_LANDINGS, DISCIPLINE_LANDINGS } from "@/lib/seoLandings";

@@ -3,7 +3,7 @@ import { UserPlus, Users, MessageCircle, Rocket, Play, Pause, Volume2, VolumeX }
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { PageSEO } from "@/components/seo";
 import logoImg from "@/assets/logo.png";
 import artistryTutorialVideo from "@/assets/artistry-tutorial.mp4";

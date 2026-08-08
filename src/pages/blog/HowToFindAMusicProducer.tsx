@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft, Calendar, User, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
