@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,12 @@ import { allRoles, getRoleLabel } from "@/lib/creativeRoles";
 import { PostReactions } from "@/components/feed/PostReactions";
 import { PostRatingReview } from "@/components/feed/PostRatingReview";
 import { CollabTabs } from "@/components/collab/CollabTabs";
+import { FeedFilters } from "@/components/collab/FeedFilters";
+import {
+  emptyFeedFilters,
+  inferCollabTypes,
+  type FeedFilterState,
+} from "@/lib/collabFilters";
 
 interface FeedPost {
   id: string;
@@ -27,7 +33,12 @@ interface FeedPost {
     username: string;
     avatar_url: string;
     is_verified: boolean;
+    location?: string | null;
+    city?: string | null;
+    country?: string | null;
   };
+  author_skills: string[];
+  collab_types: string[];
   likes_count: number;
   comments_count: number;
   is_liked: boolean;
@@ -62,6 +73,7 @@ const CollaborationFeed = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [showRolePicker, setShowRolePicker] = useState(false);
+  const [filters, setFilters] = useState<FeedFilterState>(emptyFeedFilters);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -90,9 +102,9 @@ const CollaborationFeed = () => {
     const userIds = [...new Set((postsData || []).map(p => p.user_id))];
     const postIds = (postsData || []).map(p => p.id);
 
-    const [profilesRes, likesRes, savesRes, likeCountsRes, commentCountsRes, reactionsRes, userReactionsRes, ratingsRes, userRatingsRes] = await Promise.all([
+    const [profilesRes, likesRes, savesRes, likeCountsRes, commentCountsRes, reactionsRes, userReactionsRes, ratingsRes, userRatingsRes, skillsRes] = await Promise.all([
       userIds.length > 0
-        ? supabase.from("profiles").select("id, full_name, username, avatar_url, is_verified").in("id", userIds)
+        ? supabase.from("profiles").select("id, full_name, username, avatar_url, is_verified, location, city, country").in("id", userIds)
         : { data: [] },
       postIds.length > 0
         ? supabase.from("collaboration_post_likes").select("post_id").eq("user_id", userId).in("post_id", postIds)
@@ -121,6 +133,10 @@ const CollaborationFeed = () => {
       // User's ratings
       postIds.length > 0
         ? supabase.from("collaboration_post_ratings").select("post_id, rating").eq("user_id", userId).in("post_id", postIds)
+        : { data: [] },
+      // Author skills for skill filtering
+      userIds.length > 0
+        ? supabase.from("user_skill_tags").select("user_id, skill").in("user_id", userIds)
         : { data: [] },
     ]);
 
@@ -155,11 +171,18 @@ const CollaborationFeed = () => {
     });
     const userRatingMap = Object.fromEntries((userRatingsRes.data || []).map(r => [r.post_id, r.rating]));
 
+    const skillMap: Record<string, string[]> = {};
+    ((skillsRes.data || []) as { user_id: string; skill: string }[]).forEach(s => {
+      skillMap[s.user_id] = [...(skillMap[s.user_id] || []), s.skill];
+    });
+
     const enriched: FeedPost[] = (postsData || []).map(p => ({
       ...p,
       hashtags: p.hashtags || [],
       role_tags: p.role_tags || [],
       profile: profileMap[p.user_id] as any,
+      author_skills: skillMap[p.user_id] || [],
+      collab_types: inferCollabTypes(p.content, p.hashtags || []),
       likes_count: likeCounts[p.id] || 0,
       comments_count: commentCounts[p.id] || 0,
       is_liked: likedSet.has(p.id),
