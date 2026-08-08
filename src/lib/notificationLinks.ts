@@ -17,9 +17,9 @@ export const resolveNotificationUrl = (
 
   const projectId = str("project_id");
   if (projectId) {
-    if (str("invite_id")) return `/projects/${projectId}?tab=invites`;
-    if (str("role_change_id")) return `/projects/${projectId}?tab=roles`;
-    if (str("activity_id") || str("file_id")) return `/projects/${projectId}?tab=activity`;
+    if (str("invite_id")) return `/projects/${projectId}#invites`;
+    if (str("role_change_id")) return `/projects/${projectId}#role-approvals`;
+    if (str("activity_id") || str("file_id")) return `/projects/${projectId}#activity`;
     return `/projects/${projectId}`;
   }
 
