@@ -63,8 +63,7 @@ describe("smoke: project room collaboration", () => {
   });
 
   it.each(PROJECT_ROOM_SECTIONS)("opens the %s section from a push deep link", async (section) => {
-    const scrollIntoView = vi.fn();
-    Element.prototype.scrollIntoView = scrollIntoView;
+    const scrollIntoView = vi.spyOn(Element.prototype, "scrollIntoView").mockImplementation(() => {});
     window.location.hash = `#${section}`;
 
     renderUI(<CollaborationRoom />);
@@ -74,5 +73,6 @@ describe("smoke: project room collaboration", () => {
       expect(document.getElementById(section)?.getAttribute("data-deeplink-target")).toBe("true"),
     );
     expect(scrollIntoView).toHaveBeenCalled();
+    scrollIntoView.mockRestore();
   });
 });
