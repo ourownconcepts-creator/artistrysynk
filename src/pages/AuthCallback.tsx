@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { claimStoredReferral } from "@/lib/referral";
 
 /**
  * Public OAuth landing route. Waits for the Supabase session to hydrate
@@ -20,11 +21,11 @@ const AuthCallback = () => {
     };
 
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) go("/discover");
+      if (session) void claimStoredReferral().finally(() => go("/discover"));
     });
 
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) go("/discover");
+      if (data.session) void claimStoredReferral().finally(() => go("/discover"));
     });
 
     const timeout = window.setTimeout(() => go("/auth"), 8000);
