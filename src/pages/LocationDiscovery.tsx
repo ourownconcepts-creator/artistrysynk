@@ -274,7 +274,7 @@ const LocationDiscovery = () => {
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
                     <Avatar className="w-12 h-12">
-                      <AvatarImage src={creator.avatar_url} />
+                      <AvatarImage src={creator.avatar_url ?? undefined} />
                       <AvatarFallback>{creator.full_name?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">

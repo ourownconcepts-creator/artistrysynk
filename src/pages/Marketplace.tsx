@@ -245,7 +245,7 @@ const Marketplace = () => {
     if (!orderingService || !currentUser) return;
 
     const deliveryDate = new Date();
-    deliveryDate.setDate(deliveryDate.getDate() + orderingService.delivery_days);
+    deliveryDate.setDate(deliveryDate.getDate() + (orderingService.delivery_days ?? 7));
 
     const { error } = await supabase.from("service_orders").insert({
       service_id: orderingService.id,
@@ -267,6 +267,7 @@ const Marketplace = () => {
   };
 
   const updateOrderStatus = async (orderId: string, status: string) => {
+    if (!currentUser) return;
     // Get order details for notification
     const order = sellerOrders.find(o => o.id === orderId);
     
