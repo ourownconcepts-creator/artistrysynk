@@ -337,7 +337,7 @@ const CollaborationRoom = () => {
                           task.id, 
                           task.status === "completed" ? "pending" : "completed"
                         )}>
-                          {getStatusIcon(task.status)}
+                          {getStatusIcon(task.status || "pending")}
                         </button>
                         <div className="flex-1 min-w-0">
                           <p className={`font-medium ${task.status === "completed" ? "line-through text-muted-foreground" : ""}`}>

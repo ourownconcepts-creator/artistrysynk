@@ -167,7 +167,7 @@ export const UserSessions = ({ userId }: UserSessionsProps) => {
                       </div>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="w-3 h-3" />
-                        Last active {formatDistanceToNow(new Date(session.last_active))} ago
+                        Last active {formatDistanceToNow(new Date(session.last_active || Date.now()))} ago
                       </div>
                     </div>
                   </div>

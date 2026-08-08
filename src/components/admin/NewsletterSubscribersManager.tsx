@@ -13,7 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 interface NewsletterSubscriber {
   id: string;
   email: string;
-  is_active: boolean;
+  is_active: boolean | null;
   subscribed_at: string;
   unsubscribed_at: string | null;
 }

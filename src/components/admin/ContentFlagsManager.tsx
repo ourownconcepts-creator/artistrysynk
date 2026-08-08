@@ -24,7 +24,7 @@ interface ContentFlag {
   reviewed_at: string | null;
   admin_notes: string | null;
   created_at: string;
-  reporter?: { full_name: string; email: string };
+  reporter?: { id: string; full_name: string; email: string | null };
 }
 
 export const ContentFlagsManager = () => {

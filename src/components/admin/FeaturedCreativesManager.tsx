@@ -17,10 +17,11 @@ interface FeaturedCreative {
   id: string;
   user_id: string;
   reason: string | null;
-  is_active: boolean;
+  is_active: boolean | null;
   start_date: string | null;
   end_date: string | null;
-  created_at: string;
+  created_at: string | null;
+  featured_by: string | null;
   profile?: {
     full_name: string;
     username: string;

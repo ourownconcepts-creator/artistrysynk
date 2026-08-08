@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
+import autoTable, { RowInput } from "jspdf-autotable";
 
 interface ExportDataProps {
   dataType: "users" | "activity_logs" | "analytics";
@@ -89,7 +89,7 @@ export const ExportData = ({ dataType, filters }: ExportDataProps) => {
       doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 22);
 
       const headers = Object.keys(data[0]);
-      const rows = data.map(row => Object.values(row));
+      const rows = data.map(row => Object.values(row)) as RowInput[];
 
       autoTable(doc, {
         head: [headers],
