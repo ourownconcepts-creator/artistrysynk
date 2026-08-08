@@ -40,7 +40,7 @@ describe("smoke: matched conversation chat", () => {
   it("loads the matched thread history and subscribes to realtime updates", async () => {
     renderUI(<Messages />);
     expect(await screen.findByText("Let's collaborate on a track")).toBeInTheDocument();
-    expect(await screen.findByText(/Ada Beats/)).toBeInTheDocument();
+    expect((await screen.findAllByText(/Ada Beats/)).length).toBeGreaterThan(0);
     expect(supabaseMock.channel).toHaveBeenCalled();
   });
 
