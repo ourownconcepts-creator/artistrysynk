@@ -21,6 +21,7 @@ import { ActivityFeed } from "@/components/projects/ActivityFeed";
 import { ProjectInvites } from "@/components/projects/ProjectInvites";
 import { RoleApprovals } from "@/components/projects/RoleApprovals";
 import { ProjectFiles } from "@/components/projects/ProjectFiles";
+import { useHashTarget, PROJECT_ROOM_SECTIONS } from "@/hooks/useHashTarget";
 
 interface Project {
   id: string;
@@ -68,6 +69,9 @@ const CollaborationRoom = () => {
   const [loading, setLoading] = useState(true);
   const [newTaskOpen, setNewTaskOpen] = useState(false);
   const [newTask, setNewTask] = useState({ title: "", description: "", priority: "medium" });
+
+  // Push/in-app deep links target #invites, #role-approvals and #activity.
+  useHashTarget(!loading && Boolean(project && currentUser), PROJECT_ROOM_SECTIONS);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
