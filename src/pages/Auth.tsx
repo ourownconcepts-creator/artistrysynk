@@ -17,11 +17,15 @@ import { z } from "zod";
 import { lovable } from "@/integrations/lovable/index";
 
 import { emailSchema, passwordSchema, usernameSchema } from "@/lib/authValidation";
+import { storeReferralCode, getStoredReferralCode, claimStoredReferral } from "@/lib/referral";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const referralCode = useMemo(() => searchParams.get("ref") || "", [searchParams]);
+  const referralCode = useMemo(
+    () => searchParams.get("ref") || getStoredReferralCode(),
+    [searchParams],
+  );
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,10 +37,14 @@ const Auth = () => {
   const [resetEmailSent, setResetEmailSent] = useState(false);
 
   useEffect(() => {
+    storeReferralCode(searchParams.get("ref"));
+  }, [searchParams]);
+
+  useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate("/discover");
+        void claimStoredReferral().finally(() => navigate("/discover"));
       }
     });
 
