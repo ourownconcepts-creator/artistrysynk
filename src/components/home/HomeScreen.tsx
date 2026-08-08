@@ -150,7 +150,7 @@ export function HomeScreen() {
           action={<Link to="/discover" className="text-xs font-semibold text-primary">Discover</Link>}
         />
         {nearby.isLoading ? (
-          <SkeletonTiles count={4} />
+          <SkeletonTiles tiles={4} />
         ) : nearby.data?.length ? (
           <HScroll>
             {nearby.data.map((p: Record<string, unknown>) => (
@@ -181,10 +181,17 @@ export function HomeScreen() {
           </HScroll>
         ) : (
           <EmptyState
-            icon={MapPin}
+            icon={<MapPin className="h-6 w-6" />}
             title="No one nearby yet"
             description="Add your city so we can match you with creatives around you."
-            action={{ label: "Add location", to: "/edit-profile" }}
+            action={
+              <Link
+                to="/edit-profile"
+                className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+              >
+                Add location
+              </Link>
+            }
           />
         )}
       </section>
@@ -212,11 +219,11 @@ export function HomeScreen() {
           action={<Link to="/jobs" className="text-xs font-semibold text-primary">All</Link>}
         />
         {jobs.isLoading ? (
-          <SkeletonList count={3} />
+          <SkeletonList rows={3} />
         ) : jobs.data?.length ? (
           <div className="space-y-2">
             {jobs.data.map((job) => (
-              <ListRow
+              <LinkRow
                 key={job.id}
                 to="/jobs"
                 icon={Briefcase}
@@ -227,10 +234,17 @@ export function HomeScreen() {
           </div>
         ) : (
           <EmptyState
-            icon={Briefcase}
+            icon={<Briefcase className="h-6 w-6" />}
             title="No open roles right now"
             description="Post one and let the right creatives come to you."
-            action={{ label: "Post opportunity", to: "/jobs" }}
+            action={
+              <Link
+                to="/jobs"
+                className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+              >
+                Post opportunity
+              </Link>
+            }
           />
         )}
       </section>
@@ -242,7 +256,7 @@ export function HomeScreen() {
           action={<Link to="/feed" className="text-xs font-semibold text-primary">Feed</Link>}
         />
         {posts.isLoading ? (
-          <SkeletonList count={3} />
+          <SkeletonList rows={3} />
         ) : posts.data?.length ? (
           <div className="space-y-3">
             {posts.data.map((post) => (
@@ -262,7 +276,7 @@ export function HomeScreen() {
                   {post.role_tags?.length ? (
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       {post.role_tags.slice(0, 3).map((r: string) => (
-                        <Chip key={r} size="sm">{getRoleLabel(r as never) ?? r}</Chip>
+                        <Chip key={r}>{getRoleLabel(r as never) ?? r}</Chip>
                       ))}
                     </div>
                   ) : null}
@@ -272,10 +286,17 @@ export function HomeScreen() {
           </div>
         ) : (
           <EmptyState
-            icon={Handshake}
+            icon={<Handshake className="h-6 w-6" />}
             title="No collab posts yet"
-            description="Share what you're building and find your crew."
-            action={{ label: "Open feed", to: "/feed" }}
+            description="Share what you are building and find your crew."
+            action={
+              <Link
+                to="/feed"
+                className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+              >
+                Open feed
+              </Link>
+            }
           />
         )}
       </section>
@@ -287,11 +308,11 @@ export function HomeScreen() {
           action={<Link to="/open-projects" className="text-xs font-semibold text-primary">All</Link>}
         />
         {projects.isLoading ? (
-          <SkeletonList count={3} />
+          <SkeletonList rows={3} />
         ) : projects.data?.length ? (
           <div className="space-y-2">
             {projects.data.map((p) => (
-              <ListRow
+              <LinkRow
                 key={p.id}
                 to="/open-projects"
                 icon={FolderOpen}
@@ -302,10 +323,17 @@ export function HomeScreen() {
           </div>
         ) : (
           <EmptyState
-            icon={FolderOpen}
+            icon={<FolderOpen className="h-6 w-6" />}
             title="No open projects"
             description="Start one and invite collaborators into a project room."
-            action={{ label: "Create project", to: "/projects" }}
+            action={
+              <Link
+                to="/projects"
+                className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+              >
+                Create project
+              </Link>
+            }
           />
         )}
       </section>
@@ -314,7 +342,7 @@ export function HomeScreen() {
       <section className="pb-2">
         <SectionHeader title="New on ArtistrySynk" subtitle="Latest creatives joining" />
         {signups.isLoading ? (
-          <SkeletonTiles count={4} />
+          <SkeletonTiles tiles={4} />
         ) : (
           <HScroll>
             {(signups.data ?? []).map((p) => (
@@ -350,11 +378,37 @@ function CounterTile({
 }) {
   return (
     <Link to={to} className="block">
-      <Pressable lift className="w-full rounded-3xl bg-surface-1 p-3 text-left shadow-card">
+      <Pressable lift className="w-full rounded-3xl bg-surface-1 p-3 text-left shadow-app-sm">
         <Icon className="h-4 w-4 text-primary" />
         <p className="mt-2 text-xl font-black tabular-nums leading-none">{value}</p>
         <p className="text-[11px] text-muted-foreground">{label}</p>
       </Pressable>
+    </Link>
+  );
+}
+function LinkRow({
+  to,
+  icon: Icon,
+  title,
+  subtitle,
+}: {
+  to: string;
+  icon: typeof Heart;
+  title: string;
+  subtitle?: string;
+}) {
+  return (
+    <Link to={to} className="block">
+      <ListRow
+        chevron
+        title={title}
+        subtitle={subtitle}
+        leading={
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary">
+            <Icon className="h-[18px] w-[18px]" />
+          </span>
+        }
+      />
     </Link>
   );
 }
