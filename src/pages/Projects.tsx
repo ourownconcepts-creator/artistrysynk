@@ -147,6 +147,8 @@ const Projects = () => {
     <div className="space-y-4">
       <CollabTabs />
 
+      {currentUser ? <MyProjectInvites userId={currentUser} /> : null}
+
       <SectionHeader
         title="My projects"
         subtitle={`${projects.length} collaboration${projects.length === 1 ? "" : "s"}`}
