@@ -232,7 +232,7 @@ const PublicProfile = () => {
 
               {/* Roles as editorial rail */}
               {roles.length > 0 && (
-                <div className="mt-8 flex items-baseline gap-4 overflow-x-auto pb-1">
+                <div className="mt-8 flex w-full max-w-full items-baseline gap-4 overflow-x-auto pb-1">
                   <h2 className="sr-only">Creative roles</h2>
                   {roles.map((r, i) => (
                     <span
@@ -318,10 +318,10 @@ const PublicProfile = () => {
               </div>
 
               {currentUserId && !isOwner && (
-                <div className="mt-8 flex items-center gap-3">
+                <div className="mt-8 flex flex-wrap items-center gap-3">
                   <Button
                     onClick={handleLike}
-                    className="h-12 flex-1 gap-2 rounded-xl text-[11px] font-bold uppercase tracking-widest"
+                    className="h-12 min-w-[220px] flex-1 gap-2 rounded-xl text-[11px] font-bold uppercase tracking-widest"
                   >
                     <Heart className="h-4 w-4" />
                     Request collaboration
