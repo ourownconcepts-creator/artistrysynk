@@ -15,6 +15,7 @@ import { MuteUserButton } from "@/components/settings/MuteUserButton";
 import { getRoleLabel } from "@/lib/creativeRoles";
 import NotFound from "@/pages/NotFound";
 import { ProfileHeaderMedia } from "@/components/profile/ProfileHeaderMedia";
+import { ProfileMediaGallery } from "@/components/profile/ProfileMediaGallery";
 
 const BASE = "https://artistrysynk.app";
 
@@ -151,7 +152,7 @@ const PublicProfile = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-background">
+      <main className="min-h-dvh bg-background">
         <div className="mx-auto w-full max-w-3xl px-3 pb-16 sm:px-4">
           <Button variant="ghost" className="my-3" onClick={() => navigate(-1)} aria-label="Go back">
             <ArrowLeft className="w-4 h-4 mr-2" aria-hidden="true" />
@@ -191,7 +192,7 @@ const PublicProfile = () => {
                 </div>
                 {profile.is_verified && (
                   <div className="flex min-w-0 flex-col items-end pb-2">
-                    <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.2em] text-accent sm:text-[10px] sm:tracking-[0.3em]">
+                    <span className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-[0.2em] text-accent sm:text-[12px] sm:tracking-[0.3em]">
                       <BadgeCheck className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                       <span>Verified Synk</span>
                     </span>
@@ -226,10 +227,10 @@ const PublicProfile = () => {
                   {roles.map((r, i) => (
                     <span
                       key={r}
-                      className={`flex-shrink-0 pb-1 text-[10px] font-bold uppercase tracking-widest ${
+                      className={`flex-shrink-0 pb-1 text-[11px] font-bold uppercase tracking-widest ${
                         i === 0
                           ? "border-b-2 border-secondary text-secondary"
-                          : "text-muted-foreground"
+                          : "text-foreground/70"
                       }`}
                     >
                       {getRoleLabel(r as never)}
@@ -238,16 +239,18 @@ const PublicProfile = () => {
                 </nav>
               )}
 
+              <ProfileMediaGallery items={portfolio} name={profile.full_name} />
+
               {/* Metadata grid */}
               <div className="mt-6 grid grid-cols-1 gap-px border border-border bg-border sm:mt-8 sm:grid-cols-2">
                 <div className="min-w-0 bg-card p-4">
-                  <p className="mb-1 text-[9px] uppercase tracking-widest text-muted-foreground">Genres</p>
+                  <p className="mb-1 text-[11px] uppercase tracking-widest text-muted-foreground">Genres</p>
                   <p className="break-words text-xs font-medium">
                     {genres.length ? genres.map((g) => g.replace(/_/g, " ")).join(", ") : "—"}
                   </p>
                 </div>
                 <div className="min-w-0 bg-card p-4">
-                  <p className="mb-1 text-[9px] uppercase tracking-widest text-muted-foreground">Active in</p>
+                  <p className="mb-1 text-[11px] uppercase tracking-widest text-muted-foreground">Active in</p>
                   <p className="flex min-w-0 items-center gap-1 text-xs font-medium">
                     <MapPin className="h-3 w-3 shrink-0 text-accent" aria-hidden="true" />
                     <span className="truncate">{profile.location || "Remote"}</span>
@@ -255,7 +258,7 @@ const PublicProfile = () => {
                 </div>
                 {skills.length > 0 && (
                   <div className="min-w-0 bg-card p-4 sm:col-span-2">
-                    <p className="mb-2 text-[9px] uppercase tracking-widest text-muted-foreground">Skills</p>
+                    <p className="mb-2 text-[11px] uppercase tracking-widest text-muted-foreground">Skills</p>
                     <div className="flex flex-wrap gap-2">
                       {skills.map((s) => (
                         <Badge key={s} variant="outline" className="text-[10px] uppercase tracking-widest">
@@ -400,7 +403,7 @@ const PublicProfile = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </main>
     </>
   );
 };
