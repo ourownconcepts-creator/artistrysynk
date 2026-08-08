@@ -21,6 +21,7 @@ import {
   Surface,
 } from "@/components/native-ui";
 import { CollabTabs } from "@/components/collab/CollabTabs";
+import { MyProjectInvites } from "@/components/projects/MyProjectInvites";
 
 interface Project {
   id: string;
