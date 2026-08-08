@@ -63,7 +63,6 @@ const CollaborationRoom = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
-  const [files, setFiles] = useState<ProjectFile[]>([]);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [newTaskOpen, setNewTaskOpen] = useState(false);
@@ -94,16 +93,6 @@ const CollaborationRoom = () => {
           filter: `project_id=eq.${projectId}`,
         },
         () => loadTasks()
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "project_files",
-          filter: `project_id=eq.${projectId}`,
-        },
-        () => loadFiles()
       )
       .on(
         "postgres_changes",
@@ -147,7 +136,7 @@ const CollaborationRoom = () => {
     }
 
     setProject(data);
-    await Promise.all([loadTasks(), loadMembers(), loadFiles()]);
+    await Promise.all([loadTasks(), loadMembers()]);
     setLoading(false);
   };
 
@@ -174,17 +163,6 @@ const CollaborationRoom = () => {
       .eq("project_id", projectId);
 
     setMembers((data as any) || []);
-  };
-
-  const loadFiles = async () => {
-    if (!projectId) return;
-    const { data } = await supabase
-      .from("project_files")
-      .select("*")
-      .eq("project_id", projectId)
-      .order("created_at", { ascending: false });
-
-    setFiles(data || []);
   };
 
   const createTask = async () => {
@@ -216,44 +194,6 @@ const CollaborationRoom = () => {
       .from("project_tasks")
       .update({ status })
       .eq("id", taskId);
-  };
-
-  const uploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${projectId}/${Date.now()}.${fileExt}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("portfolios")
-      .upload(fileName, file);
-
-    if (uploadError) {
-      toast.error("Failed to upload file");
-      return;
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from("portfolios")
-      .getPublicUrl(fileName);
-
-    if (!projectId || !currentUser) return;
-    const { error } = await supabase.from("project_files").insert({
-      project_id: projectId,
-      uploaded_by: currentUser,
-      file_name: file.name,
-      file_url: publicUrl,
-      file_type: file.type,
-      file_size: file.size,
-    });
-
-    if (error) {
-      toast.error("Failed to save file");
-    } else {
-      toast.success("File uploaded");
-      loadFiles();
-    }
   };
 
   const getStatusIcon = (status: string) => {
