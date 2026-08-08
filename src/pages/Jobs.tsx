@@ -23,12 +23,9 @@ interface JobPosting {
   location: string | null;
   job_type: string;
   budget_range: string | null;
-  required_roles: string[] | null;
-  required_skills: string[] | null;
+  required_roles: string[];
+  required_skills: string[];
   created_at: string;
-  updated_at?: string;
-  is_active?: boolean;
-  expires_at?: string | null;
   user_id: string;
   profiles?: {
     full_name: string;
@@ -90,6 +87,8 @@ const Jobs = () => {
 
     const jobsWithProfiles = (jobsData || []).map(job => ({
       ...job,
+      required_roles: job.required_roles || [],
+      required_skills: job.required_skills || [],
       profiles: profilesData?.find(p => p.id === job.user_id) || undefined,
     }));
 
@@ -105,7 +104,11 @@ const Jobs = () => {
       .order("created_at", { ascending: false });
 
     if (!error) {
-      setMyJobs(data || []);
+      setMyJobs((data || []).map(job => ({
+        ...job,
+        required_roles: job.required_roles || [],
+        required_skills: job.required_skills || [],
+      })));
     }
   };
 
