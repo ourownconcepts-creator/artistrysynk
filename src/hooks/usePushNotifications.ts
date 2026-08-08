@@ -68,8 +68,13 @@ export const usePushNotifications = () => {
       throw new Error('Service Worker not supported');
     }
 
-    const registration = await navigator.serviceWorker.register('/sw.js');
-    await navigator.serviceWorker.ready;
+    // The app no longer ships a caching service worker (SSR migration); web
+    // push requires an existing registration. Native (Capacitor) push is
+    // unaffected — it uses device tokens, not this hook.
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) {
+      throw new Error('No service worker registration available for web push');
+    }
     return registration;
   };
 
