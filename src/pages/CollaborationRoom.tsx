@@ -495,6 +495,14 @@ const CollaborationRoom = () => {
               </CardContent>
             </Card>
 
+            {currentUser && (
+              <ProjectInvites
+                projectId={projectId!}
+                currentUserId={currentUser}
+                canInvite={project?.created_by === currentUser}
+              />
+            )}
+
             <ActivityFeed projectId={projectId!} />
           </div>
         </div>
