@@ -48,10 +48,10 @@ export const CookieConsentBanner = () => {
           .
         </p>
         <div className="flex gap-2 shrink-0">
-          <Button variant="outline" size="sm" onClick={() => decide("essential")}>
+          <Button variant="outline" size="sm" className="min-h-11" onClick={() => decide("essential")}>
             Essential only
           </Button>
-          <Button variant="hero" size="sm" onClick={() => decide("all")}>
+          <Button variant="hero" size="sm" className="min-h-11" onClick={() => decide("all")}>
             Accept all
           </Button>
         </div>
