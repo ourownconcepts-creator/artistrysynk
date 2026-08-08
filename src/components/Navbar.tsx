@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code, Settings, Rss, Award, MapPin, TrendingUp } from "lucide-react";
+import { Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code, Settings, Rss, Award, MapPin, TrendingUp, LayoutGrid } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { ThemeToggle } from "@/components/navbar/ThemeToggle";
