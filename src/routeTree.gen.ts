@@ -34,6 +34,7 @@ import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as ForcePasswordChangeRouteImport } from './routes/force-password-change'
 import { Route as GraphicDesignersRouteImport } from './routes/graphic-designers'
+import { Route as HomeRouteImport } from './routes/home'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as LicensesRouteImport } from './routes/licenses'
@@ -52,6 +53,7 @@ import { Route as SoftwareDevelopersRouteImport } from './routes/software-develo
 import { Route as SongwritersRouteImport } from './routes/songwriters'
 import { Route as SuccessStoriesRouteImport } from './routes/success-stories'
 import { Route as SuperAdminRouteImport } from './routes/super-admin'
+import { Route as SynkAiRouteImport } from './routes/synk-ai'
 import { Route as TeamsRouteImport } from './routes/teams'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VideographersRouteImport } from './routes/videographers'
@@ -199,6 +201,11 @@ const GraphicDesignersRoute = GraphicDesignersRouteImport.update({
   path: '/graphic-designers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HowItWorksRoute = HowItWorksRouteImport.update({
   id: '/how-it-works',
   path: '/how-it-works',
@@ -287,6 +294,11 @@ const SuccessStoriesRoute = SuccessStoriesRouteImport.update({
 const SuperAdminRoute = SuperAdminRouteImport.update({
   id: '/super-admin',
   path: '/super-admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SynkAiRoute = SynkAiRouteImport.update({
+  id: '/synk-ai',
+  path: '/synk-ai',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeamsRoute = TeamsRouteImport.update({
@@ -422,6 +434,7 @@ export interface FileRoutesByFullPath {
   '/feed': typeof FeedRoute
   '/force-password-change': typeof ForcePasswordChangeRoute
   '/graphic-designers': typeof GraphicDesignersRoute
+  '/home': typeof HomeRoute
   '/how-it-works': typeof HowItWorksRoute
   '/jobs': typeof JobsRoute
   '/licenses': typeof LicensesRoute
@@ -440,6 +453,7 @@ export interface FileRoutesByFullPath {
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/super-admin': typeof SuperAdminRoute
+  '/synk-ai': typeof SynkAiRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
   '/videographers': typeof VideographersRoute
@@ -488,6 +502,7 @@ export interface FileRoutesByTo {
   '/feed': typeof FeedRoute
   '/force-password-change': typeof ForcePasswordChangeRoute
   '/graphic-designers': typeof GraphicDesignersRoute
+  '/home': typeof HomeRoute
   '/how-it-works': typeof HowItWorksRoute
   '/jobs': typeof JobsRoute
   '/licenses': typeof LicensesRoute
@@ -506,6 +521,7 @@ export interface FileRoutesByTo {
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/super-admin': typeof SuperAdminRoute
+  '/synk-ai': typeof SynkAiRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
   '/videographers': typeof VideographersRoute
@@ -555,6 +571,7 @@ export interface FileRoutesById {
   '/feed': typeof FeedRoute
   '/force-password-change': typeof ForcePasswordChangeRoute
   '/graphic-designers': typeof GraphicDesignersRoute
+  '/home': typeof HomeRoute
   '/how-it-works': typeof HowItWorksRoute
   '/jobs': typeof JobsRoute
   '/licenses': typeof LicensesRoute
@@ -573,6 +590,7 @@ export interface FileRoutesById {
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/super-admin': typeof SuperAdminRoute
+  '/synk-ai': typeof SynkAiRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
   '/videographers': typeof VideographersRoute
@@ -623,6 +641,7 @@ export interface FileRouteTypes {
     | '/feed'
     | '/force-password-change'
     | '/graphic-designers'
+    | '/home'
     | '/how-it-works'
     | '/jobs'
     | '/licenses'
@@ -641,6 +660,7 @@ export interface FileRouteTypes {
     | '/songwriters'
     | '/success-stories'
     | '/super-admin'
+    | '/synk-ai'
     | '/teams'
     | '/terms'
     | '/videographers'
@@ -689,6 +709,7 @@ export interface FileRouteTypes {
     | '/feed'
     | '/force-password-change'
     | '/graphic-designers'
+    | '/home'
     | '/how-it-works'
     | '/jobs'
     | '/licenses'
@@ -707,6 +728,7 @@ export interface FileRouteTypes {
     | '/songwriters'
     | '/success-stories'
     | '/super-admin'
+    | '/synk-ai'
     | '/teams'
     | '/terms'
     | '/videographers'
@@ -755,6 +777,7 @@ export interface FileRouteTypes {
     | '/feed'
     | '/force-password-change'
     | '/graphic-designers'
+    | '/home'
     | '/how-it-works'
     | '/jobs'
     | '/licenses'
@@ -773,6 +796,7 @@ export interface FileRouteTypes {
     | '/songwriters'
     | '/success-stories'
     | '/super-admin'
+    | '/synk-ai'
     | '/teams'
     | '/terms'
     | '/videographers'
@@ -822,6 +846,7 @@ export interface RootRouteChildren {
   FeedRoute: typeof FeedRoute
   ForcePasswordChangeRoute: typeof ForcePasswordChangeRoute
   GraphicDesignersRoute: typeof GraphicDesignersRoute
+  HomeRoute: typeof HomeRoute
   HowItWorksRoute: typeof HowItWorksRoute
   JobsRoute: typeof JobsRoute
   LicensesRoute: typeof LicensesRoute
@@ -840,6 +865,7 @@ export interface RootRouteChildren {
   SongwritersRoute: typeof SongwritersRoute
   SuccessStoriesRoute: typeof SuccessStoriesRoute
   SuperAdminRoute: typeof SuperAdminRoute
+  SynkAiRoute: typeof SynkAiRoute
   TeamsRoute: typeof TeamsRoute
   TermsRoute: typeof TermsRoute
   VideographersRoute: typeof VideographersRoute
@@ -1040,6 +1066,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GraphicDesignersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/how-it-works': {
       id: '/how-it-works'
       path: '/how-it-works'
@@ -1164,6 +1197,13 @@ declare module '@tanstack/react-router' {
       path: '/super-admin'
       fullPath: '/super-admin'
       preLoaderRoute: typeof SuperAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/synk-ai': {
+      id: '/synk-ai'
+      path: '/synk-ai'
+      fullPath: '/synk-ai'
+      preLoaderRoute: typeof SynkAiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teams': {
@@ -1342,6 +1382,7 @@ const rootRouteChildren: RootRouteChildren = {
   FeedRoute: FeedRoute,
   ForcePasswordChangeRoute: ForcePasswordChangeRoute,
   GraphicDesignersRoute: GraphicDesignersRoute,
+  HomeRoute: HomeRoute,
   HowItWorksRoute: HowItWorksRoute,
   JobsRoute: JobsRoute,
   LicensesRoute: LicensesRoute,
@@ -1360,6 +1401,7 @@ const rootRouteChildren: RootRouteChildren = {
   SongwritersRoute: SongwritersRoute,
   SuccessStoriesRoute: SuccessStoriesRoute,
   SuperAdminRoute: SuperAdminRoute,
+  SynkAiRoute: SynkAiRoute,
   TeamsRoute: TeamsRoute,
   TermsRoute: TermsRoute,
   VideographersRoute: VideographersRoute,
