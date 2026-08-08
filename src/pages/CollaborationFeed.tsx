@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,12 @@ import { allRoles, getRoleLabel } from "@/lib/creativeRoles";
 import { PostReactions } from "@/components/feed/PostReactions";
 import { PostRatingReview } from "@/components/feed/PostRatingReview";
 import { CollabTabs } from "@/components/collab/CollabTabs";
+import { FeedFilters } from "@/components/collab/FeedFilters";
+import {
+  emptyFeedFilters,
+  inferCollabTypes,
+  type FeedFilterState,
+} from "@/lib/collabFilters";
 
 interface FeedPost {
   id: string;
@@ -27,7 +33,12 @@ interface FeedPost {
     username: string;
     avatar_url: string;
     is_verified: boolean;
+    location?: string | null;
+    city?: string | null;
+    country?: string | null;
   };
+  author_skills: string[];
+  collab_types: string[];
   likes_count: number;
   comments_count: number;
   is_liked: boolean;
@@ -62,6 +73,7 @@ const CollaborationFeed = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [showRolePicker, setShowRolePicker] = useState(false);
+  const [filters, setFilters] = useState<FeedFilterState>(emptyFeedFilters);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -90,9 +102,9 @@ const CollaborationFeed = () => {
     const userIds = [...new Set((postsData || []).map(p => p.user_id))];
     const postIds = (postsData || []).map(p => p.id);
 
-    const [profilesRes, likesRes, savesRes, likeCountsRes, commentCountsRes, reactionsRes, userReactionsRes, ratingsRes, userRatingsRes] = await Promise.all([
+    const [profilesRes, likesRes, savesRes, likeCountsRes, commentCountsRes, reactionsRes, userReactionsRes, ratingsRes, userRatingsRes, skillsRes] = await Promise.all([
       userIds.length > 0
-        ? supabase.from("profiles").select("id, full_name, username, avatar_url, is_verified").in("id", userIds)
+        ? supabase.from("profiles").select("id, full_name, username, avatar_url, is_verified, location, city, country").in("id", userIds)
         : { data: [] },
       postIds.length > 0
         ? supabase.from("collaboration_post_likes").select("post_id").eq("user_id", userId).in("post_id", postIds)
@@ -121,6 +133,10 @@ const CollaborationFeed = () => {
       // User's ratings
       postIds.length > 0
         ? supabase.from("collaboration_post_ratings").select("post_id, rating").eq("user_id", userId).in("post_id", postIds)
+        : { data: [] },
+      // Author skills for skill filtering
+      userIds.length > 0
+        ? supabase.from("user_skill_tags").select("user_id, skill").in("user_id", userIds)
         : { data: [] },
     ]);
 
@@ -155,11 +171,18 @@ const CollaborationFeed = () => {
     });
     const userRatingMap = Object.fromEntries((userRatingsRes.data || []).map(r => [r.post_id, r.rating]));
 
+    const skillMap: Record<string, string[]> = {};
+    ((skillsRes.data || []) as { user_id: string; skill: string }[]).forEach(s => {
+      skillMap[s.user_id] = [...(skillMap[s.user_id] || []), s.skill];
+    });
+
     const enriched: FeedPost[] = (postsData || []).map(p => ({
       ...p,
       hashtags: p.hashtags || [],
       role_tags: p.role_tags || [],
       profile: profileMap[p.user_id] as any,
+      author_skills: skillMap[p.user_id] || [],
+      collab_types: inferCollabTypes(p.content, p.hashtags || []),
       likes_count: likeCounts[p.id] || 0,
       comments_count: commentCounts[p.id] || 0,
       is_liked: likedSet.has(p.id),
@@ -259,6 +282,49 @@ const CollaborationFeed = () => {
     setSelectedRoleTags(prev => prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]);
   };
 
+  const visiblePosts = useMemo(() => {
+    const q = filters.q.trim().toLowerCase();
+    const loc = filters.location.trim().toLowerCase();
+    const skills = filters.skills.map(s => s.toLowerCase());
+
+    return posts.filter(post => {
+      if (q) {
+        const haystack = [
+          post.content,
+          post.hashtags.join(" "),
+          post.role_tags.map(getRoleLabel).join(" "),
+          post.profile?.full_name ?? "",
+          post.profile?.username ?? "",
+        ]
+          .join(" ")
+          .toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+
+      if (filters.roles.length && !filters.roles.some(r => post.role_tags.includes(r))) return false;
+
+      if (loc) {
+        const where = [post.profile?.location, post.profile?.city, post.profile?.country]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        if (!where.includes(loc)) return false;
+      }
+
+      if (skills.length) {
+        const authorSkills = post.author_skills.map(s => s.toLowerCase());
+        const text = `${post.content} ${post.hashtags.join(" ")}`.toLowerCase();
+        if (!skills.some(s => authorSkills.some(a => a.includes(s)) || text.includes(s))) return false;
+      }
+
+      if (filters.collabTypes.length && !filters.collabTypes.some(t => post.collab_types.includes(t))) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [posts, filters]);
+
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -318,16 +384,29 @@ const CollaborationFeed = () => {
         </Card>
 
         {/* Feed */}
-        {posts.length === 0 ? (
+        <FeedFilters
+          value={filters}
+          onChange={setFilters}
+          resultCount={visiblePosts.length}
+          userId={currentUser}
+        />
+
+        {visiblePosts.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
               <Hash className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <h2 className="text-xl font-semibold mb-2">No posts yet</h2>
-              <p className="text-muted-foreground">Be the first to post a collaboration request!</p>
+              <h2 className="text-xl font-semibold mb-2">
+                {posts.length ? "No posts match your filters" : "No posts yet"}
+              </h2>
+              <p className="text-muted-foreground">
+                {posts.length
+                  ? "Try widening your role, location or collaboration type filters."
+                  : "Be the first to post a collaboration request!"}
+              </p>
             </CardContent>
           </Card>
         ) : (
-          posts.map(post => (
+          visiblePosts.map(post => (
             <Card key={post.id}>
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-3">

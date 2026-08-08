@@ -24,7 +24,7 @@ import {
   Monitor,
   UserRound,
 } from "lucide-react";
-import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
+import { InteractivePortfolio } from "@/components/portfolio/InteractivePortfolio";
 import { PortfolioUpload } from "@/components/portfolio/PortfolioUpload";
 import { VerificationRequestButton } from "@/components/profile/VerificationRequestButton";
 import { UserSessions } from "@/components/profile/UserSessions";
@@ -289,7 +289,7 @@ const Profile = () => {
       {tab === "portfolio" && userId ? (
         <div className="space-y-4">
           <PortfolioUpload userId={userId} onUploadComplete={() => { void loadProfile(userId); void loadCounts(userId); }} />
-          <PortfolioGrid userId={userId} editable />
+          <InteractivePortfolio userId={userId} editable />
         </div>
       ) : null}
 

@@ -18,6 +18,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { ExternalFileLinks } from "@/components/projects/ExternalFileLinks";
 import { ActivityFeed } from "@/components/projects/ActivityFeed";
+import { ProjectInvites } from "@/components/projects/ProjectInvites";
 
 interface Project {
   id: string;
@@ -92,6 +93,36 @@ const CollaborationRoom = () => {
           filter: `project_id=eq.${projectId}`,
         },
         () => loadTasks()
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "project_files",
+          filter: `project_id=eq.${projectId}`,
+        },
+        () => loadFiles()
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "project_members",
+          filter: `project_id=eq.${projectId}`,
+        },
+        () => loadMembers()
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "projects",
+          filter: `id=eq.${projectId}`,
+        },
+        () => loadProject()
       )
       .subscribe();
 
@@ -464,6 +495,14 @@ const CollaborationRoom = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {currentUser && (
+              <ProjectInvites
+                projectId={projectId!}
+                currentUserId={currentUser}
+                canInvite={project?.created_by === currentUser}
+              />
+            )}
 
             <ActivityFeed projectId={projectId!} />
           </div>

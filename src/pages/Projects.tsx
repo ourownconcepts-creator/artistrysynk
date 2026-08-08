@@ -21,6 +21,7 @@ import {
   Surface,
 } from "@/components/native-ui";
 import { CollabTabs } from "@/components/collab/CollabTabs";
+import { MyProjectInvites } from "@/components/projects/MyProjectInvites";
 
 interface Project {
   id: string;
@@ -146,6 +147,8 @@ const Projects = () => {
   return (
     <div className="space-y-4">
       <CollabTabs />
+
+      {currentUser ? <MyProjectInvites userId={currentUser} /> : null}
 
       <SectionHeader
         title="My projects"
