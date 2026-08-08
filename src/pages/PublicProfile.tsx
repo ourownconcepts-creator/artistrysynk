@@ -9,12 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, ArrowLeft, BadgeCheck, Heart, Flag, ExternalLink } from "lucide-react";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { toast } from "sonner";
-import { ProfileSchema, PageSEO } from "@/components/seo";
 import { FlagContentDialog } from "@/components/FlagContentDialog";
 import { BlockUserButton } from "@/components/settings/BlockUserButton";
 import { MuteUserButton } from "@/components/settings/MuteUserButton";
 import { getRoleLabel } from "@/lib/creativeRoles";
 import NotFound from "@/pages/NotFound";
+import { ProfileHeaderMedia } from "@/components/profile/ProfileHeaderMedia";
 
 const BASE = "https://artistrysynk.app";
 
@@ -146,93 +146,82 @@ const PublicProfile = () => {
       profile.location ? ` based in ${profile.location}` : ""
     }. See portfolio highlights and collaborate on ArtistrySynk.`;
   const isOwner = currentUserId === profile.id;
+  const featuredMedia =
+    portfolio.find((p) => p.media_type === "video") ?? portfolio.find((p) => p.media_type === "audio") ?? null;
 
   return (
     <>
-      <PageSEO
-        title={`${profile.full_name} (@${profile.username})${roleLabels.length ? ` — ${roleLabels[0]}` : ""}`}
-        description={metaDescription}
-        keywords={[profile.full_name, profile.username, ...roleLabels, ...skills, profile.city ?? "", "ArtistrySynk"]
-          .filter(Boolean)
-          .join(", ")}
-        ogImage={profile.avatar_url || `${BASE}/og-image.jpg`}
-        ogType="profile"
-        canonicalUrl={profileUrl}
-        breadcrumbs={[
-          { name: "Home", url: `${BASE}/` },
-          { name: profile.full_name, url: profileUrl },
-        ]}
-      />
-      <ProfileSchema
-        name={profile.full_name}
-        username={profile.username}
-        description={profile.bio ?? undefined}
-        image={profile.avatar_url ?? undefined}
-        url={profileUrl}
-        jobTitles={roleLabels}
-        location={profile.location ?? undefined}
-        sameAs={socialLinks.map(([, url]) => (url.startsWith("http") ? url : `https://${url}`))}
-      />
       <div className="min-h-screen bg-background">
-        <div className="mx-auto max-w-3xl px-4 pb-16">
-          <Button variant="ghost" className="my-3" onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
+        <div className="mx-auto w-full max-w-3xl px-3 pb-16 sm:px-4">
+          <Button variant="ghost" className="my-3" onClick={() => navigate(-1)} aria-label="Go back">
+            <ArrowLeft className="w-4 h-4 mr-2" aria-hidden="true" />
             Back
           </Button>
 
-          <div className="overflow-hidden rounded-4xl border border-border bg-card">
+          <div className="overflow-hidden rounded-3xl border border-border bg-card sm:rounded-4xl">
             {/* Editorial cover */}
-            <div className="relative h-56 w-full bg-gradient-to-br from-primary/40 via-secondary/25 to-accent/25">
-              {profile.cover_image_url && (
+            <div className="relative h-40 w-full bg-gradient-to-br from-primary/40 via-secondary/25 to-accent/25 sm:h-56">
+              {featuredMedia?.media_type === "video" ? (
+                <ProfileHeaderMedia item={featuredMedia} name={profile.full_name} />
+              ) : profile.cover_image_url ? (
                 <img
                   src={profile.cover_image_url}
                   alt={`${profile.full_name} cover image`}
                   loading="lazy"
                   className="h-full w-full object-cover opacity-70"
                 />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+              ) : null}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
             </div>
 
-            <div className="relative z-10 -mt-20 px-6 pb-8">
+            <div className="relative z-10 -mt-14 px-4 pb-8 sm:-mt-20 sm:px-6">
               {/* Asymmetric header */}
-              <div className="flex items-end justify-between">
-                <div className="overflow-hidden rounded-2xl border-2 border-secondary shadow-[4px_4px_0_0_hsl(var(--accent))]">
-                  <Avatar className="h-28 w-28 rounded-none">
+              <div className="flex items-end justify-between gap-3">
+                <div className="shrink-0 overflow-hidden rounded-2xl border-2 border-secondary shadow-[4px_4px_0_0_hsl(var(--accent))]">
+                  <Avatar className="h-20 w-20 rounded-none sm:h-28 sm:w-28">
                     <AvatarImage
                       src={profile.avatar_url ?? undefined}
                       alt={`${profile.full_name} profile photo`}
                       className="object-cover"
                     />
-                    <AvatarFallback className="rounded-none bg-primary/20 text-4xl">
+                    <AvatarFallback className="rounded-none bg-primary/20 text-3xl sm:text-4xl">
                       {profile.full_name?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                 </div>
                 {profile.is_verified && (
-                  <div className="flex flex-col items-end pb-2">
-                    <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.3em] text-accent">
-                      <BadgeCheck className="h-3.5 w-3.5" aria-label="Verified" />
-                      Verified Synk
+                  <div className="flex min-w-0 flex-col items-end pb-2">
+                    <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.2em] text-accent sm:text-[10px] sm:tracking-[0.3em]">
+                      <BadgeCheck className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                      <span>Verified Synk</span>
                     </span>
                     <div className="mt-1 h-1 w-8 bg-secondary" />
                   </div>
                 )}
               </div>
 
-              <div className="mt-6">
+              <div className="mt-5 sm:mt-6">
                 <h1
-                  className="text-5xl font-extrabold uppercase leading-[0.85] tracking-tighter"
+                  className="break-words text-[clamp(2rem,9vw,3rem)] font-extrabold uppercase leading-[0.9] tracking-tighter sm:text-5xl sm:leading-[0.85]"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   {profile.full_name}
                 </h1>
-                <p className="mt-2 font-mono text-sm uppercase tracking-tight text-primary">@{profile.username}</p>
+                <p className="mt-2 truncate font-mono text-sm uppercase tracking-tight text-primary">
+                  @{profile.username}
+                </p>
               </div>
+
+              {featuredMedia?.media_type === "audio" && (
+                <ProfileHeaderMedia item={featuredMedia} name={profile.full_name} />
+              )}
 
               {/* Roles as editorial rail */}
               {roles.length > 0 && (
-                <div className="mt-8 flex w-full max-w-full items-baseline gap-4 overflow-x-auto pb-1">
+                <nav
+                  aria-label="Creative roles"
+                  className="mt-6 -mx-1 flex w-full max-w-full items-baseline gap-4 overflow-x-auto px-1 pb-1 sm:mt-8"
+                >
                   <h2 className="sr-only">Creative roles</h2>
                   {roles.map((r, i) => (
                     <span
@@ -246,26 +235,26 @@ const PublicProfile = () => {
                       {getRoleLabel(r as never)}
                     </span>
                   ))}
-                </div>
+                </nav>
               )}
 
               {/* Metadata grid */}
-              <div className="mt-8 grid grid-cols-2 gap-px border border-border bg-border">
-                <div className="bg-card p-4">
+              <div className="mt-6 grid grid-cols-1 gap-px border border-border bg-border sm:mt-8 sm:grid-cols-2">
+                <div className="min-w-0 bg-card p-4">
                   <p className="mb-1 text-[9px] uppercase tracking-widest text-muted-foreground">Genres</p>
-                  <p className="text-xs font-medium">
+                  <p className="break-words text-xs font-medium">
                     {genres.length ? genres.map((g) => g.replace(/_/g, " ")).join(", ") : "—"}
                   </p>
                 </div>
-                <div className="bg-card p-4">
+                <div className="min-w-0 bg-card p-4">
                   <p className="mb-1 text-[9px] uppercase tracking-widest text-muted-foreground">Active in</p>
-                  <p className="flex items-center gap-1 text-xs font-medium">
-                    <MapPin className="h-3 w-3 text-accent" />
-                    {profile.location || "Remote"}
+                  <p className="flex min-w-0 items-center gap-1 text-xs font-medium">
+                    <MapPin className="h-3 w-3 shrink-0 text-accent" aria-hidden="true" />
+                    <span className="truncate">{profile.location || "Remote"}</span>
                   </p>
                 </div>
                 {skills.length > 0 && (
-                  <div className="col-span-2 bg-card p-4">
+                  <div className="min-w-0 bg-card p-4 sm:col-span-2">
                     <p className="mb-2 text-[9px] uppercase tracking-widest text-muted-foreground">Skills</p>
                     <div className="flex flex-wrap gap-2">
                       {skills.map((s) => (
@@ -292,46 +281,53 @@ const PublicProfile = () => {
               )}
 
               {socialLinks.length > 0 && (
-                <div className="mt-8 flex flex-wrap gap-3">
+                <div className="mt-6 flex flex-wrap gap-2 sm:mt-8 sm:gap-3">
                   <h2 className="sr-only">Links</h2>
                   {socialLinks.map(([platform, url]) => (
                     <Button
                       key={platform}
                       variant="outline"
                       size="sm"
-                      className="gap-1 rounded-xl text-[10px] font-bold uppercase tracking-widest"
+                      aria-label={`Open ${platform} profile of ${profile.full_name} in a new tab`}
+                      className="max-w-full gap-1 rounded-xl text-[10px] font-bold uppercase tracking-widest"
                       onClick={() => {
                         const fullUrl = url.startsWith("http") ? url : `https://${url}`;
                         void openExternalUrl(fullUrl);
                       }}
                     >
-                      <ExternalLink className="h-3 w-3" />
-                      {platform}
+                      <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
+                      <span className="truncate">{platform}</span>
                     </Button>
                   ))}
                 </div>
               )}
 
               <div className="mt-6 flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground">
-                <Calendar className="h-3 w-3" />
+                <Calendar className="h-3 w-3 shrink-0" aria-hidden="true" />
                 Joined {new Date(profile.created_at).toLocaleDateString()}
               </div>
 
               {currentUserId && !isOwner && (
-                <div className="mt-8 flex flex-wrap items-center gap-3">
+                <div className="mt-8 flex flex-wrap items-center gap-2 sm:gap-3">
                   <Button
                     onClick={handleLike}
-                    className="h-12 min-w-[220px] flex-1 gap-2 rounded-xl text-[11px] font-bold uppercase tracking-widest"
+                    aria-label={`Request collaboration with ${profile.full_name}`}
+                    className="h-12 w-full min-w-0 flex-1 gap-2 rounded-xl text-[11px] font-bold uppercase tracking-widest sm:w-auto"
                   >
-                    <Heart className="h-4 w-4" />
-                    Request collaboration
+                    <Heart className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    <span className="truncate">Request collaboration</span>
                   </Button>
                   <FlagContentDialog
                     contentType="profile"
                     contentId={profile.id}
                     trigger={
-                      <Button variant="outline" size="icon" className="text-muted-foreground hover:text-destructive">
-                        <Flag className="w-5 h-5" />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        aria-label={`Report ${profile.full_name}`}
+                        className="min-h-11 min-w-11 text-muted-foreground hover:text-destructive"
+                      >
+                        <Flag className="w-5 h-5" aria-hidden="true" />
                       </Button>
                     }
                   />

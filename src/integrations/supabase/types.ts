@@ -2774,6 +2774,7 @@ export type Database = {
         Args: { _target_id: string; _viewer_id: string }
         Returns: boolean
       }
+      claim_referral: { Args: { _code: string }; Returns: string }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -2865,6 +2866,18 @@ export type Database = {
       is_project_member: {
         Args: { _project_id: string; _user_id: string }
         Returns: boolean
+      }
+      list_my_referrals: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          completed_at: string
+          created_at: string
+          full_name: string
+          referred_id: string
+          status: string
+          username: string
+        }[]
       }
       list_public_locations: {
         Args: { _min_creators?: number }

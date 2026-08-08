@@ -20,6 +20,9 @@ export const ReferralCard = () => {
   const [referralCode, setReferralCode] = useState("");
   const [referralCount, setReferralCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [referred, setReferred] = useState<
+    { referred_id: string; full_name: string | null; username: string | null; status: string; completed_at: string | null }[]
+  >([]);
 
   useEffect(() => {
     loadReferralData();
@@ -57,6 +60,9 @@ export const ReferralCard = () => {
       .eq("status", "completed");
 
     setReferralCount(count || 0);
+
+    const { data: list } = await supabase.rpc("list_my_referrals");
+    setReferred((list as typeof referred) ?? []);
     setLoading(false);
   };
 
@@ -129,6 +135,23 @@ export const ReferralCard = () => {
           <p className="text-sm font-medium">
             {referralCount} successful referral{referralCount !== 1 ? "s" : ""}
           </p>
+
+          {referred.length > 0 && (
+            <div className="rounded-lg border border-border divide-y divide-border">
+              {referred.map((r) => (
+                <div key={r.referred_id} className="flex items-center justify-between gap-3 p-2 text-xs">
+                  <span className="min-w-0 truncate font-medium">
+                    {r.full_name || "New creator"}
+                    {r.username ? <span className="text-muted-foreground"> @{r.username}</span> : null}
+                  </span>
+                  <Badge variant={r.status === "completed" ? "default" : "outline"} className="shrink-0 text-[10px]">
+                    {r.status === "completed" ? "Attributed" : r.status}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="space-y-3">
             {REWARD_TIERS.map((tier) => {
               const Icon = tier.icon;
