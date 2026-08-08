@@ -220,3 +220,89 @@ body {
   padding-left: var(--safe-area-left);
   padding-right: var(--safe-area-right);
 }
+/* ============================================================
+   ArtistrySynk 2.0 — Native app shell design language
+   ============================================================ */
+
+@theme inline {
+  --shadow-app-sm: 0 1px 2px hsl(270 40% 10% / 0.06), 0 1px 3px hsl(270 40% 10% / 0.04);
+  --shadow-app: 0 2px 8px hsl(270 40% 10% / 0.07), 0 8px 24px hsl(270 40% 10% / 0.06);
+  --shadow-app-lg: 0 8px 32px hsl(270 40% 10% / 0.12), 0 2px 8px hsl(270 40% 10% / 0.06);
+  --shadow-fab: 0 8px 24px hsl(var(--primary) / 0.4);
+}
+
+:root {
+  /* Layered app surfaces */
+  --surface-1: 0 0% 100%;
+  --surface-2: 0 0% 98%;
+  --surface-3: 0 0% 95%;
+  --app-bar: 0 0% 100%;
+  --app-header-h: 56px;
+  --app-tabbar-h: 60px;
+}
+
+.dark {
+  --surface-1: 0 0% 8%;
+  --surface-2: 0 0% 11%;
+  --surface-3: 0 0% 14%;
+  --app-bar: 0 0% 6%;
+}
+
+@theme inline {
+  --color-surface-1: hsl(var(--surface-1));
+  --color-surface-2: hsl(var(--surface-2));
+  --color-surface-3: hsl(var(--surface-3));
+  --color-app-bar: hsl(var(--app-bar));
+}
+
+/* Native-feeling scroll container */
+@utility app-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
+}
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Horizontal snapping carousels */
+@utility snap-row {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  & > * {
+    scroll-snap-align: start;
+    flex: none;
+  }
+}
+
+/* Frosted app bars */
+@utility app-blur {
+  background-color: hsl(var(--app-bar) / 0.78);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+@utility text-gradient-brand {
+  background-image: var(--gradient-primary);
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
