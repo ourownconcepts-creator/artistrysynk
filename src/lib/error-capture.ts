@@ -1,10 +1,15 @@
 // Captures the original Error out-of-band so server.ts can recover the stack
 // when h3 has already swallowed the throw into a generic 500 Response.
 
+import { isBenignTransportError } from "./benignErrors";
+
 let lastCapturedError: { error: unknown; at: number } | undefined;
 const TTL_MS = 5_000;
 
 function record(error: unknown) {
+  // Client disconnects (Error: aborted, ECONNRESET) are transport noise, not
+  // app failures — recording them would surface a phantom runtime error.
+  if (isBenignTransportError(error)) return;
   lastCapturedError = { error, at: Date.now() };
 }
 

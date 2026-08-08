@@ -3,6 +3,7 @@
  * server monitor (deduped client-side to avoid flooding on repeated errors).
  */
 import { reportClientError } from "@/lib/error-monitoring.functions";
+import { isBenignTransportError } from "@/lib/benignErrors";
 
 let installed = false;
 const seen = new Map<string, number>();
@@ -23,6 +24,7 @@ function describe(value: unknown): { message: string; stack?: string } {
 
 export function captureClientError(error: unknown, mechanism = "manual") {
   if (typeof window === "undefined") return;
+  if (isBenignTransportError(error)) return;
   const { message, stack } = describe(error);
   if (!message || sent >= MAX_PER_SESSION) return;
   const key = `${message}|${(stack ?? "").split("\n")[1] ?? ""}`;
