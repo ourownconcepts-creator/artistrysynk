@@ -1,0 +1,20 @@
+{
+  "customizations": [
+    { "token": "--primary/-foreground/--primary-glow (deep purple palette, light+dark)", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--secondary/-foreground (neon pink, light+dark)", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--accent/-foreground (electric blue, light+dark)", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--background/--foreground/--card/--popover/--muted/--destructive/--border/--input/--ring (light+dark)", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--radius: 0.75rem", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--gradient-primary", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--gradient-accent", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--gradient-hero", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--shadow-glow-primary (light+dark)", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--shadow-glow-pink (light+dark)", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--shadow-glow-blue (light+dark)", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--sidebar-* set (light+dark, mapped to --color-sidebar-*)", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "@keyframes float + --animate-float", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "@keyframes shimmer + --animate-shimmer", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "safe-area inset variables + body padding (Capacitor)", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "container center/padding 2rem/1400px cap", "source": "tailwind.config.ts", "reappliedIn": "src/styles.css" }
+  ]
+}

@@ -1,0 +1,222 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * ArtistrySynk design system (ported from src/index.css, Tailwind v3 → v4).
+ *
+ * The @theme inline block maps CSS custom properties to Tailwind utility
+ * classes (e.g. --color-primary -> bg-primary, text-primary).
+ * Token values keep their original HSL triplets, wrapped with hsl() here.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-glow: hsl(var(--primary-glow));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-ring-offset-background: hsl(var(--background));
+  --color-sidebar: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-shimmer: shimmer 2s ease-in-out infinite;
+}
+
+/* Preserve Tailwind v3 container behaviour (centered, 2rem padding, 1400px cap) */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+  width: 100%;
+  @media (width >= 1400px) {
+    max-width: 1400px;
+  }
+}
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 5%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 5%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 5%;
+
+  /* Deep Purple Primary */
+  --primary: 270 70% 35%;
+  --primary-foreground: 0 0% 100%;
+  --primary-glow: 270 70% 55%;
+
+  /* Neon Pink Accent */
+  --secondary: 330 85% 60%;
+  --secondary-foreground: 0 0% 100%;
+
+  /* Electric Blue Accent */
+  --accent: 200 100% 55%;
+  --accent-foreground: 0 0% 100%;
+
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 40%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
+  --ring: 270 70% 35%;
+
+  --radius: 0.75rem;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(270 70% 35%), hsl(270 70% 55%));
+  --gradient-accent: linear-gradient(135deg, hsl(330 85% 60%), hsl(200 100% 55%));
+  --gradient-hero: linear-gradient(135deg, hsl(270 70% 25%), hsl(270 70% 45%), hsl(330 85% 50%));
+
+  /* Shadows with glow */
+  --shadow-glow-primary: 0 0 40px hsl(270 70% 55% / 0.3);
+  --shadow-glow-pink: 0 0 30px hsl(330 85% 60% / 0.3);
+  --shadow-glow-blue: 0 0 30px hsl(200 100% 55% / 0.3);
+
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 0 0% 5%;
+  --sidebar-primary: 270 70% 35%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 0 0% 96%;
+  --sidebar-accent-foreground: 0 0% 5%;
+  --sidebar-border: 0 0% 90%;
+  --sidebar-ring: 270 70% 35%;
+}
+
+.dark {
+  --background: 0 0% 5%;
+  --foreground: 0 0% 98%;
+
+  --card: 0 0% 8%;
+  --card-foreground: 0 0% 98%;
+
+  --popover: 0 0% 8%;
+  --popover-foreground: 0 0% 98%;
+
+  --primary: 270 70% 55%;
+  --primary-foreground: 0 0% 5%;
+  --primary-glow: 270 70% 65%;
+
+  --secondary: 330 85% 60%;
+  --secondary-foreground: 0 0% 5%;
+
+  --accent: 200 100% 55%;
+  --accent-foreground: 0 0% 5%;
+
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 60%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
+  --ring: 270 70% 55%;
+
+  --gradient-primary: linear-gradient(135deg, hsl(270 70% 35%), hsl(270 70% 55%));
+  --gradient-accent: linear-gradient(135deg, hsl(330 85% 60%), hsl(200 100% 55%));
+  --gradient-hero: linear-gradient(135deg, hsl(270 70% 25%), hsl(270 70% 45%), hsl(330 85% 50%));
+
+  --shadow-glow-primary: 0 0 50px hsl(270 70% 55% / 0.4);
+  --shadow-glow-pink: 0 0 40px hsl(330 85% 60% / 0.4);
+  --shadow-glow-blue: 0 0 40px hsl(200 100% 55% / 0.4);
+
+  --sidebar-background: 0 0% 8%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 270 70% 55%;
+  --sidebar-primary-foreground: 0 0% 5%;
+  --sidebar-accent: 0 0% 12%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 0 0% 15%;
+  --sidebar-ring: 270 70% 55%;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+}
+
+/* Float animation for parallax icons */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-15px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-1deg);
+  }
+  75% {
+    transform: translateY(-20px) rotate(1deg);
+  }
+}
+
+/* Shimmer animation for particles */
+@keyframes shimmer {
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+/* Native app safe-area insets (Capacitor iOS/Android) */
+:root {
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+}
+
+body {
+  padding-top: var(--safe-area-top);
+  padding-bottom: var(--safe-area-bottom);
+  padding-left: var(--safe-area-left);
+  padding-right: var(--safe-area-right);
+}
