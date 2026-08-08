@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, ArrowLeft, BadgeCheck, Heart, Flag, ExternalLink } from "lucide-react";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { toast } from "sonner";
-import { ProfileSchema, PageSEO } from "@/components/seo";
 import { FlagContentDialog } from "@/components/FlagContentDialog";
 import { BlockUserButton } from "@/components/settings/BlockUserButton";
 import { MuteUserButton } from "@/components/settings/MuteUserButton";
@@ -152,30 +151,6 @@ const PublicProfile = () => {
 
   return (
     <>
-      <PageSEO
-        title={`${profile.full_name} (@${profile.username})${roleLabels.length ? ` — ${roleLabels[0]}` : ""}`}
-        description={metaDescription}
-        keywords={[profile.full_name, profile.username, ...roleLabels, ...skills, profile.city ?? "", "ArtistrySynk"]
-          .filter(Boolean)
-          .join(", ")}
-        ogImage={profile.avatar_url || `${BASE}/og-image.jpg`}
-        ogType="profile"
-        canonicalUrl={profileUrl}
-        breadcrumbs={[
-          { name: "Home", url: `${BASE}/` },
-          { name: profile.full_name, url: profileUrl },
-        ]}
-      />
-      <ProfileSchema
-        name={profile.full_name}
-        username={profile.username}
-        description={profile.bio ?? undefined}
-        image={profile.avatar_url ?? undefined}
-        url={profileUrl}
-        jobTitles={roleLabels}
-        location={profile.location ?? undefined}
-        sameAs={socialLinks.map(([, url]) => (url.startsWith("http") ? url : `https://${url}`))}
-      />
       <div className="min-h-screen bg-background">
         <div className="mx-auto w-full max-w-3xl px-3 pb-16 sm:px-4">
           <Button variant="ghost" className="my-3" onClick={() => navigate(-1)} aria-label="Go back">
