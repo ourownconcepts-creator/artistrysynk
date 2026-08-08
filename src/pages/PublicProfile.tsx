@@ -15,6 +15,7 @@ import { MuteUserButton } from "@/components/settings/MuteUserButton";
 import { getRoleLabel } from "@/lib/creativeRoles";
 import NotFound from "@/pages/NotFound";
 import { ProfileHeaderMedia } from "@/components/profile/ProfileHeaderMedia";
+import { ProfileMediaGallery } from "@/components/profile/ProfileMediaGallery";
 
 const BASE = "https://artistrysynk.app";
 
@@ -226,10 +227,10 @@ const PublicProfile = () => {
                   {roles.map((r, i) => (
                     <span
                       key={r}
-                      className={`flex-shrink-0 pb-1 text-[10px] font-bold uppercase tracking-widest ${
+                      className={`flex-shrink-0 pb-1 text-[11px] font-bold uppercase tracking-widest ${
                         i === 0
                           ? "border-b-2 border-secondary text-secondary"
-                          : "text-muted-foreground"
+                          : "text-foreground/70"
                       }`}
                     >
                       {getRoleLabel(r as never)}
@@ -237,6 +238,8 @@ const PublicProfile = () => {
                   ))}
                 </nav>
               )}
+
+              <ProfileMediaGallery items={portfolio} name={profile.full_name} />
 
               {/* Metadata grid */}
               <div className="mt-6 grid grid-cols-1 gap-px border border-border bg-border sm:mt-8 sm:grid-cols-2">
