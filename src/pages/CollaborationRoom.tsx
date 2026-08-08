@@ -391,22 +391,28 @@ const CollaborationRoom = () => {
             </Card>
 
             {currentUser && (
+              <div id="invites" className="scroll-mt-24">
               <ProjectInvites
                 projectId={projectId!}
                 currentUserId={currentUser}
                 canInvite={project?.created_by === currentUser}
               />
+              </div>
             )}
 
             {currentUser && (
+              <div id="role-approvals" className="scroll-mt-24">
               <RoleApprovals
                 projectId={projectId!}
                 currentUserId={currentUser}
                 isCreator={project?.created_by === currentUser}
               />
+              </div>
             )}
 
-            <ActivityFeed projectId={projectId!} />
+            <div id="activity" className="scroll-mt-24">
+              <ActivityFeed projectId={projectId!} />
+            </div>
           </div>
         </div>
       </div>
