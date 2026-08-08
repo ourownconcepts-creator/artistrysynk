@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchHiddenUserIds } from "@/lib/hiddenUsers";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -87,11 +88,19 @@ const CollaborationFeed = () => {
   }, [navigate]);
 
   const loadPosts = async (userId: string) => {
-    const { data: postsData, error } = await supabase
+    const { all: hiddenIds } = await fetchHiddenUserIds(userId);
+
+    let postsQuery = supabase
       .from("collaboration_posts")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(50);
+
+    if (hiddenIds.length > 0) {
+      postsQuery = postsQuery.not("user_id", "in", `(${hiddenIds.join(",")})`);
+    }
+
+    const { data: postsData, error } = await postsQuery;
 
     if (error) {
       console.error("Error loading posts:", error);
