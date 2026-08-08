@@ -16,5 +16,6 @@ export const submitContactSupport = createServerFn({ method: "POST" })
   .inputValidator(submitContactSupportSchema)
   .handler(async ({ data }) => {
     const { submitContactSupport } = await import("@/lib/submit-contact-support.server");
-    return submitContactSupport(data);
+    const { withRunLog } = await import("@/lib/functionRunLog.server");
+    return withRunLog("submit-contact-support", { subject: data.subject }, () => submitContactSupport(data));
   });

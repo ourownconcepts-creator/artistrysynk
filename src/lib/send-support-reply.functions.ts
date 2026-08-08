@@ -16,5 +16,8 @@ export const sendSupportReply = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase, context.userId);
 
     const { sendSupportReply: impl } = await import("@/lib/send-support-reply.server");
-    return impl(context.supabase, context.userId, data);
+    const { withRunLog } = await import("@/lib/functionRunLog.server");
+    return withRunLog("send-support-reply", { submissionId: data.submissionId, status: data.status }, () =>
+      impl(context.supabase, context.userId, data),
+    );
   });

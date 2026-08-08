@@ -18,5 +18,6 @@ export const sendAdminNotification = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase, context.userId);
 
     const { sendAdminNotification } = await import("@/lib/send-admin-notification.server");
-    return sendAdminNotification(data);
+    const { withRunLog } = await import("@/lib/functionRunLog.server");
+    return withRunLog("send-admin-notification", { action: data.action }, () => sendAdminNotification(data));
   });

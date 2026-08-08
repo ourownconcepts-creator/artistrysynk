@@ -17,5 +17,8 @@ export const notifyContentStatus = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase, context.userId);
 
     const { notifyContentStatus: impl } = await import("@/lib/notify-content-status.server");
-    return impl(data);
+    const { withRunLog } = await import("@/lib/functionRunLog.server");
+    return withRunLog("notify-content-status", { contentType: data.contentType, action: data.action }, () =>
+      impl(data),
+    );
   });
