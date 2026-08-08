@@ -282,6 +282,49 @@ const CollaborationFeed = () => {
     setSelectedRoleTags(prev => prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]);
   };
 
+  const visiblePosts = useMemo(() => {
+    const q = filters.q.trim().toLowerCase();
+    const loc = filters.location.trim().toLowerCase();
+    const skills = filters.skills.map(s => s.toLowerCase());
+
+    return posts.filter(post => {
+      if (q) {
+        const haystack = [
+          post.content,
+          post.hashtags.join(" "),
+          post.role_tags.map(getRoleLabel).join(" "),
+          post.profile?.full_name ?? "",
+          post.profile?.username ?? "",
+        ]
+          .join(" ")
+          .toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+
+      if (filters.roles.length && !filters.roles.some(r => post.role_tags.includes(r))) return false;
+
+      if (loc) {
+        const where = [post.profile?.location, post.profile?.city, post.profile?.country]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        if (!where.includes(loc)) return false;
+      }
+
+      if (skills.length) {
+        const authorSkills = post.author_skills.map(s => s.toLowerCase());
+        const text = `${post.content} ${post.hashtags.join(" ")}`.toLowerCase();
+        if (!skills.some(s => authorSkills.some(a => a.includes(s)) || text.includes(s))) return false;
+      }
+
+      if (filters.collabTypes.length && !filters.collabTypes.some(t => post.collab_types.includes(t))) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [posts, filters]);
+
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -341,16 +384,29 @@ const CollaborationFeed = () => {
         </Card>
 
         {/* Feed */}
-        {posts.length === 0 ? (
+        <FeedFilters
+          value={filters}
+          onChange={setFilters}
+          resultCount={visiblePosts.length}
+          userId={currentUser}
+        />
+
+        {visiblePosts.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
               <Hash className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <h2 className="text-xl font-semibold mb-2">No posts yet</h2>
-              <p className="text-muted-foreground">Be the first to post a collaboration request!</p>
+              <h2 className="text-xl font-semibold mb-2">
+                {posts.length ? "No posts match your filters" : "No posts yet"}
+              </h2>
+              <p className="text-muted-foreground">
+                {posts.length
+                  ? "Try widening your role, location or collaboration type filters."
+                  : "Be the first to post a collaboration request!"}
+              </p>
             </CardContent>
           </Card>
         ) : (
-          posts.map(post => (
+          visiblePosts.map(post => (
             <Card key={post.id}>
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-3">
