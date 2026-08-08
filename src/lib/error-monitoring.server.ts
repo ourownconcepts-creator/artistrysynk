@@ -5,6 +5,7 @@
  */
 import { recordFunctionRun } from "@/lib/functionRunLog.server";
 import { hasResend, sendEmail } from "@/lib/email/resend.server";
+import { isBenignTransportError } from "@/lib/benignErrors";
 
 export type ErrorReport = {
   source: "client" | "server";
@@ -57,6 +58,10 @@ const escapeHtml = (value: string) =>
   value.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c] as string);
 
 export async function reportError(report: ErrorReport): Promise<{ logged: boolean; alerted: boolean }> {
+  // Ignore client-disconnect noise so it never reaches logs or alerts.
+  if (isBenignTransportError(new Error(`${report.message}\n${report.stack ?? ""}`))) {
+    return { logged: false, alerted: false };
+  }
   const key = fingerprint(report);
 
   await recordFunctionRun({
