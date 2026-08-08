@@ -73,7 +73,7 @@ export function ProfileHeaderMedia({ item, name }: { item: FeaturedMedia; name: 
         {playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
       </button>
       <div className="min-w-0">
-        <p className="text-[9px] uppercase tracking-widest text-muted-foreground">Featured track</p>
+        <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Featured track</p>
         <p className="truncate text-sm font-medium">{item.title || "Untitled"}</p>
       </div>
       <Music2 className="ml-auto h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
