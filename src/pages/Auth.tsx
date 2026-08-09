@@ -18,6 +18,8 @@ import { lovable } from "@/integrations/lovable/index";
 
 import { emailSchema, passwordSchema, usernameSchema } from "@/lib/authValidation";
 import { storeReferralCode, getStoredReferralCode, claimStoredReferral } from "@/lib/referral";
+import { SignupConsent } from "@/components/legal/SignupConsent";
+import { buildSignupConsents, flushPendingConsents, storePendingConsents } from "@/lib/consent";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -35,6 +37,9 @@ const Auth = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [confirmedAge, setConfirmedAge] = useState(false);
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
 
   useEffect(() => {
     storeReferralCode(searchParams.get("ref"));
@@ -44,7 +49,9 @@ const Auth = () => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        void claimStoredReferral().finally(() => navigate("/discover"));
+        void flushPendingConsents()
+          .then(() => claimStoredReferral())
+          .finally(() => navigate("/discover"));
       }
     });
 
@@ -95,7 +102,13 @@ const Auth = () => {
     if (!passwordResult.success) {
       newErrors.password = passwordResult.error.errors[0].message;
     }
-    
+
+    if (!acceptedTerms) {
+      newErrors.consent = "Please accept the Terms of Service and Privacy Policy to continue.";
+    } else if (!confirmedAge) {
+      newErrors.consent = "ArtistrySynk is for creatives aged 18 and over.";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -146,8 +159,14 @@ const Auth = () => {
     e.preventDefault();
     
     if (!validateSignUpForm()) return;
-    
+
     setLoading(true);
+
+    // Captured before sign-up: the session may only appear after email
+    // confirmation, so consents are queued and flushed on first sign-in.
+    storePendingConsents(
+      buildSignupConsents({ acceptedTerms, confirmedAge, marketing: marketingOptIn }),
+    );
 
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -188,7 +207,31 @@ const Auth = () => {
     setLoading(false);
   };
 
-  const handleGoogleSignIn = async () => {
+  /** Social sign-up must capture the same consents as email sign-up. */
+  const socialConsentBlocked = (fromSignup: boolean) => {
+    if (!fromSignup) return false;
+    if (!acceptedTerms) {
+      setErrors((prev) => ({
+        ...prev,
+        consent: "Please accept the Terms of Service and Privacy Policy to continue.",
+      }));
+      return true;
+    }
+    if (!confirmedAge) {
+      setErrors((prev) => ({
+        ...prev,
+        consent: "ArtistrySynk is for creatives aged 18 and over.",
+      }));
+      return true;
+    }
+    storePendingConsents(
+      buildSignupConsents({ acceptedTerms, confirmedAge, marketing: marketingOptIn }),
+    );
+    return false;
+  };
+
+  const handleGoogleSignIn = async (fromSignup = false) => {
+    if (socialConsentBlocked(fromSignup)) return;
     setLoading(true);
 
     try {
@@ -212,7 +255,8 @@ const Auth = () => {
     }
   };
 
-  const handleAppleSignIn = async () => {
+  const handleAppleSignIn = async (fromSignup = false) => {
+    if (socialConsentBlocked(fromSignup)) return;
     setLoading(true);
 
     try {
@@ -469,7 +513,7 @@ const Auth = () => {
                     type="button"
                     variant="outline"
                     className="w-full"
-                    onClick={handleGoogleSignIn}
+                    onClick={() => void handleGoogleSignIn()}
                     disabled={loading}
                   >
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -485,7 +529,7 @@ const Auth = () => {
                     type="button"
                     variant="outline"
                     className="w-full"
-                    onClick={handleAppleSignIn}
+                    onClick={() => void handleAppleSignIn()}
                     disabled={loading}
                   >
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
@@ -575,6 +619,22 @@ const Auth = () => {
                       Min 8 chars with uppercase, lowercase, number, and special character
                     </p>
                   </div>
+                  <SignupConsent
+                    acceptedTerms={acceptedTerms}
+                    confirmedAge={confirmedAge}
+                    marketing={marketingOptIn}
+                    onAcceptedTermsChange={(v) => {
+                      setAcceptedTerms(v);
+                      clearError('consent');
+                    }}
+                    onConfirmedAgeChange={(v) => {
+                      setConfirmedAge(v);
+                      clearError('consent');
+                    }}
+                    onMarketingChange={setMarketingOptIn}
+                    error={errors.consent}
+                  />
+
                   <Button type="submit" variant="hero" className="w-full" disabled={loading}>
                     {loading ? "Creating account..." : "Create Account"}
                   </Button>
@@ -590,7 +650,7 @@ const Auth = () => {
                     type="button"
                     variant="outline"
                     className="w-full"
-                    onClick={handleGoogleSignIn}
+                    onClick={() => void handleGoogleSignIn(true)}
                     disabled={loading}
                   >
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -606,7 +666,7 @@ const Auth = () => {
                     type="button"
                     variant="outline"
                     className="w-full"
-                    onClick={handleAppleSignIn}
+                    onClick={() => void handleAppleSignIn(true)}
                     disabled={loading}
                   >
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
