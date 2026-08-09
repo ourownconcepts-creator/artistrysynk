@@ -821,6 +821,7 @@ export type Database = {
           reviewed_by: string | null
           rights_holder_name: string
           status: string
+          submitter_ip_hash: string | null
           updated_at: string
           work_description: string
         }
@@ -844,6 +845,7 @@ export type Database = {
           reviewed_by?: string | null
           rights_holder_name: string
           status?: string
+          submitter_ip_hash?: string | null
           updated_at?: string
           work_description: string
         }
@@ -867,6 +869,7 @@ export type Database = {
           reviewed_by?: string | null
           rights_holder_name?: string
           status?: string
+          submitter_ip_hash?: string | null
           updated_at?: string
           work_description?: string
         }
