@@ -532,44 +532,73 @@ export type Database = {
       compliance_records: {
         Row: {
           activity: string | null
+          approved_at: string | null
+          approved_by: string | null
           content: Json
           created_at: string
           created_by: string | null
           id: string
+          last_reviewed_at: string | null
+          linked_record_id: string | null
           owner: string | null
           record_type: string
+          reference_id: string | null
           review_due: string | null
+          review_notes: string | null
+          risk_level: string | null
           status: string
           title: string
           updated_at: string
         }
         Insert: {
           activity?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           content?: Json
           created_at?: string
           created_by?: string | null
           id?: string
+          last_reviewed_at?: string | null
+          linked_record_id?: string | null
           owner?: string | null
           record_type: string
+          reference_id?: string | null
           review_due?: string | null
+          review_notes?: string | null
+          risk_level?: string | null
           status?: string
           title: string
           updated_at?: string
         }
         Update: {
           activity?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           content?: Json
           created_at?: string
           created_by?: string | null
           id?: string
+          last_reviewed_at?: string | null
+          linked_record_id?: string | null
           owner?: string | null
           record_type?: string
+          reference_id?: string | null
           review_due?: string | null
+          review_notes?: string | null
+          risk_level?: string | null
           status?: string
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "compliance_records_linked_record_id_fkey"
+            columns: ["linked_record_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_records"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contact_submission_audit: {
         Row: {
