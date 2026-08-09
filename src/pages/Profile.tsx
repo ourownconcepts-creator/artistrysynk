@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +24,7 @@ import {
   Share2,
   Monitor,
   UserRound,
+  LogOut,
 } from "lucide-react";
 import { InteractivePortfolio } from "@/components/portfolio/InteractivePortfolio";
 import { PortfolioUpload } from "@/components/portfolio/PortfolioUpload";
@@ -54,6 +56,7 @@ const TABS = [
 
 const Profile = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   useSessionTracking();
   const [profile, setProfile] = useState<any>(null);
   const [roles, setRoles] = useState<any[]>([]);
@@ -64,6 +67,14 @@ const Profile = () => {
   const [counts, setCounts] = useState({ portfolio: 0, matches: 0 });
   const [tab, setTab] = useState<Tab>("about");
   const [loading, setLoading] = useState(true);
+
+  const handleSignOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    toast.success("Signed out successfully");
+    navigate("/auth", { replace: true });
+  };
 
   const loadProfile = useCallback(async (uid: string) => {
     const [{ data: profileData }, { data: rolesData }, { data: genresData }] = await Promise.all([
@@ -387,6 +398,16 @@ const Profile = () => {
               <SettingsIcon className="h-4 w-4 text-muted-foreground" />
             </Pressable>
           </Surface>
+
+          <Button
+            variant="outline"
+            className="w-full gap-2 rounded-full"
+            onClick={handleSignOut}
+            aria-label="Sign out of your account"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </Button>
 
           {allRoles.some((r) => r !== "user") ? (
             <Surface inset className="space-y-3">
