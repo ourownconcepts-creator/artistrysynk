@@ -19,6 +19,7 @@ import { Route as AdminComplianceRouteImport } from './routes/admin-compliance'
 import { Route as AdminCopyrightRouteImport } from './routes/admin-copyright'
 import { Route as AdminFunctionLogsRouteImport } from './routes/admin-function-logs'
 import { Route as AdminReportsRouteImport } from './routes/admin-reports'
+import { Route as AdminRetentionRouteImport } from './routes/admin-retention'
 import { Route as AdminSettingsRouteImport } from './routes/admin-settings'
 import { Route as AdminSupportRouteImport } from './routes/admin-support'
 import { Route as ApiAccessRouteImport } from './routes/api-access'
@@ -132,6 +133,11 @@ const AdminFunctionLogsRoute = AdminFunctionLogsRouteImport.update({
 const AdminReportsRoute = AdminReportsRouteImport.update({
   id: '/admin-reports',
   path: '/admin-reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRetentionRoute = AdminRetentionRouteImport.update({
+  id: '/admin-retention',
+  path: '/admin-retention',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
@@ -468,6 +474,7 @@ export interface FileRoutesByFullPath {
   '/admin-copyright': typeof AdminCopyrightRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-reports': typeof AdminReportsRoute
+  '/admin-retention': typeof AdminRetentionRoute
   '/admin-settings': typeof AdminSettingsRoute
   '/admin-support': typeof AdminSupportRoute
   '/api-access': typeof ApiAccessRoute
@@ -544,6 +551,7 @@ export interface FileRoutesByTo {
   '/admin-copyright': typeof AdminCopyrightRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-reports': typeof AdminReportsRoute
+  '/admin-retention': typeof AdminRetentionRoute
   '/admin-settings': typeof AdminSettingsRoute
   '/admin-support': typeof AdminSupportRoute
   '/api-access': typeof ApiAccessRoute
@@ -621,6 +629,7 @@ export interface FileRoutesById {
   '/admin-copyright': typeof AdminCopyrightRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-reports': typeof AdminReportsRoute
+  '/admin-retention': typeof AdminRetentionRoute
   '/admin-settings': typeof AdminSettingsRoute
   '/admin-support': typeof AdminSupportRoute
   '/api-access': typeof ApiAccessRoute
@@ -699,6 +708,7 @@ export interface FileRouteTypes {
     | '/admin-copyright'
     | '/admin-function-logs'
     | '/admin-reports'
+    | '/admin-retention'
     | '/admin-settings'
     | '/admin-support'
     | '/api-access'
@@ -775,6 +785,7 @@ export interface FileRouteTypes {
     | '/admin-copyright'
     | '/admin-function-logs'
     | '/admin-reports'
+    | '/admin-retention'
     | '/admin-settings'
     | '/admin-support'
     | '/api-access'
@@ -851,6 +862,7 @@ export interface FileRouteTypes {
     | '/admin-copyright'
     | '/admin-function-logs'
     | '/admin-reports'
+    | '/admin-retention'
     | '/admin-settings'
     | '/admin-support'
     | '/api-access'
@@ -928,6 +940,7 @@ export interface RootRouteChildren {
   AdminCopyrightRoute: typeof AdminCopyrightRoute
   AdminFunctionLogsRoute: typeof AdminFunctionLogsRoute
   AdminReportsRoute: typeof AdminReportsRoute
+  AdminRetentionRoute: typeof AdminRetentionRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSupportRoute: typeof AdminSupportRoute
   ApiAccessRoute: typeof ApiAccessRoute
@@ -1064,6 +1077,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-reports'
       fullPath: '/admin-reports'
       preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-retention': {
+      id: '/admin-retention'
+      path: '/admin-retention'
+      fullPath: '/admin-retention'
+      preLoaderRoute: typeof AdminRetentionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-settings': {
@@ -1528,6 +1548,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCopyrightRoute: AdminCopyrightRoute,
   AdminFunctionLogsRoute: AdminFunctionLogsRoute,
   AdminReportsRoute: AdminReportsRoute,
+  AdminRetentionRoute: AdminRetentionRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSupportRoute: AdminSupportRoute,
   ApiAccessRoute: ApiAccessRoute,
