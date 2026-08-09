@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
-import { ChevronLeft, Sparkles } from "lucide-react";
+import { ChevronLeft, Sparkles, User, Settings, LogOut } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { cn } from "@/lib/utils";
 import { Pressable } from "@/components/native-ui";
@@ -8,6 +8,17 @@ import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { ThemeToggle } from "@/components/navbar/ThemeToggle";
 import { GlobalSearch } from "@/components/navbar/GlobalSearch";
 import { useAppUser } from "@/hooks/useAppUser";
+import { supabase } from "@/integrations/supabase/client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function AppTopBar({
   title,
