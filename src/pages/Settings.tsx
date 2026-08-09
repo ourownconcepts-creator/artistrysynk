@@ -10,6 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { useServerFn } from "@tanstack/react-start";
+import { deleteMyAccount } from "@/lib/delete-account.functions";
 import { Bell, Shield, User, Trash2, Moon, Sun, Monitor, Loader2, Scale, FileText, Cookie, Trash, ExternalLink, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
 import { PushNotificationSettings } from "@/components/notifications/PushNotificationSettings";
@@ -65,6 +68,10 @@ const Settings = () => {
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
   const [userId, setUserId] = useState<string | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const runDeleteAccount = useServerFn(deleteMyAccount);
 
   const handleSignOut = async () => {
     await queryClient.cancelQueries();
@@ -144,7 +151,23 @@ const Settings = () => {
   };
 
   const handleDeleteAccount = async () => {
-    toast.info("Account deletion requested. Our team will process this within 48 hours.");
+    if (deleteConfirm.trim().toUpperCase() !== "DELETE") return;
+    setDeleting(true);
+    try {
+      await runDeleteAccount({ data: { confirmation: "DELETE" } });
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      await supabase.auth.signOut();
+      toast.success("Your account and data have been permanently deleted.");
+      setDeleteOpen(false);
+      navigate("/auth", { replace: true });
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Could not delete your account. Please contact support.",
+      );
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) {
