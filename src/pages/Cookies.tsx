@@ -231,8 +231,10 @@ const Cookies = () => {
                   If you have questions about our use of cookies, please contact us at:
                 </p>
                 <ul className="list-none space-y-2 text-muted-foreground mt-4">
-                  <li><strong>Email:</strong> privacy@artistrysynk.app</li>
-                  <li><strong>Address:</strong> Lagos, Nigeria</li>
+                  <li><strong>Company:</strong> Lomodogs Dot Nigeria Limited</li>
+                  <li><strong>Email:</strong> ourownconcepts@gmail.com</li>
+                  <li><strong>Phone:</strong> +234 906 931 2437</li>
+                  <li><strong>Address:</strong> 6 Oluyoro Street, off Awolowo Avenue, Bodija, Ibadan, Oyo State, Nigeria</li>
                 </ul>
               </CardContent>
             </Card>

@@ -47,10 +47,19 @@ const ORGANIZATION_JSONLD = JSON.stringify({
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer service",
-    email: "hello@artistrysynk.app",
+    email: "ourownconcepts@gmail.com",
+    telephone: "+2349069312437",
+    name: "Kolebaje Adekunle Tunji",
     availableLanguage: ["English"],
   },
-  address: { "@type": "PostalAddress", addressCountry: "NG", addressLocality: "Lagos" },
+  legalName: "Lomodogs Dot Nigeria Limited",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "6 Oluyoro Street, off Awolowo Avenue, Bodija",
+    addressLocality: "Ibadan",
+    addressRegion: "Oyo State",
+    addressCountry: "NG",
+  },
 });
 
 const WEBSITE_JSONLD = JSON.stringify({

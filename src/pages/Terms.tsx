@@ -220,7 +220,7 @@ const Terms = () => {
               <CardContent className="pt-6 prose prose-lg max-w-none">
                 <h2 className="text-2xl font-bold mb-4">11. Governing Law</h2>
                 <p className="text-muted-foreground">
-                  These Terms shall be governed by the laws of the Federal Republic of Nigeria. Any disputes shall be resolved in the courts of Lagos, Nigeria.
+                  These Terms shall be governed by the laws of the Federal Republic of Nigeria. Any disputes shall be resolved in the courts of Oyo State, Nigeria.
                 </p>
               </CardContent>
             </Card>
@@ -232,8 +232,11 @@ const Terms = () => {
                   If you have questions about these Terms, contact us at:
                 </p>
                 <ul className="list-none space-y-2 text-muted-foreground mt-4">
-                  <li><strong>Email:</strong> legal@artistrysynk.app</li>
-                  <li><strong>Address:</strong> Lagos, Nigeria</li>
+                  <li><strong>Company:</strong> Lomodogs Dot Nigeria Limited</li>
+                  <li><strong>Contact person:</strong> Kolebaje Adekunle Tunji</li>
+                  <li><strong>Email:</strong> ourownconcepts@gmail.com</li>
+                  <li><strong>Phone:</strong> +234 906 931 2437</li>
+                  <li><strong>Address:</strong> 6 Oluyoro Street, off Awolowo Avenue, Bodija, Ibadan, Oyo State, Nigeria</li>
                 </ul>
               </CardContent>
             </Card>

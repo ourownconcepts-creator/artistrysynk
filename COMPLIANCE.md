@@ -81,10 +81,12 @@ and SEO suites via `bunx vitest run`.
 
 ## Remaining gaps (not fixable in code)
 
-1. **Controller identity and contact details** — the legal documents need the registered
-   company name, address and, where required, a representative in the EU/UK.
-2. **Data Protection Officer / privacy contact** — appoint a named owner; the registers
-   currently carry a generic role name.
+1. **EU/UK representative** — the controller is Lomodogs Dot Nigeria Limited, 6 Oluyoro
+   Street, off Awolowo Avenue, Bodija, Ibadan, Oyo State, Nigeria (contact: Kolebaje
+   Adekunle Tunji, ourownconcepts@gmail.com, +234 906 931 2437). Where required, an
+   EU/UK representative must still be appointed.
+2. **Data Protection Officer** — Kolebaje Adekunle Tunji is the named privacy contact; a
+   formal DPO appointment is still required if the NDPA/GDPR thresholds are met.
 3. **Signed DPAs with processors** — the register tracks DPA status, but the executed
    agreements with each provider must exist outside the app.
 4. **NDPA registration** — Nigerian data-controller registration and annual audit filing.
