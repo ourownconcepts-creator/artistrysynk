@@ -82,6 +82,7 @@ import { Route as ProjectsProjectIdRouteImport } from './routes/projects/$projec
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
 import { Route as StudioItemIdRouteImport } from './routes/studio/$itemId'
+import { Route as ApiPublicHooksRetentionSweepRouteImport } from './routes/api/public/hooks/retention-sweep'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -449,6 +450,12 @@ const StudioItemIdRoute = StudioItemIdRouteImport.update({
   path: '/studio/$itemId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksRetentionSweepRoute =
+  ApiPublicHooksRetentionSweepRouteImport.update({
+    id: '/api/public/hooks/retention-sweep',
+    path: '/api/public/hooks/retention-sweep',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -524,6 +531,7 @@ export interface FileRoutesByFullPath {
   '/profile/': typeof ProfileIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/settings/': typeof SettingsIndexRoute
+  '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -599,6 +607,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/settings': typeof SettingsIndexRoute
+  '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -675,6 +684,7 @@ export interface FileRoutesById {
   '/profile/': typeof ProfileIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/settings/': typeof SettingsIndexRoute
+  '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -752,6 +762,7 @@ export interface FileRouteTypes {
     | '/profile/'
     | '/projects/'
     | '/settings/'
+    | '/api/public/hooks/retention-sweep'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -827,6 +838,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/projects'
     | '/settings'
+    | '/api/public/hooks/retention-sweep'
   id:
     | '__root__'
     | '/'
@@ -902,6 +914,7 @@ export interface FileRouteTypes {
     | '/profile/'
     | '/projects/'
     | '/settings/'
+    | '/api/public/hooks/retention-sweep'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -978,6 +991,7 @@ export interface RootRouteChildren {
   ProfileIndexRoute: typeof ProfileIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
+  ApiPublicHooksRetentionSweepRoute: typeof ApiPublicHooksRetentionSweepRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1493,6 +1507,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioItemIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/retention-sweep': {
+      id: '/api/public/hooks/retention-sweep'
+      path: '/api/public/hooks/retention-sweep'
+      fullPath: '/api/public/hooks/retention-sweep'
+      preLoaderRoute: typeof ApiPublicHooksRetentionSweepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1570,6 +1591,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileIndexRoute: ProfileIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
+  ApiPublicHooksRetentionSweepRoute: ApiPublicHooksRetentionSweepRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -2313,8 +2313,13 @@ export type Database = {
           id: string
           is_automated: boolean
           justification: string
+          last_deleted_count: number | null
+          last_run_at: string | null
           retention_days: number | null
           retention_rule: string
+          target_column: string | null
+          target_condition: string | null
+          target_table: string | null
           updated_at: string
         }
         Insert: {
@@ -2325,8 +2330,13 @@ export type Database = {
           id?: string
           is_automated?: boolean
           justification: string
+          last_deleted_count?: number | null
+          last_run_at?: string | null
           retention_days?: number | null
           retention_rule: string
+          target_column?: string | null
+          target_condition?: string | null
+          target_table?: string | null
           updated_at?: string
         }
         Update: {
@@ -2337,11 +2347,63 @@ export type Database = {
           id?: string
           is_automated?: boolean
           justification?: string
+          last_deleted_count?: number | null
+          last_run_at?: string | null
           retention_days?: number | null
           retention_rule?: string
+          target_column?: string | null
+          target_condition?: string | null
+          target_table?: string | null
           updated_at?: string
         }
         Relationships: []
+      }
+      retention_runs: {
+        Row: {
+          category: string
+          created_at: string
+          cutoff: string | null
+          deleted_count: number
+          error_message: string | null
+          id: string
+          policy_id: string | null
+          status: string
+          target: string
+          triggered_by: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          cutoff?: string | null
+          deleted_count?: number
+          error_message?: string | null
+          id?: string
+          policy_id?: string | null
+          status?: string
+          target: string
+          triggered_by?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          cutoff?: string | null
+          deleted_count?: number
+          error_message?: string | null
+          id?: string
+          policy_id?: string | null
+          status?: string
+          target?: string
+          triggered_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retention_runs_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "retention_policies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       revenue_transactions: {
         Row: {
@@ -3706,6 +3768,16 @@ export type Database = {
         }[]
       }
       resolve_overdue_role_changes: { Args: never; Returns: number }
+      run_retention_purges: {
+        Args: { _triggered_by?: string }
+        Returns: {
+          category: string
+          deleted_count: number
+          error_message: string
+          status: string
+          target: string
+        }[]
+      }
     }
     Enums: {
       app_role:
