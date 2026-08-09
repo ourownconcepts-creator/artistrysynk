@@ -4,6 +4,8 @@
  */
 import { reportClientError } from "@/lib/error-monitoring.functions";
 import { isBenignTransportError } from "@/lib/benignErrors";
+import { reportClientDisconnect } from "@/lib/diagnostics.functions";
+import { getClientCorrelationId } from "@/lib/correlation";
 
 let installed = false;
 const seen = new Map<string, number>();
@@ -12,6 +14,30 @@ const MAX_PER_SESSION = 20;
 let sent = 0;
 const ASSET_RECOVERY_KEY = "artistrysynk_asset_recovery";
 const ASSET_RECOVERY_WINDOW_MS = 30_000;
+const DISCONNECT_DEDUPE_MS = 15_000;
+let lastDisconnectAt = 0;
+
+/**
+ * Client aborts / dropped asset loads are not app faults, but they are the other
+ * half of a server 5xx incident — record them against the same correlation id.
+ */
+export function reportDisconnect(reason: string, phase: string) {
+  if (typeof window === "undefined") return;
+  const now = Date.now();
+  if (now - lastDisconnectAt < DISCONNECT_DEDUPE_MS) return;
+  lastDisconnectAt = now;
+  void reportClientDisconnect({
+    data: {
+      reason: reason.slice(0, 300),
+      route: window.location.pathname + window.location.hash,
+      phase,
+      ...(getClientCorrelationId() ? { correlationId: getClientCorrelationId() as string } : {}),
+      userAgent: navigator.userAgent.slice(0, 300),
+    },
+  }).catch(() => {
+    /* diagnostics must never break the app */
+  });
+}
 
 function isAssetLoadFailure(value: unknown): boolean {
   const { message } = describe(value);
@@ -58,8 +84,14 @@ function describe(value: unknown): { message: string; stack?: string } {
 
 export function captureClientError(error: unknown, mechanism = "manual") {
   if (typeof window === "undefined") return;
-  if (isBenignTransportError(error)) return;
-  if (isAssetLoadFailure(error) && recoverFromAssetLoadFailure()) return;
+  if (isBenignTransportError(error)) {
+    reportDisconnect(describe(error).message || "client abort", "abort");
+    return;
+  }
+  if (isAssetLoadFailure(error)) {
+    reportDisconnect(describe(error).message || "asset load failure", "asset");
+    if (recoverFromAssetLoadFailure()) return;
+  }
   const { message, stack } = describe(error);
   if (!message || sent >= MAX_PER_SESSION) return;
   const key = `${message}|${(stack ?? "").split("\n")[1] ?? ""}`;
@@ -76,6 +108,7 @@ export function captureClientError(error: unknown, mechanism = "manual") {
       route: window.location.pathname + window.location.hash,
       userAgent: navigator.userAgent.slice(0, 300),
       mechanism,
+      ...(getClientCorrelationId() ? { correlationId: getClientCorrelationId() as string } : {}),
     },
   }).catch(() => {
     /* monitoring must never break the app */
@@ -91,7 +124,10 @@ export function installClientErrorMonitor() {
       event.target instanceof HTMLLinkElement
     ) {
       const source = event.target instanceof HTMLScriptElement ? event.target.src : event.target.href;
-      if (source && isLocalAppAsset(source) && recoverFromAssetLoadFailure()) return;
+      if (source && isLocalAppAsset(source)) {
+        reportDisconnect(`failed to load app asset ${source}`, "asset");
+        if (recoverFromAssetLoadFailure()) return;
+      }
     }
     captureClientError(event.error ?? event.message, "onerror");
   });
