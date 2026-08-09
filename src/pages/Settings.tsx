@@ -59,11 +59,20 @@ const defaultSettings: UserSettings = {
 
 const Settings = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { theme, setTheme } = useTheme();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
   const [userId, setUserId] = useState<string | null>(null);
+
+  const handleSignOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    toast.success("Signed out successfully");
+    navigate("/auth", { replace: true });
+  };
 
   useEffect(() => {
     const loadSettings = async () => {
