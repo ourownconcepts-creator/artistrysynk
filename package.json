@@ -13,7 +13,8 @@
     "test:watch": "vitest",
     "predev": "bunx tsx scripts/generate-sitemap.ts",
     "prebuild": "bunx tsx scripts/generate-sitemap.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:e2e": "python3 tests/e2e/smoke_no_blank_screen.py"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.2",
