@@ -121,7 +121,7 @@ const CopyrightClaim = () => {
       <PageSEO
         title="Report copyright infringement | ArtistrySynk"
         description="File a copyright takedown notice for content hosted on ArtistrySynk, or track the status of a notice you already submitted."
-        canonicalPath="/copyright/report"
+        canonicalUrl="https://artistrysynk.app/copyright/report"
       />
 
       <main className="container mx-auto px-4 py-12 max-w-3xl space-y-8">
