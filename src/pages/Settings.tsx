@@ -395,6 +395,15 @@ const Settings = () => {
               <Button variant="outline" onClick={() => navigate("/edit-profile")}>
                 Edit Profile
               </Button>
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={handleSignOut}
+                aria-label="Sign out of your account"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Button>
             </CardContent>
           </Card>
 
