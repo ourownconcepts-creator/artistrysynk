@@ -18,7 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, ShieldAlert, Search, CheckCircle2 } from "lucide-react";
+import { Loader2, ShieldAlert, Search, CheckCircle2, Upload, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { LEGAL_CONFIG } from "@/config/legal";
 
 const CONTENT_TYPES = [
@@ -53,6 +54,8 @@ const CopyrightClaim = () => {
     evidenceUrls: "",
   });
   const [declared, setDeclared] = useState(false);
+  const [files, setFiles] = useState<{ name: string; path: string }[]>([]);
+  const [uploading, setUploading] = useState(false);
   const [busy, setBusy] = useState(false);
   const [reference, setReference] = useState<string | null>(null);
 
@@ -65,6 +68,41 @@ const CopyrightClaim = () => {
   const set = (key: keyof typeof form) => (value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
+  const uploadEvidence = async (chosen: FileList | null) => {
+    if (!chosen?.length) return;
+    const room = 5 - files.length;
+    if (room <= 0) {
+      toast.error("You can attach up to 5 evidence files.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const uploaded: { name: string; path: string }[] = [];
+      for (const file of Array.from(chosen).slice(0, room)) {
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error(`${file.name} is larger than 10MB.`);
+          continue;
+        }
+        const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-80);
+        const path = `intake/${crypto.randomUUID()}-${safe}`;
+        const { error } = await supabase.storage
+          .from("copyright-evidence")
+          .upload(path, file, { upsert: false, contentType: file.type || "application/octet-stream" });
+        if (error) {
+          toast.error(`Could not upload ${file.name}.`);
+          continue;
+        }
+        uploaded.push({ name: file.name, path: `storage://copyright-evidence/${path}` });
+      }
+      if (uploaded.length) {
+        setFiles((prev) => [...prev, ...uploaded]);
+        toast.success(`${uploaded.length} file${uploaded.length === 1 ? "" : "s"} attached.`);
+      }
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const send = async () => {
     if (!declared) {
       toast.error("Please confirm the declaration before submitting.");
@@ -76,6 +114,7 @@ const CopyrightClaim = () => {
         .split(/[\s,]+/)
         .map((u) => u.trim())
         .filter(Boolean)
+        .concat(files.map((f) => f.path))
         .slice(0, 5);
 
       const result = await submit({
@@ -155,7 +194,10 @@ const CopyrightClaim = () => {
                 A confirmation has been emailed to {form.contactEmail}. Questions?{" "}
                 {LEGAL_CONFIG.COPYRIGHT_EMAIL}
               </p>
-              <Button variant="outline" onClick={() => setReference(null)} className="min-h-11">
+              <Button variant="outline" onClick={() => {
+                  setFiles([]);
+                  setReference(null);
+                }} className="min-h-11">
                 File another notice
               </Button>
             </CardContent>
@@ -254,6 +296,61 @@ const CopyrightClaim = () => {
                   onChange={(e) => set("evidenceUrls")(e.target.value)}
                   placeholder="Links to the original release, registration certificate, screenshots…"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="cc-files">Upload evidence files (optional, up to 5, 10MB each)</Label>
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    id="cc-files"
+                    type="file"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      void uploadEvidence(e.target.files);
+                      e.target.value = "";
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="min-h-11"
+                    disabled={uploading || files.length >= 5}
+                    onClick={() => document.getElementById("cc-files")?.click()}
+                  >
+                    {uploading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                    ) : (
+                      <Upload className="mr-2 h-4 w-4" aria-hidden="true" />
+                    )}
+                    {uploading ? "Uploading…" : "Choose files"}
+                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    Screenshots, contracts or registration certificates. Only our Trust &amp; Safety
+                    team can open them.
+                  </p>
+                </div>
+                {files.length > 0 && (
+                  <ul className="space-y-1">
+                    {files.map((f) => (
+                      <li
+                        key={f.path}
+                        className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2 text-sm"
+                      >
+                        <span className="truncate">{f.name}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Remove ${f.name}`}
+                          onClick={() => setFiles((prev) => prev.filter((x) => x.path !== f.path))}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
               <div className="flex items-start gap-3 rounded-lg border border-border p-3">

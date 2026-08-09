@@ -399,6 +399,17 @@ const AdminDashboard = () => {
               Open registers
             </Button>
           </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-4">
+            <div>
+              <p className="font-medium">Retention run status</p>
+              <p className="text-sm text-muted-foreground">
+                Last purge time, the rules it touched and every per-run result.
+              </p>
+            </div>
+            <Button variant="outline" onClick={() => navigate("/admin-retention")}>
+              Open status
+            </Button>
+          </div>
           <PortfolioModeration />
         </TabsContent>
 

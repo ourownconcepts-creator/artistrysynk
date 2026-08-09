@@ -1,6 +1,7 @@
 import { Cookie, Settings, BarChart3, Shield } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
+import { openCookiePreferences } from "@/components/legal/CookieConsentBanner";
 import { Button } from "@/components/ui/button";
 import { PageSEO } from "@/components/seo";
 import { toast } from "sonner";
@@ -186,13 +187,7 @@ const Cookies = () => {
                 <div className="mt-6">
                   <Button
                     variant="hero"
-                    onClick={() => {
-                      localStorage.removeItem("as_cookie_consent");
-                      toast.success("Cookie preferences reset", {
-                        description: "The consent banner will reappear so you can choose again.",
-                      });
-                      setTimeout(() => window.location.reload(), 800);
-                    }}
+                    onClick={() => openCookiePreferences()}
                   >
                     Manage Cookie Preferences
                   </Button>

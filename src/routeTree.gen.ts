@@ -19,6 +19,7 @@ import { Route as AdminComplianceRouteImport } from './routes/admin-compliance'
 import { Route as AdminCopyrightRouteImport } from './routes/admin-copyright'
 import { Route as AdminFunctionLogsRouteImport } from './routes/admin-function-logs'
 import { Route as AdminReportsRouteImport } from './routes/admin-reports'
+import { Route as AdminRetentionRouteImport } from './routes/admin-retention'
 import { Route as AdminSettingsRouteImport } from './routes/admin-settings'
 import { Route as AdminSupportRouteImport } from './routes/admin-support'
 import { Route as ApiAccessRouteImport } from './routes/api-access'
@@ -50,6 +51,7 @@ import { Route as OpenProjectsRouteImport } from './routes/open-projects'
 import { Route as PhotographersRouteImport } from './routes/photographers'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PrivacyRequestsRouteImport } from './routes/privacy-requests'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SetupProfileRouteImport } from './routes/setup-profile'
 import { Route as SoftwareDevelopersRouteImport } from './routes/software-developers'
@@ -132,6 +134,11 @@ const AdminFunctionLogsRoute = AdminFunctionLogsRouteImport.update({
 const AdminReportsRoute = AdminReportsRouteImport.update({
   id: '/admin-reports',
   path: '/admin-reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRetentionRoute = AdminRetentionRouteImport.update({
+  id: '/admin-retention',
+  path: '/admin-retention',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
@@ -287,6 +294,11 @@ const PricingRoute = PricingRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRequestsRoute = PrivacyRequestsRouteImport.update({
+  id: '/privacy-requests',
+  path: '/privacy-requests',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -468,6 +480,7 @@ export interface FileRoutesByFullPath {
   '/admin-copyright': typeof AdminCopyrightRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-reports': typeof AdminReportsRoute
+  '/admin-retention': typeof AdminRetentionRoute
   '/admin-settings': typeof AdminSettingsRoute
   '/admin-support': typeof AdminSupportRoute
   '/api-access': typeof ApiAccessRoute
@@ -499,6 +512,7 @@ export interface FileRoutesByFullPath {
   '/photographers': typeof PhotographersRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/privacy-requests': typeof PrivacyRequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
   '/software-developers': typeof SoftwareDevelopersRoute
@@ -544,6 +558,7 @@ export interface FileRoutesByTo {
   '/admin-copyright': typeof AdminCopyrightRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-reports': typeof AdminReportsRoute
+  '/admin-retention': typeof AdminRetentionRoute
   '/admin-settings': typeof AdminSettingsRoute
   '/admin-support': typeof AdminSupportRoute
   '/api-access': typeof ApiAccessRoute
@@ -575,6 +590,7 @@ export interface FileRoutesByTo {
   '/photographers': typeof PhotographersRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/privacy-requests': typeof PrivacyRequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
   '/software-developers': typeof SoftwareDevelopersRoute
@@ -621,6 +637,7 @@ export interface FileRoutesById {
   '/admin-copyright': typeof AdminCopyrightRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-reports': typeof AdminReportsRoute
+  '/admin-retention': typeof AdminRetentionRoute
   '/admin-settings': typeof AdminSettingsRoute
   '/admin-support': typeof AdminSupportRoute
   '/api-access': typeof ApiAccessRoute
@@ -652,6 +669,7 @@ export interface FileRoutesById {
   '/photographers': typeof PhotographersRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/privacy-requests': typeof PrivacyRequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
   '/software-developers': typeof SoftwareDevelopersRoute
@@ -699,6 +717,7 @@ export interface FileRouteTypes {
     | '/admin-copyright'
     | '/admin-function-logs'
     | '/admin-reports'
+    | '/admin-retention'
     | '/admin-settings'
     | '/admin-support'
     | '/api-access'
@@ -730,6 +749,7 @@ export interface FileRouteTypes {
     | '/photographers'
     | '/pricing'
     | '/privacy'
+    | '/privacy-requests'
     | '/reset-password'
     | '/setup-profile'
     | '/software-developers'
@@ -775,6 +795,7 @@ export interface FileRouteTypes {
     | '/admin-copyright'
     | '/admin-function-logs'
     | '/admin-reports'
+    | '/admin-retention'
     | '/admin-settings'
     | '/admin-support'
     | '/api-access'
@@ -806,6 +827,7 @@ export interface FileRouteTypes {
     | '/photographers'
     | '/pricing'
     | '/privacy'
+    | '/privacy-requests'
     | '/reset-password'
     | '/setup-profile'
     | '/software-developers'
@@ -851,6 +873,7 @@ export interface FileRouteTypes {
     | '/admin-copyright'
     | '/admin-function-logs'
     | '/admin-reports'
+    | '/admin-retention'
     | '/admin-settings'
     | '/admin-support'
     | '/api-access'
@@ -882,6 +905,7 @@ export interface FileRouteTypes {
     | '/photographers'
     | '/pricing'
     | '/privacy'
+    | '/privacy-requests'
     | '/reset-password'
     | '/setup-profile'
     | '/software-developers'
@@ -928,6 +952,7 @@ export interface RootRouteChildren {
   AdminCopyrightRoute: typeof AdminCopyrightRoute
   AdminFunctionLogsRoute: typeof AdminFunctionLogsRoute
   AdminReportsRoute: typeof AdminReportsRoute
+  AdminRetentionRoute: typeof AdminRetentionRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSupportRoute: typeof AdminSupportRoute
   ApiAccessRoute: typeof ApiAccessRoute
@@ -959,6 +984,7 @@ export interface RootRouteChildren {
   PhotographersRoute: typeof PhotographersRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
+  PrivacyRequestsRoute: typeof PrivacyRequestsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SetupProfileRoute: typeof SetupProfileRoute
   SoftwareDevelopersRoute: typeof SoftwareDevelopersRoute
@@ -1064,6 +1090,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-reports'
       fullPath: '/admin-reports'
       preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-retention': {
+      id: '/admin-retention'
+      path: '/admin-retention'
+      fullPath: '/admin-retention'
+      preLoaderRoute: typeof AdminRetentionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-settings': {
@@ -1281,6 +1314,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-requests': {
+      id: '/privacy-requests'
+      path: '/privacy-requests'
+      fullPath: '/privacy-requests'
+      preLoaderRoute: typeof PrivacyRequestsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -1528,6 +1568,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCopyrightRoute: AdminCopyrightRoute,
   AdminFunctionLogsRoute: AdminFunctionLogsRoute,
   AdminReportsRoute: AdminReportsRoute,
+  AdminRetentionRoute: AdminRetentionRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSupportRoute: AdminSupportRoute,
   ApiAccessRoute: ApiAccessRoute,
@@ -1559,6 +1600,7 @@ const rootRouteChildren: RootRouteChildren = {
   PhotographersRoute: PhotographersRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
+  PrivacyRequestsRoute: PrivacyRequestsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SetupProfileRoute: SetupProfileRoute,
   SoftwareDevelopersRoute: SoftwareDevelopersRoute,
