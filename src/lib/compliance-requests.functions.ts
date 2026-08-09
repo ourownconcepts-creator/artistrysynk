@@ -24,7 +24,6 @@ export type RequestAuditEntry = {
   targetId: string | null;
   targetLabel: string | null;
   reason: string | null;
-  metadata: Record<string, unknown>;
   createdAt: string;
 };
 
@@ -82,7 +81,6 @@ export const listRequestQueues = createServerFn({ method: "POST" })
         targetId: a.target_id ?? null,
         targetLabel: a.target_label ?? null,
         reason: a.reason ?? null,
-        metadata: (a.metadata ?? {}) as Record<string, unknown>,
         createdAt: a.created_at,
       })),
     };

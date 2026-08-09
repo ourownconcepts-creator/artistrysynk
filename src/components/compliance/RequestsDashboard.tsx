@@ -63,7 +63,8 @@ export const RequestsDashboard = () => {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const [queues, claimRows] = await Promise.all([loadQueues(), loadClaims({ data: {} })]);
+      const queues = await loadQueues();
+      const claimRows = await loadClaims({ data: {} });
       setRequests(queues.privacyRequests);
       setAudit(queues.auditTrail);
       setClaims(claimRows);
