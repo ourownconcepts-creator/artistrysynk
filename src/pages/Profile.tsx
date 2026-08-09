@@ -56,6 +56,7 @@ const TABS = [
 
 const Profile = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   useSessionTracking();
   const [profile, setProfile] = useState<any>(null);
   const [roles, setRoles] = useState<any[]>([]);
@@ -66,6 +67,14 @@ const Profile = () => {
   const [counts, setCounts] = useState({ portfolio: 0, matches: 0 });
   const [tab, setTab] = useState<Tab>("about");
   const [loading, setLoading] = useState(true);
+
+  const handleSignOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    toast.success("Signed out successfully");
+    navigate("/auth", { replace: true });
+  };
 
   const loadProfile = useCallback(async (uid: string) => {
     const [{ data: profileData }, { data: rolesData }, { data: genresData }] = await Promise.all([
