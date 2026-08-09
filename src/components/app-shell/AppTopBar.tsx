@@ -83,6 +83,39 @@ export function AppTopBar({
           </Link>
           {user ? <NotificationBell userId={user.id} /> : null}
           <ThemeToggle />
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Open account menu"
+                  className="grid h-10 w-10 place-items-center rounded-full hover:bg-surface-2 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <Avatar className="h-7 w-7">
+                    <AvatarImage src={profile?.avatar_url ?? undefined} alt={profile?.full_name || "Your account"} />
+                    <AvatarFallback>
+                      {profile?.full_name?.charAt(0) || <User className="h-4 w-4" />}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuItem onClick={() => router.navigate({ to: "/profile" })}>
+                  <User className="mr-2 h-4 w-4" />
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.navigate({ to: "/settings" })}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : null}
         </div>
       </div>
     </header>
