@@ -32,7 +32,16 @@ export function AppTopBar({
   transparent?: boolean;
 }) {
   const router = useRouter();
-  const { user } = useAppUser();
+  const { user, profile } = useAppUser();
+  const queryClient = useQueryClient();
+
+  const handleSignOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    toast.success("Signed out successfully");
+    router.navigate({ to: "/auth", replace: true });
+  };
 
   return (
     <header
