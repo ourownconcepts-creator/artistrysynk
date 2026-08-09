@@ -46,6 +46,7 @@ export const Footer = () => {
               <li><a href="/terms" className="hover:text-primary transition-colors">Terms of Service</a></li>
               <li><a href="/legal/community-guidelines" className="hover:text-primary transition-colors">Community Guidelines</a></li>
               <li><a href="/legal/copyright" className="hover:text-primary transition-colors">Copyright &amp; IP</a></li>
+              <li><a href="/copyright/report" className="hover:text-primary transition-colors">Report Infringement</a></li>
               <li><a href="/legal/moderation" className="hover:text-primary transition-colors">Safety &amp; Moderation</a></li>
               <li><a href="/legal/data-protection" className="hover:text-primary transition-colors">Your Privacy Rights</a></li>
               <li><a href="/data-deletion" className="hover:text-primary transition-colors">Account &amp; Data Deletion</a></li>
