@@ -59,6 +59,17 @@ function isErrorLike(value: unknown): value is Error {
 // recorded for consumeLastCapturedError and expanded before serialization.
 const originalConsoleError = console.error.bind(console);
 console.error = (...args: unknown[]) => {
+  // Never let a client disconnect reach the log pipeline: the platform's error
+  // reporter scrapes console.error output and would surface `Error: aborted`
+  // (from node:_http_server abortIncoming) as an app runtime error.
+  if (args.some((arg) => isErrorLike(arg) && isBenignTransportError(arg))) return;
+  if (
+    args.length > 0 &&
+    args.every((arg) => typeof arg === "string" && isBenignTransportError(arg))
+  ) {
+    return;
+  }
+
   const expanded = args.map((arg) => {
     if (!isErrorLike(arg)) return arg;
     record(arg);
@@ -72,6 +83,27 @@ if (typeof globalThis.addEventListener === "function") {
   globalThis.addEventListener("unhandledrejection", (event) =>
     record((event as PromiseRejectionEvent).reason),
   );
+}
+
+// Node raises `Error: aborted` at the socket level (abortIncoming/socketOnClose)
+// when the browser navigates away or refreshes mid-request. It arrives as an
+// uncaught exception with no request context, so it must be swallowed here or it
+// is reported as a crash. Anything else is re-thrown untouched.
+type NodeProcess = {
+  on?: (event: string, listener: (value: unknown) => void) => void;
+  listenerCount?: (event: string) => number;
+};
+const nodeProcess = (globalThis as { process?: NodeProcess }).process;
+if (typeof nodeProcess?.on === "function") {
+  nodeProcess.on("uncaughtException", (error: unknown) => {
+    if (isBenignTransportError(error)) return;
+    record(error);
+    throw error;
+  });
+  nodeProcess.on("unhandledRejection", (reason: unknown) => {
+    if (isBenignTransportError(reason)) return;
+    record(reason);
+  });
 }
 
 export function consumeLastCapturedError(): unknown {
