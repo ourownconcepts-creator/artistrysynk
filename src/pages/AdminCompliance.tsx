@@ -398,6 +398,7 @@ const AdminCompliance = () => {
             <TabsTrigger value="ropa">Processing activities ({ropa.length})</TabsTrigger>
             <TabsTrigger value="dpia">Impact assessments ({dpia.length})</TabsTrigger>
             <TabsTrigger value="processors">Processors ({registers?.processors.length ?? 0})</TabsTrigger>
+            <TabsTrigger value="retention">Retention</TabsTrigger>
           </TabsList>
 
           <TabsContent value="ropa" className="mt-4 space-y-4">
@@ -450,6 +451,104 @@ const AdminCompliance = () => {
                 </CardContent>
               </Card>
             ))}
+          </TabsContent>
+
+          <TabsContent value="retention" className="mt-4 space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-muted-foreground">
+                Automated rules run daily and delete data that has passed its retention period. Every
+                sweep is logged below.
+              </p>
+              <Button onClick={() => void handleSweep()} disabled={sweeping}>
+                {sweeping ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                )}
+                Run sweep now
+              </Button>
+            </div>
+
+            {!retention ? (
+              <div className="flex justify-center py-10">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <>
+                <div className="space-y-3">
+                  {retention.policies.map((p) => (
+                    <Card key={p.id}>
+                      <CardHeader className="pb-2">
+                        <div className="flex flex-wrap items-start justify-between gap-2">
+                          <CardTitle className="text-base">{p.category}</CardTitle>
+                          <div className="flex flex-wrap gap-2">
+                            <Badge variant="outline">{p.retentionRule}</Badge>
+                            <Badge variant={p.isAutomated ? "default" : "outline"}>
+                              {p.isAutomated ? "Automated" : "Manual"}
+                            </Badge>
+                          </div>
+                        </div>
+                        <CardDescription>{p.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-1 text-sm text-muted-foreground">
+                        <p>Why: {p.justification}</p>
+                        <p>On expiry: {p.deletionBehaviour}</p>
+                        {p.isAutomated && (
+                          <p>
+                            {p.lastRunAt
+                              ? `Last run ${format(new Date(p.lastRunAt), "d MMM yyyy HH:mm")} — ${
+                                  p.lastDeletedCount ?? 0
+                                } removed`
+                              : p.targetTable
+                                ? "Not run yet"
+                                : "Not yet linked to any data — no purge will run"}
+                          </p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base">Recent sweeps</CardTitle>
+                    <CardDescription>Latest 100 purge results, newest first.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {retention.runs.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">No sweeps recorded yet.</p>
+                    ) : (
+                      retention.runs.map((r) => (
+                        <div
+                          key={r.id}
+                          className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2 text-sm last:border-0 last:pb-0"
+                        >
+                          <div>
+                            <p className="font-medium">{r.category}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {format(new Date(r.createdAt), "d MMM yyyy HH:mm")} · {r.triggeredBy}
+                              {r.errorMessage ? ` · ${r.errorMessage}` : ""}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-muted-foreground">{r.deletedCount} removed</span>
+                            {r.status === "success" ? (
+                              <Badge variant="outline" className="gap-1">
+                                <CheckCircle2 className="h-3 w-3" /> ok
+                              </Badge>
+                            ) : (
+                              <Badge variant="destructive" className="gap-1">
+                                <AlertTriangle className="h-3 w-3" /> failed
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </CardContent>
+                </Card>
+              </>
+            )}
           </TabsContent>
         </Tabs>
       )}
