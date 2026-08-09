@@ -391,7 +391,17 @@ const Messages = () => {
                   </Avatar>
                   <div className="flex-1">
                     <CardTitle className="text-lg">{otherUser.full_name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">@{otherUser.username}</p>
+                    <p className="text-sm text-muted-foreground">
+                      @{otherUser.username}
+                      {realtimeStatus !== "connected" && (
+                        <span
+                          data-testid="chat-connection-status"
+                          className="ml-2 text-xs text-muted-foreground"
+                        >
+                          {realtimeStatus === "offline" ? "· offline" : "· reconnecting…"}
+                        </span>
+                      )}
+                    </p>
                   </div>
                   
                   <Dialog open={showProjectDialog} onOpenChange={setShowProjectDialog}>
