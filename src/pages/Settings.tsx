@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { Bell, Shield, User, Moon, Sun, Monitor, Loader2, Scale, FileText, Cookie, Trash, ExternalLink, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
 import { PushNotificationSettings } from "@/components/notifications/PushNotificationSettings";
+import { PrivacyCenterCard } from "@/components/settings/PrivacyCenterCard";
+import { PrivacyRequestsCard } from "@/components/settings/PrivacyRequestsCard";
 import { BlockedUsersList } from "@/components/settings/BlockedUsersList";
 import { MutedUsersList } from "@/components/settings/MutedUsersList";
 import { UserSessions } from "@/components/profile/UserSessions";
@@ -331,6 +333,9 @@ const Settings = () => {
               </div>
             </CardContent>
           </Card>
+
+          <PrivacyCenterCard />
+          <PrivacyRequestsCard />
 
           {userId && <BlockedUsersList userId={userId} />}
           {userId && <MutedUsersList userId={userId} />}

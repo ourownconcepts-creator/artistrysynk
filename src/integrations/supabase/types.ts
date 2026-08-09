@@ -3586,6 +3586,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_discoverable: {
+        Args: { _surface: string; _user_id: string }
+        Returns: boolean
+      }
       is_project_creator: {
         Args: { _project_id: string; _user_id: string }
         Returns: boolean
@@ -3604,6 +3608,12 @@ export type Database = {
           referred_id: string
           status: string
           username: string
+        }[]
+      }
+      list_opted_out_ids: {
+        Args: { _surface: string }
+        Returns: {
+          user_id: string
         }[]
       }
       list_public_locations: {
