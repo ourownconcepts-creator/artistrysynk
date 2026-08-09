@@ -22,7 +22,21 @@ const BENIGN_PATTERNS: RegExp[] = [
   /ResizeObserver loop/i,
 ];
 
+const BENIGN_CODES = new Set([
+  "ABORT_ERR",
+  "ECONNABORTED",
+  "ECONNRESET",
+  "EPIPE",
+  "ERR_HTTP2_STREAM_ERROR",
+  "ERR_STREAM_PREMATURE_CLOSE",
+]);
+
 export function isBenignTransportError(error: unknown): boolean {
+  const code =
+    error != null && typeof error === "object" && "code" in error
+      ? (error as { code?: unknown }).code
+      : undefined;
+  if (typeof code === "string" && BENIGN_CODES.has(code)) return true;
   const message =
     error instanceof Error
       ? `${error.name}: ${error.message}`
