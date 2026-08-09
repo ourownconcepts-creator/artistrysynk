@@ -31,16 +31,20 @@ export const OrganizationSchema = ({
     "description": description,
     "foundingDate": "2024",
     "sameAs": sameAs,
+    "legalName": "Lomodogs Dot Nigeria Limited",
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "customer service",
-      "email": "hello@artistrysynk.app",
+      "email": "ourownconcepts@gmail.com",
+      "telephone": "+2349069312437",
       "availableLanguage": ["English"]
     },
     "address": {
       "@type": "PostalAddress",
-      "addressCountry": "NG",
-      "addressLocality": "Lagos"
+      "streetAddress": "6 Oluyoro Street, off Awolowo Avenue, Bodija",
+      "addressLocality": "Ibadan",
+      "addressRegion": "Oyo State",
+      "addressCountry": "NG"
     }
   };
 
