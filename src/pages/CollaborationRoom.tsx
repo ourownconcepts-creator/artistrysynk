@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { useRealtimeChannel } from "@/hooks/useRealtimeChannel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -84,12 +85,15 @@ const CollaborationRoom = () => {
     });
   }, [projectId, navigate]);
 
-  useEffect(() => {
-    if (!projectId) return;
-
-    const channel = supabase
-      .channel(`project-${projectId}`)
-      .on(
+  // Reconnects with backoff after transient drops and refetches room state.
+  useRealtimeChannel({
+    name: projectId ? `project-${projectId}` : null,
+    onReconnect: () => {
+      loadProject();
+    },
+    setup: (channel) =>
+      channel
+        .on(
         "postgres_changes",
         {
           event: "*",
@@ -99,7 +103,7 @@ const CollaborationRoom = () => {
         },
         () => loadTasks()
       )
-      .on(
+        .on(
         "postgres_changes",
         {
           event: "*",
@@ -109,7 +113,7 @@ const CollaborationRoom = () => {
         },
         () => loadMembers()
       )
-      .on(
+        .on(
         "postgres_changes",
         {
           event: "UPDATE",
@@ -118,13 +122,8 @@ const CollaborationRoom = () => {
           filter: `id=eq.${projectId}`,
         },
         () => loadProject()
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [projectId]);
+      ),
+  });
 
   const loadProject = async () => {
     if (!projectId) return;
