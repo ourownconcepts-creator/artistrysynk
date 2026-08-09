@@ -23,7 +23,7 @@ export const DataExportCard = () => {
   const handleExport = async () => {
     setLoading(true);
     try {
-      const result = await runExport({ data: {} });
+      const result = await runExport();
       const stamp = new Date().toISOString().slice(0, 10);
       download(`artistrysynk-data-${stamp}.json`, result.json, "application/json");
       setMediaUrls(result.mediaUrls);
