@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchHiddenUserIds } from "@/lib/hiddenUsers";
+import { fetchOptedOutIds } from "@/lib/discoverability";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Sparkles, SlidersHorizontal, Zap, Users, RefreshCw } from "lucide-react";
@@ -102,9 +103,16 @@ const Discover = () => {
         .eq("swiper_id", userId);
 
       const { all: hiddenIds } = await fetchHiddenUserIds(userId);
+      // Respect the "don't show me in discovery" privacy preference.
+      const optedOutIds = await fetchOptedOutIds("discovery");
 
       const excludeIds = [
-        ...new Set([userId, ...(swipedIds?.map((s) => s.swiped_id) || []), ...hiddenIds]),
+        ...new Set([
+          userId,
+          ...(swipedIds?.map((s) => s.swiped_id) || []),
+          ...hiddenIds,
+          ...optedOutIds,
+        ]),
       ];
 
       let query = supabase
