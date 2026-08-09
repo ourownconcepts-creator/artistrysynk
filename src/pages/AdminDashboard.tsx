@@ -376,7 +376,18 @@ const AdminDashboard = () => {
           <MatchManagement />
         </TabsContent>
 
-        <TabsContent value="portfolio">
+        <TabsContent value="portfolio" className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-4">
+            <div>
+              <p className="font-medium">Copyright Notices</p>
+              <p className="text-sm text-muted-foreground">
+                Takedown notices with decisions, content hiding and audit trail.
+              </p>
+            </div>
+            <Button variant="outline" onClick={() => navigate("/admin-copyright")}>
+              Open queue
+            </Button>
+          </div>
           <PortfolioModeration />
         </TabsContent>
 
