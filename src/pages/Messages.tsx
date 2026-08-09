@@ -89,12 +89,16 @@ const Messages = () => {
     }
   }, [messages, currentUser, conversationId]);
 
-  useEffect(() => {
-    if (!conversationId || !currentUser) return;
-
-    const channel = supabase
-      .channel(`conversation-${conversationId}`)
-      .on(
+  // Graceful reconnection: on a transient drop the channel resubscribes with
+  // backoff and the conversation is refetched so no message is silently missed.
+  const realtimeStatus = useRealtimeChannel({
+    name: conversationId && currentUser ? `conversation-${conversationId}` : null,
+    onReconnect: () => {
+      if (currentUser) loadConversation(currentUser);
+    },
+    setup: (channel) =>
+      channel
+        .on(
         'postgres_changes',
         {
           event: 'INSERT',
@@ -108,7 +112,7 @@ const Messages = () => {
           scrollToBottom();
         }
       )
-      .on(
+        .on(
         'postgres_changes',
         {
           event: 'UPDATE',
@@ -122,13 +126,8 @@ const Messages = () => {
             prev.map((m) => (m.id === updated.id ? { ...m, ...updated, status: "sent" } : m))
           );
         }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [conversationId, currentUser]);
+      ),
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
