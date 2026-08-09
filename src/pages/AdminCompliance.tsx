@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { Link } from "@/lib/router-compat";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import {
