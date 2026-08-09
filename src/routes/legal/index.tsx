@@ -58,7 +58,7 @@ function LegalIndex() {
         <ul className="space-y-3">
           {docs.map((doc) => (
             <li key={doc.slug}>
-              <Link to={`/legal/${doc.slug}`} className="block group">
+              <Link to="/legal/$slug" params={{ slug: doc.slug }} className="block group">
                 <Surface className="p-4 transition-colors group-hover:border-primary/50">
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
