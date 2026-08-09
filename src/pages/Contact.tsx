@@ -89,19 +89,19 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email Us",
-      info: "hello@artistrysynk.app",
+      info: "ourownconcepts@gmail.com",
       description: "We'll respond within 24 hours"
     },
     {
       icon: Phone,
       title: "Call Us",
-      info: "+234 (0) 800 ARTIST",
+      info: "+234 906 931 2437",
       description: "Mon-Fri, 9AM-6PM WAT"
     },
     {
       icon: MapPin,
       title: "Visit Us",
-      info: "Lagos, Nigeria",
+      info: "Ibadan, Oyo State, Nigeria",
       description: "Schedule an appointment first"
     },
     {
