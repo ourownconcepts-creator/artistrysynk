@@ -38,14 +38,20 @@ export const Footer = () => {
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Legal & Safety */}
           <div>
-            <h3 className="font-semibold mb-4">Legal</h3>
+            <h3 className="font-semibold mb-4">Legal &amp; Safety</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><a href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</a></li>
               <li><a href="/terms" className="hover:text-primary transition-colors">Terms of Service</a></li>
-              <li><a href="/cookies" className="hover:text-primary transition-colors">Cookie Policy</a></li>
+              <li><a href="/legal/community-guidelines" className="hover:text-primary transition-colors">Community Guidelines</a></li>
+              <li><a href="/legal/copyright" className="hover:text-primary transition-colors">Copyright &amp; IP</a></li>
+              <li><a href="/legal/moderation" className="hover:text-primary transition-colors">Safety &amp; Moderation</a></li>
+              <li><a href="/legal/data-protection" className="hover:text-primary transition-colors">Your Privacy Rights</a></li>
               <li><a href="/data-deletion" className="hover:text-primary transition-colors">Account &amp; Data Deletion</a></li>
+              <li><a href="/cookies" className="hover:text-primary transition-colors">Cookie Policy</a></li>
+              <li><a href="/legal" className="hover:text-primary transition-colors">All policies</a></li>
+              <li><a href="/contact" className="hover:text-primary transition-colors">Help &amp; Support</a></li>
               <li><a href="/licenses" className="hover:text-primary transition-colors">Open Source Licenses</a></li>
               <li><a href="/admin-auth" className="hover:text-primary transition-colors">Admin Access</a></li>
             </ul>

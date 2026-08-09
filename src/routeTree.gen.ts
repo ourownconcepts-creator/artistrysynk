@@ -66,6 +66,8 @@ import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as BlogHowToFindAMusicProducerRouteImport } from './routes/blog/how-to-find-a-music-producer'
 import { Route as ExploreIndexRouteImport } from './routes/explore/index'
 import { Route as ExploreNearbyRouteImport } from './routes/explore/nearby'
+import { Route as LegalIndexRouteImport } from './routes/legal/index'
+import { Route as LegalSlugRouteImport } from './routes/legal/$slug'
 import { Route as LocationsIndexRouteImport } from './routes/locations/index'
 import { Route as LocationsCitySlugRouteImport } from './routes/locations/$citySlug'
 import { Route as MessagesIndexRouteImport } from './routes/messages/index'
@@ -364,6 +366,16 @@ const ExploreNearbyRoute = ExploreNearbyRouteImport.update({
   path: '/explore/nearby',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalIndexRoute = LegalIndexRouteImport.update({
+  id: '/legal/',
+  path: '/legal/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalSlugRoute = LegalSlugRouteImport.update({
+  id: '/legal/$slug',
+  path: '/legal/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LocationsIndexRoute = LocationsIndexRouteImport.update({
   id: '/locations/',
   path: '/locations/',
@@ -475,6 +487,7 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/explore/nearby': typeof ExploreNearbyRoute
+  '/legal/$slug': typeof LegalSlugRoute
   '/locations/$citySlug': typeof LocationsCitySlugRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
@@ -484,6 +497,7 @@ export interface FileRoutesByFullPath {
   '/auth/': typeof AuthIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/explore/': typeof ExploreIndexRoute
+  '/legal/': typeof LegalIndexRoute
   '/locations/': typeof LocationsIndexRoute
   '/messages/': typeof MessagesIndexRoute
   '/profile/': typeof ProfileIndexRoute
@@ -545,6 +559,7 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/explore/nearby': typeof ExploreNearbyRoute
+  '/legal/$slug': typeof LegalSlugRoute
   '/locations/$citySlug': typeof LocationsCitySlugRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
@@ -554,6 +569,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthIndexRoute
   '/blog': typeof BlogIndexRoute
   '/explore': typeof ExploreIndexRoute
+  '/legal': typeof LegalIndexRoute
   '/locations': typeof LocationsIndexRoute
   '/messages': typeof MessagesIndexRoute
   '/profile': typeof ProfileIndexRoute
@@ -616,6 +632,7 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/explore/nearby': typeof ExploreNearbyRoute
+  '/legal/$slug': typeof LegalSlugRoute
   '/locations/$citySlug': typeof LocationsCitySlugRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
@@ -625,6 +642,7 @@ export interface FileRoutesById {
   '/auth/': typeof AuthIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/explore/': typeof ExploreIndexRoute
+  '/legal/': typeof LegalIndexRoute
   '/locations/': typeof LocationsIndexRoute
   '/messages/': typeof MessagesIndexRoute
   '/profile/': typeof ProfileIndexRoute
@@ -688,6 +706,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/blog/how-to-find-a-music-producer'
     | '/explore/nearby'
+    | '/legal/$slug'
     | '/locations/$citySlug'
     | '/messages/$conversationId'
     | '/profile/$userId'
@@ -697,6 +716,7 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/blog/'
     | '/explore/'
+    | '/legal/'
     | '/locations/'
     | '/messages/'
     | '/profile/'
@@ -758,6 +778,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/blog/how-to-find-a-music-producer'
     | '/explore/nearby'
+    | '/legal/$slug'
     | '/locations/$citySlug'
     | '/messages/$conversationId'
     | '/profile/$userId'
@@ -767,6 +788,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/blog'
     | '/explore'
+    | '/legal'
     | '/locations'
     | '/messages'
     | '/profile'
@@ -828,6 +850,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/blog/how-to-find-a-music-producer'
     | '/explore/nearby'
+    | '/legal/$slug'
     | '/locations/$citySlug'
     | '/messages/$conversationId'
     | '/profile/$userId'
@@ -837,6 +860,7 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/blog/'
     | '/explore/'
+    | '/legal/'
     | '/locations/'
     | '/messages/'
     | '/profile/'
@@ -899,6 +923,7 @@ export interface RootRouteChildren {
   AuthCallbackRoute: typeof AuthCallbackRoute
   BlogHowToFindAMusicProducerRoute: typeof BlogHowToFindAMusicProducerRoute
   ExploreNearbyRoute: typeof ExploreNearbyRoute
+  LegalSlugRoute: typeof LegalSlugRoute
   LocationsCitySlugRoute: typeof LocationsCitySlugRoute
   MessagesConversationIdRoute: typeof MessagesConversationIdRoute
   ProfileUserIdRoute: typeof ProfileUserIdRoute
@@ -908,6 +933,7 @@ export interface RootRouteChildren {
   AuthIndexRoute: typeof AuthIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ExploreIndexRoute: typeof ExploreIndexRoute
+  LegalIndexRoute: typeof LegalIndexRoute
   LocationsIndexRoute: typeof LocationsIndexRoute
   MessagesIndexRoute: typeof MessagesIndexRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
@@ -1316,6 +1342,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExploreNearbyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/': {
+      id: '/legal/'
+      path: '/legal'
+      fullPath: '/legal/'
+      preLoaderRoute: typeof LegalIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/$slug': {
+      id: '/legal/$slug'
+      path: '/legal/$slug'
+      fullPath: '/legal/$slug'
+      preLoaderRoute: typeof LegalSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/locations/': {
       id: '/locations/'
       path: '/locations'
@@ -1451,6 +1491,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthCallbackRoute: AuthCallbackRoute,
   BlogHowToFindAMusicProducerRoute: BlogHowToFindAMusicProducerRoute,
   ExploreNearbyRoute: ExploreNearbyRoute,
+  LegalSlugRoute: LegalSlugRoute,
   LocationsCitySlugRoute: LocationsCitySlugRoute,
   MessagesConversationIdRoute: MessagesConversationIdRoute,
   ProfileUserIdRoute: ProfileUserIdRoute,
@@ -1460,6 +1501,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthIndexRoute: AuthIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   ExploreIndexRoute: ExploreIndexRoute,
+  LegalIndexRoute: LegalIndexRoute,
   LocationsIndexRoute: LocationsIndexRoute,
   MessagesIndexRoute: MessagesIndexRoute,
   ProfileIndexRoute: ProfileIndexRoute,
@@ -1469,13 +1511,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

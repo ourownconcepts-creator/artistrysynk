@@ -20,6 +20,7 @@ import { UpdateBanner } from "@/components/pwa/UpdateBanner";
 import { DeepLinkHandler } from "@/components/native/DeepLinkHandler";
 import { NativeShell } from "@/components/native/NativeShell";
 import { CookieConsentBanner } from "@/components/legal/CookieConsentBanner";
+import { LegalAcceptanceGate } from "@/components/legal/LegalAcceptanceGate";
 import { SessionWatcher } from "@/components/auth/SessionWatcher";
 import NotFound from "@/pages/NotFound";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
@@ -206,6 +207,7 @@ function RootComponent() {
               <InstallPrompt />
               <UpdateBanner />
               <CookieConsentBanner />
+              <LegalAcceptanceGate />
             </AnalyticsProvider>
           </TooltipProvider>
         </QueryClientProvider>
