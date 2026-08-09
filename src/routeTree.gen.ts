@@ -51,6 +51,7 @@ import { Route as OpenProjectsRouteImport } from './routes/open-projects'
 import { Route as PhotographersRouteImport } from './routes/photographers'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PrivacyRequestsRouteImport } from './routes/privacy-requests'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SetupProfileRouteImport } from './routes/setup-profile'
 import { Route as SoftwareDevelopersRouteImport } from './routes/software-developers'
@@ -295,6 +296,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRequestsRoute = PrivacyRequestsRouteImport.update({
+  id: '/privacy-requests',
+  path: '/privacy-requests',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -506,6 +512,7 @@ export interface FileRoutesByFullPath {
   '/photographers': typeof PhotographersRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/privacy-requests': typeof PrivacyRequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
   '/software-developers': typeof SoftwareDevelopersRoute
@@ -583,6 +590,7 @@ export interface FileRoutesByTo {
   '/photographers': typeof PhotographersRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/privacy-requests': typeof PrivacyRequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
   '/software-developers': typeof SoftwareDevelopersRoute
@@ -661,6 +669,7 @@ export interface FileRoutesById {
   '/photographers': typeof PhotographersRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/privacy-requests': typeof PrivacyRequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
   '/software-developers': typeof SoftwareDevelopersRoute
@@ -740,6 +749,7 @@ export interface FileRouteTypes {
     | '/photographers'
     | '/pricing'
     | '/privacy'
+    | '/privacy-requests'
     | '/reset-password'
     | '/setup-profile'
     | '/software-developers'
@@ -817,6 +827,7 @@ export interface FileRouteTypes {
     | '/photographers'
     | '/pricing'
     | '/privacy'
+    | '/privacy-requests'
     | '/reset-password'
     | '/setup-profile'
     | '/software-developers'
@@ -894,6 +905,7 @@ export interface FileRouteTypes {
     | '/photographers'
     | '/pricing'
     | '/privacy'
+    | '/privacy-requests'
     | '/reset-password'
     | '/setup-profile'
     | '/software-developers'
@@ -972,6 +984,7 @@ export interface RootRouteChildren {
   PhotographersRoute: typeof PhotographersRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
+  PrivacyRequestsRoute: typeof PrivacyRequestsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SetupProfileRoute: typeof SetupProfileRoute
   SoftwareDevelopersRoute: typeof SoftwareDevelopersRoute
@@ -1303,6 +1316,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy-requests': {
+      id: '/privacy-requests'
+      path: '/privacy-requests'
+      fullPath: '/privacy-requests'
+      preLoaderRoute: typeof PrivacyRequestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -1580,6 +1600,7 @@ const rootRouteChildren: RootRouteChildren = {
   PhotographersRoute: PhotographersRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
+  PrivacyRequestsRoute: PrivacyRequestsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SetupProfileRoute: SetupProfileRoute,
   SoftwareDevelopersRoute: SoftwareDevelopersRoute,
