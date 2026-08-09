@@ -8,6 +8,7 @@ const reportSchema = z.object({
   userAgent: z.string().max(300).optional(),
   mechanism: z.string().max(60).optional(),
   release: z.string().max(60).optional(),
+  correlationId: z.string().max(80).optional(),
 });
 
 /** Client runtime errors are posted here; the handler logs + alerts. */
@@ -15,6 +16,7 @@ export const reportClientError = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => reportSchema.parse(input))
   .handler(async ({ data }) => {
     const { reportError } = await import("@/lib/error-monitoring.server");
+    const { sanitizeCorrelationId } = await import("@/lib/correlation");
     return reportError({
       source: "client",
       message: data.message,
@@ -23,5 +25,6 @@ export const reportClientError = createServerFn({ method: "POST" })
       userAgent: data.userAgent ?? null,
       mechanism: data.mechanism ?? "onerror",
       release: data.release ?? null,
+      correlationId: sanitizeCorrelationId(data.correlationId),
     });
   });
