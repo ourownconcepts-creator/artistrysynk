@@ -77,7 +77,7 @@ export default function AdminDiagnostics() {
       <PageSEO
         title="Error diagnostics | ArtistrySynk Admin"
         description="Client disconnect and abort events with timestamps, routes and correlation IDs."
-        noindex
+        noIndex
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
