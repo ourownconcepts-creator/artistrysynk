@@ -15,6 +15,7 @@ import { Route as ActorsRouteImport } from './routes/actors'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminAuthRouteImport } from './routes/admin-auth'
 import { Route as AdminCategoriesRouteImport } from './routes/admin-categories'
+import { Route as AdminCopyrightRouteImport } from './routes/admin-copyright'
 import { Route as AdminFunctionLogsRouteImport } from './routes/admin-function-logs'
 import { Route as AdminReportsRouteImport } from './routes/admin-reports'
 import { Route as AdminSettingsRouteImport } from './routes/admin-settings'
@@ -109,6 +110,11 @@ const AdminAuthRoute = AdminAuthRouteImport.update({
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   id: '/admin-categories',
   path: '/admin-categories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCopyrightRoute = AdminCopyrightRouteImport.update({
+  id: '/admin-copyright',
+  path: '/admin-copyright',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminFunctionLogsRoute = AdminFunctionLogsRouteImport.update({
@@ -445,6 +451,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/admin-auth': typeof AdminAuthRoute
   '/admin-categories': typeof AdminCategoriesRoute
+  '/admin-copyright': typeof AdminCopyrightRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-settings': typeof AdminSettingsRoute
@@ -518,6 +525,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/admin-auth': typeof AdminAuthRoute
   '/admin-categories': typeof AdminCategoriesRoute
+  '/admin-copyright': typeof AdminCopyrightRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-settings': typeof AdminSettingsRoute
@@ -592,6 +600,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/admin-auth': typeof AdminAuthRoute
   '/admin-categories': typeof AdminCategoriesRoute
+  '/admin-copyright': typeof AdminCopyrightRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-settings': typeof AdminSettingsRoute
@@ -667,6 +676,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-auth'
     | '/admin-categories'
+    | '/admin-copyright'
     | '/admin-function-logs'
     | '/admin-reports'
     | '/admin-settings'
@@ -740,6 +750,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-auth'
     | '/admin-categories'
+    | '/admin-copyright'
     | '/admin-function-logs'
     | '/admin-reports'
     | '/admin-settings'
@@ -813,6 +824,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-auth'
     | '/admin-categories'
+    | '/admin-copyright'
     | '/admin-function-logs'
     | '/admin-reports'
     | '/admin-settings'
@@ -887,6 +899,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AdminAuthRoute: typeof AdminAuthRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminCopyrightRoute: typeof AdminCopyrightRoute
   AdminFunctionLogsRoute: typeof AdminFunctionLogsRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -996,6 +1009,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-categories'
       fullPath: '/admin-categories'
       preLoaderRoute: typeof AdminCategoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-copyright': {
+      id: '/admin-copyright'
+      path: '/admin-copyright'
+      fullPath: '/admin-copyright'
+      preLoaderRoute: typeof AdminCopyrightRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-function-logs': {
@@ -1463,6 +1483,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AdminAuthRoute: AdminAuthRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminCopyrightRoute: AdminCopyrightRoute,
   AdminFunctionLogsRoute: AdminFunctionLogsRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
@@ -1532,3 +1553,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
