@@ -59,6 +59,7 @@ import { Route as TeamsRouteImport } from './routes/teams'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VideographersRouteImport } from './routes/videographers'
 import { Route as WhoLikedYouRouteImport } from './routes/who-liked-you'
+import { Route as AccountConfirmDeletionRouteImport } from './routes/account/confirm-deletion'
 import { Route as AuthIndexRouteImport } from './routes/auth/index'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
@@ -327,6 +328,11 @@ const WhoLikedYouRoute = WhoLikedYouRouteImport.update({
   path: '/who-liked-you',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountConfirmDeletionRoute = AccountConfirmDeletionRouteImport.update({
+  id: '/account/confirm-deletion',
+  path: '/account/confirm-deletion',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/auth/',
   path: '/auth/',
@@ -465,6 +471,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/videographers': typeof VideographersRoute
   '/who-liked-you': typeof WhoLikedYouRoute
+  '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/explore/nearby': typeof ExploreNearbyRoute
@@ -534,6 +541,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/videographers': typeof VideographersRoute
   '/who-liked-you': typeof WhoLikedYouRoute
+  '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/explore/nearby': typeof ExploreNearbyRoute
@@ -604,6 +612,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/videographers': typeof VideographersRoute
   '/who-liked-you': typeof WhoLikedYouRoute
+  '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/explore/nearby': typeof ExploreNearbyRoute
@@ -675,6 +684,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/videographers'
     | '/who-liked-you'
+    | '/account/confirm-deletion'
     | '/auth/callback'
     | '/blog/how-to-find-a-music-producer'
     | '/explore/nearby'
@@ -744,6 +754,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/videographers'
     | '/who-liked-you'
+    | '/account/confirm-deletion'
     | '/auth/callback'
     | '/blog/how-to-find-a-music-producer'
     | '/explore/nearby'
@@ -813,6 +824,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/videographers'
     | '/who-liked-you'
+    | '/account/confirm-deletion'
     | '/auth/callback'
     | '/blog/how-to-find-a-music-producer'
     | '/explore/nearby'
@@ -883,6 +895,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   VideographersRoute: typeof VideographersRoute
   WhoLikedYouRoute: typeof WhoLikedYouRoute
+  AccountConfirmDeletionRoute: typeof AccountConfirmDeletionRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   BlogHowToFindAMusicProducerRoute: typeof BlogHowToFindAMusicProducerRoute
   ExploreNearbyRoute: typeof ExploreNearbyRoute
@@ -1254,6 +1267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WhoLikedYouRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account/confirm-deletion': {
+      id: '/account/confirm-deletion'
+      path: '/account/confirm-deletion'
+      fullPath: '/account/confirm-deletion'
+      preLoaderRoute: typeof AccountConfirmDeletionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/': {
       id: '/auth/'
       path: '/auth'
@@ -1427,6 +1447,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   VideographersRoute: VideographersRoute,
   WhoLikedYouRoute: WhoLikedYouRoute,
+  AccountConfirmDeletionRoute: AccountConfirmDeletionRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   BlogHowToFindAMusicProducerRoute: BlogHowToFindAMusicProducerRoute,
   ExploreNearbyRoute: ExploreNearbyRoute,
