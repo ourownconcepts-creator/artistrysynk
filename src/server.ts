@@ -1,6 +1,7 @@
 import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
+import { isBenignTransportError } from "./lib/benignErrors";
 import { renderErrorPage } from "./lib/error-page";
 
 type ServerEntry = {
