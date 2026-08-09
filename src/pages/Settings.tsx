@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { openCookiePreferences } from "@/components/legal/CookieConsentBanner";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
@@ -450,10 +451,7 @@ const Settings = () => {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => {
-                  localStorage.removeItem("as_cookie_consent");
-                  toast.success("Cookie preferences reset — the consent banner will reappear.");
-                }}
+                onClick={() => openCookiePreferences()}
               >
                 Reset Cookie Preferences
               </Button>
