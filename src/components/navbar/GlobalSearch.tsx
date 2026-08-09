@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchOptedOutIds } from "@/lib/discoverability";
 import {
   Search,
   User,
@@ -117,6 +118,12 @@ export const GlobalSearch = () => {
         usersQuery = usersQuery.or(
           `location.ilike.%${location}%,city.ilike.%${location}%,country.ilike.%${location}%`,
         );
+      }
+
+      // Respect the "don't show me in search" privacy preference.
+      const searchOptOuts = await fetchOptedOutIds("search");
+      if (searchOptOuts.length > 0) {
+        usersQuery = usersQuery.not("id", "in", `(${searchOptOuts.join(",")})`);
       }
 
       // Fetch a wider slate than we show so ranking can pick the best 5.

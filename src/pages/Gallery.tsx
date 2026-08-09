@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchOptedOutIds } from "@/lib/discoverability";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -73,7 +74,9 @@ const Gallery = () => {
         .order("created_at", { ascending: false })
         .limit(200);
 
-      const visible = (items ?? []).filter((i) => !i.is_hidden);
+      // Respect the "don't show me in search" privacy preference.
+      const optedOut = new Set(await fetchOptedOutIds("search"));
+      const visible = (items ?? []).filter((i) => !i.is_hidden && !optedOut.has(i.user_id));
       const ownerIds = [...new Set(visible.map((i) => i.user_id))];
 
       if (!ownerIds.length) {
