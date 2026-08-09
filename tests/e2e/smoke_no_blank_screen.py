@@ -34,6 +34,19 @@ def blank(text: str) -> bool:
     return len(text.strip()) < 200
 
 
+async def wait_for_content(page, timeout_ms: int = 8000) -> str:
+    """Polls until the app has painted real content (hydration can lag SSR)."""
+    body = ""
+    waited = 0
+    while waited < timeout_ms:
+        body = await page.inner_text("body")
+        if not blank(body):
+            return body
+        await page.wait_for_timeout(250)
+        waited += 250
+    return body
+
+
 async def check(page, path: str, reload: bool) -> list[str]:
     failures: list[str] = []
     errors: list[str] = []
@@ -51,8 +64,7 @@ async def check(page, path: str, reload: bool) -> list[str]:
     if response.status >= 400:
         failures.append(f"{label}: HTTP {response.status}")
 
-    await page.wait_for_timeout(700)
-    body = await page.inner_text("body")
+    body = await wait_for_content(page)
     if blank(body):
         failures.append(f"{label}: blank screen (body under 200 chars)")
     if "This page didn't load" in body:
@@ -95,14 +107,21 @@ async def main() -> int:
         # during in-app navigation rather than a fresh document load.
         page = await context.new_page()
         await page.goto(BASE_URL, wait_until="domcontentloaded")
+        await wait_for_content(page)
         for path in ["/about", "/pricing", "/how-it-works", "/"]:
-            await page.evaluate(
-                "p => window.history.pushState({}, '', p) || window.dispatchEvent(new PopStateEvent('popstate'))",
-                path,
-            )
-            await page.wait_for_timeout(500)
-            if blank(await page.inner_text("body")):
+            link = page.locator(f'a[href="{path}"]').first
+            if await link.count() == 0:
+                # No in-app link on this screen: fall back to router history nav.
+                await page.go_back()
+                await wait_for_content(page)
+                continue
+            await link.click()
+            await page.wait_for_url(f"**{path}", timeout=10_000)
+            if blank(await wait_for_content(page)):
                 all_failures.append(f"client nav {path}: blank screen")
+        await page.go_back()
+        if blank(await wait_for_content(page)):
+            all_failures.append("client nav back: blank screen")
         print(f"{'FAIL' if all_failures else 'ok  '} client-side navigation sweep")
         await page.close()
         await browser.close()
