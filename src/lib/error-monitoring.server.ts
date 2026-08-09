@@ -15,6 +15,7 @@ export type ErrorReport = {
   userAgent?: string | null;
   release?: string | null;
   mechanism?: string | null;
+  correlationId?: string | null;
 };
 
 const ALERT_WINDOW_MS = 15 * 60 * 1000;
@@ -75,6 +76,7 @@ export async function reportError(report: ErrorReport): Promise<{ logged: boolea
       release: report.release ?? null,
       user_agent: report.userAgent ? report.userAgent.slice(0, 300) : null,
       stack: report.stack ? report.stack.slice(0, 4000) : null,
+      correlation_id: report.correlationId ?? null,
       fingerprint: key,
     },
   });
