@@ -87,23 +87,48 @@ if (typeof globalThis.addEventListener === "function") {
 
 // Node raises `Error: aborted` at the socket level (abortIncoming/socketOnClose)
 // when the browser navigates away or refreshes mid-request. It arrives as an
-// uncaught exception with no request context, so it must be swallowed here or it
-// is reported as a crash. Anything else is re-thrown untouched.
+// uncaught exception with no request context, so it is dropped here.
+//
+// Everything else MUST keep Node's default behaviour: installing a permanent
+// uncaughtException listener would silently keep a broken process alive. So for
+// a non-benign error we detach our listeners first and re-throw, which leaves no
+// listener registered and lets Node crash/report exactly as it normally would.
 type NodeProcess = {
   on?: (event: string, listener: (value: unknown) => void) => void;
-  listenerCount?: (event: string) => number;
+  off?: (event: string, listener: (value: unknown) => void) => void;
+  emit?: (event: string, ...args: unknown[]) => boolean;
 };
 const nodeProcess = (globalThis as { process?: NodeProcess }).process;
-if (typeof nodeProcess?.on === "function") {
-  nodeProcess.on("uncaughtException", (error: unknown) => {
+const REGISTERED = Symbol.for("artistrysynk.transportErrorGuards");
+const globalFlags = globalThis as unknown as Record<symbol, boolean>;
+
+if (typeof nodeProcess?.on === "function" && !globalFlags[REGISTERED]) {
+  // Vite re-evaluates this module on HMR; register the guards exactly once so we
+  // never stack duplicate listeners (MaxListenersExceededWarning).
+  globalFlags[REGISTERED] = true;
+
+  const detach = () => {
+    nodeProcess.off?.("uncaughtException", onUncaught);
+    nodeProcess.off?.("unhandledRejection", onRejection);
+  };
+
+  const onUncaught = (error: unknown) => {
     if (isBenignTransportError(error)) return;
     record(error);
+    detach();
     throw error;
-  });
-  nodeProcess.on("unhandledRejection", (reason: unknown) => {
+  };
+
+  const onRejection = (reason: unknown) => {
     if (isBenignTransportError(reason)) return;
     record(reason);
-  });
+    detach();
+    // Re-emit so Node applies its configured unhandled-rejection mode.
+    Promise.reject(reason);
+  };
+
+  nodeProcess.on("uncaughtException", onUncaught);
+  nodeProcess.on("unhandledRejection", onRejection);
 }
 
 export function consumeLastCapturedError(): unknown {
