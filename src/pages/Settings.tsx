@@ -10,25 +10,14 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
-import { useServerFn } from "@tanstack/react-start";
-import { deleteMyAccount } from "@/lib/delete-account.functions";
-import { Bell, Shield, User, Trash2, Moon, Sun, Monitor, Loader2, Scale, FileText, Cookie, Trash, ExternalLink, LogOut } from "lucide-react";
+import { Bell, Shield, User, Moon, Sun, Monitor, Loader2, Scale, FileText, Cookie, Trash, ExternalLink, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
 import { PushNotificationSettings } from "@/components/notifications/PushNotificationSettings";
 import { BlockedUsersList } from "@/components/settings/BlockedUsersList";
 import { MutedUsersList } from "@/components/settings/MutedUsersList";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { UserSessions } from "@/components/profile/UserSessions";
+import { DataExportCard } from "@/components/settings/DataExportCard";
+import { AccountDeletionCard } from "@/components/settings/AccountDeletionCard";
 
 interface UserSettings {
   email_notifications: boolean;
@@ -68,10 +57,6 @@ const Settings = () => {
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
   const [userId, setUserId] = useState<string | null>(null);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState("");
-  const [deleting, setDeleting] = useState(false);
-  const runDeleteAccount = useServerFn(deleteMyAccount);
 
   const handleSignOut = async () => {
     await queryClient.cancelQueries();
@@ -147,26 +132,6 @@ const Settings = () => {
     setSettings(prev => ({ ...prev, [key]: value }));
     if (key === "theme_preference" && typeof value === "string") {
       setTheme(value);
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    if (deleteConfirm.trim().toUpperCase() !== "DELETE") return;
-    setDeleting(true);
-    try {
-      await runDeleteAccount({ data: { confirmation: "DELETE" } });
-      await queryClient.cancelQueries();
-      queryClient.clear();
-      await supabase.auth.signOut();
-      toast.success("Your account and data have been permanently deleted.");
-      setDeleteOpen(false);
-      navigate("/auth", { replace: true });
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Could not delete your account. Please contact support.",
-      );
-    } finally {
-      setDeleting(false);
     }
   };
 
@@ -430,66 +395,11 @@ const Settings = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-destructive">
-            <CardHeader>
-              <CardTitle className="text-destructive">Danger Zone</CardTitle>
-              <CardDescription>Irreversible actions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <AlertDialog
-                open={deleteOpen}
-                onOpenChange={(open) => {
-                  setDeleteOpen(open);
-                  if (!open) setDeleteConfirm("");
-                }}
-              >
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" className="gap-2">
-                    <Trash2 className="w-4 h-4" />
-                    Delete Account
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Permanently delete your account?</AlertDialogTitle>
-                    <AlertDialogDescription asChild>
-                      <div className="space-y-2 text-left">
-                        <p>
-                          This cannot be undone. Your profile, matches, messages, portfolio,
-                          projects and settings will be permanently removed.
-                        </p>
-                        <p>
-                          Type <span className="font-semibold text-foreground">DELETE</span> below
-                          to confirm.
-                        </p>
-                      </div>
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <Input
-                    value={deleteConfirm}
-                    onChange={(e) => setDeleteConfirm(e.target.value)}
-                    placeholder="DELETE"
-                    autoComplete="off"
-                    aria-label="Type DELETE to confirm account deletion"
-                  />
-                  <AlertDialogFooter>
-                    <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={(e) => {
-                        e.preventDefault();
-                        void handleDeleteAccount();
-                      }}
-                      disabled={deleting || deleteConfirm.trim().toUpperCase() !== "DELETE"}
-                      className="gap-2"
-                    >
-                      {deleting && <Loader2 className="h-4 w-4 animate-spin" />}
-                      {deleting ? "Deleting…" : "Delete Account"}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </CardContent>
-          </Card>
+          {userId && <UserSessions userId={userId} />}
+
+          <DataExportCard />
+
+          <AccountDeletionCard />
         </TabsContent>
 
         <TabsContent value="legal" className="space-y-6">

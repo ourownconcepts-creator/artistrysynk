@@ -35,7 +35,8 @@ export const UserSessions = ({ userId }: UserSessionsProps) => {
   const getCurrentSession = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
-      setCurrentSessionId(session.access_token.substring(0, 20));
+      // Must match the id written by useSessionTracking.
+      setCurrentSessionId(session.access_token.slice(-20));
     }
   };
 
@@ -101,10 +102,13 @@ export const UserSessions = ({ userId }: UserSessionsProps) => {
       .eq('user_id', userId)
       .neq('session_id', currentSessionId || '');
 
-    if (error) {
-      toast.error('Failed to terminate sessions');
+    // Actually revoke the refresh tokens of every other device.
+    const { error: revokeError } = await supabase.auth.signOut({ scope: 'others' });
+
+    if (error || revokeError) {
+      toast.error('Failed to log out other devices');
     } else {
-      toast.success('All other sessions terminated');
+      toast.success('All other devices have been signed out');
       loadSessions();
     }
   };
