@@ -436,7 +436,13 @@ const Settings = () => {
               <CardDescription>Irreversible actions</CardDescription>
             </CardHeader>
             <CardContent>
-              <AlertDialog>
+              <AlertDialog
+                open={deleteOpen}
+                onOpenChange={(open) => {
+                  setDeleteOpen(open);
+                  if (!open) setDeleteConfirm("");
+                }}
+              >
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive" className="gap-2">
                     <Trash2 className="w-4 h-4" />
@@ -445,16 +451,39 @@ const Settings = () => {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete your
-                      account and remove all your data from our servers.
+                    <AlertDialogTitle>Permanently delete your account?</AlertDialogTitle>
+                    <AlertDialogDescription asChild>
+                      <div className="space-y-2 text-left">
+                        <p>
+                          This cannot be undone. Your profile, matches, messages, portfolio,
+                          projects and settings will be permanently removed.
+                        </p>
+                        <p>
+                          Type <span className="font-semibold text-foreground">DELETE</span> below
+                          to confirm.
+                        </p>
+                      </div>
                     </AlertDialogDescription>
                   </AlertDialogHeader>
+                  <Input
+                    value={deleteConfirm}
+                    onChange={(e) => setDeleteConfirm(e.target.value)}
+                    placeholder="DELETE"
+                    autoComplete="off"
+                    aria-label="Type DELETE to confirm account deletion"
+                  />
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteAccount}>
-                      Delete Account
+                    <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={(e) => {
+                        e.preventDefault();
+                        void handleDeleteAccount();
+                      }}
+                      disabled={deleting || deleteConfirm.trim().toUpperCase() !== "DELETE"}
+                      className="gap-2"
+                    >
+                      {deleting && <Loader2 className="h-4 w-4 animate-spin" />}
+                      {deleting ? "Deleting…" : "Delete Account"}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
