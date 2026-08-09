@@ -33,6 +33,18 @@ function recoverFromAssetLoadFailure(): boolean {
   }
 }
 
+function isLocalAppAsset(source: string): boolean {
+  try {
+    const url = new URL(source, window.location.href);
+    return (
+      url.origin === window.location.origin &&
+      /(?:^\/src\/|^\/@|\.(?:css|js|mjs)(?:$|\?))/.test(`${url.pathname}${url.search}`)
+    );
+  } catch {
+    return false;
+  }
+}
+
 function describe(value: unknown): { message: string; stack?: string } {
   if (value instanceof Error) return { message: value.message, ...(value.stack ? { stack: value.stack } : {}) };
   if (value instanceof Response) return { message: `Response ${value.status}${value.url ? ` at ${value.url}` : ""}` };
@@ -79,7 +91,7 @@ export function installClientErrorMonitor() {
       event.target instanceof HTMLLinkElement
     ) {
       const source = event.target instanceof HTMLScriptElement ? event.target.src : event.target.href;
-      if (source && recoverFromAssetLoadFailure()) return;
+      if (source && isLocalAppAsset(source) && recoverFromAssetLoadFailure()) return;
     }
     captureClientError(event.error ?? event.message, "onerror");
   });
