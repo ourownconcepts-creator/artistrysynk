@@ -15,7 +15,7 @@ export default defineConfig({
     testTimeout: 20_000,
     hookTimeout: 20_000,
     teardownTimeout: 10_000,
-    pool: "threads",
-    poolOptions: { threads: { singleThread: true } },
+    // Each test file keeps its own module registry (shared Supabase/router mocks).
+    isolate: true,
   },
 });
