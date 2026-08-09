@@ -47,10 +47,18 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      // The client already went away (navigation/refresh mid-flight): rendering
+      // would only write into a dead socket and raise `Error: aborted`.
+      if (request.signal?.aborted) {
+        return new Response(null, { status: 499 });
+      }
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
+      if (isBenignTransportError(error)) {
+        return new Response(null, { status: 499 });
+      }
       console.error(error);
       return new Response(renderErrorPage(), {
         status: 500,
