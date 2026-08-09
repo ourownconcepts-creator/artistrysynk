@@ -17,6 +17,7 @@ import { Route as AdminAuthRouteImport } from './routes/admin-auth'
 import { Route as AdminCategoriesRouteImport } from './routes/admin-categories'
 import { Route as AdminComplianceRouteImport } from './routes/admin-compliance'
 import { Route as AdminCopyrightRouteImport } from './routes/admin-copyright'
+import { Route as AdminDiagnosticsRouteImport } from './routes/admin-diagnostics'
 import { Route as AdminFunctionLogsRouteImport } from './routes/admin-function-logs'
 import { Route as AdminReportsRouteImport } from './routes/admin-reports'
 import { Route as AdminRetentionRouteImport } from './routes/admin-retention'
@@ -124,6 +125,11 @@ const AdminComplianceRoute = AdminComplianceRouteImport.update({
 const AdminCopyrightRoute = AdminCopyrightRouteImport.update({
   id: '/admin-copyright',
   path: '/admin-copyright',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminDiagnosticsRoute = AdminDiagnosticsRouteImport.update({
+  id: '/admin-diagnostics',
+  path: '/admin-diagnostics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminFunctionLogsRoute = AdminFunctionLogsRouteImport.update({
@@ -478,6 +484,7 @@ export interface FileRoutesByFullPath {
   '/admin-categories': typeof AdminCategoriesRoute
   '/admin-compliance': typeof AdminComplianceRoute
   '/admin-copyright': typeof AdminCopyrightRoute
+  '/admin-diagnostics': typeof AdminDiagnosticsRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-retention': typeof AdminRetentionRoute
@@ -556,6 +563,7 @@ export interface FileRoutesByTo {
   '/admin-categories': typeof AdminCategoriesRoute
   '/admin-compliance': typeof AdminComplianceRoute
   '/admin-copyright': typeof AdminCopyrightRoute
+  '/admin-diagnostics': typeof AdminDiagnosticsRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-retention': typeof AdminRetentionRoute
@@ -635,6 +643,7 @@ export interface FileRoutesById {
   '/admin-categories': typeof AdminCategoriesRoute
   '/admin-compliance': typeof AdminComplianceRoute
   '/admin-copyright': typeof AdminCopyrightRoute
+  '/admin-diagnostics': typeof AdminDiagnosticsRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-retention': typeof AdminRetentionRoute
@@ -715,6 +724,7 @@ export interface FileRouteTypes {
     | '/admin-categories'
     | '/admin-compliance'
     | '/admin-copyright'
+    | '/admin-diagnostics'
     | '/admin-function-logs'
     | '/admin-reports'
     | '/admin-retention'
@@ -793,6 +803,7 @@ export interface FileRouteTypes {
     | '/admin-categories'
     | '/admin-compliance'
     | '/admin-copyright'
+    | '/admin-diagnostics'
     | '/admin-function-logs'
     | '/admin-reports'
     | '/admin-retention'
@@ -871,6 +882,7 @@ export interface FileRouteTypes {
     | '/admin-categories'
     | '/admin-compliance'
     | '/admin-copyright'
+    | '/admin-diagnostics'
     | '/admin-function-logs'
     | '/admin-reports'
     | '/admin-retention'
@@ -950,6 +962,7 @@ export interface RootRouteChildren {
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminComplianceRoute: typeof AdminComplianceRoute
   AdminCopyrightRoute: typeof AdminCopyrightRoute
+  AdminDiagnosticsRoute: typeof AdminDiagnosticsRoute
   AdminFunctionLogsRoute: typeof AdminFunctionLogsRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminRetentionRoute: typeof AdminRetentionRoute
@@ -1076,6 +1089,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-copyright'
       fullPath: '/admin-copyright'
       preLoaderRoute: typeof AdminCopyrightRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-diagnostics': {
+      id: '/admin-diagnostics'
+      path: '/admin-diagnostics'
+      fullPath: '/admin-diagnostics'
+      preLoaderRoute: typeof AdminDiagnosticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-function-logs': {
@@ -1566,6 +1586,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminComplianceRoute: AdminComplianceRoute,
   AdminCopyrightRoute: AdminCopyrightRoute,
+  AdminDiagnosticsRoute: AdminDiagnosticsRoute,
   AdminFunctionLogsRoute: AdminFunctionLogsRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminRetentionRoute: AdminRetentionRoute,

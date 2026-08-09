@@ -1,4 +1,7 @@
-export function renderErrorPage(): string {
+export function renderErrorPage(correlationId?: string): string {
+  const reference = correlationId
+    ? `<p style="font-size:12px;color:#6b7280">Reference: <code>${correlationId.replace(/[^A-Za-z0-9._:-]/g, "")}</code></p>`
+    : "";
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -24,6 +27,7 @@ export function renderErrorPage(): string {
         <button class="primary" onclick="location.reload()">Try again</button>
         <a class="secondary" href="/">Go home</a>
       </div>
+      ${reference}
     </div>
   </body>
 </html>`;

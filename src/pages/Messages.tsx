@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { useRealtimeChannel } from "@/hooks/useRealtimeChannel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -89,12 +90,16 @@ const Messages = () => {
     }
   }, [messages, currentUser, conversationId]);
 
-  useEffect(() => {
-    if (!conversationId || !currentUser) return;
-
-    const channel = supabase
-      .channel(`conversation-${conversationId}`)
-      .on(
+  // Graceful reconnection: on a transient drop the channel resubscribes with
+  // backoff and the conversation is refetched so no message is silently missed.
+  const realtimeStatus = useRealtimeChannel({
+    name: conversationId && currentUser ? `conversation-${conversationId}` : null,
+    onReconnect: () => {
+      if (currentUser) loadConversation(currentUser);
+    },
+    setup: (channel) =>
+      channel
+        .on(
         'postgres_changes',
         {
           event: 'INSERT',
@@ -108,7 +113,7 @@ const Messages = () => {
           scrollToBottom();
         }
       )
-      .on(
+        .on(
         'postgres_changes',
         {
           event: 'UPDATE',
@@ -122,13 +127,8 @@ const Messages = () => {
             prev.map((m) => (m.id === updated.id ? { ...m, ...updated, status: "sent" } : m))
           );
         }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [conversationId, currentUser]);
+      ),
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -391,7 +391,17 @@ const Messages = () => {
                   </Avatar>
                   <div className="flex-1">
                     <CardTitle className="text-lg">{otherUser.full_name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">@{otherUser.username}</p>
+                    <p className="text-sm text-muted-foreground">
+                      @{otherUser.username}
+                      {realtimeStatus !== "connected" && (
+                        <span
+                          data-testid="chat-connection-status"
+                          className="ml-2 text-xs text-muted-foreground"
+                        >
+                          {realtimeStatus === "offline" ? "· offline" : "· reconnecting…"}
+                        </span>
+                      )}
+                    </p>
                   </div>
                   
                   <Dialog open={showProjectDialog} onOpenChange={setShowProjectDialog}>
