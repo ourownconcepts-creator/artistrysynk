@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +24,7 @@ import {
   Share2,
   Monitor,
   UserRound,
+  LogOut,
 } from "lucide-react";
 import { InteractivePortfolio } from "@/components/portfolio/InteractivePortfolio";
 import { PortfolioUpload } from "@/components/portfolio/PortfolioUpload";
