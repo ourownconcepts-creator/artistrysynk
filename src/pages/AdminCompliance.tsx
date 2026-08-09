@@ -399,7 +399,7 @@ const AdminCompliance = () => {
                       {p.provider} — {p.service}
                     </CardTitle>
                     <div className="flex gap-2">
-                      <Badge variant={p.contractStatus === "signed" ? "default" : "outline"}>
+                      <Badge variant={p.contractStatus === "dpa_in_place" ? "default" : "outline"}>
                         DPA: {p.contractStatus.replace(/_/g, " ")}
                       </Badge>
                       {!p.isActive && <Badge variant="outline">Inactive</Badge>}

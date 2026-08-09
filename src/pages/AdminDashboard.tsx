@@ -388,6 +388,17 @@ const AdminDashboard = () => {
               Open queue
             </Button>
           </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-4">
+            <div>
+              <p className="font-medium">Compliance Registers</p>
+              <p className="text-sm text-muted-foreground">
+                Processing activities (ROPA), impact assessments (DPIA) and processors.
+              </p>
+            </div>
+            <Button variant="outline" onClick={() => navigate("/admin-compliance")}>
+              Open registers
+            </Button>
+          </div>
           <PortfolioModeration />
         </TabsContent>
 
