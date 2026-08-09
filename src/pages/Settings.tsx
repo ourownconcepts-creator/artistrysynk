@@ -10,25 +10,14 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
-import { useServerFn } from "@tanstack/react-start";
-import { deleteMyAccount } from "@/lib/delete-account.functions";
-import { Bell, Shield, User, Trash2, Moon, Sun, Monitor, Loader2, Scale, FileText, Cookie, Trash, ExternalLink, LogOut } from "lucide-react";
+import { Bell, Shield, User, Moon, Sun, Monitor, Loader2, Scale, FileText, Cookie, Trash, ExternalLink, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
 import { PushNotificationSettings } from "@/components/notifications/PushNotificationSettings";
 import { BlockedUsersList } from "@/components/settings/BlockedUsersList";
 import { MutedUsersList } from "@/components/settings/MutedUsersList";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { UserSessions } from "@/components/profile/UserSessions";
+import { DataExportCard } from "@/components/settings/DataExportCard";
+import { AccountDeletionCard } from "@/components/settings/AccountDeletionCard";
 
 interface UserSettings {
   email_notifications: boolean;
@@ -68,10 +57,6 @@ const Settings = () => {
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
   const [userId, setUserId] = useState<string | null>(null);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState("");
-  const [deleting, setDeleting] = useState(false);
-  const runDeleteAccount = useServerFn(deleteMyAccount);
 
   const handleSignOut = async () => {
     await queryClient.cancelQueries();
