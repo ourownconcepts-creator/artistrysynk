@@ -4,7 +4,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 export type DataExport = {
   exportedAt: string;
   userId: string;
-  data: Record<string, unknown>;
+  /** Pretty-printed JSON of every exported table. */
+  json: string;
   mediaUrls: string[];
 };
 
@@ -66,23 +67,32 @@ export const exportMyData = createServerFn({ method: "POST" })
     collect(profile, ["avatar_url", "cover_image_url"]);
     collect(portfolio, ["media_url", "thumbnail_url"]);
 
+    const exportedAt = new Date().toISOString();
+
     return {
-      exportedAt: new Date().toISOString(),
+      exportedAt,
       userId,
-      data: {
-        profile,
-        settings,
-        creative_roles: roles,
-        genres,
-        skills,
-        portfolio_items: portfolio,
-        projects,
-        project_memberships: memberships,
-        collaboration_posts: collabPosts,
-        notifications,
-        referrals,
-        sessions,
-      },
+      json: JSON.stringify(
+        {
+          exported_at: exportedAt,
+          user_id: userId,
+          profile,
+          settings,
+          creative_roles: roles,
+          genres,
+          skills,
+          portfolio_items: portfolio,
+          projects,
+          project_memberships: memberships,
+          collaboration_posts: collabPosts,
+          notifications,
+          referrals,
+          sessions,
+          media_urls: [...mediaUrls],
+        },
+        null,
+        2,
+      ),
       mediaUrls: [...mediaUrls],
     };
   });
