@@ -108,7 +108,7 @@ const AdminCompliance = () => {
   const [registers, setRegisters] = useState<ComplianceRegisters | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [tab, setTab] = useState<"ropa" | "dpia" | "processors" | "retention">("ropa");
+  const [tab, setTab] = useState<"ropa" | "dpia" | "processors" | "retention" | "requests">("ropa");
   const [retention, setRetention] = useState<RetentionOverview | null>(null);
   const [sweeping, setSweeping] = useState(false);
 
@@ -399,7 +399,12 @@ const AdminCompliance = () => {
             <TabsTrigger value="dpia">Impact assessments ({dpia.length})</TabsTrigger>
             <TabsTrigger value="processors">Processors ({registers?.processors.length ?? 0})</TabsTrigger>
             <TabsTrigger value="retention">Retention</TabsTrigger>
+            <TabsTrigger value="requests">Requests</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="requests" className="mt-4">
+            <RequestsDashboard />
+          </TabsContent>
 
           <TabsContent value="ropa" className="mt-4 space-y-4">
             <Button onClick={() => openEditor("ropa")}>
