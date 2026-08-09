@@ -465,14 +465,19 @@ const AdminCompliance = () => {
                 Automated rules run daily and delete data that has passed its retention period. Every
                 sweep is logged below.
               </p>
-              <Button onClick={() => void handleSweep()} disabled={sweeping}>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" asChild>
+                  <Link to="/admin-retention">Full run status</Link>
+                </Button>
+                <Button onClick={() => void handleSweep()} disabled={sweeping}>
                 {sweeping ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <RefreshCw className="mr-2 h-4 w-4" />
                 )}
                 Run sweep now
-              </Button>
+                </Button>
+              </div>
             </div>
 
             {!retention ? (
