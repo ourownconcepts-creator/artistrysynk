@@ -64,6 +64,7 @@ import { Route as AuthIndexRouteImport } from './routes/auth/index'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as BlogHowToFindAMusicProducerRouteImport } from './routes/blog/how-to-find-a-music-producer'
+import { Route as CopyrightReportRouteImport } from './routes/copyright/report'
 import { Route as ExploreIndexRouteImport } from './routes/explore/index'
 import { Route as ExploreNearbyRouteImport } from './routes/explore/nearby'
 import { Route as LegalIndexRouteImport } from './routes/legal/index'
@@ -356,6 +357,11 @@ const BlogHowToFindAMusicProducerRoute =
     path: '/blog/how-to-find-a-music-producer',
     getParentRoute: () => rootRouteImport,
   } as any)
+const CopyrightReportRoute = CopyrightReportRouteImport.update({
+  id: '/copyright/report',
+  path: '/copyright/report',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExploreIndexRoute = ExploreIndexRouteImport.update({
   id: '/explore/',
   path: '/explore/',
@@ -486,6 +492,7 @@ export interface FileRoutesByFullPath {
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
+  '/copyright/report': typeof CopyrightReportRoute
   '/explore/nearby': typeof ExploreNearbyRoute
   '/legal/$slug': typeof LegalSlugRoute
   '/locations/$citySlug': typeof LocationsCitySlugRoute
@@ -558,6 +565,7 @@ export interface FileRoutesByTo {
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
+  '/copyright/report': typeof CopyrightReportRoute
   '/explore/nearby': typeof ExploreNearbyRoute
   '/legal/$slug': typeof LegalSlugRoute
   '/locations/$citySlug': typeof LocationsCitySlugRoute
@@ -631,6 +639,7 @@ export interface FileRoutesById {
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
+  '/copyright/report': typeof CopyrightReportRoute
   '/explore/nearby': typeof ExploreNearbyRoute
   '/legal/$slug': typeof LegalSlugRoute
   '/locations/$citySlug': typeof LocationsCitySlugRoute
@@ -705,6 +714,7 @@ export interface FileRouteTypes {
     | '/account/confirm-deletion'
     | '/auth/callback'
     | '/blog/how-to-find-a-music-producer'
+    | '/copyright/report'
     | '/explore/nearby'
     | '/legal/$slug'
     | '/locations/$citySlug'
@@ -777,6 +787,7 @@ export interface FileRouteTypes {
     | '/account/confirm-deletion'
     | '/auth/callback'
     | '/blog/how-to-find-a-music-producer'
+    | '/copyright/report'
     | '/explore/nearby'
     | '/legal/$slug'
     | '/locations/$citySlug'
@@ -849,6 +860,7 @@ export interface FileRouteTypes {
     | '/account/confirm-deletion'
     | '/auth/callback'
     | '/blog/how-to-find-a-music-producer'
+    | '/copyright/report'
     | '/explore/nearby'
     | '/legal/$slug'
     | '/locations/$citySlug'
@@ -922,6 +934,7 @@ export interface RootRouteChildren {
   AccountConfirmDeletionRoute: typeof AccountConfirmDeletionRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   BlogHowToFindAMusicProducerRoute: typeof BlogHowToFindAMusicProducerRoute
+  CopyrightReportRoute: typeof CopyrightReportRoute
   ExploreNearbyRoute: typeof ExploreNearbyRoute
   LegalSlugRoute: typeof LegalSlugRoute
   LocationsCitySlugRoute: typeof LocationsCitySlugRoute
@@ -1328,6 +1341,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogHowToFindAMusicProducerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/copyright/report': {
+      id: '/copyright/report'
+      path: '/copyright/report'
+      fullPath: '/copyright/report'
+      preLoaderRoute: typeof CopyrightReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore/': {
       id: '/explore/'
       path: '/explore'
@@ -1490,6 +1510,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountConfirmDeletionRoute: AccountConfirmDeletionRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   BlogHowToFindAMusicProducerRoute: BlogHowToFindAMusicProducerRoute,
+  CopyrightReportRoute: CopyrightReportRoute,
   ExploreNearbyRoute: ExploreNearbyRoute,
   LegalSlugRoute: LegalSlugRoute,
   LocationsCitySlugRoute: LocationsCitySlugRoute,
