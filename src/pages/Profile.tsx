@@ -399,6 +399,16 @@ const Profile = () => {
             </Pressable>
           </Surface>
 
+          <Button
+            variant="outline"
+            className="w-full gap-2 rounded-full"
+            onClick={handleSignOut}
+            aria-label="Sign out of your account"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </Button>
+
           {allRoles.some((r) => r !== "user") ? (
             <Surface inset className="space-y-3">
               <SectionHeader title="Admin access" className="px-0" />
