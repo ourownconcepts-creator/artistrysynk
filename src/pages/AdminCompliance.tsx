@@ -102,11 +102,15 @@ const AdminCompliance = () => {
   const save = useServerFn(saveComplianceRecord);
   const review = useServerFn(reviewComplianceRecord);
   const remove = useServerFn(deleteComplianceRecord);
+  const loadRetention = useServerFn(getRetentionOverview);
+  const sweepRetention = useServerFn(runRetentionSweepNow);
 
   const [registers, setRegisters] = useState<ComplianceRegisters | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [tab, setTab] = useState<"ropa" | "dpia" | "processors">("ropa");
+  const [tab, setTab] = useState<"ropa" | "dpia" | "processors" | "retention">("ropa");
+  const [retention, setRetention] = useState<RetentionOverview | null>(null);
+  const [sweeping, setSweeping] = useState(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<ComplianceRecordDraft | null>(null);
@@ -128,6 +132,33 @@ const AdminCompliance = () => {
   useEffect(() => {
     void refresh();
   }, [refresh]);
+
+  const refreshRetention = useCallback(async () => {
+    try {
+      setRetention(await loadRetention({ data: undefined }));
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not load retention data");
+    }
+  }, [loadRetention]);
+
+  useEffect(() => {
+    if (tab === "retention" && !retention) void refreshRetention();
+  }, [tab, retention, refreshRetention]);
+
+  const handleSweep = useCallback(async () => {
+    setSweeping(true);
+    try {
+      const result = await sweepRetention({ data: {} });
+      toast.success(
+        `Sweep complete — ${result.deleted} record(s) purged, ${result.accountsPurged} account(s) finalised.`,
+      );
+      await refreshRetention();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Sweep failed");
+    } finally {
+      setSweeping(false);
+    }
+  }, [sweepRetention, refreshRetention]);
 
   const records = registers?.records ?? [];
   const ropa = useMemo(() => records.filter((r) => r.recordType === "ropa"), [records]);
