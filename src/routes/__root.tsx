@@ -20,6 +20,7 @@ import { UpdateBanner } from "@/components/pwa/UpdateBanner";
 import { DeepLinkHandler } from "@/components/native/DeepLinkHandler";
 import { NativeShell } from "@/components/native/NativeShell";
 import { CookieConsentBanner } from "@/components/legal/CookieConsentBanner";
+import { SessionWatcher } from "@/components/auth/SessionWatcher";
 import NotFound from "@/pages/NotFound";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
 import { installClientErrorMonitor, captureClientError } from "@/lib/client-error-monitor";
@@ -198,6 +199,7 @@ function RootComponent() {
             <Sonner />
             <AnalyticsProvider>
               <RouteSEO />
+              <SessionWatcher />
               <Outlet />
               <DeepLinkHandler />
               <NativeShell />
