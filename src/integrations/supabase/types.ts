@@ -3610,6 +3610,12 @@ export type Database = {
           username: string
         }[]
       }
+      list_opted_out_ids: {
+        Args: { _surface: string }
+        Returns: {
+          user_id: string
+        }[]
+      }
       list_public_locations: {
         Args: { _min_creators?: number }
         Returns: {
