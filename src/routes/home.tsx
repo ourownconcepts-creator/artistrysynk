@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from "@/pages/Home";
 
 export const Route = createFileRoute("/home")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Your Home Feed | ArtistrySynk" },
@@ -20,5 +22,9 @@ export const Route = createFileRoute("/home")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: Home,
+  component: () => (
+    <ProtectedRoute>
+      <Home />
+    </ProtectedRoute>
+  ),
 });
