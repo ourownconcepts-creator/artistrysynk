@@ -649,3 +649,185 @@ export async function deleteStudioService(serviceId: string) {
   const { error } = await supabase.from("services").delete().eq("id", serviceId);
   if (error) throw error;
 }
+/* ---------------------- studio commerce & inbox (V1.5) ---------------------- */
+
+/**
+ * V1.5 attribution is denormalized onto existing rows (`service_orders`,
+ * `service_reviews`, `revenue_transactions`, `conversations`) and written by
+ * database triggers/RPCs — never by the client. A studio id passed from the
+ * browser is data only; `has_studio_capability(auth.uid(), ...)` in RLS decides
+ * what is visible or writable.
+ */
+
+export type StudioOrder = {
+  id: string;
+  service_id: string;
+  buyer_id: string;
+  seller_id: string;
+  status: string;
+  amount: number;
+  requirements: string | null;
+  delivery_date: string | null;
+  created_at: string;
+  services?: { title: string } | null;
+};
+
+export const STUDIO_ORDER_STATUSES = [
+  "pending",
+  "in_progress",
+  "delivered",
+  "completed",
+  "cancelled",
+] as const;
+
+/** Orders placed against this studio's services. Visible to view_analytics holders. */
+export async function fetchStudioOrders(studioId: string, limit = 50): Promise<StudioOrder[]> {
+  const { data, error } = await supabase
+    .from("service_orders")
+    .select("id, service_id, buyer_id, seller_id, status, amount, requirements, delivery_date, created_at, services(title)")
+    .eq("studio_id", studioId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return (data ?? []) as unknown as StudioOrder[];
+}
+
+/** Status transition on a studio order — gated by manage_services in RLS. */
+export async function updateStudioOrderStatus(orderId: string, status: string) {
+  const { error } = await supabase.from("service_orders").update({ status }).eq("id", orderId);
+  if (error) throw error;
+}
+
+export type StudioRevenueSummary = { total: number; currency: string; count: number };
+
+/** Revenue attributed to this studio. Read-only; writes are server-side only. */
+export async function fetchStudioRevenue(studioId: string): Promise<StudioRevenueSummary> {
+  const { data, error } = await supabase
+    .from("revenue_transactions")
+    .select("amount, currency, status")
+    .eq("studio_id", studioId)
+    .limit(1000);
+  if (error) throw error;
+  const rows = data ?? [];
+  return {
+    total: rows.reduce((sum, r) => sum + Number(r.amount ?? 0), 0),
+    currency: rows[0]?.currency ?? "NGN",
+    count: rows.length,
+  };
+}
+
+export type StudioThread = {
+  id: string;
+  customer_id: string | null;
+  updated_at: string | null;
+  customer?: { id: string; full_name: string | null; username: string | null; avatar_url: string | null } | null;
+  unread: number;
+};
+
+/** Business conversations owned by a studio — reachable only with manage_inbox. */
+export async function fetchStudioThreads(studioId: string, userId: string): Promise<StudioThread[]> {
+  const { data, error } = await supabase
+    .from("conversations")
+    .select("id, customer_id, updated_at")
+    .eq("studio_id", studioId)
+    .order("updated_at", { ascending: false })
+    .limit(100);
+  if (error) throw error;
+
+  const threads = data ?? [];
+  if (threads.length === 0) return [];
+
+  const customerIds = Array.from(
+    new Set(threads.map((t) => t.customer_id).filter((id): id is string => Boolean(id))),
+  );
+
+  const [{ data: profiles }, { data: unreadRows }] = await Promise.all([
+    supabase.from("profiles").select("id, full_name, username, avatar_url").in("id", customerIds),
+    supabase
+      .from("messages")
+      .select("conversation_id")
+      .in("conversation_id", threads.map((t) => t.id))
+      .eq("read", false)
+      .neq("sender_id", userId),
+  ]);
+
+  const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
+  const unreadMap = new Map<string, number>();
+  (unreadRows ?? []).forEach((r) => {
+    unreadMap.set(r.conversation_id, (unreadMap.get(r.conversation_id) ?? 0) + 1);
+  });
+
+  return threads.map((t) => ({
+    ...t,
+    customer: t.customer_id ? profileMap.get(t.customer_id) ?? null : null,
+    unread: unreadMap.get(t.id) ?? 0,
+  }));
+}
+
+/**
+ * Opens (or reuses) a business conversation with a studio. The creator side is
+ * taken from `auth.uid()` inside the RPC, so it cannot be spoofed.
+ */
+export async function startStudioConversation(studioId: string): Promise<string> {
+  const { data, error } = await supabase.rpc("start_studio_conversation", { _studio_id: studioId });
+  if (error) throw error;
+  return data as unknown as string;
+}
+
+/* ------------------- project studio participation (V1.5) ------------------- */
+
+/**
+ * Attribution only: a studio credited on a project gains NO access to the
+ * project room, files or tasks. Room access remains per-user `project_members`.
+ */
+export type ProjectStudioCredit = {
+  id: string;
+  project_id: string;
+  studio_id: string;
+  role_label: string | null;
+  status: string;
+  created_at: string;
+  studios?: { id: string; name: string; handle: string; logo_url: string | null; is_verified: boolean | null } | null;
+};
+
+export async function fetchProjectStudios(projectId: string): Promise<ProjectStudioCredit[]> {
+  const { data, error } = await supabase
+    .from("project_studios")
+    .select("id, project_id, studio_id, role_label, status, created_at, studios(id, name, handle, logo_url, is_verified)")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as unknown as ProjectStudioCredit[];
+}
+
+export async function fetchStudioProjectCredits(studioId: string): Promise<ProjectStudioCredit[]> {
+  const { data, error } = await supabase
+    .from("project_studios")
+    .select("id, project_id, studio_id, role_label, status, created_at")
+    .eq("studio_id", studioId)
+    .order("created_at", { ascending: false })
+    .limit(50);
+  if (error) throw error;
+  return (data ?? []) as unknown as ProjectStudioCredit[];
+}
+
+/** Only the project creator, acting for a studio they represent, may attach it. */
+export async function attachStudioToProject(input: {
+  projectId: string;
+  studioId: string;
+  userId: string;
+  roleLabel?: string;
+}) {
+  const { error } = await supabase.from("project_studios").insert({
+    project_id: input.projectId,
+    studio_id: input.studioId,
+    added_by: input.userId,
+    role_label: input.roleLabel || null,
+  });
+  if (error) throw error;
+}
+
+export async function detachStudioFromProject(rowId: string) {
+  const { error } = await supabase.from("project_studios").delete().eq("id", rowId);
+  if (error) throw error;
+}
