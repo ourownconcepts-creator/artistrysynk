@@ -16,6 +16,7 @@ import { getRoleLabel } from "@/lib/creativeRoles";
 import NotFound from "@/pages/NotFound";
 import { ProfileHeaderMedia } from "@/components/profile/ProfileHeaderMedia";
 import { ProfileMediaGallery } from "@/components/profile/ProfileMediaGallery";
+import { ProfileQuickActions } from "@/components/profile/ProfileQuickActions";
 
 const BASE = "https://artistrysynk.app";
 
@@ -311,7 +312,13 @@ const PublicProfile = () => {
               </div>
 
               {currentUserId && !isOwner && (
-                <div className="mt-8 flex flex-wrap items-center gap-2 sm:gap-3">
+                <div className="mt-8 space-y-3">
+                  <ProfileQuickActions
+                    currentUserId={currentUserId}
+                    profileId={profile.id}
+                    profileName={profile.full_name}
+                  />
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                   <Button
                     onClick={handleLike}
                     aria-label={`Request collaboration with ${profile.full_name}`}
@@ -345,6 +352,7 @@ const PublicProfile = () => {
                     targetUserName={profile.full_name}
                     onBlocked={() => navigate("/discover")}
                   />
+                  </div>
                 </div>
               )}
 

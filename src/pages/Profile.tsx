@@ -43,6 +43,8 @@ import {
   Surface,
   Pressable,
   SkeletonTiles,
+  MediaTile,
+  EmptyState,
 } from "@/components/native-ui";
 
 type Tab = "portfolio" | "about" | "insights" | "account";
@@ -65,6 +67,7 @@ const Profile = () => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [counts, setCounts] = useState({ portfolio: 0, matches: 0 });
+  const [recentWork, setRecentWork] = useState<any[]>([]);
   const [tab, setTab] = useState<Tab>("about");
   const [loading, setLoading] = useState(true);
 
@@ -89,14 +92,21 @@ const Profile = () => {
   }, []);
 
   const loadCounts = useCallback(async (uid: string) => {
-    const [{ count: portfolio }, { count: matches }] = await Promise.all([
+    const [{ count: portfolio }, { count: matches }, { data: work }] = await Promise.all([
       supabase.from("portfolio_items").select("id", { count: "exact", head: true }).eq("user_id", uid),
       supabase
         .from("matches")
         .select("id", { count: "exact", head: true })
         .or(`user_id_1.eq.${uid},user_id_2.eq.${uid}`),
+      supabase
+        .from("portfolio_items")
+        .select("id, title, media_url, media_type, thumbnail_url")
+        .eq("user_id", uid)
+        .order("created_at", { ascending: false })
+        .limit(6),
     ]);
     setCounts({ portfolio: portfolio ?? 0, matches: matches ?? 0 });
+    setRecentWork(work ?? []);
   }, []);
 
   useEffect(() => {
@@ -348,6 +358,45 @@ const Profile = () => {
               </div>
             </Surface>
           ) : null}
+
+          <Surface inset className="space-y-3">
+            <SectionHeader
+              title="Recent work"
+              className="px-0"
+              action={
+                counts.portfolio > 0 ? (
+                  <Pressable onClick={() => setTab("portfolio")} className="text-xs font-medium text-primary">
+                    View all
+                  </Pressable>
+                ) : undefined
+              }
+            />
+            {recentWork.length ? (
+              <div className="grid grid-cols-3 gap-2">
+                {recentWork.map((item) => (
+                  <MediaTile
+                    key={item.id}
+                    url={item.media_url}
+                    thumbnail={item.thumbnail_url}
+                    type={item.media_type}
+                    title={item.title}
+                    onClick={() => setTab("portfolio")}
+                    className="aspect-square"
+                  />
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                title="No work uploaded yet"
+                description="Add photos, tracks or videos so collaborators can see your style."
+                action={
+                  <Button variant="outline" className="rounded-full" onClick={() => setTab("portfolio")}>
+                    Add media
+                  </Button>
+                }
+              />
+            )}
+          </Surface>
 
           {!roles.length && !genres.length && !profile?.looking_for?.length ? (
             <Surface inset className="text-center text-sm text-muted-foreground">
