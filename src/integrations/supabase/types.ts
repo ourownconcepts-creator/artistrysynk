@@ -3467,7 +3467,10 @@ export type Database = {
           created_at: string
           current_period_end: string | null
           current_period_start: string | null
+          granted_at: string | null
+          granted_by: string | null
           id: string
+          is_lifetime: boolean
           paystack_customer_id: string | null
           paystack_subscription_code: string | null
           status: string
@@ -3480,7 +3483,10 @@ export type Database = {
           created_at?: string
           current_period_end?: string | null
           current_period_start?: string | null
+          granted_at?: string | null
+          granted_by?: string | null
           id?: string
+          is_lifetime?: boolean
           paystack_customer_id?: string | null
           paystack_subscription_code?: string | null
           status?: string
@@ -3493,7 +3499,10 @@ export type Database = {
           created_at?: string
           current_period_end?: string | null
           current_period_start?: string | null
+          granted_at?: string | null
+          granted_by?: string | null
           id?: string
+          is_lifetime?: boolean
           paystack_customer_id?: string | null
           paystack_subscription_code?: string | null
           status?: string
@@ -3595,6 +3604,7 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      expire_due_subscriptions: { Args: never; Returns: number }
       get_match_activity_since: {
         Args: { _since: string; _user_id: string }
         Returns: {
