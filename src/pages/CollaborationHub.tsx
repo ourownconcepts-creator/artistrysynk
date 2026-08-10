@@ -52,7 +52,7 @@ type Project = {
   description: string | null;
   status: string | null;
   created_by: string;
-  deadline: string | null;
+  created_at: string | null;
 };
 
 type Task = {
@@ -132,7 +132,7 @@ export default function CollaborationHub() {
     if (!projectId) return;
     const { data, error } = await supabase
       .from("projects")
-      .select("id, title, description, status, created_by, deadline")
+      .select("id, title, description, status, created_by, created_at")
       .eq("id", projectId)
       .maybeSingle();
     if (error || !data) {
@@ -229,9 +229,9 @@ export default function CollaborationHub() {
             <div className="min-w-0">
               <h1 className="truncate text-lg font-bold tracking-tight">{project.title}</h1>
               <p className="text-xs text-muted-foreground">
-                {project.deadline
-                  ? `Deadline ${formatDistanceToNow(new Date(project.deadline), { addSuffix: true })}`
-                  : "No deadline set"}
+                {project.created_at
+                  ? `Started ${formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}`
+                  : "Project workspace"}
               </p>
             </div>
             <Badge variant="secondary" className="capitalize">
