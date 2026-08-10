@@ -55,7 +55,11 @@ export const UPLOAD_RULES: Record<UploadCategory, UploadRule> = {
 
 /** Storage buckets and the path convention each one enforces through RLS. */
 export const UPLOAD_BUCKETS = {
-  /** Public profile + portfolio media. Path: {userId}/... */
+  /**
+   * Public profile + portfolio media.
+   * Personal path: {userId}/...
+   * Studio path:   studios/{studioId}/{logo|cover|equipment|work}/... (studio membership RLS)
+   */
   portfolios: "portfolios",
   /** Private chat images. Path: {userId}/{conversationId}/{uuid}.{ext} */
   chatImages: "chat-images",
