@@ -28,6 +28,7 @@ import {
   haptic,
 } from "@/components/native-ui";
 import { DiscoverSearchResults, type SearchProfile } from "@/components/discover/DiscoverSearchResults";
+import { StudioSearchResults } from "@/components/discover/StudioSearchResults";
 
 interface Profile {
   id: string;
@@ -553,6 +554,7 @@ const Discover = () => {
               </Pressable>
             ) : null}
           </div>
+          <StudioSearchResults query={query.trim()} onOpen={(handle) => navigate(`/studios/${handle}`)} />
           <DiscoverSearchResults
             results={results}
             loading={searching && results.length === 0}
