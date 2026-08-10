@@ -24,9 +24,11 @@ import {
   inviteToStudio,
   removeStudioMember,
   requestStudioVerification,
+  setStudioActive,
   STUDIO_FACILITIES,
   STUDIO_ROLE_LABELS,
   STUDIO_ROLES,
+  transferStudioOwnership,
   updateStudio,
   updateStudioMemberRole,
   upsertStudioEquipment,
@@ -126,6 +128,7 @@ const StudioManage = () => {
   const canManageStudio = can(role, "manage_studio");
   const canManageMembers = can(role, "manage_members");
   const canManageGear = can(role, "manage_equipment");
+  const isOwner = !!studio && !!user && studio.owner_id === user.id;
 
   const saveProfile = async () => {
     if (!studio) return;
@@ -140,7 +143,6 @@ const StudioManage = () => {
         contact_email: form.contact_email.trim() || null,
         facilities: form.facilities,
         visibility: form.visibility,
-        is_active: form.is_active,
       });
       toast.success("Studio updated");
     } catch (error) {
