@@ -6,7 +6,6 @@ export function VerifiedBadge({ className }: { className?: string }) {
   return (
     <BadgeCheck
       aria-label="Verified creative"
-      title="Verified creative"
       className={cn("h-4 w-4 shrink-0 text-emerald-500", className)}
     />
   );
