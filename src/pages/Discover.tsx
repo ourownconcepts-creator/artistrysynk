@@ -67,6 +67,11 @@ const Discover = () => {
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [results, setResults] = useState<SearchProfile[]>([]);
   const [searching, setSearching] = useState(false);
+  const [page, setPage] = useState(0);
+  const [hasMoreResults, setHasMoreResults] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [deckHasMore, setDeckHasMore] = useState(true);
+  const [loadingDeckMore, setLoadingDeckMore] = useState(false);
 
   const activeFilterCount =
     (roleFilter !== "all" ? 1 : 0) +
@@ -77,18 +82,21 @@ const Discover = () => {
 
   /** Instant search — runs on every keystroke (debounced) and on filter changes. */
   const runSearch = useCallback(
-    async (userId: string) => {
-      setSearching(true);
+    async (userId: string, pageIndex = 0, append = false) => {
+      if (append) setLoadingMore(true);
+      else setSearching(true);
 
       const { all: hiddenIds } = await fetchHiddenUserIds(userId);
       const optedOutIds = await fetchOptedOutIds("discovery");
       const excludeIds = [...new Set([userId, ...hiddenIds, ...optedOutIds])];
 
+      const pageSize = 24;
       let request = supabase
         .from("profiles")
-        .select("id, full_name, username, bio, location, avatar_url, is_verified, last_seen_at, user_creative_roles(role), user_genres(genre)")
+        .select("id, full_name, username, bio, location, avatar_url, is_verified, is_featured, last_seen_at, user_creative_roles(role), user_genres(genre)")
         .not("id", "in", `(${excludeIds.join(",")})`)
-        .limit(48);
+        .order("last_seen_at", { ascending: false, nullsFirst: false })
+        .range(pageIndex * pageSize, pageIndex * pageSize + pageSize - 1);
 
       const needle = query.trim();
       if (needle) {
@@ -102,6 +110,7 @@ const Discover = () => {
 
       const { data } = await request;
       let rows = (data as any[]) ?? [];
+      const fetched = rows.length;
 
       if (roleFilter !== "all") {
         rows = rows.filter((p) => (p.user_creative_roles ?? []).some((r: any) => r.role === roleFilter));
@@ -119,11 +128,23 @@ const Discover = () => {
         rows = rows.filter((p) => matched.has(p.id));
       }
 
-      setResults(rows as SearchProfile[]);
+      setResults((prev) => {
+        if (!append) return rows as SearchProfile[];
+        const seen = new Set(prev.map((p) => p.id));
+        return [...prev, ...(rows as SearchProfile[]).filter((p) => !seen.has(p.id))];
+      });
+      setHasMoreResults(fetched === pageSize);
+      setPage(pageIndex);
       setSearching(false);
+      setLoadingMore(false);
     },
     [query, roleFilter, genreFilter, skillFilter, locationFilter, verifiedOnly],
   );
+
+  const loadMoreResults = useCallback(() => {
+    if (!currentUser || loadingMore || searching || !hasMoreResults) return;
+    void runSearch(currentUser, page + 1, true);
+  }, [currentUser, loadingMore, searching, hasMoreResults, page, runSearch]);
 
   const loadCurrentUserProfile = async (userId: string) => {
     const { data: profile } = await supabase
@@ -251,6 +272,7 @@ const Discover = () => {
 
       setProfiles(filteredData);
       setCurrentIndex(0);
+      setDeckHasMore(filteredData.length > 0);
       setLoading(false);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
