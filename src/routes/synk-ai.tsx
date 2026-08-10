@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import SynkAI from "@/pages/SynkAI";
 
 export const Route = createFileRoute("/synk-ai")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Synk AI Creative Assistant | ArtistrySynk" },
@@ -20,5 +22,9 @@ export const Route = createFileRoute("/synk-ai")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: SynkAI,
+  component: () => (
+    <ProtectedRoute>
+      <SynkAI />
+    </ProtectedRoute>
+  ),
 });
