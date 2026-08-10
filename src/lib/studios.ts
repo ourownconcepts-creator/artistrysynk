@@ -27,6 +27,8 @@ export type StudioCapability =
   | "delete_equipment"
   | "manage_portfolio"
   | "delete_portfolio"
+  | "manage_services"
+  | "delete_services"
   | "request_verification"
   | "view_analytics"
   | "delete_studio";
@@ -66,6 +68,8 @@ const CAPABILITY_ROLES: Record<StudioCapability, StudioRole[]> = {
   delete_equipment: ["owner", "admin", "manager"],
   manage_portfolio: ["owner", "admin", "manager", "staff", "contributor"],
   delete_portfolio: ["owner", "admin", "manager"],
+  manage_services: ["owner", "admin", "manager"],
+  delete_services: ["owner", "admin"],
   request_verification: ["owner", "admin"],
   view_analytics: ["owner", "admin", "manager"],
   delete_studio: ["owner"],
@@ -556,3 +560,88 @@ export function studioMediaPath(studioId: string, kind: "logo" | "cover" | "equi
 
 /** Bucket that holds studio brand + work media. */
 export const STUDIO_MEDIA_BUCKET = UPLOAD_BUCKETS.portfolios;
+
+/* -------------------------- studio services (V1.5-A) -------------------------- */
+
+/**
+ * Studio services are ordinary `services` rows with an optional `studio_id`.
+ * There is no second marketplace, order or review system: authorization is the
+ * studio capability matrix enforced by RLS, so the studio id sent from the
+ * client is data only — `auth.uid()` decides what is permitted.
+ */
+export type StudioService = {
+  id: string;
+  studio_id: string | null;
+  seller_id: string;
+  title: string;
+  description: string | null;
+  category: string;
+  subcategory: string | null;
+  price: number;
+  currency: string | null;
+  delivery_days: number | null;
+  is_active: boolean | null;
+  average_rating: number | null;
+  total_reviews: number | null;
+  created_at: string;
+};
+
+const SERVICE_COLUMNS =
+  "id, studio_id, seller_id, title, description, category, subcategory, price, currency, delivery_days, is_active, average_rating, total_reviews, created_at";
+
+/** Published services of a studio — used by the public studio page. */
+export async function fetchStudioServices(studioId: string, limit = 24): Promise<StudioService[]> {
+  const { data } = await supabase
+    .from("services")
+    .select(SERVICE_COLUMNS)
+    .eq("studio_id", studioId)
+    .eq("is_active", true)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  return (data ?? []) as unknown as StudioService[];
+}
+
+/** Every service of a studio, published or not — members only, via RLS. */
+export async function fetchStudioServicesForMember(studioId: string): Promise<StudioService[]> {
+  const { data, error } = await supabase
+    .from("services")
+    .select(SERVICE_COLUMNS)
+    .eq("studio_id", studioId)
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) throw error;
+  return (data ?? []) as unknown as StudioService[];
+}
+
+export async function createStudioService(input: {
+  studioId: string;
+  sellerId: string;
+  title: string;
+  description?: string;
+  category: string;
+  subcategory?: string;
+  price: number;
+  deliveryDays?: number;
+}) {
+  const { error } = await supabase.from("services").insert({
+    studio_id: input.studioId,
+    seller_id: input.sellerId,
+    title: input.title,
+    description: input.description || null,
+    category: input.category,
+    subcategory: input.subcategory || null,
+    price: input.price,
+    delivery_days: input.deliveryDays ?? 7,
+  });
+  if (error) throw error;
+}
+
+export async function updateStudioService(serviceId: string, patch: Record<string, unknown>) {
+  const { error } = await supabase.from("services").update(patch).eq("id", serviceId);
+  if (error) throw error;
+}
+
+export async function deleteStudioService(serviceId: string) {
+  const { error } = await supabase.from("services").delete().eq("id", serviceId);
+  if (error) throw error;
+}
