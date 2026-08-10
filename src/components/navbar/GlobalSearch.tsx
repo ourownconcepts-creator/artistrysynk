@@ -34,6 +34,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { TrustSignals, VerifiedBadge } from "@/components/trust/TrustSignals";
 
 interface SearchResult {
   id: string;
@@ -41,6 +42,8 @@ interface SearchResult {
   title: string;
   subtitle?: string;
   avatar?: string;
+  isVerified?: boolean | null;
+  isFeatured?: boolean | null;
 }
 
 type Availability = "all" | "open" | "closed";
@@ -158,6 +161,8 @@ export const GlobalSearch = () => {
               ? `@${user.username} · ${user.location}`
               : `@${user.username}`,
             avatar: user.avatar_url || undefined,
+            isVerified: user.is_verified,
+            isFeatured: user.is_featured,
           });
         });
       }
