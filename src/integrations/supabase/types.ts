@@ -2609,6 +2609,7 @@ export type Database = {
           id: string
           metadata: Json | null
           status: string | null
+          studio_id: string | null
           type: string
           user_id: string | null
         }
@@ -2620,6 +2621,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           status?: string | null
+          studio_id?: string | null
           type: string
           user_id?: string | null
         }
@@ -2631,10 +2633,19 @@ export type Database = {
           id?: string
           metadata?: Json | null
           status?: string | null
+          studio_id?: string | null
           type?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "revenue_transactions_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       saved_filter_presets: {
         Row: {
@@ -2928,6 +2939,7 @@ export type Database = {
           seller_id: string
           service_id: string
           status: string
+          studio_id: string | null
           updated_at: string
         }
         Insert: {
@@ -2940,6 +2952,7 @@ export type Database = {
           seller_id: string
           service_id: string
           status?: string
+          studio_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -2952,6 +2965,7 @@ export type Database = {
           seller_id?: string
           service_id?: string
           status?: string
+          studio_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -2960,6 +2974,13 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_orders_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
             referencedColumns: ["id"]
           },
         ]
@@ -2974,6 +2995,7 @@ export type Database = {
           reviewer_id: string
           seller_id: string
           service_id: string
+          studio_id: string | null
           updated_at: string
         }
         Insert: {
@@ -2985,6 +3007,7 @@ export type Database = {
           reviewer_id: string
           seller_id: string
           service_id: string
+          studio_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -2996,6 +3019,7 @@ export type Database = {
           reviewer_id?: string
           seller_id?: string
           service_id?: string
+          studio_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -3011,6 +3035,13 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_reviews_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
             referencedColumns: ["id"]
           },
         ]
