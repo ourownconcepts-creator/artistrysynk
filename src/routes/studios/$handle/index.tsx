@@ -41,6 +41,33 @@ export const Route = createFileRoute("/studios/$handle/")({
           : []),
       ],
       links: [{ rel: "canonical", href: `${BASE}/studios/${handle}` }],
+      ...(studio
+        ? {
+            scripts: [
+              {
+                type: "application/ld+json",
+                children: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "LocalBusiness",
+                  name: studio.name,
+                  description: description,
+                  url: `${BASE}/studios/${handle}`,
+                  ...(studio.logo_url ? { logo: studio.logo_url } : {}),
+                  ...(image ? { image } : {}),
+                  ...(studio.primary_city || studio.primary_country
+                    ? {
+                        address: {
+                          "@type": "PostalAddress",
+                          ...(studio.primary_city ? { addressLocality: studio.primary_city } : {}),
+                          ...(studio.primary_country ? { addressCountry: studio.primary_country } : {}),
+                        },
+                      }
+                    : {}),
+                }),
+              },
+            ],
+          }
+        : {}),
     };
   },
   component: () => (
