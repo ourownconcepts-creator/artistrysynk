@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { UPLOAD_BUCKETS, UPLOAD_LIMITS, safeFileName, validateUpload } from "@/config/uploads";
 import { submitCopyrightClaim, lookupCopyrightClaim } from "@/lib/copyright.functions";
 import { Footer } from "@/components/Footer";
 import { PageSEO } from "@/components/seo";
