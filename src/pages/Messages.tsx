@@ -57,6 +57,8 @@ const Messages = () => {
   const [showProjectDialog, setShowProjectDialog] = useState(false);
   const [creatingProject, setCreatingProject] = useState(false);
   const [showPeek, setShowPeek] = useState(false);
+  const [otherLastSeen, setOtherLastSeen] = useState<string | null>(null);
+  const [otherUnreadElsewhere, setOtherUnreadElsewhere] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [loadingOlder, setLoadingOlder] = useState(false);
@@ -144,6 +146,51 @@ const Messages = () => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  /** Live last-seen for the person you're chatting with (polled while tab is visible). */
+  useEffect(() => {
+    if (!otherUser?.id) return;
+    let active = true;
+    const fetchSeen = async () => {
+      if (document.visibilityState !== "visible") return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("last_seen_at")
+        .eq("id", otherUser.id)
+        .maybeSingle();
+      if (active) setOtherLastSeen((data?.last_seen_at as string | null) ?? null);
+    };
+    void fetchSeen();
+    const interval = setInterval(fetchSeen, 30_000);
+    document.addEventListener("visibilitychange", fetchSeen);
+    return () => {
+      active = false;
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", fetchSeen);
+    };
+  }, [otherUser?.id]);
+
+  /** Unread messages waiting in your other conversations, shown on the back button. */
+  useEffect(() => {
+    if (!currentUser) return;
+    let active = true;
+    const fetchUnread = async () => {
+      const { data } = await supabase
+        .from("messages")
+        .select("conversation_id")
+        .eq("read", false)
+        .neq("sender_id", currentUser);
+      if (!active) return;
+      const count = (data ?? []).filter((m) => m.conversation_id !== conversationId).length;
+      setOtherUnreadElsewhere(count);
+    };
+    void fetchUnread();
+    const interval = setInterval(fetchUnread, 30_000);
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [currentUser, conversationId, messages.length]);
 
   const loadCurrentUserProfile = async (userId: string) => {
     const { data: profile } = await supabase
