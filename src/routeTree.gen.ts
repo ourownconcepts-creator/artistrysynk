@@ -87,6 +87,7 @@ import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
 import { Route as StudioItemIdRouteImport } from './routes/studio/$itemId'
 import { Route as StudiosIndexRouteImport } from './routes/studios/index'
+import { Route as StudiosNewRouteImport } from './routes/studios/new'
 import { Route as StudiosHandleIndexRouteImport } from './routes/studios/$handle/index'
 import { Route as StudiosHandleManageRouteImport } from './routes/studios/$handle/manage'
 import { Route as ApiPublicHooksRetentionSweepRouteImport } from './routes/api/public/hooks/retention-sweep'
@@ -482,6 +483,11 @@ const StudiosIndexRoute = StudiosIndexRouteImport.update({
   path: '/studios/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudiosNewRoute = StudiosNewRouteImport.update({
+  id: '/studios/new',
+  path: '/studios/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudiosHandleIndexRoute = StudiosHandleIndexRouteImport.update({
   id: '/studios/$handle/',
   path: '/studios/$handle/',
@@ -568,6 +574,7 @@ export interface FileRoutesByFullPath {
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/studio/$itemId': typeof StudioItemIdRoute
+  '/studios/new': typeof StudiosNewRoute
   '/auth/': typeof AuthIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/explore/': typeof ExploreIndexRoute
@@ -651,6 +658,7 @@ export interface FileRoutesByTo {
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/studio/$itemId': typeof StudioItemIdRoute
+  '/studios/new': typeof StudiosNewRoute
   '/auth': typeof AuthIndexRoute
   '/blog': typeof BlogIndexRoute
   '/explore': typeof ExploreIndexRoute
@@ -735,6 +743,7 @@ export interface FileRoutesById {
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/studio/$itemId': typeof StudioItemIdRoute
+  '/studios/new': typeof StudiosNewRoute
   '/auth/': typeof AuthIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/explore/': typeof ExploreIndexRoute
@@ -820,6 +829,7 @@ export interface FileRouteTypes {
     | '/projects/$projectId'
     | '/settings/notifications'
     | '/studio/$itemId'
+    | '/studios/new'
     | '/auth/'
     | '/blog/'
     | '/explore/'
@@ -903,6 +913,7 @@ export interface FileRouteTypes {
     | '/projects/$projectId'
     | '/settings/notifications'
     | '/studio/$itemId'
+    | '/studios/new'
     | '/auth'
     | '/blog'
     | '/explore'
@@ -986,6 +997,7 @@ export interface FileRouteTypes {
     | '/projects/$projectId'
     | '/settings/notifications'
     | '/studio/$itemId'
+    | '/studios/new'
     | '/auth/'
     | '/blog/'
     | '/explore/'
@@ -1070,6 +1082,7 @@ export interface RootRouteChildren {
   ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
   StudioItemIdRoute: typeof StudioItemIdRoute
+  StudiosNewRoute: typeof StudiosNewRoute
   AuthIndexRoute: typeof AuthIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ExploreIndexRoute: typeof ExploreIndexRoute
@@ -1633,6 +1646,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudiosIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/studios/new': {
+      id: '/studios/new'
+      path: '/studios/new'
+      fullPath: '/studios/new'
+      preLoaderRoute: typeof StudiosNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/studios/$handle/': {
       id: '/studios/$handle/'
       path: '/studios/$handle'
@@ -1726,6 +1746,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsProjectIdRoute: ProjectsProjectIdRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
   StudioItemIdRoute: StudioItemIdRoute,
+  StudiosNewRoute: StudiosNewRoute,
   AuthIndexRoute: AuthIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   ExploreIndexRoute: ExploreIndexRoute,
