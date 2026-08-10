@@ -32,6 +32,8 @@ import { VoiceNoteRecorder } from "@/components/messages/VoiceNoteRecorder";
 import { VoiceNotePlayer } from "@/components/messages/VoiceNotePlayer";
 import { AttachmentPicker } from "@/components/messages/AttachmentPicker";
 import { ImageAttachment } from "@/components/messages/ImageAttachment";
+import { ChatMediaGallery } from "@/components/messages/ChatMediaGallery";
+import { uploadWithProgress } from "@/lib/uploadWithProgress";
 
 interface Message {
   id: string;
@@ -70,6 +72,7 @@ const Messages = () => {
   const [otherUnreadElsewhere, setOtherUnreadElsewhere] = useState(0);
   const [reactions, setReactions] = useState<Reaction[]>([]);
   const [otherTyping, setOtherTyping] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const typingSentAt = useRef(0);
   const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -262,10 +265,10 @@ const Messages = () => {
     if (!currentUser || !conversationId) return;
     const ext = file.name.includes(".") ? file.name.split(".").pop() : kind === "image" ? "jpg" : "webm";
     const path = `${conversationId}/${crypto.randomUUID()}.${ext}`;
-    const { error: uploadError } = await supabase.storage
-      .from("voice-notes")
-      .upload(path, file, { contentType: file.type || undefined });
+    setUploadProgress(0);
+    const { error: uploadError } = await uploadWithProgress("voice-notes", path, file, setUploadProgress);
     if (uploadError) {
+      setUploadProgress(null);
       toast.error("Couldn't upload attachment");
       return;
     }
@@ -281,9 +284,11 @@ const Messages = () => {
       .select("*")
       .single();
     if (error || !inserted) {
+      setUploadProgress(null);
       toast.error("Couldn't send attachment");
       return;
     }
+    setUploadProgress(null);
     setMessages((prev) =>
       prev.some((m) => m.id === inserted.id) ? prev : [...prev, { ...(inserted as Message), status: "sent" }],
     );
@@ -649,6 +654,8 @@ const Messages = () => {
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </Button>
+
+                  <ChatMediaGallery messages={messages} name={otherUser.full_name} />
                   
                   <Dialog open={showProjectDialog} onOpenChange={setShowProjectDialog}>
                     <DialogTrigger asChild>
@@ -842,7 +849,7 @@ const Messages = () => {
           </CardContent>
 
           <div className="app-blur border-t border-border/40 p-3 pb-[max(0.75rem,var(--safe-area-bottom))]">
-            <form onSubmit={sendMessage} className="flex gap-2">
+            <form onSubmit={sendMessage} className="relative flex gap-2">
               <Input
                 value={newMessage}
                 onChange={(e) => {
@@ -852,7 +859,7 @@ const Messages = () => {
                 placeholder="Message..."
                 className="flex-1 rounded-full bg-surface-2 border-0"
               />
-              <AttachmentPicker onPick={sendAttachment} disabled={!currentUser} />
+              <AttachmentPicker onPick={sendAttachment} disabled={!currentUser} progress={uploadProgress} />
               <VoiceNoteRecorder onRecorded={sendVoiceNote} disabled={!currentUser} />
               <Button type="submit" variant="hero" disabled={!newMessage.trim()} aria-label="Send message">
                 <Send className="w-4 h-4" />
