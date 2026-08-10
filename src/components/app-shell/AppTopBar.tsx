@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
-import { ChevronLeft, Sparkles, User, Settings, LogOut } from "lucide-react";
+import { ChevronLeft, Sparkles, User, Settings, LogOut, Building2 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { cn } from "@/lib/utils";
 import { Pressable } from "@/components/native-ui";
@@ -8,6 +8,7 @@ import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { ThemeToggle } from "@/components/navbar/ThemeToggle";
 import { GlobalSearch } from "@/components/navbar/GlobalSearch";
 import { useAppUser } from "@/hooks/useAppUser";
+import { useMyStudios } from "@/hooks/useMyStudios";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -34,6 +35,7 @@ export function AppTopBar({
   const router = useRouter();
   const { user, profile } = useAppUser();
   const queryClient = useQueryClient();
+  const { primary, canManagePrimary } = useMyStudios();
 
   const handleSignOut = async () => {
     await queryClient.cancelQueries();
@@ -103,6 +105,20 @@ export function AppTopBar({
                 <DropdownMenuItem onClick={() => router.navigate({ to: "/profile" })}>
                   <User className="mr-2 h-4 w-4" />
                   Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    router.navigate({
+                      to: primary
+                        ? canManagePrimary
+                          ? `/studios/${primary.studio.handle}/manage`
+                          : `/studios/${primary.studio.handle}`
+                        : "/studios",
+                    })
+                  }
+                >
+                  <Building2 className="mr-2 h-4 w-4" />
+                  {primary ? (canManagePrimary ? "My Studio" : primary.studio.name) : "Studios"}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => router.navigate({ to: "/settings" })}>
                   <Settings className="mr-2 h-4 w-4" />

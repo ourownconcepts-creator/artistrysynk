@@ -9,9 +9,11 @@ import {
   Radio,
   UsersRound,
   Sparkles,
+  Building2,
 } from "lucide-react";
 import { BottomSheet, Pressable } from "@/components/native-ui";
 import { toast } from "sonner";
+import { useMyStudios } from "@/hooks/useMyStudios";
 
 type Action = {
   label: string;
@@ -35,6 +37,14 @@ const ACTIONS: Action[] = [
   { label: "Ask Synk AI", hint: "Ideas, captions, gigs", icon: Sparkles, to: "/synk-ai" },
 ];
 
+// Entitlement is enforced server-side by create_studio; this entry only routes.
+const CREATE_STUDIO: Action = {
+  label: "Create Studio",
+  hint: "Studio, agency or label",
+  icon: Building2,
+  to: "/studios/new",
+};
+
 export function CreateSheet({
   open,
   onOpenChange,
@@ -43,6 +53,8 @@ export function CreateSheet({
   onOpenChange: (open: boolean) => void;
 }) {
   const navigate = useNavigate();
+  const { hasStudio } = useMyStudios();
+  const actions = hasStudio ? ACTIONS : [...ACTIONS, CREATE_STUDIO];
 
   return (
     <BottomSheet
@@ -52,7 +64,7 @@ export function CreateSheet({
       description="What are you making today?"
     >
       <div className="grid grid-cols-2 gap-3 pb-4 sm:grid-cols-3">
-        {ACTIONS.map(({ label, hint, icon: Icon, to, search, soon }) => (
+        {actions.map(({ label, hint, icon: Icon, to, search, soon }) => (
           <Pressable
             key={label}
             lift
