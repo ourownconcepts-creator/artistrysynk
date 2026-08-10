@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAppUser } from "@/hooks/useAppUser";
+import { StudioServicesManager } from "@/components/studio/StudioServicesManager";
 import { UPLOAD_BUCKETS, UPLOAD_LIMITS, UPLOAD_RULES, validateUpload, extensionFor } from "@/config/uploads";
 import {
   can,
@@ -270,8 +271,19 @@ const StudioManage = () => {
         <TabsList>
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="team">Team</TabsTrigger>
+          <TabsTrigger value="services">Services</TabsTrigger>
           <TabsTrigger value="gear">Gear</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="services" className="mt-6">
+          <StudioServicesManager
+            studioId={studio.id}
+            studioHandle={studio.handle}
+            role={role}
+            studioActive={studio.is_active !== false}
+            userId={user?.id}
+          />
+        </TabsContent>
 
         <TabsContent value="profile" className="mt-6 space-y-6">
           <Card>
