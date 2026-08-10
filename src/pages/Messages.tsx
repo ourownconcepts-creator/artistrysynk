@@ -849,8 +849,7 @@ const Messages = () => {
           </CardContent>
 
           <div className="app-blur border-t border-border/40 p-3 pb-[max(0.75rem,var(--safe-area-bottom))]">
-            <form onSubmit={sendMessage} className="flex gap-2">
-              <div className="pointer-events-none absolute" />
+            <form onSubmit={sendMessage} className="relative flex gap-2">
               <Input
                 value={newMessage}
                 onChange={(e) => {
