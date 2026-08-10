@@ -3069,6 +3069,7 @@ export type Database = {
           is_hidden: boolean | null
           price: number
           seller_id: string
+          studio_id: string | null
           subcategory: string | null
           title: string
           total_reviews: number | null
@@ -3086,6 +3087,7 @@ export type Database = {
           is_hidden?: boolean | null
           price: number
           seller_id: string
+          studio_id?: string | null
           subcategory?: string | null
           title: string
           total_reviews?: number | null
@@ -3103,12 +3105,21 @@ export type Database = {
           is_hidden?: boolean | null
           price?: number
           seller_id?: string
+          studio_id?: string | null
           subcategory?: string | null
           title?: string
           total_reviews?: number | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "services_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       studio_equipment: {
         Row: {

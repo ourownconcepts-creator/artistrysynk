@@ -15,12 +15,14 @@ import {
   fetchStudioEquipment,
   EQUIPMENT_PAGE_SIZE,
   fetchStudioPortfolio,
+  fetchStudioServices,
   fetchStudioTeam,
   isFollowingStudio,
   toggleStudioFollow,
   type PublicStudio,
   type StudioEquipment,
   type StudioPortfolioItem,
+  type StudioService,
   type StudioTeamMember,
 } from "@/lib/studios";
 
@@ -34,6 +36,7 @@ const StudioPublic = () => {
   const [gearDone, setGearDone] = useState(false);
   const [gearLoadingMore, setGearLoadingMore] = useState(false);
   const [work, setWork] = useState<StudioPortfolioItem[]>([]);
+  const [services, setServices] = useState<StudioService[]>([]);
   const [following, setFollowing] = useState(false);
 
   useEffect(() => {
@@ -44,16 +47,18 @@ const StudioPublic = () => {
       setStudio(row);
       setLoading(false);
       if (!row) return;
-      const [t, e, w] = await Promise.all([
+      const [t, e, w, s] = await Promise.all([
         fetchStudioTeam(row.id),
         fetchStudioEquipment(row.id),
         fetchStudioPortfolio(row.id),
+        fetchStudioServices(row.id),
       ]);
       if (!active) return;
       setTeam(t);
       setEquipment(e);
       setGearDone(e.length < EQUIPMENT_PAGE_SIZE);
       setWork(w);
+      setServices(s);
     });
     return () => {
       active = false;
@@ -175,9 +180,40 @@ const StudioPublic = () => {
           <TabsList>
             <TabsTrigger value="about">About</TabsTrigger>
             <TabsTrigger value="team">Team</TabsTrigger>
+            {services.length > 0 && <TabsTrigger value="services">Services</TabsTrigger>}
             <TabsTrigger value="gear">Gear</TabsTrigger>
             <TabsTrigger value="work">Work</TabsTrigger>
           </TabsList>
+
+          {services.length > 0 && (
+            <TabsContent value="services" className="mt-6">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {services.map((service) => (
+                  <Card key={service.id}>
+                    <CardContent className="py-4">
+                      <p className="font-medium">{service.title}</p>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        <Badge variant="outline">{service.category}</Badge>
+                        {service.subcategory && <Badge variant="secondary">{service.subcategory}</Badge>}
+                      </div>
+                      {service.description && (
+                        <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{service.description}</p>
+                      )}
+                      <div className="mt-3 flex items-center justify-between text-sm">
+                        <span className="font-semibold text-primary">₦{Number(service.price).toLocaleString()}</span>
+                        {service.delivery_days && (
+                          <span className="text-muted-foreground">{service.delivery_days} days</span>
+                        )}
+                      </div>
+                      <Button variant="outline" size="sm" className="mt-4 w-full" asChild>
+                        <Link to={`/marketplace?service=${service.id}`}>View in marketplace</Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+          )}
 
           <TabsContent value="about" className="mt-6 space-y-6">
             <p className="whitespace-pre-line leading-relaxed text-muted-foreground">

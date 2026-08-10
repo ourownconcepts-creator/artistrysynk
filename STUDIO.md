@@ -55,3 +55,31 @@ nullable `studio_id` rather than duplicating them.
   avoids parallel tables for near-identical entities.
 - **Deferred to V1.5+**: studio bookings, paid session flows, multi-studio
   ownership, studio-level billing, follower feeds, trigram search.
+## V1.5-A — Services integration
+
+One marketplace, one service entity. Studio listings are ordinary `public.services`
+rows with a nullable `studio_id`; there is no parallel studio service table, order
+table or review table.
+
+- `services.studio_id` → `studios(id) ON DELETE SET NULL`, partial index on non-null values.
+  Deleting a studio therefore never deletes trading history — the listing simply
+  reverts to a personal service owned by `seller_id`.
+- `seller_id` remains the responsible human and is validated by
+  `validate_studio_service()`: a studio service's seller must be an *active*
+  member of that studio.
+- New capabilities in `studio_role_capability`:
+  - `manage_services` — owner, admin, manager
+  - `delete_services` — owner, admin
+  Both flow through `has_studio_capability`, so the lifecycle/entitlement gate
+  (`studio_management_allowed`) soft-locks service management when a studio is
+  deactivated or the owner's Studio plan lapses. Existing listings stay live-owned
+  by the studio but become unmanageable until resolved; nothing is deleted.
+- RLS: the personal policy is scoped to `studio_id IS NULL`, so studio rows are
+  governed exclusively by capability policies. Public SELECT additionally requires
+  the studio to be `is_active`, `visibility = 'public'` and not hidden; studio
+  members can always read their own studio's listings, including unpublished ones.
+- Surfaces: Services tab in `/studios/:handle/manage`, a Services tab on the
+  public studio page, and studio attribution (linking to `/studios/:handle`) on
+  Marketplace cards. Ordering, reviews, payouts and moderation are untouched.
+- Out of scope for this slice: studio-level order dashboards, payouts splitting,
+  bookings/availability and studio analytics.
