@@ -25,6 +25,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { ProfilePeekSheet } from "@/components/messages/ProfilePeekSheet";
 
 interface Message {
   id: string;
@@ -55,23 +56,33 @@ const Messages = () => {
   const [projectDescription, setProjectDescription] = useState("");
   const [showProjectDialog, setShowProjectDialog] = useState(false);
   const [creatingProject, setCreatingProject] = useState(false);
+  const [showPeek, setShowPeek] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const PAGE_SIZE = 30;
 
+  // `navigate` from the router shim is not referentially stable, so it must stay
+  // out of the dep array — including it re-ran this effect on every render, which
+  // flipped `loading` back to true and left the page stuck on "Loading conversation".
   useEffect(() => {
+    let active = true;
     supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!active) return;
       if (!user) {
         navigate("/auth");
       } else {
         setCurrentUser(user.id);
-        loadCurrentUserProfile(user.id);
-        loadConversation(user.id);
+        void loadCurrentUserProfile(user.id);
+        void loadConversation(user.id);
       }
     });
-  }, [navigate, conversationId]);
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId]);
 
   // Mark messages as read when viewing conversation
   useEffect(() => {
@@ -383,14 +394,20 @@ const Messages = () => {
               
               {otherUser && (
                 <div className="flex items-center gap-3 flex-1">
-                  <Avatar>
-                    <AvatarImage src={otherUser.avatar_url ?? undefined} />
-                    <AvatarFallback>
-                      {otherUser.full_name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <CardTitle className="text-lg">{otherUser.full_name}</CardTitle>
+                  <button
+                    type="button"
+                    onClick={() => setShowPeek(true)}
+                    aria-label={`View ${otherUser.full_name}'s profile and portfolio`}
+                    className="flex min-w-0 flex-1 items-center gap-3 rounded-xl px-1 py-1 text-left transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <Avatar>
+                      <AvatarImage src={otherUser.avatar_url ?? undefined} />
+                      <AvatarFallback>
+                        {otherUser.full_name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                    <CardTitle className="truncate text-lg">{otherUser.full_name}</CardTitle>
                     <p className="text-sm text-muted-foreground">
                       @{otherUser.username}
                       {realtimeStatus !== "connected" && (
@@ -402,7 +419,18 @@ const Messages = () => {
                         </span>
                       )}
                     </p>
-                  </div>
+                    </div>
+                  </button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowPeek(true)}
+                    className="hidden sm:inline-flex"
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    Profile
+                  </Button>
                   
                   <Dialog open={showProjectDialog} onOpenChange={setShowProjectDialog}>
                     <DialogTrigger asChild>
@@ -455,6 +483,8 @@ const Messages = () => {
               )}
             </div>
           </CardHeader>
+
+          <ProfilePeekSheet userId={otherUser?.id ?? null} open={showPeek} onOpenChange={setShowPeek} />
 
           <CardContent
             ref={scrollContainerRef}
