@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "@/lib/router-compat";
+import { Link, useNavigate, useSearchParams } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyOrderStatus } from "@/lib/notify-order-status.functions";
 import { Button } from "@/components/ui/button";
