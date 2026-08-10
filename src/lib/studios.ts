@@ -503,5 +503,8 @@ export async function toggleStudioFollow(studioId: string, userId: string, follo
 
 /** Shared studio media path enforced by storage RLS: studios/{studioId}/... */
 export function studioMediaPath(studioId: string, kind: "logo" | "cover" | "equipment" | "work", ext: string) {
-  return `${UPLOAD_BUCKETS.portfolios}|studios/${studioId}/${kind}/${crypto.randomUUID()}.${ext}`.split("|")[1];
+  return `studios/${studioId}/${kind}/${crypto.randomUUID()}.${ext}`;
 }
+
+/** Bucket that holds studio brand + work media. */
+export const STUDIO_MEDIA_BUCKET = UPLOAD_BUCKETS.portfolios;
