@@ -88,6 +88,7 @@ import { Route as SettingsNotificationsRouteImport } from './routes/settings/not
 import { Route as StudioItemIdRouteImport } from './routes/studio/$itemId'
 import { Route as StudiosIndexRouteImport } from './routes/studios/index'
 import { Route as StudiosHandleIndexRouteImport } from './routes/studios/$handle/index'
+import { Route as StudiosHandleManageRouteImport } from './routes/studios/$handle/manage'
 import { Route as ApiPublicHooksRetentionSweepRouteImport } from './routes/api/public/hooks/retention-sweep'
 
 const IndexRoute = IndexRouteImport.update({
@@ -486,6 +487,11 @@ const StudiosHandleIndexRoute = StudiosHandleIndexRouteImport.update({
   path: '/studios/$handle/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudiosHandleManageRoute = StudiosHandleManageRouteImport.update({
+  id: '/studios/$handle/manage',
+  path: '/studios/$handle/manage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksRetentionSweepRoute =
   ApiPublicHooksRetentionSweepRouteImport.update({
     id: '/api/public/hooks/retention-sweep',
@@ -572,6 +578,7 @@ export interface FileRoutesByFullPath {
   '/projects/': typeof ProjectsIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/studios/': typeof StudiosIndexRoute
+  '/studios/$handle/manage': typeof StudiosHandleManageRoute
   '/studios/$handle/': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
 }
@@ -654,6 +661,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/studios': typeof StudiosIndexRoute
+  '/studios/$handle/manage': typeof StudiosHandleManageRoute
   '/studios/$handle': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
 }
@@ -737,6 +745,7 @@ export interface FileRoutesById {
   '/projects/': typeof ProjectsIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/studios/': typeof StudiosIndexRoute
+  '/studios/$handle/manage': typeof StudiosHandleManageRoute
   '/studios/$handle/': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
 }
@@ -821,6 +830,7 @@ export interface FileRouteTypes {
     | '/projects/'
     | '/settings/'
     | '/studios/'
+    | '/studios/$handle/manage'
     | '/studios/$handle/'
     | '/api/public/hooks/retention-sweep'
   fileRoutesByTo: FileRoutesByTo
@@ -903,6 +913,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/settings'
     | '/studios'
+    | '/studios/$handle/manage'
     | '/studios/$handle'
     | '/api/public/hooks/retention-sweep'
   id:
@@ -985,6 +996,7 @@ export interface FileRouteTypes {
     | '/projects/'
     | '/settings/'
     | '/studios/'
+    | '/studios/$handle/manage'
     | '/studios/$handle/'
     | '/api/public/hooks/retention-sweep'
   fileRoutesById: FileRoutesById
@@ -1068,6 +1080,7 @@ export interface RootRouteChildren {
   ProjectsIndexRoute: typeof ProjectsIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   StudiosIndexRoute: typeof StudiosIndexRoute
+  StudiosHandleManageRoute: typeof StudiosHandleManageRoute
   StudiosHandleIndexRoute: typeof StudiosHandleIndexRoute
   ApiPublicHooksRetentionSweepRoute: typeof ApiPublicHooksRetentionSweepRoute
 }
@@ -1627,6 +1640,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudiosHandleIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/studios/$handle/manage': {
+      id: '/studios/$handle/manage'
+      path: '/studios/$handle/manage'
+      fullPath: '/studios/$handle/manage'
+      preLoaderRoute: typeof StudiosHandleManageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/retention-sweep': {
       id: '/api/public/hooks/retention-sweep'
       path: '/api/public/hooks/retention-sweep'
@@ -1716,6 +1736,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsIndexRoute: ProjectsIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   StudiosIndexRoute: StudiosIndexRoute,
+  StudiosHandleManageRoute: StudiosHandleManageRoute,
   StudiosHandleIndexRoute: StudiosHandleIndexRoute,
   ApiPublicHooksRetentionSweepRoute: ApiPublicHooksRetentionSweepRoute,
 }
