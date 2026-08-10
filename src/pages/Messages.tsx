@@ -653,8 +653,16 @@ const Messages = () => {
                 <div className="flex items-center gap-3 flex-1">
                   <button
                     type="button"
-                    onClick={() => setShowPeek(true)}
-                    aria-label={`View ${otherUser.full_name}'s profile and portfolio`}
+                    onClick={() =>
+                      studioSide === "customer"
+                        ? navigate(`/studios/${studioHandle ?? ""}`)
+                        : setShowPeek(true)
+                    }
+                    aria-label={
+                      studioSide === "customer"
+                        ? `View the ${otherUser.full_name} studio page`
+                        : `View ${otherUser.full_name}'s profile and portfolio`
+                    }
                     className="flex min-w-0 flex-1 items-center gap-3 rounded-xl px-1 py-1 text-left transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <Avatar>
@@ -666,7 +674,9 @@ const Messages = () => {
                     <div className="min-w-0 flex-1">
                     <CardTitle className="truncate text-lg">{otherUser.full_name}</CardTitle>
                     <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                      {otherOnline ? (
+                      {studioSide === "customer" ? (
+                        <span>Studio</span>
+                      ) : otherOnline ? (
                         <span className="flex items-center gap-1 text-emerald-500">
                           <span className="h-2 w-2 rounded-full bg-emerald-500" />
                           Online
@@ -690,15 +700,20 @@ const Messages = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setShowPeek(true)}
+                    onClick={() =>
+                      studioSide === "customer"
+                        ? navigate(`/studios/${studioHandle ?? ""}`)
+                        : setShowPeek(true)
+                    }
                     className="hidden sm:inline-flex"
                   >
                     <User className="mr-2 h-4 w-4" />
-                    Profile
+                    {studioSide === "customer" ? "Studio" : "Profile"}
                   </Button>
 
                   <ChatMediaGallery messages={messages} name={otherUser.full_name} />
-                  
+
+                  {studioSide === null && (
                   <Dialog open={showProjectDialog} onOpenChange={setShowProjectDialog}>
                     <DialogTrigger asChild>
                       <Button variant="outline" size="sm">
@@ -746,12 +761,17 @@ const Messages = () => {
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
+                  )}
                 </div>
               )}
             </div>
           </CardHeader>
 
-          <ProfilePeekSheet userId={otherUser?.id ?? null} open={showPeek} onOpenChange={setShowPeek} />
+          <ProfilePeekSheet
+            userId={studioSide === "customer" ? null : otherUser?.id ?? null}
+            open={showPeek}
+            onOpenChange={setShowPeek}
+          />
 
           <CardContent
             ref={scrollContainerRef}
