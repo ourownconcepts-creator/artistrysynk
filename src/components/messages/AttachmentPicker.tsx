@@ -3,8 +3,7 @@ import { ImagePlus, Loader2, X, Music2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-
-const MAX_BYTES = 15 * 1024 * 1024;
+import { UPLOAD_LIMITS, formatBytes, validateUpload } from "@/config/uploads";
 
 /** Lets collaborators attach an image or audio clip, preview it, and watch upload progress. */
 export function AttachmentPicker({
@@ -27,12 +26,10 @@ export function AttachmentPicker({
     if (inputRef.current) inputRef.current.value = "";
     if (!file) return;
     const kind = file.type.startsWith("image/") ? "image" : file.type.startsWith("audio/") ? "audio" : null;
-    if (!kind) {
-      toast.error("Only images and audio clips can be attached");
-      return;
-    }
-    if (file.size > MAX_BYTES) {
-      toast.error("Attachments must be 15MB or smaller");
+    const cap = kind === "audio" ? UPLOAD_LIMITS.chatAudio : UPLOAD_LIMITS.chatImage;
+    const check = validateUpload(file, ["image", "audio"], cap);
+    if (!kind || !check.ok) {
+      toast.error(check.ok ? "Only images and audio clips can be attached" : check.error);
       return;
     }
     setPending({ file, kind, url: URL.createObjectURL(file) });
@@ -89,7 +86,7 @@ export function AttachmentPicker({
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">{pending.file.name}</p>
               <p className="text-xs text-muted-foreground">
-                {(pending.file.size / 1024 / 1024).toFixed(2)} MB
+                {formatBytes(pending.file.size)}
               </p>
               {busy ? (
                 <div className="mt-2 flex items-center gap-2">
