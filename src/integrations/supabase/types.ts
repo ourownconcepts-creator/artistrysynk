@@ -4093,6 +4093,23 @@ export type Database = {
         Returns: boolean
       }
       claim_referral: { Args: { _code: string }; Returns: string }
+      create_studio: {
+        Args: {
+          _bio?: string
+          _contact_email?: string
+          _facilities?: string[]
+          _handle: string
+          _name: string
+          _org_type?: Database["public"]["Enums"]["studio_org_type"]
+          _primary_city?: string
+          _primary_country?: string
+          _tagline?: string
+        }
+        Returns: {
+          handle: string
+          id: string
+        }[]
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -4234,6 +4251,7 @@ export type Database = {
         Args: { _capability: string; _studio_id: string; _user_id: string }
         Returns: boolean
       }
+      has_studio_entitlement: { Args: { _user_id: string }; Returns: boolean }
       is_conversation_participant: {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
@@ -4402,9 +4420,17 @@ export type Database = {
           target: string
         }[]
       }
+      set_studio_active: {
+        Args: { _active: boolean; _studio_id: string }
+        Returns: undefined
+      }
       studio_role_of: {
         Args: { _studio_id: string; _user_id: string }
         Returns: Database["public"]["Enums"]["studio_role"]
+      }
+      transfer_studio_ownership: {
+        Args: { _new_owner_id: string; _studio_id: string }
+        Returns: undefined
       }
     }
     Enums: {
