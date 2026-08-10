@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "@/lib/router-compat";
-import { BadgeCheck, Building2, Heart, Mail, MapPin, Music2, Users } from "lucide-react";
+import { Link, useNavigate, useParams } from "@/lib/router-compat";
+import { BadgeCheck, Building2, Heart, Loader2, Mail, MapPin, MessageSquare, Music2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
