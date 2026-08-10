@@ -55,8 +55,11 @@ export function ProjectStudioCredits({ projectId, currentUserId, canManage }: Pr
     void load();
   }, [load]);
 
+  // Only roles that can represent the studio may be credited by this user.
   const attachable = studios.filter(
-    (s) => !credits.some((c) => c.studio_id === s.studio_id),
+    (s) =>
+      ["owner", "admin", "manager"].includes(s.role) &&
+      !credits.some((c) => c.studio_id === s.studio.id),
   );
 
   const onAttach = async () => {
@@ -115,8 +118,8 @@ export function ProjectStudioCredits({ projectId, currentUserId, canManage }: Pr
             </SelectTrigger>
             <SelectContent>
               {attachable.map((s) => (
-                <SelectItem key={s.studio_id} value={s.studio_id}>
-                  {s.name}
+                <SelectItem key={s.studio.id} value={s.studio.id}>
+                  {s.studio.name}
                 </SelectItem>
               ))}
             </SelectContent>
