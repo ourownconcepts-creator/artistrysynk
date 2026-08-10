@@ -32,3 +32,35 @@ describe("studio capability model", () => {
     expect(can(null, "manage_portfolio")).toBe(false);
   });
 });
+
+describe("studio service capabilities (V1.5-A)", () => {
+  it("manage_services is limited to owner, admin and manager", () => {
+    for (const role of ["owner", "admin", "manager"] as const) {
+      expect(can(role, "manage_services")).toBe(true);
+    }
+    for (const role of ["staff", "booking_manager", "finance_manager", "contributor"] as const) {
+      expect(can(role, "manage_services")).toBe(false);
+    }
+  });
+
+  it("delete_services is limited to owner and admin", () => {
+    expect(can("owner", "delete_services")).toBe(true);
+    expect(can("admin", "delete_services")).toBe(true);
+    expect(can("manager", "delete_services")).toBe(false);
+  });
+
+  it("service capabilities cannot be widened by permissions JSONB", () => {
+    expect(can("staff", "manage_services", { permissions: { manage_services: true } })).toBe(false);
+    expect(can("manager", "delete_services", { permissions: { delete_services: true } })).toBe(false);
+  });
+
+  it("a deactivated or downgraded studio blocks service management", () => {
+    expect(can("owner", "manage_services", { studioActive: false })).toBe(false);
+    expect(can("admin", "delete_services", { studioActive: false })).toBe(false);
+  });
+
+  it("a non-member has no service capability", () => {
+    expect(can(null, "manage_services")).toBe(false);
+    expect(can(null, "delete_services")).toBe(false);
+  });
+});
