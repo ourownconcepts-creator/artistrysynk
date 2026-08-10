@@ -306,7 +306,8 @@ const Messages = () => {
 
   /** Live last-seen for the person you're chatting with (polled while tab is visible). */
   useEffect(() => {
-    if (!otherUser?.id) return;
+    // A studio has no presence row — skip the poll when the header is a studio.
+    if (!otherUser?.id || studioSide === "customer") return;
     let active = true;
     const fetchSeen = async () => {
       if (document.visibilityState !== "visible") return;
@@ -325,7 +326,7 @@ const Messages = () => {
       clearInterval(interval);
       document.removeEventListener("visibilitychange", fetchSeen);
     };
-  }, [otherUser?.id]);
+  }, [otherUser?.id, studioSide]);
 
   /** Unread messages waiting in your other conversations, shown on the back button. */
   useEffect(() => {
