@@ -32,6 +32,8 @@ import { VoiceNoteRecorder } from "@/components/messages/VoiceNoteRecorder";
 import { VoiceNotePlayer } from "@/components/messages/VoiceNotePlayer";
 import { AttachmentPicker } from "@/components/messages/AttachmentPicker";
 import { ImageAttachment } from "@/components/messages/ImageAttachment";
+import { ChatMediaGallery } from "@/components/messages/ChatMediaGallery";
+import { uploadWithProgress } from "@/lib/uploadWithProgress";
 
 interface Message {
   id: string;
