@@ -64,20 +64,32 @@ export const PortfolioUpload = ({ userId, onUploadComplete }: PortfolioUploadPro
       return;
     }
 
+    const caps: Record<string, number> = {
+      image: UPLOAD_LIMITS.portfolioImage,
+      audio: UPLOAD_LIMITS.portfolioAudio,
+      video: UPLOAD_LIMITS.portfolioVideo,
+      document: UPLOAD_RULES.document.maxBytes,
+    };
+    const cap = caps[mediaType] ?? UPLOAD_RULES.document.maxBytes;
+    if (file.size > cap) {
+      toast.error(`${file.name} is larger than ${formatBytes(cap)}`);
+      return;
+    }
+
     setUploading(true);
 
     try {
-      const fileExt = file.name.split(".").pop();
+      const fileExt = extensionFor(file, "bin");
       const fileName = `${userId}/${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
-        .from("portfolios")
+        .from(UPLOAD_BUCKETS.portfolios)
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from("portfolios")
+        .from(UPLOAD_BUCKETS.portfolios)
         .getPublicUrl(fileName);
 
       const { error: dbError } = await supabase
