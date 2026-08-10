@@ -18,6 +18,10 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { FlagContentDialog } from "@/components/FlagContentDialog";
+import { UPLOAD_BUCKETS, UPLOAD_LIMITS, formatBytes, safeFileName } from "@/config/uploads";
+
+/** Marker for files stored in the private project-files bucket. */
+const PRIVATE_PREFIX = `storage://${UPLOAD_BUCKETS.projectFiles}/`;
 
 type UploadStatus = "queued" | "uploading" | "processing" | "ready" | "failed";
 
@@ -123,7 +127,7 @@ export const ProjectFiles = ({
         const xhr = new XMLHttpRequest();
         xhr.open(
           "POST",
-          `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/portfolios/${path}`,
+          `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/${UPLOAD_BUCKETS.projectFiles}/${path}`,
         );
         xhr.setRequestHeader("Authorization", `Bearer ${token}`);
         xhr.setRequestHeader("apikey", import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string);
@@ -144,7 +148,11 @@ export const ProjectFiles = ({
     });
 
   const startUpload = async (file: File) => {
-    const path = `${projectId}/${Date.now()}-${file.name.replace(/[^\w.-]/g, "_")}`;
+    if (file.size > UPLOAD_LIMITS.projectFile) {
+      toast.error(`${file.name} is larger than ${formatBytes(UPLOAD_LIMITS.projectFile)}`);
+      return;
+    }
+    const path = `${projectId}/${Date.now()}-${safeFileName(file.name)}`;
 
     // 1. Queued row so every member sees the file immediately
     const { data: row, error } = await supabase
@@ -183,14 +191,11 @@ export const ProjectFiles = ({
         }
       });
 
-      // 3. Processing
+      // 3. Processing — private bucket, so we store a reference and sign on demand
       await setStatus(id, "processing", { upload_progress: 100 });
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("portfolios").getPublicUrl(path);
 
       // 4. Ready
-      await setStatus(id, "ready", { upload_progress: 100, file_url: publicUrl });
+      await setStatus(id, "ready", { upload_progress: 100, file_url: `${PRIVATE_PREFIX}${path}` });
       toast.success(`${file.name} is ready`);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Upload failed";
@@ -214,12 +219,33 @@ export const ProjectFiles = ({
   };
 
   const removeFile = async (file: ProjectFileRow) => {
+    if (file.file_url.startsWith(PRIVATE_PREFIX)) {
+      await supabase.storage
+        .from(UPLOAD_BUCKETS.projectFiles)
+        .remove([file.file_url.slice(PRIVATE_PREFIX.length)]);
+    }
     const { error } = await supabase.from("project_files").delete().eq("id", file.id);
     if (error) {
       toast.error("Could not remove the file");
       return;
     }
     setFiles((prev) => prev.filter((f) => f.id !== file.id));
+  };
+
+  /** Opens a file: legacy public URLs directly, private bucket objects through a signed URL. */
+  const openFile = async (file: ProjectFileRow) => {
+    if (!file.file_url.startsWith(PRIVATE_PREFIX)) {
+      window.open(file.file_url, "_blank", "noopener,noreferrer");
+      return;
+    }
+    const { data, error } = await supabase.storage
+      .from(UPLOAD_BUCKETS.projectFiles)
+      .createSignedUrl(file.file_url.slice(PRIVATE_PREFIX.length), 3600);
+    if (error || !data?.signedUrl) {
+      toast.error("Could not open that file");
+      return;
+    }
+    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
   };
 
   const activeCount = files.filter((f) =>
@@ -271,14 +297,13 @@ export const ProjectFiles = ({
                     <FileText className="h-5 w-5 shrink-0 text-muted-foreground" />
                     <div className="min-w-0 flex-1">
                       {isReady ? (
-                        <a
-                          href={file.file_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block truncate text-sm font-medium hover:text-primary"
+                        <button
+                          type="button"
+                          onClick={() => void openFile(file)}
+                          className="block max-w-full truncate text-left text-sm font-medium hover:text-primary"
                         >
                           {file.file_name}
-                        </a>
+                        </button>
                       ) : (
                         <p className="truncate text-sm font-medium">{file.file_name}</p>
                       )}

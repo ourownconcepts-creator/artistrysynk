@@ -130,13 +130,19 @@ const EditProfile = () => {
 
   const handleImageUpload = async (file: File, type: 'avatar' | 'cover') => {
     if (!userId) return;
-    
+
+    const check = validateUpload(file, ["image"], UPLOAD_LIMITS.profileImage);
+    if (!check.ok) {
+      toast.error(check.error);
+      return;
+    }
+
     setUploading(true);
-    const fileExt = file.name.split('.').pop();
+    const fileExt = extensionFor(file, 'jpg');
     const filePath = `${userId}/${type}-${Date.now()}.${fileExt}`;
 
     const { error: uploadError } = await supabase.storage
-      .from('portfolios')
+      .from(UPLOAD_BUCKETS.portfolios)
       .upload(filePath, file);
 
     if (uploadError) {
@@ -146,7 +152,7 @@ const EditProfile = () => {
     }
 
     const { data: { publicUrl } } = supabase.storage
-      .from('portfolios')
+      .from(UPLOAD_BUCKETS.portfolios)
       .getPublicUrl(filePath);
 
     if (type === 'avatar') {
