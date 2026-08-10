@@ -400,6 +400,55 @@ const Discover = () => {
   const currentProfile = profiles[currentIndex];
   const remaining = Math.max(profiles.length - currentIndex, 0);
 
+  /** Deck infinite scroll: quietly append more creatives as you swipe near the end. */
+  const loadMoreDeck = useCallback(async () => {
+    if (!currentUser || loadingDeckMore || !deckHasMore) return;
+    setLoadingDeckMore(true);
+
+    const { data: swipedIds } = await supabase
+      .from("swipes")
+      .select("swiped_id")
+      .eq("swiper_id", currentUser);
+    const { all: hiddenIds } = await fetchHiddenUserIds(currentUser);
+    const optedOutIds = await fetchOptedOutIds("discovery");
+    const excludeIds = [
+      ...new Set([
+        currentUser,
+        ...(swipedIds?.map((s) => s.swiped_id) || []),
+        ...hiddenIds,
+        ...optedOutIds,
+        ...profiles.map((p) => p.id),
+      ]),
+    ];
+
+    let request = supabase
+      .from("profiles")
+      .select(`*, user_creative_roles(role), user_genres(genre)`)
+      .not("id", "in", `(${excludeIds.join(",")})`)
+      .limit(20);
+    if (locationFilter) request = request.ilike("location", `%${locationFilter}%`);
+
+    const { data } = await request;
+    let batch: any[] = data || [];
+    if (roleFilter !== "all") {
+      batch = batch.filter((p) => (p.user_creative_roles ?? []).some((r: any) => r.role === roleFilter));
+    }
+    if (genreFilter !== "all") {
+      batch = batch.filter((p) => (p.user_genres ?? []).some((g: any) => g.genre === genreFilter));
+    }
+
+    setDeckHasMore((data || []).length === 20);
+    if (batch.length > 0) setProfiles((prev) => [...prev, ...batch]);
+    setLoadingDeckMore(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, loadingDeckMore, deckHasMore, profiles, locationFilter, roleFilter, genreFilter]);
+
+  useEffect(() => {
+    if (browsing || loading) return;
+    if (remaining <= 3) void loadMoreDeck();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [remaining, browsing, loading]);
+
   return (
     <AppShell
       title="Discover"
@@ -509,6 +558,9 @@ const Discover = () => {
             loading={searching && results.length === 0}
             query={query.trim()}
             onOpen={(id) => navigate(`/profile/${id}`)}
+            hasMore={hasMoreResults}
+            loadingMore={loadingMore}
+            onLoadMore={loadMoreResults}
           />
         </div>
       ) : loading || isTransitioning ? (
