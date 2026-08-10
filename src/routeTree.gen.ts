@@ -72,6 +72,7 @@ import { Route as BlogHowToFindAMusicProducerRouteImport } from './routes/blog/h
 import { Route as CopyrightReportRouteImport } from './routes/copyright/report'
 import { Route as ExploreIndexRouteImport } from './routes/explore/index'
 import { Route as ExploreNearbyRouteImport } from './routes/explore/nearby'
+import { Route as HubProjectIdRouteImport } from './routes/hub/$projectId'
 import { Route as LegalIndexRouteImport } from './routes/legal/index'
 import { Route as LegalSlugRouteImport } from './routes/legal/$slug'
 import { Route as LocationsIndexRouteImport } from './routes/locations/index'
@@ -403,6 +404,11 @@ const ExploreNearbyRoute = ExploreNearbyRouteImport.update({
   path: '/explore/nearby',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HubProjectIdRoute = HubProjectIdRouteImport.update({
+  id: '/hub/$projectId',
+  path: '/hub/$projectId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LegalIndexRoute = LegalIndexRouteImport.update({
   id: '/legal/',
   path: '/legal/',
@@ -536,6 +542,7 @@ export interface FileRoutesByFullPath {
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
   '/explore/nearby': typeof ExploreNearbyRoute
+  '/hub/$projectId': typeof HubProjectIdRoute
   '/legal/$slug': typeof LegalSlugRoute
   '/locations/$citySlug': typeof LocationsCitySlugRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
@@ -615,6 +622,7 @@ export interface FileRoutesByTo {
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
   '/explore/nearby': typeof ExploreNearbyRoute
+  '/hub/$projectId': typeof HubProjectIdRoute
   '/legal/$slug': typeof LegalSlugRoute
   '/locations/$citySlug': typeof LocationsCitySlugRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
@@ -695,6 +703,7 @@ export interface FileRoutesById {
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
   '/explore/nearby': typeof ExploreNearbyRoute
+  '/hub/$projectId': typeof HubProjectIdRoute
   '/legal/$slug': typeof LegalSlugRoute
   '/locations/$citySlug': typeof LocationsCitySlugRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
@@ -776,6 +785,7 @@ export interface FileRouteTypes {
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
     | '/explore/nearby'
+    | '/hub/$projectId'
     | '/legal/$slug'
     | '/locations/$citySlug'
     | '/messages/$conversationId'
@@ -855,6 +865,7 @@ export interface FileRouteTypes {
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
     | '/explore/nearby'
+    | '/hub/$projectId'
     | '/legal/$slug'
     | '/locations/$citySlug'
     | '/messages/$conversationId'
@@ -934,6 +945,7 @@ export interface FileRouteTypes {
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
     | '/explore/nearby'
+    | '/hub/$projectId'
     | '/legal/$slug'
     | '/locations/$citySlug'
     | '/messages/$conversationId'
@@ -1014,6 +1026,7 @@ export interface RootRouteChildren {
   BlogHowToFindAMusicProducerRoute: typeof BlogHowToFindAMusicProducerRoute
   CopyrightReportRoute: typeof CopyrightReportRoute
   ExploreNearbyRoute: typeof ExploreNearbyRoute
+  HubProjectIdRoute: typeof HubProjectIdRoute
   LegalSlugRoute: typeof LegalSlugRoute
   LocationsCitySlugRoute: typeof LocationsCitySlugRoute
   MessagesConversationIdRoute: typeof MessagesConversationIdRoute
@@ -1476,6 +1489,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExploreNearbyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hub/$projectId': {
+      id: '/hub/$projectId'
+      path: '/hub/$projectId'
+      fullPath: '/hub/$projectId'
+      preLoaderRoute: typeof HubProjectIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/legal/': {
       id: '/legal/'
       path: '/legal'
@@ -1638,6 +1658,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogHowToFindAMusicProducerRoute: BlogHowToFindAMusicProducerRoute,
   CopyrightReportRoute: CopyrightReportRoute,
   ExploreNearbyRoute: ExploreNearbyRoute,
+  HubProjectIdRoute: HubProjectIdRoute,
   LegalSlugRoute: LegalSlugRoute,
   LocationsCitySlugRoute: LocationsCitySlugRoute,
   MessagesConversationIdRoute: MessagesConversationIdRoute,
@@ -1659,13 +1680,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
