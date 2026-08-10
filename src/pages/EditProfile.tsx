@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { UPLOAD_BUCKETS, UPLOAD_LIMITS, extensionFor, validateUpload } from "@/config/uploads";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
