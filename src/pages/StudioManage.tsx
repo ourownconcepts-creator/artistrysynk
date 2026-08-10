@@ -126,9 +126,12 @@ const StudioManage = () => {
     };
   }, [handle, user, loadRoster]);
 
-  const canManageStudio = can(role, "manage_studio");
-  const canManageMembers = can(role, "manage_members");
-  const canManageGear = can(role, "manage_equipment");
+  // Mirrors the server lifecycle gate: a deactivated studio keeps all its data
+  // but normal management is unavailable until the owner reactivates it.
+  const lifecycle = { studioActive: studio?.is_active !== false };
+  const canManageStudio = can(role, "manage_studio", lifecycle);
+  const canManageMembers = can(role, "manage_members", lifecycle);
+  const canManageGear = can(role, "manage_equipment", lifecycle);
   const isOwner = !!studio && !!user && studio.owner_id === user.id;
 
   const saveProfile = async () => {
@@ -400,7 +403,7 @@ const StudioManage = () => {
             </CardContent>
           </Card>
 
-          {can(role, "request_verification") && !studio.is_verified && (
+          {can(role, "request_verification", lifecycle) && !studio.is_verified && (
             <Card>
               <CardHeader>
                 <CardTitle>Verification</CardTitle>
@@ -698,7 +701,7 @@ const StudioManage = () => {
                         {[item.brand, item.model, item.category].filter(Boolean).join(" · ")}
                       </p>
                     </div>
-                    {can(role, "delete_equipment") && (
+                    {can(role, "delete_equipment", lifecycle) && (
                       <Button
                         variant="ghost"
                         size="sm"

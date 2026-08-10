@@ -22,10 +22,16 @@ export const requestAccountDeletion = createServerFn({ method: "POST" })
       getAdmin,
       safeOrigin,
       sendDeletionConfirmationEmail,
+      ownedStudioBlocks,
+      studioBlockMessage,
     } = await import("./account-deletion.server");
 
     const admin = await getAdmin();
     const userId = context.userId;
+
+    // Studio ownership must be resolved before a destructive deletion starts.
+    const studioBlocks = await ownedStudioBlocks(userId);
+    if (studioBlocks.length) throw new Error(studioBlockMessage(studioBlocks));
 
     const { data: authUser } = await admin.auth.admin.getUserById(userId);
     const email = authUser?.user?.email;
@@ -145,11 +151,23 @@ export const getMyDeletionRequest = createServerFn({ method: "POST" })
     if (!row) return { status: "none", gracePeriodDays: GRACE_PERIOD_DAYS };
 
     if (row.status === "scheduled" && row.scheduled_for && new Date(row.scheduled_for) <= new Date()) {
+      try {
+        await purgeUser(context.userId);
+      } catch {
+        // Unresolved studio ownership (or another guard) blocks the purge: keep
+        // the request scheduled instead of marking it completed.
+        return {
+          status: "scheduled",
+          email: row.email,
+          requestedAt: row.requested_at,
+          scheduledFor: row.scheduled_for,
+          gracePeriodDays: GRACE_PERIOD_DAYS,
+        };
+      }
       await admin
         .from("account_deletion_requests")
         .update({ status: "completed", completed_at: new Date().toISOString() })
         .eq("id", row.id);
-      await purgeUser(context.userId);
       return { status: "none", gracePeriodDays: GRACE_PERIOD_DAYS };
     }
 
