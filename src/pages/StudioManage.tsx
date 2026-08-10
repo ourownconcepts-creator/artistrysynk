@@ -424,6 +424,76 @@ const StudioManage = () => {
               </CardContent>
             </Card>
           )}
+
+          {isOwner && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Ownership &amp; status</CardTitle>
+                <CardDescription>Only you, as the owner, can change these.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-5">
+                <div className="flex items-center justify-between rounded-lg border p-4">
+                  <div>
+                    <p className="font-medium">Studio active</p>
+                    <p className="text-sm text-muted-foreground">
+                      Turning this off hides the studio everywhere. Nothing is deleted — team, gear and work stay put.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={studio.is_active}
+                    onCheckedChange={async (v) => {
+                      try {
+                        await setStudioActive(studio.id, v);
+                        setStudio({ ...studio, is_active: v });
+                        toast.success(v ? "Studio is live again" : "Studio deactivated");
+                      } catch (error) {
+                        toast.error(error instanceof Error ? error.message : "Could not update the status");
+                      }
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Transfer ownership</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Hand the studio to an active member. You'll stay on as an admin.
+                  </p>
+                  <Select
+                    value={transferTo}
+                    onValueChange={async (v) => {
+                      setTransferTo(v);
+                      try {
+                        await transferStudioOwnership(studio.id, v);
+                        setStudio({ ...studio, owner_id: v });
+                        setRole("admin");
+                        await loadRoster(studio.id);
+                        toast.success("Ownership transferred");
+                      } catch (error) {
+                        toast.error(error instanceof Error ? error.message : "Could not transfer ownership");
+                      } finally {
+                        setTransferTo("");
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="sm:w-80">
+                      <SelectValue placeholder="Choose a member" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roster
+                        .filter((m) => m.status === "active" && m.user_id !== user?.id)
+                        .map((m) => (
+                          <SelectItem key={m.user_id} value={m.user_id}>
+                            {profiles[m.user_id]?.full_name ??
+                              profiles[m.user_id]?.username ??
+                              STUDIO_ROLE_LABELS[m.role]}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="team" className="mt-6 space-y-6">
