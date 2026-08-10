@@ -34,6 +34,7 @@ import { AttachmentPicker } from "@/components/messages/AttachmentPicker";
 import { ImageAttachment } from "@/components/messages/ImageAttachment";
 import { ChatMediaGallery } from "@/components/messages/ChatMediaGallery";
 import { uploadWithProgress } from "@/lib/uploadWithProgress";
+import { UPLOAD_BUCKETS, extensionFor } from "@/config/uploads";
 
 interface Message {
   id: string;
@@ -226,9 +227,9 @@ const Messages = () => {
   /** Upload a recorded voice note and post it as a message. */
   const sendVoiceNote = async (blob: Blob, durationSeconds: number) => {
     if (!currentUser || !conversationId) return;
-    const path = `${conversationId}/${crypto.randomUUID()}.webm`;
+    const path = `${currentUser}/${conversationId}/${crypto.randomUUID()}.webm`;
     const { error: uploadError } = await supabase.storage
-      .from("voice-notes")
+      .from(UPLOAD_BUCKETS.voiceNotes)
       .upload(path, blob, { contentType: blob.type || "audio/webm" });
     if (uploadError) {
       toast.error("Couldn't upload voice note");
@@ -263,10 +264,11 @@ const Messages = () => {
   /** Upload a picked image or audio clip and post it as a message. */
   const sendAttachment = async (file: File, kind: "image" | "audio") => {
     if (!currentUser || !conversationId) return;
-    const ext = file.name.includes(".") ? file.name.split(".").pop() : kind === "image" ? "jpg" : "webm";
-    const path = `${conversationId}/${crypto.randomUUID()}.${ext}`;
+    const ext = extensionFor(file, kind === "image" ? "jpg" : "webm");
+    const bucket = kind === "image" ? UPLOAD_BUCKETS.chatImages : UPLOAD_BUCKETS.voiceNotes;
+    const path = `${currentUser}/${conversationId}/${crypto.randomUUID()}.${ext}`;
     setUploadProgress(0);
-    const { error: uploadError } = await uploadWithProgress("voice-notes", path, file, setUploadProgress);
+    const { error: uploadError } = await uploadWithProgress(bucket, path, file, setUploadProgress);
     if (uploadError) {
       setUploadProgress(null);
       toast.error("Couldn't upload attachment");
