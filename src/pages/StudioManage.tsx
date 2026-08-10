@@ -211,7 +211,9 @@ const StudioManage = () => {
     try {
       await upsertStudioEquipment(studio.id, { ...newItem, name: newItem.name.trim() }, user.id);
       setNewItem({ name: "", category: "", brand: "", model: "", quantity: 1 });
-      setEquipment(await fetchStudioEquipmentForMember(studio.id));
+      const refreshed = await fetchStudioEquipmentForMember(studio.id);
+      setEquipment(refreshed);
+      setGearDone(refreshed.length < EQUIPMENT_PAGE_SIZE);
       toast.success("Gear added");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not add that gear");
