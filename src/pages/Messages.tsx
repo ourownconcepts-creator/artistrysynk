@@ -850,6 +850,7 @@ const Messages = () => {
 
           <div className="app-blur border-t border-border/40 p-3 pb-[max(0.75rem,var(--safe-area-bottom))]">
             <form onSubmit={sendMessage} className="flex gap-2">
+              <div className="pointer-events-none absolute" />
               <Input
                 value={newMessage}
                 onChange={(e) => {
@@ -859,7 +860,7 @@ const Messages = () => {
                 placeholder="Message..."
                 className="flex-1 rounded-full bg-surface-2 border-0"
               />
-              <AttachmentPicker onPick={sendAttachment} disabled={!currentUser} />
+              <AttachmentPicker onPick={sendAttachment} disabled={!currentUser} progress={uploadProgress} />
               <VoiceNoteRecorder onRecorded={sendVoiceNote} disabled={!currentUser} />
               <Button type="submit" variant="hero" disabled={!newMessage.trim()} aria-label="Send message">
                 <Send className="w-4 h-4" />
