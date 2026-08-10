@@ -803,20 +803,26 @@ export type Database = {
       conversations: {
         Row: {
           created_at: string | null
+          customer_id: string | null
           id: string
-          match_id: string
+          match_id: string | null
+          studio_id: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
+          customer_id?: string | null
           id?: string
-          match_id: string
+          match_id?: string | null
+          studio_id?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
+          customer_id?: string | null
           id?: string
-          match_id?: string
+          match_id?: string | null
+          studio_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -825,6 +831,13 @@ export type Database = {
             columns: ["match_id"]
             isOneToOne: false
             referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
             referencedColumns: ["id"]
           },
         ]
@@ -2317,6 +2330,54 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_studios: {
+        Row: {
+          added_by: string
+          created_at: string
+          id: string
+          project_id: string
+          role_label: string | null
+          status: string
+          studio_id: string
+          updated_at: string
+        }
+        Insert: {
+          added_by: string
+          created_at?: string
+          id?: string
+          project_id: string
+          role_label?: string | null
+          status?: string
+          studio_id: string
+          updated_at?: string
+        }
+        Update: {
+          added_by?: string
+          created_at?: string
+          id?: string
+          project_id?: string
+          role_label?: string | null
+          status?: string
+          studio_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_studios_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_studios_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
             referencedColumns: ["id"]
           },
         ]
