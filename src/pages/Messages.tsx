@@ -415,6 +415,7 @@ const Messages = () => {
   };
 
   if (loading) {
+    // computed below for the header; nothing to derive while loading
     return (
       <div className="flex min-h-dvh items-center justify-center bg-background">
         <div className="text-center space-y-3">
@@ -424,6 +425,13 @@ const Messages = () => {
       </div>
     );
   }
+
+  const seenMs = otherLastSeen ? Date.now() - new Date(otherLastSeen).getTime() : null;
+  const otherOnline = seenMs !== null && seenMs < 5 * 60 * 1000;
+  const lastSeenLabel =
+    seenMs === null
+      ? "Offline"
+      : `Active ${formatDistanceToNow(new Date(otherLastSeen as string), { addSuffix: true })}`;
 
   return (
     <div className="min-h-dvh bg-background">
