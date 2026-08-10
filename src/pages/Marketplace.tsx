@@ -20,6 +20,7 @@ import { useServiceTaxonomy } from "@/hooks/useServiceTaxonomy";
 interface Service {
   id: string;
   seller_id: string;
+  studio_id?: string | null;
   title: string;
   description: string | null;
   category: string;
@@ -36,6 +37,11 @@ interface Service {
     avatar_url: string | null;
     is_verified: boolean | null;
   };
+  studio?: {
+    handle: string;
+    name: string;
+    is_verified: boolean | null;
+  } | null;
 }
 
 interface Order {
@@ -148,14 +154,21 @@ const Marketplace = () => {
 
     if (servicesData && servicesData.length > 0) {
       const sellerIds = [...new Set(servicesData.map(s => s.seller_id))];
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("id, full_name, username, avatar_url, is_verified")
-        .in("id", sellerIds);
+      const studioIds = [
+        ...new Set(servicesData.map((s) => (s as { studio_id?: string | null }).studio_id).filter(Boolean)),
+      ] as string[];
 
-      const servicesWithProfiles = servicesData.map(s => ({
+      const [{ data: profiles }, { data: studios }] = await Promise.all([
+        supabase.from("profiles").select("id, full_name, username, avatar_url, is_verified").in("id", sellerIds),
+        studioIds.length
+          ? supabase.from("studios").select("id, handle, name, is_verified").in("id", studioIds)
+          : Promise.resolve({ data: [] as { id: string; handle: string; name: string; is_verified: boolean }[] }),
+      ]);
+
+      const servicesWithProfiles = servicesData.map((s) => ({
         ...s,
-        profiles: profiles?.find(p => p.id === s.seller_id),
+        profiles: profiles?.find((p) => p.id === s.seller_id),
+        studio: studios?.find((st) => st.id === (s as { studio_id?: string | null }).studio_id) ?? null,
       }));
       setServices(servicesWithProfiles as Service[]);
     } else {
@@ -629,10 +642,25 @@ const Marketplace = () => {
                           </Badge>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        by {service.profiles?.full_name || "Unknown"}{' '}
-                        {service.profiles?.username && <span className="text-xs">@{service.profiles.username}</span>}
-                      </p>
+                      {service.studio ? (
+                        <p className="text-sm text-muted-foreground">
+                          by{" "}
+                          <Link
+                            to={`/studios/${service.studio.handle}`}
+                            className="font-medium text-foreground underline-offset-2 hover:underline"
+                          >
+                            {service.studio.name}
+                          </Link>{" "}
+                          <span className="text-xs">
+                            · studio{service.profiles?.full_name ? ` · ${service.profiles.full_name}` : ""}
+                          </span>
+                        </p>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          by {service.profiles?.full_name || "Unknown"}{" "}
+                          {service.profiles?.username && <span className="text-xs">@{service.profiles.username}</span>}
+                        </p>
+                      )}
                     </CardHeader>
                     <CardContent className="flex-1">
                       {service.description && (
