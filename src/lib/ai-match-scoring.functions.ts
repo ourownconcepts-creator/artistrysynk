@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const userProfileSchema = z.object({
   id: z.string(),
@@ -17,6 +18,7 @@ const aiMatchScoringInput = z.object({
 });
 
 export const scoreMatches = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator(aiMatchScoringInput)
   .handler(async ({ data }) => {
     const { scoreMatches } = await import("@/lib/ai-match-scoring.server");
