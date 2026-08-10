@@ -63,6 +63,13 @@ const Messages = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [otherUser, setOtherUser] = useState<OtherUser | null>(null);
+  /**
+   * Studio business threads reuse this screen. `"customer"` means you are the
+   * creator talking to a studio (the header shows the studio); `"team"` means
+   * you are answering on the studio's behalf (the header shows the creator).
+   */
+  const [studioSide, setStudioSide] = useState<"customer" | "team" | null>(null);
+  const [studioHandle, setStudioHandle] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [projectTitle, setProjectTitle] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
