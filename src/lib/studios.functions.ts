@@ -34,11 +34,11 @@ export const createStudioFn = createServerFn({ method: "POST" })
       _handle: data.handle,
       _name: data.name,
       _org_type: data.orgType,
-      _tagline: data.tagline ?? null,
-      _bio: data.bio ?? null,
-      _primary_city: data.city ?? null,
-      _primary_country: data.country ?? null,
-      _contact_email: data.contactEmail ? data.contactEmail : null,
+      _tagline: data.tagline || undefined,
+      _bio: data.bio || undefined,
+      _primary_city: data.city || undefined,
+      _primary_country: data.country || undefined,
+      _contact_email: data.contactEmail || undefined,
       _facilities: data.facilities,
     });
     if (error) throw new Error(error.message);
