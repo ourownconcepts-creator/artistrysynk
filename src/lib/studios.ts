@@ -371,8 +371,11 @@ export async function requestStudioVerification(studio: { id: string; handle: st
 
 /* ------------------------------ studio writes ------------------------------ */
 
+/**
+ * Creation runs through a server function: the owner is derived from the session,
+ * entitlement is checked server-side and the owner membership is created atomically.
+ */
 export async function createStudio(input: {
-  ownerId: string;
   handle: string;
   name: string;
   orgType: StudioOrgType;
@@ -383,30 +386,32 @@ export async function createStudio(input: {
   contactEmail?: string;
   facilities?: string[];
 }) {
-  const { data, error } = await supabase
-    .from("studios")
-    .insert({
-      owner_id: input.ownerId,
+  const { createStudioFn } = await import("./studios.functions");
+  return createStudioFn({
+    data: {
       handle: input.handle,
       name: input.name,
-      org_type: input.orgType,
-      tagline: input.tagline || null,
-      bio: input.bio || null,
-      primary_city: input.city || null,
-      primary_country: input.country || null,
-      contact_email: input.contactEmail || null,
+      orgType: input.orgType,
+      tagline: input.tagline,
+      bio: input.bio,
+      city: input.city,
+      country: input.country,
+      contactEmail: input.contactEmail,
       facilities: input.facilities ?? [],
-    })
-    .select("id, handle")
-    .single();
-  if (error) throw error;
+    },
+  });
+}
 
-  const { error: memberError } = await supabase
-    .from("studio_members")
-    .insert({ studio_id: data.id, user_id: input.ownerId, role: "owner", title: "Founder" });
-  if (memberError) throw memberError;
+/** Owner-only, enforced by `transfer_studio_ownership`. */
+export async function transferStudioOwnership(studioId: string, newOwnerId: string) {
+  const { transferStudioOwnershipFn } = await import("./studios.functions");
+  await transferStudioOwnershipFn({ data: { studioId, newOwnerId } });
+}
 
-  return data;
+/** Owner-only, enforced by `set_studio_active`. Deactivation deletes nothing. */
+export async function setStudioActive(studioId: string, active: boolean) {
+  const { setStudioActiveFn } = await import("./studios.functions");
+  await setStudioActiveFn({ data: { studioId, active } });
 }
 
 export type StudioRecord = PublicStudio & {
