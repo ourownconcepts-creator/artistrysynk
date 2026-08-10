@@ -654,6 +654,8 @@ const Messages = () => {
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </Button>
+
+                  <ChatMediaGallery messages={messages} name={otherUser.full_name} />
                   
                   <Dialog open={showProjectDialog} onOpenChange={setShowProjectDialog}>
                     <DialogTrigger asChild>
