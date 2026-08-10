@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { CreditCard, Crown, Users, TrendingUp, Loader2 } from "lucide-react";
-import { format } from "date-fns";
+import { CreditCard, Crown, Users, TrendingUp, Loader2, Infinity as InfinityIcon, ShieldAlert } from "lucide-react";
+import { format, formatDistanceToNowStrict } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Subscription {
@@ -19,8 +19,31 @@ interface Subscription {
   status: string;
   current_period_start: string | null;
   current_period_end: string | null;
+  is_lifetime: boolean;
   created_at: string;
 }
+
+/** Selectable grant lengths. `months: null` means lifetime (never expires). */
+const DURATIONS: { value: string; label: string; months: number | null }[] = [
+  { value: "1w", label: "1 week", months: 0.25 },
+  { value: "1m", label: "1 month", months: 1 },
+  { value: "3m", label: "3 months", months: 3 },
+  { value: "6m", label: "6 months", months: 6 },
+  { value: "9m", label: "9 months", months: 9 },
+  { value: "12m", label: "1 year", months: 12 },
+  { value: "24m", label: "2 years", months: 24 },
+  { value: "60m", label: "5 years", months: 60 },
+  { value: "life", label: "Lifetime", months: null },
+];
+
+const endDateFor = (value: string): string | null => {
+  const found = DURATIONS.find((d) => d.value === value);
+  if (!found || found.months === null) return null;
+  const end = new Date();
+  if (found.months < 1) end.setDate(end.getDate() + Math.round(found.months * 30));
+  else end.setMonth(end.getMonth() + found.months);
+  return end.toISOString();
+};
 
 interface SubscriptionStats {
   total: number;
@@ -38,9 +61,20 @@ export const SubscriptionManager = () => {
   const [savingIds, setSavingIds] = useState<string[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkRunning, setBulkRunning] = useState(false);
+  const [duration, setDuration] = useState<string>("1m");
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   useEffect(() => {
     fetchSubscriptions();
+    void (async () => {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) return;
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", auth.user.id);
+      setIsSuperAdmin((roles ?? []).some((r) => r.role === "super_admin" || r.role === "master_admin"));
+    })();
   }, []);
 
   const fetchSubscriptions = async () => {
@@ -112,16 +146,30 @@ export const SubscriptionManager = () => {
   /** Optimistic, in-place update: no loading screen, no reload, reverts on failure. */
   const patchSubscriptions = async (
     ids: string[],
-    patch: { tier?: "free" | "pro" | "studio"; status?: string },
+    patch: {
+      tier?: "free" | "pro" | "studio";
+      status?: string;
+      current_period_start?: string | null;
+      current_period_end?: string | null;
+      is_lifetime?: boolean;
+      granted_at?: string | null;
+    },
     successMessage: string,
   ) => {
     const snapshot = subscriptions.filter((s) => ids.includes(s.id));
-    applyLocal(ids, patch);
+    applyLocal(ids, patch as Partial<Subscription>);
     markSaving(ids, true);
 
+    const { data: auth } = await supabase.auth.getUser();
     const { error } = await supabase
       .from("user_subscriptions")
-      .update({ ...patch, updated_at: new Date().toISOString() })
+      .update({
+        ...patch,
+        ...(patch.tier || patch.is_lifetime !== undefined
+          ? { granted_by: auth.user?.id ?? null }
+          : {}),
+        updated_at: new Date().toISOString(),
+      })
       .in("id", ids);
 
     markSaving(ids, false);
@@ -132,7 +180,11 @@ export const SubscriptionManager = () => {
         setStats(recomputeStats(next));
         return next;
       });
-      toast.error("Update failed — changes reverted");
+      toast.error(
+        error.message.includes("lifetime")
+          ? "Lifetime plans can only be changed by a super admin"
+          : "Update failed — changes reverted",
+      );
       return false;
     }
 
@@ -140,8 +192,46 @@ export const SubscriptionManager = () => {
     return true;
   };
 
-  const updateSubscriptionTier = (subscriptionId: string, newTier: "free" | "pro" | "studio") =>
-    patchSubscriptions([subscriptionId], { tier: newTier }, `Updated to ${newTier}`);
+  /** Applies the tier together with the currently selected grant length. */
+  const updateSubscriptionTier = (subscriptionId: string, newTier: "free" | "pro" | "studio") => {
+    const lifetime = duration === "life";
+    const end = newTier === "free" ? null : endDateFor(duration);
+    const label = DURATIONS.find((d) => d.value === duration)?.label ?? "";
+    return patchSubscriptions(
+      [subscriptionId],
+      {
+        tier: newTier,
+        status: "active",
+        current_period_start: new Date().toISOString(),
+        current_period_end: end,
+        is_lifetime: newTier === "free" ? false : lifetime,
+        granted_at: new Date().toISOString(),
+      },
+      newTier === "free" ? "Downgraded to free" : `${newTier} · ${label}`,
+    );
+  };
+
+  /** Extend / change only the expiry of an existing plan. */
+  const updateExpiry = (sub: Subscription, value: string) => {
+    const lifetime = value === "life";
+    return patchSubscriptions(
+      [sub.id],
+      {
+        status: "active",
+        current_period_end: endDateFor(value),
+        is_lifetime: lifetime,
+        granted_at: new Date().toISOString(),
+      },
+      lifetime ? "Set to lifetime" : `Expires in ${DURATIONS.find((d) => d.value === value)?.label}`,
+    );
+  };
+
+  const revokeLifetime = (sub: Subscription) =>
+    patchSubscriptions(
+      [sub.id],
+      { is_lifetime: false, current_period_end: endDateFor("1m") },
+      "Lifetime revoked — now expires in 1 month",
+    );
 
   const updateSubscriptionStatus = (subscriptionId: string, newStatus: string) =>
     patchSubscriptions([subscriptionId], { status: newStatus }, "Status updated");
@@ -149,10 +239,21 @@ export const SubscriptionManager = () => {
   const bulkSetTier = async (newTier: "free" | "pro" | "studio") => {
     if (selectedIds.length === 0) return;
     setBulkRunning(true);
+    const lifetime = duration === "life";
+    const label = DURATIONS.find((d) => d.value === duration)?.label ?? "";
     const ok = await patchSubscriptions(
       selectedIds,
-      { tier: newTier },
-      `${selectedIds.length} ${selectedIds.length === 1 ? "user" : "users"} moved to ${newTier}`,
+      {
+        tier: newTier,
+        status: "active",
+        current_period_start: new Date().toISOString(),
+        current_period_end: newTier === "free" ? null : endDateFor(duration),
+        is_lifetime: newTier === "free" ? false : lifetime,
+        granted_at: new Date().toISOString(),
+      },
+      `${selectedIds.length} ${selectedIds.length === 1 ? "user" : "users"} moved to ${newTier}${
+        newTier === "free" ? "" : ` · ${label}`
+      }`,
     );
     setBulkRunning(false);
     if (ok) setSelectedIds([]);
@@ -256,6 +357,27 @@ export const SubscriptionManager = () => {
           </Button>
         </div>
 
+        {/* Grant length applied when a tier is changed */}
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-muted/30 p-3">
+          <span className="text-sm font-medium">Grant length</span>
+          <Select value={duration} onValueChange={setDuration}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {DURATIONS.map((d) => (
+                <SelectItem key={d.value} value={d.value}>
+                  {d.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            Applied whenever you set a paid tier below. Expired paid plans drop back to Free automatically;
+            lifetime plans never expire and can only be revoked by a super admin.
+          </p>
+        </div>
+
         {/* Bulk actions — upgrade or downgrade many users in one silent write */}
         {selectedIds.length > 0 ? (
           <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/40 p-3">
@@ -298,8 +420,9 @@ export const SubscriptionManager = () => {
                 <TableHead>Email</TableHead>
                 <TableHead>Tier</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Period End</TableHead>
+                <TableHead>Expires</TableHead>
                 <TableHead>Change Tier</TableHead>
+                <TableHead>Expiry</TableHead>
                 <TableHead>Change Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -327,9 +450,26 @@ export const SubscriptionManager = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {sub.current_period_end 
-                      ? format(new Date(sub.current_period_end), "MMM dd, yyyy")
-                      : "N/A"}
+                    {sub.is_lifetime ? (
+                      <Badge variant="default" className="gap-1">
+                        <InfinityIcon className="h-3 w-3" /> Lifetime
+                      </Badge>
+                    ) : sub.current_period_end ? (
+                      <span
+                        className={
+                          new Date(sub.current_period_end) < new Date() ? "text-destructive" : undefined
+                        }
+                      >
+                        {format(new Date(sub.current_period_end), "MMM dd, yyyy")}
+                        <span className="block text-xs text-muted-foreground">
+                          {new Date(sub.current_period_end) < new Date()
+                            ? "expired"
+                            : `in ${formatDistanceToNowStrict(new Date(sub.current_period_end))}`}
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Select
@@ -350,6 +490,41 @@ export const SubscriptionManager = () => {
                     </Select>
                   </TableCell>
                   <TableCell>
+                    {sub.is_lifetime ? (
+                      isSuperAdmin ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={savingIds.includes(sub.id)}
+                          onClick={() => void revokeLifetime(sub)}
+                        >
+                          Revoke lifetime
+                        </Button>
+                      ) : (
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <ShieldAlert className="h-3 w-3" /> Super admin only
+                        </span>
+                      )
+                    ) : (
+                      <Select
+                        value={undefined}
+                        disabled={sub.tier === "free"}
+                        onValueChange={(value) => void updateExpiry(sub, value)}
+                      >
+                        <SelectTrigger className="w-[130px]">
+                          <SelectValue placeholder="Set expiry" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {DURATIONS.map((d) => (
+                            <SelectItem key={d.value} value={d.value}>
+                              {d.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </TableCell>
+                  <TableCell>
                     <Select
                       value={sub.status}
                       onValueChange={(value) => void updateSubscriptionStatus(sub.id, value)}
@@ -368,7 +543,7 @@ export const SubscriptionManager = () => {
               ))}
               {filteredSubscriptions.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-muted-foreground">
+                  <TableCell colSpan={9} className="text-center text-muted-foreground">
                     No subscriptions found
                   </TableCell>
                 </TableRow>
