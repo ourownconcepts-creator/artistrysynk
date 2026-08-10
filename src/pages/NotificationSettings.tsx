@@ -197,6 +197,14 @@ const NotificationSettings = () => {
       return next;
     });
 
+  /** Mute silences a whole category (email + in-app); unmute re-enables both. */
+  const setCategoryMuted = (typeId: string, muted: boolean) =>
+    setPrefs((prev) => {
+      const type = TYPES.find((t) => t.id === typeId);
+      if (!type) return prev;
+      return { ...prev, [type.email]: !muted, [type.inApp]: !muted };
+    });
+
   const save = async () => {
     if (!userId) return;
     setSaving(true);
@@ -311,6 +319,7 @@ const NotificationSettings = () => {
               </div>
               {TYPES.map((t, i) => {
                 const Icon = t.icon;
+                const muted = !prefs[t.email] && !prefs[t.inApp];
                 return (
                   <div key={t.id}>
                     {i > 0 && <Separator className="my-1" />}
@@ -320,8 +329,23 @@ const NotificationSettings = () => {
                           <Icon className="h-4 w-4" aria-hidden="true" />
                         </div>
                         <div className="min-w-0">
-                          <p className="font-medium">{t.label}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{t.label}</p>
+                            {muted ? (
+                              <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                                Muted
+                              </span>
+                            ) : null}
+                          </div>
                           <p className="text-sm text-muted-foreground">{t.description}</p>
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="h-auto p-0 text-xs"
+                            onClick={() => setCategoryMuted(t.id, !muted)}
+                          >
+                            {muted ? `Unmute ${t.label.toLowerCase()}` : `Mute ${t.label.toLowerCase()}`}
+                          </Button>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 sm:w-14 sm:justify-center">
