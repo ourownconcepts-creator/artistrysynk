@@ -416,6 +416,7 @@ const Messages = () => {
 
   if (loading) {
     return (
+
       <div className="flex min-h-dvh items-center justify-center bg-background">
         <div className="text-center space-y-3">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
