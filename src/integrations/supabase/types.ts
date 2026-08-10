@@ -4536,6 +4536,10 @@ export type Database = {
         Args: { _active: boolean; _studio_id: string }
         Returns: undefined
       }
+      start_studio_conversation: {
+        Args: { _studio_id: string }
+        Returns: string
+      }
       studio_management_allowed: {
         Args: { _studio_id: string }
         Returns: boolean
