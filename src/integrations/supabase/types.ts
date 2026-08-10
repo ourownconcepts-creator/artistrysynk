@@ -4354,7 +4354,7 @@ export type Database = {
         }[]
       }
       list_studio_public_equipment: {
-        Args: { _limit?: number; _studio_id: string }
+        Args: { _limit?: number; _offset?: number; _studio_id: string }
         Returns: {
           brand: string
           category: string
@@ -4391,6 +4391,15 @@ export type Database = {
           user_id: string
           username: string
         }[]
+      }
+      log_studio_audit: {
+        Args: {
+          _action: string
+          _actor: string
+          _metadata?: Json
+          _studio_id: string
+        }
+        Returns: undefined
       }
       move_to_dlq: {
         Args: {

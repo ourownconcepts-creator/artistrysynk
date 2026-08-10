@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS public.list_studio_public_equipment(uuid, integer);

@@ -254,8 +254,22 @@ export async function fetchStudioTeam(studioId: string): Promise<StudioTeamMembe
   return (data as StudioTeamMember[] | null) ?? [];
 }
 
-export async function fetchStudioEquipment(studioId: string): Promise<StudioEquipment[]> {
-  const { data } = await supabase.rpc("list_studio_public_equipment", { _studio_id: studioId, _limit: 100 });
+/** Page size used by every studio equipment surface, public and member-facing. */
+export const EQUIPMENT_PAGE_SIZE = 24;
+
+/**
+ * Public gear reads are bounded server-side (`list_studio_public_equipment`
+ * caps at 200 per call) and paged with a simple limit/offset window.
+ */
+export async function fetchStudioEquipment(
+  studioId: string,
+  page: { limit?: number; offset?: number } = {},
+): Promise<StudioEquipment[]> {
+  const { data } = await supabase.rpc("list_studio_public_equipment", {
+    _studio_id: studioId,
+    _limit: page.limit ?? EQUIPMENT_PAGE_SIZE,
+    _offset: page.offset ?? 0,
+  });
   return (data as StudioEquipment[] | null) ?? [];
 }
 
@@ -487,12 +501,19 @@ export async function deleteStudioEquipment(id: string) {
   if (error) throw error;
 }
 
-export async function fetchStudioEquipmentForMember(studioId: string): Promise<StudioEquipment[]> {
+/** Management gear reads are bounded with the same window as the public list. */
+export async function fetchStudioEquipmentForMember(
+  studioId: string,
+  page: { limit?: number; offset?: number } = {},
+): Promise<StudioEquipment[]> {
+  const limit = page.limit ?? EQUIPMENT_PAGE_SIZE;
+  const offset = page.offset ?? 0;
   const { data } = await supabase
     .from("studio_equipment")
     .select("id, name, category, brand, model, description, photo_url, quantity, is_available")
     .eq("studio_id", studioId)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
   return (data ?? []) as StudioEquipment[];
 }
 
