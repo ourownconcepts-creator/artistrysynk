@@ -29,6 +29,8 @@ export type StudioCapability =
   | "delete_portfolio"
   | "manage_services"
   | "delete_services"
+  | "manage_inbox"
+  | "represent_studio"
   | "request_verification"
   | "view_analytics"
   | "delete_studio";
@@ -70,6 +72,8 @@ const CAPABILITY_ROLES: Record<StudioCapability, StudioRole[]> = {
   delete_portfolio: ["owner", "admin", "manager"],
   manage_services: ["owner", "admin", "manager"],
   delete_services: ["owner", "admin"],
+  manage_inbox: ["owner", "admin", "manager", "booking_manager"],
+  represent_studio: ["owner", "admin"],
   request_verification: ["owner", "admin"],
   view_analytics: ["owner", "admin", "manager"],
   delete_studio: ["owner"],
