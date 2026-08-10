@@ -1719,6 +1719,7 @@ export type Database = {
           is_hidden: boolean | null
           media_type: string
           media_url: string
+          studio_id: string | null
           thumbnail_url: string | null
           title: string
           updated_at: string | null
@@ -1731,6 +1732,7 @@ export type Database = {
           is_hidden?: boolean | null
           media_type: string
           media_url: string
+          studio_id?: string | null
           thumbnail_url?: string | null
           title: string
           updated_at?: string | null
@@ -1743,12 +1745,20 @@ export type Database = {
           is_hidden?: boolean | null
           media_type?: string
           media_url?: string
+          studio_id?: string | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string | null
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "portfolio_items_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "portfolio_items_user_id_fkey"
             columns: ["user_id"]
@@ -3100,6 +3110,69 @@ export type Database = {
         }
         Relationships: []
       }
+      studio_equipment: {
+        Row: {
+          brand: string | null
+          category: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_available: boolean
+          model: string | null
+          name: string
+          photo_url: string | null
+          quantity: number
+          studio_id: string
+          updated_at: string
+        }
+        Insert: {
+          brand?: string | null
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_available?: boolean
+          model?: string | null
+          name: string
+          photo_url?: string | null
+          quantity?: number
+          studio_id: string
+          updated_at?: string
+        }
+        Update: {
+          brand?: string | null
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_available?: boolean
+          model?: string | null
+          name?: string
+          photo_url?: string | null
+          quantity?: number
+          studio_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studio_equipment_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_equipment_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       studio_feedback: {
         Row: {
           content: string
@@ -3131,6 +3204,246 @@ export type Database = {
             columns: ["portfolio_item_id"]
             isOneToOne: false
             referencedRelation: "portfolio_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      studio_follows: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          studio_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind?: string
+          studio_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          studio_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studio_follows_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_follows_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      studio_invites: {
+        Row: {
+          created_at: string
+          id: string
+          invited_by: string
+          invited_user_id: string
+          message: string | null
+          responded_at: string | null
+          role: Database["public"]["Enums"]["studio_role"]
+          status: string
+          studio_id: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invited_by: string
+          invited_user_id: string
+          message?: string | null
+          responded_at?: string | null
+          role?: Database["public"]["Enums"]["studio_role"]
+          status?: string
+          studio_id: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invited_by?: string
+          invited_user_id?: string
+          message?: string | null
+          responded_at?: string | null
+          role?: Database["public"]["Enums"]["studio_role"]
+          status?: string
+          studio_id?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studio_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_invites_invited_user_id_fkey"
+            columns: ["invited_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_invites_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      studio_members: {
+        Row: {
+          created_at: string
+          creative_roles: Database["public"]["Enums"]["creative_role"][]
+          id: string
+          permissions: Json
+          role: Database["public"]["Enums"]["studio_role"]
+          status: string
+          studio_id: string
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          creative_roles?: Database["public"]["Enums"]["creative_role"][]
+          id?: string
+          permissions?: Json
+          role?: Database["public"]["Enums"]["studio_role"]
+          status?: string
+          studio_id: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          creative_roles?: Database["public"]["Enums"]["creative_role"][]
+          id?: string
+          permissions?: Json
+          role?: Database["public"]["Enums"]["studio_role"]
+          status?: string
+          studio_id?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studio_members_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      studios: {
+        Row: {
+          bio: string | null
+          contact_email: string | null
+          cover_url: string | null
+          created_at: string
+          facilities: string[]
+          handle: string
+          id: string
+          is_active: boolean
+          is_hidden: boolean
+          is_verified: boolean
+          latitude: number | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          org_type: Database["public"]["Enums"]["studio_org_type"]
+          owner_id: string
+          primary_city: string | null
+          primary_country: string | null
+          social_links: Json
+          tagline: string | null
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          bio?: string | null
+          contact_email?: string | null
+          cover_url?: string | null
+          created_at?: string
+          facilities?: string[]
+          handle: string
+          id?: string
+          is_active?: boolean
+          is_hidden?: boolean
+          is_verified?: boolean
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          org_type?: Database["public"]["Enums"]["studio_org_type"]
+          owner_id: string
+          primary_city?: string | null
+          primary_country?: string | null
+          social_links?: Json
+          tagline?: string | null
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          bio?: string | null
+          contact_email?: string | null
+          cover_url?: string | null
+          created_at?: string
+          facilities?: string[]
+          handle?: string
+          id?: string
+          is_active?: boolean
+          is_hidden?: boolean
+          is_verified?: boolean
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          org_type?: Database["public"]["Enums"]["studio_org_type"]
+          owner_id?: string
+          primary_city?: string | null
+          primary_country?: string | null
+          social_links?: Json
+          tagline?: string | null
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studios_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -3826,6 +4139,25 @@ export type Database = {
           username: string
         }[]
       }
+      get_nearby_studios: {
+        Args: {
+          _lat: number
+          _limit?: number
+          _lng: number
+          _radius_km?: number
+        }
+        Returns: {
+          distance_km: number
+          handle: string
+          id: string
+          is_verified: boolean
+          logo_url: string
+          name: string
+          primary_city: string
+          primary_country: string
+          tagline: string
+        }[]
+      }
       get_pending_legal_acceptances: {
         Args: { _user_id: string }
         Returns: {
@@ -3864,6 +4196,29 @@ export type Database = {
           username: string
         }[]
       }
+      get_public_studio: {
+        Args: { _handle: string }
+        Returns: {
+          bio: string
+          contact_email: string
+          cover_url: string
+          created_at: string
+          facilities: string[]
+          handle: string
+          id: string
+          is_verified: boolean
+          latitude: number
+          logo_url: string
+          longitude: number
+          member_count: number
+          name: string
+          org_type: string
+          primary_city: string
+          primary_country: string
+          social_links: Json
+          tagline: string
+        }[]
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -3873,6 +4228,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      has_studio_capability: {
+        Args: { _capability: string; _studio_id: string; _user_id: string }
         Returns: boolean
       }
       is_conversation_participant: {
@@ -3889,6 +4248,10 @@ export type Database = {
       }
       is_project_member: {
         Args: { _project_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_studio_member: {
+        Args: { _studio_id: string; _user_id: string }
         Returns: boolean
       }
       list_my_referrals: {
@@ -3949,6 +4312,68 @@ export type Database = {
           username: string
         }[]
       }
+      list_public_studios: {
+        Args: {
+          _city?: string
+          _limit?: number
+          _offset?: number
+          _org_type?: string
+          _search?: string
+        }
+        Returns: {
+          cover_url: string
+          created_at: string
+          facilities: string[]
+          handle: string
+          id: string
+          is_verified: boolean
+          logo_url: string
+          name: string
+          org_type: string
+          primary_city: string
+          primary_country: string
+          tagline: string
+        }[]
+      }
+      list_studio_public_equipment: {
+        Args: { _limit?: number; _studio_id: string }
+        Returns: {
+          brand: string
+          category: string
+          description: string
+          id: string
+          is_available: boolean
+          model: string
+          name: string
+          photo_url: string
+          quantity: number
+        }[]
+      }
+      list_studio_public_portfolio: {
+        Args: { _limit?: number; _studio_id: string }
+        Returns: {
+          created_at: string
+          description: string
+          id: string
+          media_type: string
+          media_url: string
+          thumbnail_url: string
+          title: string
+        }[]
+      }
+      list_studio_public_team: {
+        Args: { _limit?: number; _studio_id: string }
+        Returns: {
+          avatar_url: string
+          creative_roles: string[]
+          full_name: string
+          is_verified: boolean
+          role: string
+          title: string
+          user_id: string
+          username: string
+        }[]
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -3976,6 +4401,10 @@ export type Database = {
           status: string
           target: string
         }[]
+      }
+      studio_role_of: {
+        Args: { _studio_id: string; _user_id: string }
+        Returns: Database["public"]["Enums"]["studio_role"]
       }
     }
     Enums: {
@@ -4065,6 +4494,20 @@ export type Database = {
         | "fuji"
         | "juju"
         | "other"
+      studio_org_type:
+        | "studio"
+        | "agency"
+        | "label"
+        | "production_company"
+        | "collective"
+      studio_role:
+        | "owner"
+        | "admin"
+        | "manager"
+        | "staff"
+        | "booking_manager"
+        | "finance_manager"
+        | "contributor"
       subscription_tier: "free" | "pro" | "studio"
     }
     CompositeTypes: {
@@ -4281,6 +4724,22 @@ export const Constants = {
         "fuji",
         "juju",
         "other",
+      ],
+      studio_org_type: [
+        "studio",
+        "agency",
+        "label",
+        "production_company",
+        "collective",
+      ],
+      studio_role: [
+        "owner",
+        "admin",
+        "manager",
+        "staff",
+        "booking_manager",
+        "finance_manager",
+        "contributor",
       ],
       subscription_tier: ["free", "pro", "studio"],
     },

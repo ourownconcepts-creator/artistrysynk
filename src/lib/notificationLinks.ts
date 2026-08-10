@@ -26,6 +26,9 @@ export const resolveNotificationUrl = (
   const conversationId = str("conversation_id");
   if (conversationId) return `/messages/${conversationId}`;
 
+  const studioHandle = str("studio_handle");
+  if (studioHandle) return str("invite_id") ? "/studios" : `/studios/${studioHandle}`;
+
   const profileId = str("profile_id") || str("liker_id") || str("matched_user");
   if (profileId) return `/profile/${profileId}`;
 
