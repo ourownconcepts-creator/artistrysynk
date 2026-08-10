@@ -12,9 +12,11 @@ import {
   Heart,
   Sparkles,
   Settings,
+  Building2,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { cn } from "@/lib/utils";
+import { useMyStudios } from "@/hooks/useMyStudios";
 
 const PRIMARY = [
   { label: "Home", to: "/home", icon: Home },
@@ -35,6 +37,18 @@ const SECONDARY = [
 
 export function DesktopRail({ onCreate }: { onCreate: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { primary, canManagePrimary } = useMyStudios();
+
+  // One Studio entry: management for members who have a studio, the public
+  // directory for everyone else. Management links are never shown to members
+  // whose role cannot manage.
+  const studioEntry = primary
+    ? {
+        label: canManagePrimary ? "My Studio" : primary.studio.name,
+        to: canManagePrimary ? `/studios/${primary.studio.handle}/manage` : `/studios/${primary.studio.handle}`,
+        icon: Building2,
+      }
+    : { label: "Studios", to: "/studios", icon: Building2 };
 
   const item = (entry: { label: string; to: string; icon: typeof Home }) => {
     const active = pathname === entry.to || pathname.startsWith(`${entry.to}/`);
@@ -73,7 +87,7 @@ export function DesktopRail({ onCreate }: { onCreate: () => void }) {
       </button>
       <div className="my-3 h-px bg-border/50" />
       <nav aria-label="More" className="flex flex-col gap-1">
-        {SECONDARY.map(item)}
+        {[...SECONDARY.slice(0, 3), studioEntry, ...SECONDARY.slice(3)].map(item)}
       </nav>
     </aside>
   );

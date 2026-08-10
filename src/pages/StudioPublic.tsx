@@ -13,6 +13,7 @@ import { useAppUser } from "@/hooks/useAppUser";
 import {
   fetchPublicStudio,
   fetchStudioEquipment,
+  EQUIPMENT_PAGE_SIZE,
   fetchStudioPortfolio,
   fetchStudioTeam,
   isFollowingStudio,
@@ -30,6 +31,8 @@ const StudioPublic = () => {
   const [loading, setLoading] = useState(true);
   const [team, setTeam] = useState<StudioTeamMember[]>([]);
   const [equipment, setEquipment] = useState<StudioEquipment[]>([]);
+  const [gearDone, setGearDone] = useState(false);
+  const [gearLoadingMore, setGearLoadingMore] = useState(false);
   const [work, setWork] = useState<StudioPortfolioItem[]>([]);
   const [following, setFollowing] = useState(false);
 
@@ -49,6 +52,7 @@ const StudioPublic = () => {
       if (!active) return;
       setTeam(t);
       setEquipment(e);
+      setGearDone(e.length < EQUIPMENT_PAGE_SIZE);
       setWork(w);
     });
     return () => {
@@ -246,6 +250,7 @@ const StudioPublic = () => {
             {equipment.length === 0 ? (
               <p className="text-muted-foreground">This studio hasn't listed its gear yet.</p>
             ) : (
+              <>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {equipment.map((item) => (
                   <Card key={item.id}>
@@ -269,6 +274,25 @@ const StudioPublic = () => {
                   </Card>
                 ))}
               </div>
+              {!gearDone && (
+                <div className="mt-6 text-center">
+                  <Button
+                    variant="outline"
+                    disabled={gearLoadingMore}
+                    onClick={async () => {
+                      if (!studio) return;
+                      setGearLoadingMore(true);
+                      const next = await fetchStudioEquipment(studio.id, { offset: equipment.length });
+                      setEquipment((prev) => [...prev, ...next]);
+                      setGearDone(next.length < EQUIPMENT_PAGE_SIZE);
+                      setGearLoadingMore(false);
+                    }}
+                  >
+                    {gearLoadingMore ? "Loading…" : "Load more gear"}
+                  </Button>
+                </div>
+              )}
+              </>
             )}
           </TabsContent>
 

@@ -19,6 +19,7 @@ import {
   can,
   deleteStudioEquipment,
   fetchStudioEquipmentForMember,
+  EQUIPMENT_PAGE_SIZE,
   fetchStudioForMember,
   fetchStudioRoster,
   inviteToStudio,
@@ -69,6 +70,8 @@ const StudioManage = () => {
   const [inviteTitle, setInviteTitle] = useState("");
 
   const [equipment, setEquipment] = useState<StudioEquipment[]>([]);
+  const [gearDone, setGearDone] = useState(false);
+  const [gearLoadingMore, setGearLoadingMore] = useState(false);
   const [newItem, setNewItem] = useState({ name: "", category: "", brand: "", model: "", quantity: 1 });
 
   const loadRoster = useCallback(async (studioId: string) => {
@@ -116,7 +119,9 @@ const StudioManage = () => {
         if (!active) return;
         setRole((membership?.role as StudioRole | undefined) ?? null);
         await loadRoster(record.id);
-        setEquipment(await fetchStudioEquipmentForMember(record.id));
+        const gear = await fetchStudioEquipmentForMember(record.id);
+        setEquipment(gear);
+        setGearDone(gear.length < EQUIPMENT_PAGE_SIZE);
       } finally {
         if (active) setLoading(false);
       }
@@ -206,7 +211,9 @@ const StudioManage = () => {
     try {
       await upsertStudioEquipment(studio.id, { ...newItem, name: newItem.name.trim() }, user.id);
       setNewItem({ name: "", category: "", brand: "", model: "", quantity: 1 });
-      setEquipment(await fetchStudioEquipmentForMember(studio.id));
+      const refreshed = await fetchStudioEquipmentForMember(studio.id);
+      setEquipment(refreshed);
+      setGearDone(refreshed.length < EQUIPMENT_PAGE_SIZE);
       toast.success("Gear added");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not add that gear");
@@ -684,7 +691,7 @@ const StudioManage = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Gear list ({equipment.length})</CardTitle>
+              <CardTitle>Gear list ({equipment.length}{gearDone ? "" : "+"})</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {equipment.length === 0 ? (
@@ -720,6 +727,22 @@ const StudioManage = () => {
                     )}
                   </div>
                 ))
+              )}
+              {!gearDone && (
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  disabled={gearLoadingMore}
+                  onClick={async () => {
+                    setGearLoadingMore(true);
+                    const next = await fetchStudioEquipmentForMember(studio.id, { offset: equipment.length });
+                    setEquipment((prev) => [...prev, ...next]);
+                    setGearDone(next.length < EQUIPMENT_PAGE_SIZE);
+                    setGearLoadingMore(false);
+                  }}
+                >
+                  {gearLoadingMore ? "Loading…" : "Load more gear"}
+                </Button>
               )}
             </CardContent>
           </Card>
