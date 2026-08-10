@@ -370,6 +370,8 @@ const Messages = () => {
       .select(`
         id,
         match_id,
+        studio_id,
+        customer_id,
         matches(user_id_1, user_id_2)
       `)
       .eq('id', conversationId)
@@ -381,16 +383,46 @@ const Messages = () => {
       return;
     }
 
-    const match = conversation.matches as any;
-    const otherUserId = match.user_id_1 === userId ? match.user_id_2 : match.user_id_1;
+    if (conversation.studio_id) {
+      // Studio business thread: the counterpart depends on which side you're on.
+      const viewerIsCustomer = conversation.customer_id === userId;
+      setStudioSide(viewerIsCustomer ? "customer" : "team");
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('id, full_name, username, avatar_url')
-      .eq('id', otherUserId)
-      .single();
+      if (viewerIsCustomer) {
+        const { data: studio } = await supabase
+          .from("studios")
+          .select("id, name, handle, logo_url")
+          .eq("id", conversation.studio_id)
+          .maybeSingle();
+        setStudioHandle(studio?.handle ?? null);
+        setOtherUser(
+          studio
+            ? { id: studio.id, full_name: studio.name, username: studio.handle, avatar_url: studio.logo_url }
+            : null,
+        );
+      } else {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("id, full_name, username, avatar_url")
+          .eq("id", conversation.customer_id ?? "")
+          .maybeSingle();
+        setStudioHandle(null);
+        setOtherUser(profile);
+      }
+    } else {
+      setStudioSide(null);
+      setStudioHandle(null);
+      const match = conversation.matches as any;
+      const otherUserId = match.user_id_1 === userId ? match.user_id_2 : match.user_id_1;
 
-    setOtherUser(profile);
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id, full_name, username, avatar_url')
+        .eq('id', otherUserId)
+        .single();
+
+      setOtherUser(profile);
+    }
 
     const { data: messagesData } = await supabase
       .from('messages')
