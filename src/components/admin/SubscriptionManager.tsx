@@ -507,7 +507,7 @@ export const SubscriptionManager = () => {
                       )
                     ) : (
                       <Select
-                        value=""
+                        value={undefined}
                         disabled={sub.tier === "free"}
                         onValueChange={(value) => void updateExpiry(sub, value)}
                       >
