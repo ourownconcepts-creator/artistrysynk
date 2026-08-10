@@ -72,6 +72,7 @@ const Messages = () => {
   const [otherUnreadElsewhere, setOtherUnreadElsewhere] = useState(0);
   const [reactions, setReactions] = useState<Reaction[]>([]);
   const [otherTyping, setOtherTyping] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const typingSentAt = useRef(0);
   const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
