@@ -420,8 +420,16 @@ export const GlobalSearch = () => {
                         <AvatarFallback>{result.title.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium">{result.title}</p>
+                        <p className="flex items-center gap-1 font-medium">
+                          {result.title}
+                          {result.isVerified ? <VerifiedBadge className="h-3.5 w-3.5" /> : null}
+                        </p>
                         <p className="text-xs text-muted-foreground">{result.subtitle}</p>
+                        <TrustSignals
+                          className="mt-1"
+                          isVerified={result.isVerified}
+                          isFeatured={result.isFeatured}
+                        />
                       </div>
                     </CommandItem>
                   ))}
