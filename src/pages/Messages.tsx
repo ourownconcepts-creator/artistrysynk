@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
+import { formatDistanceToNow } from "date-fns";
 import { Send, ArrowLeft, FolderPlus, Flag, MoreVertical, CheckCheck, Check, Clock, AlertCircle, Loader2, User } from "lucide-react";
 import { FlagContentDialog } from "@/components/FlagContentDialog";
 import {
@@ -57,6 +58,8 @@ const Messages = () => {
   const [showProjectDialog, setShowProjectDialog] = useState(false);
   const [creatingProject, setCreatingProject] = useState(false);
   const [showPeek, setShowPeek] = useState(false);
+  const [otherLastSeen, setOtherLastSeen] = useState<string | null>(null);
+  const [otherUnreadElsewhere, setOtherUnreadElsewhere] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [loadingOlder, setLoadingOlder] = useState(false);
@@ -144,6 +147,51 @@ const Messages = () => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  /** Live last-seen for the person you're chatting with (polled while tab is visible). */
+  useEffect(() => {
+    if (!otherUser?.id) return;
+    let active = true;
+    const fetchSeen = async () => {
+      if (document.visibilityState !== "visible") return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("last_seen_at")
+        .eq("id", otherUser.id)
+        .maybeSingle();
+      if (active) setOtherLastSeen((data?.last_seen_at as string | null) ?? null);
+    };
+    void fetchSeen();
+    const interval = setInterval(fetchSeen, 30_000);
+    document.addEventListener("visibilitychange", fetchSeen);
+    return () => {
+      active = false;
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", fetchSeen);
+    };
+  }, [otherUser?.id]);
+
+  /** Unread messages waiting in your other conversations, shown on the back button. */
+  useEffect(() => {
+    if (!currentUser) return;
+    let active = true;
+    const fetchUnread = async () => {
+      const { data } = await supabase
+        .from("messages")
+        .select("conversation_id")
+        .eq("read", false)
+        .neq("sender_id", currentUser);
+      if (!active) return;
+      const count = (data ?? []).filter((m) => m.conversation_id !== conversationId).length;
+      setOtherUnreadElsewhere(count);
+    };
+    void fetchUnread();
+    const interval = setInterval(fetchUnread, 30_000);
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [currentUser, conversationId, messages.length]);
 
   const loadCurrentUserProfile = async (userId: string) => {
     const { data: profile } = await supabase
@@ -368,6 +416,7 @@ const Messages = () => {
   };
 
   if (loading) {
+    // computed below for the header; nothing to derive while loading
     return (
       <div className="flex min-h-dvh items-center justify-center bg-background">
         <div className="text-center space-y-3">
@@ -378,19 +427,38 @@ const Messages = () => {
     );
   }
 
+  const seenMs = otherLastSeen ? Date.now() - new Date(otherLastSeen).getTime() : null;
+  const otherOnline = seenMs !== null && seenMs < 5 * 60 * 1000;
+  const lastSeenLabel =
+    seenMs === null
+      ? "Offline"
+      : `Active ${formatDistanceToNow(new Date(otherLastSeen as string), { addSuffix: true })}`;
+
   return (
     <div className="min-h-dvh bg-background">
       <div className="mx-auto flex h-dvh max-w-3xl flex-col">
         <Card className="flex flex-1 flex-col overflow-hidden rounded-none border-0 bg-transparent shadow-none">
           <CardHeader className="app-blur sticky top-0 z-10 border-b border-border/40 py-3">
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate("/messages")}
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate("/messages")}
+                  aria-label={
+                    otherUnreadElsewhere > 0
+                      ? `Back to inbox, ${otherUnreadElsewhere} unread in other chats`
+                      : "Back to inbox"
+                  }
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+                {otherUnreadElsewhere > 0 ? (
+                  <span className="pointer-events-none absolute -right-0.5 -top-0.5 grid min-w-[18px] place-items-center rounded-full bg-primary px-1 text-[10px] font-bold leading-4 text-primary-foreground">
+                    {otherUnreadElsewhere > 99 ? "99+" : otherUnreadElsewhere}
+                  </span>
+                ) : null}
+              </div>
               
               {otherUser && (
                 <div className="flex items-center gap-3 flex-1">
@@ -408,8 +476,16 @@ const Messages = () => {
                     </Avatar>
                     <div className="min-w-0 flex-1">
                     <CardTitle className="truncate text-lg">{otherUser.full_name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      @{otherUser.username}
+                    <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      {otherOnline ? (
+                        <span className="flex items-center gap-1 text-emerald-500">
+                          <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                          Online
+                        </span>
+                      ) : (
+                        <span>{lastSeenLabel}</span>
+                      )}
+                      <span className="truncate">· @{otherUser.username}</span>
                       {realtimeStatus !== "connected" && (
                         <span
                           data-testid="chat-connection-status"

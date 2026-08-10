@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { CreditCard, Crown, Users, TrendingUp } from "lucide-react";
+import { CreditCard, Crown, Users, TrendingUp, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -34,6 +35,9 @@ export const SubscriptionManager = () => {
   const [stats, setStats] = useState<SubscriptionStats>({ total: 0, free: 0, pro: 0, studio: 0, active: 0 });
   const [loading, setLoading] = useState(true);
   const [filterTier, setFilterTier] = useState<string>("all");
+  const [savingIds, setSavingIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkRunning, setBulkRunning] = useState(false);
 
   useEffect(() => {
     fetchSubscriptions();
@@ -81,38 +85,77 @@ export const SubscriptionManager = () => {
     };
 
     setStats(newStats);
-    setSubscriptions(enrichedSubs);
+    setSubscriptions(enrichedSubs as Subscription[]);
     setLoading(false);
   };
 
-  const updateSubscriptionTier = async (subscriptionId: string, newTier: "free" | "pro" | "studio") => {
-    const { error } = await supabase
-      .from("user_subscriptions")
-      .update({ tier: newTier, updated_at: new Date().toISOString() })
-      .eq("id", subscriptionId);
+  /** Stats are derived locally so a single row edit never needs a full refetch. */
+  const recomputeStats = (rows: Subscription[]): SubscriptionStats => ({
+    total: rows.length,
+    free: rows.filter((s) => s.tier === "free").length,
+    pro: rows.filter((s) => s.tier === "pro").length,
+    studio: rows.filter((s) => s.tier === "studio").length,
+    active: rows.filter((s) => s.status === "active").length,
+  });
 
-    if (error) {
-      toast.error("Failed to update subscription");
-      return;
-    }
-
-    toast.success(`Subscription updated to ${newTier}`);
-    fetchSubscriptions();
+  const applyLocal = (ids: string[], patch: Partial<Subscription>) => {
+    setSubscriptions((prev) => {
+      const next = prev.map((s) => (ids.includes(s.id) ? { ...s, ...patch } : s));
+      setStats(recomputeStats(next));
+      return next;
+    });
   };
 
-  const updateSubscriptionStatus = async (subscriptionId: string, newStatus: string) => {
+  const markSaving = (ids: string[], on: boolean) =>
+    setSavingIds((prev) => (on ? [...prev, ...ids] : prev.filter((id) => !ids.includes(id))));
+
+  /** Optimistic, in-place update: no loading screen, no reload, reverts on failure. */
+  const patchSubscriptions = async (
+    ids: string[],
+    patch: { tier?: "free" | "pro" | "studio"; status?: string },
+    successMessage: string,
+  ) => {
+    const snapshot = subscriptions.filter((s) => ids.includes(s.id));
+    applyLocal(ids, patch);
+    markSaving(ids, true);
+
     const { error } = await supabase
       .from("user_subscriptions")
-      .update({ status: newStatus, updated_at: new Date().toISOString() })
-      .eq("id", subscriptionId);
+      .update({ ...patch, updated_at: new Date().toISOString() })
+      .in("id", ids);
+
+    markSaving(ids, false);
 
     if (error) {
-      toast.error("Failed to update subscription status");
-      return;
+      setSubscriptions((prev) => {
+        const next = prev.map((s) => snapshot.find((o) => o.id === s.id) ?? s);
+        setStats(recomputeStats(next));
+        return next;
+      });
+      toast.error("Update failed — changes reverted");
+      return false;
     }
 
-    toast.success("Subscription status updated");
-    fetchSubscriptions();
+    toast.success(successMessage);
+    return true;
+  };
+
+  const updateSubscriptionTier = (subscriptionId: string, newTier: "free" | "pro" | "studio") =>
+    patchSubscriptions([subscriptionId], { tier: newTier }, `Updated to ${newTier}`);
+
+  const updateSubscriptionStatus = (subscriptionId: string, newStatus: string) =>
+    patchSubscriptions([subscriptionId], { status: newStatus }, "Status updated");
+
+  const bulkSetTier = async (newTier: "free" | "pro" | "studio") => {
+    if (selectedIds.length === 0) return;
+    setBulkRunning(true);
+    const ok = await patchSubscriptions(
+      selectedIds,
+      { tier: newTier },
+      `${selectedIds.length} ${selectedIds.length === 1 ? "user" : "users"} moved to ${newTier}`,
+    );
+    setBulkRunning(false);
+    if (ok) setSelectedIds([]);
   };
 
   const getTierBadgeVariant = (tier: string) => {
@@ -126,6 +169,15 @@ export const SubscriptionManager = () => {
   const filteredSubscriptions = filterTier === "all" 
     ? subscriptions 
     : subscriptions.filter(s => s.tier === filterTier);
+
+  const allVisibleSelected =
+    filteredSubscriptions.length > 0 && filteredSubscriptions.every((s) => selectedIds.includes(s.id));
+
+  const toggleAllVisible = () =>
+    setSelectedIds(allVisibleSelected ? [] : filteredSubscriptions.map((s) => s.id));
+
+  const toggleOne = (id: string) =>
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
     <Card>
@@ -198,7 +250,35 @@ export const SubscriptionManager = () => {
               <SelectItem value="studio">Studio</SelectItem>
             </SelectContent>
           </Select>
+
+          <Button variant="ghost" size="sm" onClick={fetchSubscriptions} disabled={loading}>
+            Refresh
+          </Button>
         </div>
+
+        {/* Bulk actions — upgrade or downgrade many users in one silent write */}
+        {selectedIds.length > 0 ? (
+          <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/40 p-3">
+            <span className="text-sm font-medium">
+              {selectedIds.length} selected
+              {bulkRunning ? <Loader2 className="ml-2 inline h-3.5 w-3.5 animate-spin" /> : null}
+            </span>
+            <div className="ml-auto flex flex-wrap gap-2">
+              <Button size="sm" variant="outline" disabled={bulkRunning} onClick={() => bulkSetTier("free")}>
+                Set Free
+              </Button>
+              <Button size="sm" variant="outline" disabled={bulkRunning} onClick={() => bulkSetTier("pro")}>
+                Set Pro
+              </Button>
+              <Button size="sm" variant="outline" disabled={bulkRunning} onClick={() => bulkSetTier("studio")}>
+                Set Studio
+              </Button>
+              <Button size="sm" variant="ghost" disabled={bulkRunning} onClick={() => setSelectedIds([])}>
+                Clear
+              </Button>
+            </div>
+          </div>
+        ) : null}
 
         {/* Table */}
         {loading ? (
@@ -207,6 +287,13 @@ export const SubscriptionManager = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-8">
+                  <Checkbox
+                    checked={allVisibleSelected}
+                    onCheckedChange={toggleAllVisible}
+                    aria-label="Select all visible subscriptions"
+                  />
+                </TableHead>
                 <TableHead>User</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Tier</TableHead>
@@ -218,7 +305,14 @@ export const SubscriptionManager = () => {
             </TableHeader>
             <TableBody>
               {filteredSubscriptions.map((sub) => (
-                <TableRow key={sub.id}>
+                <TableRow key={sub.id} data-saving={savingIds.includes(sub.id) || undefined}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedIds.includes(sub.id)}
+                      onCheckedChange={() => toggleOne(sub.id)}
+                      aria-label={`Select ${sub.user_name}`}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">{sub.user_name}</TableCell>
                   <TableCell className="text-muted-foreground">{sub.user_email}</TableCell>
                   <TableCell>
@@ -240,10 +334,13 @@ export const SubscriptionManager = () => {
                   <TableCell>
                     <Select
                       value={sub.tier}
-                      onValueChange={(value) => updateSubscriptionTier(sub.id, value as "free" | "pro" | "studio")}
+                      onValueChange={(value) => void updateSubscriptionTier(sub.id, value as "free" | "pro" | "studio")}
                     >
-                      <SelectTrigger className="w-[100px]">
+                      <SelectTrigger className="w-[110px]">
                         <SelectValue />
+                        {savingIds.includes(sub.id) ? (
+                          <Loader2 className="ml-1 h-3 w-3 animate-spin text-muted-foreground" />
+                        ) : null}
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="free">Free</SelectItem>
@@ -255,7 +352,7 @@ export const SubscriptionManager = () => {
                   <TableCell>
                     <Select
                       value={sub.status}
-                      onValueChange={(value) => updateSubscriptionStatus(sub.id, value)}
+                      onValueChange={(value) => void updateSubscriptionStatus(sub.id, value)}
                     >
                       <SelectTrigger className="w-[110px]">
                         <SelectValue />
@@ -271,7 +368,7 @@ export const SubscriptionManager = () => {
               ))}
               {filteredSubscriptions.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground">
+                  <TableCell colSpan={8} className="text-center text-muted-foreground">
                     No subscriptions found
                   </TableCell>
                 </TableRow>
