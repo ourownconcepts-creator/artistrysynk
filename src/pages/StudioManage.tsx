@@ -48,6 +48,7 @@ const StudioManage = () => {
   const [role, setRole] = useState<StudioRole | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [transferTo, setTransferTo] = useState("");
 
   const [form, setForm] = useState({
     name: "",
