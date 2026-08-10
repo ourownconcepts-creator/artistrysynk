@@ -23,6 +23,7 @@ interface Entry {
 
 const staticEntries: Entry[] = [
   { path: "/", changefreq: "daily", priority: "1.0" },
+  { path: "/studios", changefreq: "daily", priority: "0.8" },
   { path: "/features", changefreq: "weekly", priority: "0.8" },
   { path: "/how-it-works", changefreq: "weekly", priority: "0.8" },
   { path: "/pricing", changefreq: "weekly", priority: "0.8" },
@@ -115,6 +116,22 @@ async function main() {
     changefreq: "weekly",
     priority: "0.6",
   }));
+
+  const studios = await rpc<{ handle: string; created_at: string | null }>("list_public_studios", {
+    _city: null,
+    _org_type: null,
+    _search: null,
+    _limit: 200,
+    _offset: 0,
+  });
+  const studioEntries: Entry[] = studios
+    .filter((s) => !!s.handle)
+    .map((s) => ({
+      path: `/studios/${s.handle}`,
+      lastmod: day(s.created_at),
+      changefreq: "weekly" as Freq,
+      priority: "0.7",
+    }));
   // Projects, jobs and events have no public (non-authenticated) detail routes yet,
   // so they are intentionally omitted rather than listed as crawl dead-ends.
   const projectEntries: Entry[] = [];
@@ -146,6 +163,7 @@ async function main() {
   emit("sitemap-blog.xml", blogEntries, true);
   emit("sitemap-landing.xml", landingEntries, true);
   emit("sitemap-users.xml", userEntries);
+  emit("sitemap-studios.xml", studioEntries);
   emit("sitemap-projects.xml", projectEntries);
   emit("sitemap-jobs.xml", jobEntries);
   emit("sitemap-events.xml", eventEntries);

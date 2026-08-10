@@ -40,6 +40,8 @@ export const exportMyData = createServerFn({ method: "POST" })
       notifications,
       referrals,
       sessions,
+      studioMemberships,
+      ownedStudios,
     ] = await Promise.all([
       pick("profiles", "id"),
       pick("user_settings", "user_id"),
@@ -53,6 +55,8 @@ export const exportMyData = createServerFn({ method: "POST" })
       pick("user_notifications", "user_id"),
       pick("referrals", "referrer_id"),
       pick("user_sessions", "user_id"),
+      pick("studio_members", "user_id"),
+      pick("studios", "owner_id"),
     ]);
 
     const mediaUrls = new Set<string>();
@@ -88,6 +92,8 @@ export const exportMyData = createServerFn({ method: "POST" })
           notifications,
           referrals,
           sessions,
+          studio_memberships: studioMemberships,
+          owned_studios: ownedStudios,
           media_urls: [...mediaUrls],
         },
         null,

@@ -77,7 +77,6 @@ const StudioCreate = () => {
     setSaving(true);
     try {
       const studio = await createStudio({
-        ownerId: user.id,
         handle,
         name: name.trim(),
         orgType,
