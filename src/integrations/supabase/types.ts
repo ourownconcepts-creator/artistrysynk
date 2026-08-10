@@ -4424,6 +4424,27 @@ export type Database = {
         Args: { _active: boolean; _studio_id: string }
         Returns: undefined
       }
+      studio_management_allowed: {
+        Args: { _studio_id: string }
+        Returns: boolean
+      }
+      studio_ownership_block: {
+        Args: { _user_id: string }
+        Returns: {
+          eligible_successors: number
+          handle: string
+          is_active: boolean
+          name: string
+          studio_id: string
+        }[]
+      }
+      studio_role_capability: {
+        Args: {
+          _capability: string
+          _role: Database["public"]["Enums"]["studio_role"]
+        }
+        Returns: boolean
+      }
       studio_role_of: {
         Args: { _studio_id: string; _user_id: string }
         Returns: Database["public"]["Enums"]["studio_role"]

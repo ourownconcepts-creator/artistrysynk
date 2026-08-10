@@ -61,6 +61,11 @@ export const UPLOAD_BUCKETS = {
    * Studio path:   studios/{studioId}/{logo|cover|equipment|work}/... (studio membership RLS)
    */
   portfolios: "portfolios",
+  /**
+   * Private studio media (unreleased work, internal brand assets).
+   * Path: {studioId}/... — studio membership reads, capability-level writes.
+   */
+  studioPrivateMedia: "studio-private-media",
   /** Private chat images. Path: {userId}/{conversationId}/{uuid}.{ext} */
   chatImages: "chat-images",
   /** Private voice notes and audio clips. Path: {userId}/{conversationId}/{uuid}.{ext} */

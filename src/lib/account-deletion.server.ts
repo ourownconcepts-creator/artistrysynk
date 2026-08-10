@@ -24,9 +24,44 @@ export async function getAdmin() {
   return supabaseAdmin;
 }
 
+export type OwnedStudioBlock = {
+  studio_id: string;
+  handle: string;
+  name: string;
+  is_active: boolean;
+  eligible_successors: number;
+};
+
+/**
+ * A studio is an independent actor, so a personal account that still owns one
+ * cannot be purged: `studios.owner_id` is ON DELETE RESTRICT. Callers must
+ * resolve ownership first (transfer to an active member, or delete the studio).
+ */
+export async function ownedStudioBlocks(userId: string): Promise<OwnedStudioBlock[]> {
+  const admin = await getAdmin();
+  const { data } = await admin.rpc("studio_ownership_block", { _user_id: userId });
+  return ((data as OwnedStudioBlock[] | null) ?? []).map((row) => ({
+    ...row,
+    eligible_successors: Number(row.eligible_successors ?? 0),
+  }));
+}
+
+export function studioBlockMessage(blocks: OwnedStudioBlock[]): string {
+  const names = blocks.map((b) => b.name).join(", ");
+  const hasSuccessor = blocks.some((b) => b.eligible_successors > 0);
+  return hasSuccessor
+    ? `You still own ${names}. Transfer ownership to an active studio member, then request deletion again — deleting your account never deletes a studio.`
+    : `You still own ${names}, and it has no other active member to take over. Add and promote a member, or delete the studio from its manage page, then request deletion again.`;
+}
+
 /** Permanently removes the user's app rows and auth account. */
 export async function purgeUser(userId: string) {
   const supabaseAdmin = await getAdmin();
+
+  // Never let a personal purge cascade into studio-owned data.
+  const blocks = await ownedStudioBlocks(userId);
+  if (blocks.length) throw new Error(studioBlockMessage(blocks));
+
   await supabaseAdmin.from("user_settings").delete().eq("user_id", userId);
   await supabaseAdmin.from("user_sessions").delete().eq("user_id", userId);
   await supabaseAdmin.from("profiles").delete().eq("id", userId);

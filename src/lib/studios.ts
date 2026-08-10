@@ -58,7 +58,7 @@ export const STUDIO_ROLE_LABELS: Record<StudioRole, string> = {
   contributor: "Contributor",
 };
 
-/** Mirrors public.has_studio_capability — presentation only, never a security boundary. */
+/** Mirrors public.studio_role_capability — presentation only, never a security boundary. */
 const CAPABILITY_ROLES: Record<StudioCapability, StudioRole[]> = {
   manage_studio: ["owner", "admin"],
   manage_members: ["owner", "admin"],
@@ -71,8 +71,30 @@ const CAPABILITY_ROLES: Record<StudioCapability, StudioRole[]> = {
   delete_studio: ["owner"],
 };
 
-export function can(role: StudioRole | null | undefined, capability: StudioCapability): boolean {
-  return !!role && CAPABILITY_ROLES[capability].includes(role);
+/**
+ * Capabilities that stay reachable while a studio is deactivated or its owner's
+ * Studio plan lapsed, so the studio can still be inspected and resolved.
+ */
+const LIFECYCLE_EXEMPT: StudioCapability[] = ["view_analytics", "delete_studio"];
+
+/**
+ * Role-first capability mirror.
+ *
+ * The role matrix is the ceiling: a per-member `permissions` entry can only
+ * revoke a capability (`false`), never grant one the role does not already
+ * have. `studioActive: false` hides normal management controls the same way
+ * `has_studio_capability` blocks them server-side.
+ */
+export function can(
+  role: StudioRole | null | undefined,
+  capability: StudioCapability,
+  context?: { permissions?: Record<string, unknown> | null; studioActive?: boolean },
+): boolean {
+  if (!role || !CAPABILITY_ROLES[capability].includes(role)) return false;
+  const override = context?.permissions?.[capability];
+  if (override !== undefined && override !== true) return false;
+  if (context?.studioActive === false && !LIFECYCLE_EXEMPT.includes(capability)) return false;
+  return true;
 }
 
 export const STUDIO_FACILITIES = [
