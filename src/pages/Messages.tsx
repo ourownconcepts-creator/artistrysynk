@@ -27,6 +27,9 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { ProfilePeekSheet } from "@/components/messages/ProfilePeekSheet";
+import { MessageReactions, type Reaction } from "@/components/messages/MessageReactions";
+import { VoiceNoteRecorder } from "@/components/messages/VoiceNoteRecorder";
+import { VoiceNotePlayer } from "@/components/messages/VoiceNotePlayer";
 
 interface Message {
   id: string;
@@ -35,6 +38,9 @@ interface Message {
   created_at: string;
   read: boolean;
   status?: "sending" | "sent" | "failed";
+  media_url?: string | null;
+  media_type?: string | null;
+  media_duration_seconds?: number | null;
 }
 
 interface OtherUser {
@@ -60,6 +66,10 @@ const Messages = () => {
   const [showPeek, setShowPeek] = useState(false);
   const [otherLastSeen, setOtherLastSeen] = useState<string | null>(null);
   const [otherUnreadElsewhere, setOtherUnreadElsewhere] = useState(0);
+  const [reactions, setReactions] = useState<Reaction[]>([]);
+  const [otherTyping, setOtherTyping] = useState(false);
+  const typingSentAt = useRef(0);
+  const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [loadingOlder, setLoadingOlder] = useState(false);
@@ -141,8 +151,105 @@ const Messages = () => {
             prev.map((m) => (m.id === updated.id ? { ...m, ...updated, status: "sent" } : m))
           );
         }
-      ),
+      )
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'message_reactions' },
+          () => {
+            void loadReactions();
+          }
+        )
+        .on('broadcast', { event: 'typing' }, ({ payload }) => {
+          if (!payload || payload.userId === currentUser) return;
+          setOtherTyping(true);
+          if (typingTimeout.current) clearTimeout(typingTimeout.current);
+          typingTimeout.current = setTimeout(() => setOtherTyping(false), 3000);
+        }),
   });
+
+  /** Load reactions for the visible conversation. */
+  const loadReactions = async () => {
+    if (!messages.length) return;
+    const { data } = await supabase
+      .from("message_reactions")
+      .select("id, message_id, user_id, emoji")
+      .in("message_id", messages.filter((m) => !m.id.startsWith("temp-")).map((m) => m.id));
+    setReactions((data as Reaction[]) ?? []);
+  };
+
+  useEffect(() => {
+    void loadReactions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages.length]);
+
+  /** Toggle my reaction on a message. */
+  const toggleReaction = async (messageId: string, emoji: string) => {
+    if (!currentUser) return;
+    const mine = reactions.find(
+      (r) => r.message_id === messageId && r.user_id === currentUser && r.emoji === emoji,
+    );
+    if (mine) {
+      setReactions((prev) => prev.filter((r) => r.id !== mine.id));
+      await supabase.from("message_reactions").delete().eq("id", mine.id);
+      return;
+    }
+    const optimistic: Reaction = { id: `temp-${crypto.randomUUID()}`, message_id: messageId, user_id: currentUser, emoji };
+    setReactions((prev) => [...prev, optimistic]);
+    const { data, error } = await supabase
+      .from("message_reactions")
+      .insert({ message_id: messageId, user_id: currentUser, emoji })
+      .select("id, message_id, user_id, emoji")
+      .single();
+    if (error) {
+      setReactions((prev) => prev.filter((r) => r.id !== optimistic.id));
+      return;
+    }
+    setReactions((prev) => prev.map((r) => (r.id === optimistic.id ? (data as Reaction) : r)));
+  };
+
+  /** Broadcast a throttled typing ping to the other participant. */
+  const broadcastTyping = () => {
+    if (!conversationId || !currentUser) return;
+    const now = Date.now();
+    if (now - typingSentAt.current < 1500) return;
+    typingSentAt.current = now;
+    void supabase
+      .channel(`conversation-${conversationId}`)
+      .send({ type: "broadcast", event: "typing", payload: { userId: currentUser } });
+  };
+
+  /** Upload a recorded voice note and post it as a message. */
+  const sendVoiceNote = async (blob: Blob, durationSeconds: number) => {
+    if (!currentUser || !conversationId) return;
+    const path = `${conversationId}/${crypto.randomUUID()}.webm`;
+    const { error: uploadError } = await supabase.storage
+      .from("voice-notes")
+      .upload(path, blob, { contentType: blob.type || "audio/webm" });
+    if (uploadError) {
+      toast.error("Couldn't upload voice note");
+      return;
+    }
+    const { data: inserted, error } = await supabase
+      .from("messages")
+      .insert({
+        conversation_id: conversationId,
+        sender_id: currentUser,
+        content: "🎤 Voice note",
+        media_url: path,
+        media_type: "audio",
+        media_duration_seconds: durationSeconds,
+      })
+      .select("*")
+      .single();
+    if (error || !inserted) {
+      toast.error("Couldn't send voice note");
+      return;
+    }
+    setMessages((prev) =>
+      prev.some((m) => m.id === inserted.id) ? prev : [...prev, { ...(inserted as Message), status: "sent" }],
+    );
+    setTimeout(scrollToBottom, 50);
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -606,7 +713,15 @@ const Messages = () => {
                               : 'bg-muted'
                           } ${message.status === "failed" ? 'cursor-pointer ring-1 ring-destructive/60' : ''} ${message.status === "sending" ? 'opacity-70' : ''}`}
                         >
-                          <p className="text-sm">{message.content}</p>
+                          {message.media_type === "audio" && message.media_url ? (
+                            <VoiceNotePlayer
+                              path={message.media_url}
+                              durationSeconds={message.media_duration_seconds}
+                              mine={isCurrentUser}
+                            />
+                          ) : (
+                            <p className="text-sm">{message.content}</p>
+                          )}
                           <div className={`flex items-center gap-1 mt-1 ${isCurrentUser ? 'justify-end' : ''}`}>
                             <p className={`text-xs ${
                               isCurrentUser
@@ -659,11 +774,33 @@ const Messages = () => {
                           </DropdownMenu>
                         )}
                       </div>
+                      {!message.id.startsWith("temp-") && (
+                        <MessageReactions
+                          reactions={reactions.filter((r) => r.message_id === message.id)}
+                          currentUserId={currentUser}
+                          align={isCurrentUser ? "end" : "start"}
+                          onToggle={(emoji) => void toggleReaction(message.id, emoji)}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
               );
             })}
+            {otherTyping && (
+              <div className="flex justify-start" aria-live="polite">
+                <div className="flex items-center gap-1.5 rounded-2xl bg-muted px-3 py-2">
+                  <span className="sr-only">{otherUser?.full_name} is typing</span>
+                  {[0, 1, 2].map((i) => (
+                    <span
+                      key={i}
+                      style={{ animationDelay: `${i * 150}ms` }}
+                      className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </CardContent>
 
@@ -671,11 +808,15 @@ const Messages = () => {
             <form onSubmit={sendMessage} className="flex gap-2">
               <Input
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
+                onChange={(e) => {
+                  setNewMessage(e.target.value);
+                  broadcastTyping();
+                }}
                 placeholder="Message..."
                 className="flex-1 rounded-full bg-surface-2 border-0"
               />
-              <Button type="submit" variant="hero">
+              <VoiceNoteRecorder onRecorded={sendVoiceNote} disabled={!currentUser} />
+              <Button type="submit" variant="hero" disabled={!newMessage.trim()} aria-label="Send message">
                 <Send className="w-4 h-4" />
               </Button>
             </form>

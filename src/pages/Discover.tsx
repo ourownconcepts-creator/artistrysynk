@@ -5,7 +5,7 @@ import { fetchHiddenUserIds } from "@/lib/hiddenUsers";
 import { fetchOptedOutIds } from "@/lib/discoverability";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Sparkles, SlidersHorizontal, Zap, Users, RefreshCw } from "lucide-react";
+import { Sparkles, SlidersHorizontal, Zap, Users, RefreshCw, Search, X, BadgeCheck, LayoutGrid, Layers } from "lucide-react";
 import { DiscoverProfileCard } from "@/components/discover/DiscoverProfileCard";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -27,6 +27,7 @@ import {
   SkeletonCard,
   haptic,
 } from "@/components/native-ui";
+import { DiscoverSearchResults, type SearchProfile } from "@/components/discover/DiscoverSearchResults";
 
 interface Profile {
   id: string;
@@ -61,12 +62,68 @@ const Discover = () => {
   const [locationFilter, setLocationFilter] = useState<string>("");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [lastSwipe, setLastSwipe] = useState<{ id: string; swipedId: string } | null>(null);
+  const [mode, setMode] = useState<"deck" | "grid">("deck");
+  const [query, setQuery] = useState("");
+  const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [results, setResults] = useState<SearchProfile[]>([]);
+  const [searching, setSearching] = useState(false);
 
   const activeFilterCount =
     (roleFilter !== "all" ? 1 : 0) +
     (genreFilter !== "all" ? 1 : 0) +
     (skillFilter.trim() ? 1 : 0) +
-    (locationFilter.trim() ? 1 : 0);
+    (locationFilter.trim() ? 1 : 0) +
+    (verifiedOnly ? 1 : 0);
+
+  /** Instant search — runs on every keystroke (debounced) and on filter changes. */
+  const runSearch = useCallback(
+    async (userId: string) => {
+      setSearching(true);
+
+      const { all: hiddenIds } = await fetchHiddenUserIds(userId);
+      const optedOutIds = await fetchOptedOutIds("discovery");
+      const excludeIds = [...new Set([userId, ...hiddenIds, ...optedOutIds])];
+
+      let request = supabase
+        .from("profiles")
+        .select("id, full_name, username, bio, location, avatar_url, is_verified, last_seen_at, user_creative_roles(role), user_genres(genre)")
+        .not("id", "in", `(${excludeIds.join(",")})`)
+        .limit(48);
+
+      const needle = query.trim();
+      if (needle) {
+        const safe = needle.replace(/[%,()]/g, "");
+        request = request.or(
+          `full_name.ilike.%${safe}%,username.ilike.%${safe}%,bio.ilike.%${safe}%,location.ilike.%${safe}%`,
+        );
+      }
+      if (locationFilter.trim()) request = request.ilike("location", `%${locationFilter.trim()}%`);
+      if (verifiedOnly) request = request.eq("is_verified", true);
+
+      const { data } = await request;
+      let rows = (data as any[]) ?? [];
+
+      if (roleFilter !== "all") {
+        rows = rows.filter((p) => (p.user_creative_roles ?? []).some((r: any) => r.role === roleFilter));
+      }
+      if (genreFilter !== "all") {
+        rows = rows.filter((p) => (p.user_genres ?? []).some((g: any) => g.genre === genreFilter));
+      }
+      if (skillFilter.trim() && rows.length > 0) {
+        const { data: skillRows } = await supabase
+          .from("user_skill_tags")
+          .select("user_id")
+          .in("user_id", rows.map((p) => p.id))
+          .ilike("skill", `%${skillFilter.trim()}%`);
+        const matched = new Set((skillRows ?? []).map((r: any) => r.user_id));
+        rows = rows.filter((p) => matched.has(p.id));
+      }
+
+      setResults(rows as SearchProfile[]);
+      setSearching(false);
+    },
+    [query, roleFilter, genreFilter, skillFilter, locationFilter, verifiedOnly],
+  );
 
   const loadCurrentUserProfile = async (userId: string) => {
     const { data: profile } = await supabase
@@ -213,9 +270,36 @@ const Discover = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
+  const browsing = mode === "grid" || query.trim().length > 0;
+
+  /** Debounced instant search: re-queries as you type or change filters. */
+  useEffect(() => {
+    if (!currentUser || !browsing) return;
+    const timer = setTimeout(() => void runSearch(currentUser), 250);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, browsing, runSearch]);
+
+  /** Live-updating results: new or updated profiles appear without a refresh. */
+  useEffect(() => {
+    if (!currentUser || !browsing) return;
+    const channel = supabase
+      .channel("discover-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
+        void runSearch(currentUser);
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, browsing]);
+
   const applyFilters = () => {
     setFiltersOpen(false);
-    if (currentUser) void loadProfiles(currentUser);
+    if (!currentUser) return;
+    if (mode === "grid" || query.trim()) void runSearch(currentUser);
+    else void loadProfiles(currentUser);
   };
 
   const clearFilters = () => {
@@ -223,6 +307,7 @@ const Discover = () => {
     setGenreFilter("all");
     setSkillFilter("");
     setLocationFilter("");
+    setVerifiedOnly(false);
   };
 
   const handleSwipe = async (liked: boolean) => {
@@ -318,10 +403,43 @@ const Discover = () => {
         noIndex
       />
 
+      {/* Instant search */}
+      <div className="mb-3 flex items-center gap-2">
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search creatives, roles, cities…"
+            aria-label="Search creatives"
+            className="h-11 rounded-full border-0 bg-surface-2 pl-9 pr-9"
+          />
+          {query ? (
+            <Pressable
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+              className="absolute right-2 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full bg-surface-3 text-muted-foreground"
+            >
+              <X className="h-3.5 w-3.5" />
+            </Pressable>
+          ) : null}
+        </div>
+        <Pressable
+          onClick={() => setMode((m) => (m === "deck" ? "grid" : "deck"))}
+          aria-label={mode === "deck" ? "Switch to grid results" : "Switch to swipe deck"}
+          className="grid h-11 w-11 place-items-center rounded-full bg-surface-2 text-foreground"
+        >
+          {mode === "deck" ? <LayoutGrid className="h-[18px] w-[18px]" /> : <Layers className="h-[18px] w-[18px]" />}
+        </Pressable>
+      </div>
+
       {/* Quick filter chips */}
       <div className="app-scroll -mx-4 mb-3 flex gap-2 overflow-x-auto px-4 pb-1">
         <Chip active={activeFilterCount === 0} onClick={clearFilters} aria-label="Everyone">
           Everyone
+        </Chip>
+        <Chip active={verifiedOnly} icon={<BadgeCheck className="h-3.5 w-3.5" />} onClick={() => setVerifiedOnly((v) => !v)}>
+          Verified
         </Chip>
         <Chip
           active={aiMatchingEnabled}
@@ -350,7 +468,28 @@ const Discover = () => {
         </Chip>
       </div>
 
-      {loading || isTransitioning ? (
+      {browsing ? (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <p className="text-xs text-muted-foreground">
+              {searching
+                ? "Searching…"
+                : `${results.length} ${results.length === 1 ? "creative" : "creatives"} live${query.trim() ? ` for “${query.trim()}”` : ""}`}
+            </p>
+            {mode === "grid" && !query.trim() ? (
+              <Pressable onClick={() => setMode("deck")} className="text-xs font-medium text-primary">
+                Back to swiping
+              </Pressable>
+            ) : null}
+          </div>
+          <DiscoverSearchResults
+            results={results}
+            loading={searching && results.length === 0}
+            query={query.trim()}
+            onOpen={(id) => navigate(`/profile/${id}`)}
+          />
+        </div>
+      ) : loading || isTransitioning ? (
         <SkeletonCard />
       ) : !currentProfile ? (
         <EmptyState
@@ -447,6 +586,14 @@ const Discover = () => {
               onChange={(e) => setLocationFilter(e.target.value)}
             />
           </div>
+
+          <Surface level={2} inset className="flex items-center justify-between">
+            <div className="pr-3">
+              <p className="text-sm font-medium">Verified creatives only</p>
+              <p className="text-xs text-muted-foreground">Show profiles with a verified badge.</p>
+            </div>
+            <Switch checked={verifiedOnly} onCheckedChange={setVerifiedOnly} aria-label="Verified creatives only" />
+          </Surface>
 
           <Surface level={2} inset className="flex items-center justify-between">
             <div className="pr-3">

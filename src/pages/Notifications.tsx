@@ -18,6 +18,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { Chip } from "@/components/native-ui";
 
 interface AppNotification {
   id: string;
@@ -51,6 +52,49 @@ const iconFor = (type: string) => {
       return Users;
     default:
       return Info;
+  }
+};
+
+type Category = "all" | "matches" | "messages" | "projects" | "system";
+
+const CATEGORIES: { id: Category; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "matches", label: "Matches" },
+  { id: "messages", label: "Messages" },
+  { id: "projects", label: "Projects" },
+  { id: "system", label: "System" },
+];
+
+/** Buckets a notification type into a user-facing category. */
+const categoryFor = (type: string): Exclude<Category, "all"> => {
+  if (["match", "match_online", "like", "swipe"].includes(type)) return "matches";
+  if (type === "message") return "messages";
+  if (
+    [
+      "collaboration_request",
+      "project_application",
+      "application_status",
+      "project_invite",
+      "job_application",
+      "role_change",
+      "room_activity",
+    ].includes(type)
+  )
+    return "projects";
+  return "system";
+};
+
+/** Primary action label for an actionable notification. */
+const actionLabelFor = (type: string): string => {
+  switch (categoryFor(type)) {
+    case "messages":
+      return "Reply";
+    case "matches":
+      return "View match";
+    case "projects":
+      return "Open project";
+    default:
+      return "View";
   }
 };
 
@@ -89,6 +133,7 @@ const Notifications = () => {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [emails, setEmails] = useState<EmailLogRow[]>([]);
   const [filter, setFilter] = useState<"all" | "unread">("all");
+  const [category, setCategory] = useState<Category>("all");
 
   useEffect(() => {
     document.title = "Notifications inbox | ArtistrySynk";
@@ -137,6 +182,32 @@ const Notifications = () => {
           (payload) =>
             setNotifications((prev) => [payload.new as AppNotification, ...prev])
         )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "user_notifications",
+            filter: `user_id=eq.${uid}`,
+          },
+          (payload) => {
+            const updated = payload.new as AppNotification;
+            setNotifications((prev) => prev.map((n) => (n.id === updated.id ? { ...n, ...updated } : n)));
+          }
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "user_notifications",
+            filter: `user_id=eq.${uid}`,
+          },
+          (payload) => {
+            const removed = payload.old as { id: string };
+            setNotifications((prev) => prev.filter((n) => n.id !== removed.id));
+          }
+        )
         .subscribe();
     };
 
@@ -152,9 +223,23 @@ const Notifications = () => {
     [notifications]
   );
 
+  /** Live unread counters per category. */
+  const categoryCounts = useMemo(() => {
+    const counts: Record<Category, number> = { all: 0, matches: 0, messages: 0, projects: 0, system: 0 };
+    for (const n of notifications) {
+      if (n.is_read) continue;
+      counts.all += 1;
+      counts[categoryFor(n.type)] += 1;
+    }
+    return counts;
+  }, [notifications]);
+
   const visible = useMemo(
-    () => (filter === "unread" ? notifications.filter((n) => !n.is_read) : notifications),
-    [notifications, filter]
+    () =>
+      notifications
+        .filter((n) => (filter === "unread" ? !n.is_read : true))
+        .filter((n) => (category === "all" ? true : categoryFor(n.type) === category)),
+    [notifications, filter, category]
   );
 
   const markAsRead = async (id: string) => {
@@ -216,6 +301,19 @@ const Notifications = () => {
         </TabsList>
 
         <TabsContent value="in-app">
+          <div className="app-scroll -mx-1 mb-3 flex gap-2 overflow-x-auto px-1 pb-1">
+            {CATEGORIES.map((c) => (
+              <Chip key={c.id} active={category === c.id} onClick={() => setCategory(c.id)}>
+                {c.label}
+                {categoryCounts[c.id] > 0 ? (
+                  <span className="ml-1.5 rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground tabular-nums">
+                    {categoryCounts[c.id]}
+                  </span>
+                ) : null}
+              </Chip>
+            ))}
+          </div>
+
           <div className="mb-4 flex gap-2">
             <Button
               variant={filter === "all" ? "default" : "outline"}
@@ -275,12 +373,33 @@ const Notifications = () => {
                           {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
                         </p>
                       </div>
-                      {!n.is_read && (
-                        <span
-                          className="mt-2 h-2 w-2 shrink-0 rounded-full bg-primary"
-                          aria-hidden="true"
-                        />
-                      )}
+                      <div className="flex shrink-0 flex-col items-end gap-2">
+                        {!n.is_read && (
+                          <span className="mt-1 h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
+                        )}
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            open(n);
+                          }}
+                        >
+                          {actionLabelFor(n.type)}
+                        </Button>
+                        {!n.is_read && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              void markAsRead(n.id);
+                            }}
+                          >
+                            Mark read
+                          </Button>
+                        )}
+                      </div>
                     </Card>
                   </li>
                 );
