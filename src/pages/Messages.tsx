@@ -63,6 +63,13 @@ const Messages = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [otherUser, setOtherUser] = useState<OtherUser | null>(null);
+  /**
+   * Studio business threads reuse this screen. `"customer"` means you are the
+   * creator talking to a studio (the header shows the studio); `"team"` means
+   * you are answering on the studio's behalf (the header shows the creator).
+   */
+  const [studioSide, setStudioSide] = useState<"customer" | "team" | null>(null);
+  const [studioHandle, setStudioHandle] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [projectTitle, setProjectTitle] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
@@ -299,7 +306,8 @@ const Messages = () => {
 
   /** Live last-seen for the person you're chatting with (polled while tab is visible). */
   useEffect(() => {
-    if (!otherUser?.id) return;
+    // A studio has no presence row — skip the poll when the header is a studio.
+    if (!otherUser?.id || studioSide === "customer") return;
     let active = true;
     const fetchSeen = async () => {
       if (document.visibilityState !== "visible") return;
@@ -318,7 +326,7 @@ const Messages = () => {
       clearInterval(interval);
       document.removeEventListener("visibilitychange", fetchSeen);
     };
-  }, [otherUser?.id]);
+  }, [otherUser?.id, studioSide]);
 
   /** Unread messages waiting in your other conversations, shown on the back button. */
   useEffect(() => {
@@ -363,6 +371,8 @@ const Messages = () => {
       .select(`
         id,
         match_id,
+        studio_id,
+        customer_id,
         matches(user_id_1, user_id_2)
       `)
       .eq('id', conversationId)
@@ -374,16 +384,46 @@ const Messages = () => {
       return;
     }
 
-    const match = conversation.matches as any;
-    const otherUserId = match.user_id_1 === userId ? match.user_id_2 : match.user_id_1;
+    if (conversation.studio_id) {
+      // Studio business thread: the counterpart depends on which side you're on.
+      const viewerIsCustomer = conversation.customer_id === userId;
+      setStudioSide(viewerIsCustomer ? "customer" : "team");
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('id, full_name, username, avatar_url')
-      .eq('id', otherUserId)
-      .single();
+      if (viewerIsCustomer) {
+        const { data: studio } = await supabase
+          .from("studios")
+          .select("id, name, handle, logo_url")
+          .eq("id", conversation.studio_id)
+          .maybeSingle();
+        setStudioHandle(studio?.handle ?? null);
+        setOtherUser(
+          studio
+            ? { id: studio.id, full_name: studio.name, username: studio.handle, avatar_url: studio.logo_url }
+            : null,
+        );
+      } else {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("id, full_name, username, avatar_url")
+          .eq("id", conversation.customer_id ?? "")
+          .maybeSingle();
+        setStudioHandle(null);
+        setOtherUser(profile);
+      }
+    } else {
+      setStudioSide(null);
+      setStudioHandle(null);
+      const match = conversation.matches as any;
+      const otherUserId = match.user_id_1 === userId ? match.user_id_2 : match.user_id_1;
 
-    setOtherUser(profile);
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id, full_name, username, avatar_url')
+        .eq('id', otherUserId)
+        .single();
+
+      setOtherUser(profile);
+    }
 
     const { data: messagesData } = await supabase
       .from('messages')
@@ -613,8 +653,16 @@ const Messages = () => {
                 <div className="flex items-center gap-3 flex-1">
                   <button
                     type="button"
-                    onClick={() => setShowPeek(true)}
-                    aria-label={`View ${otherUser.full_name}'s profile and portfolio`}
+                    onClick={() =>
+                      studioSide === "customer"
+                        ? navigate(`/studios/${studioHandle ?? ""}`)
+                        : setShowPeek(true)
+                    }
+                    aria-label={
+                      studioSide === "customer"
+                        ? `View the ${otherUser.full_name} studio page`
+                        : `View ${otherUser.full_name}'s profile and portfolio`
+                    }
                     className="flex min-w-0 flex-1 items-center gap-3 rounded-xl px-1 py-1 text-left transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <Avatar>
@@ -626,7 +674,9 @@ const Messages = () => {
                     <div className="min-w-0 flex-1">
                     <CardTitle className="truncate text-lg">{otherUser.full_name}</CardTitle>
                     <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                      {otherOnline ? (
+                      {studioSide === "customer" ? (
+                        <span>Studio</span>
+                      ) : otherOnline ? (
                         <span className="flex items-center gap-1 text-emerald-500">
                           <span className="h-2 w-2 rounded-full bg-emerald-500" />
                           Online
@@ -650,15 +700,20 @@ const Messages = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setShowPeek(true)}
+                    onClick={() =>
+                      studioSide === "customer"
+                        ? navigate(`/studios/${studioHandle ?? ""}`)
+                        : setShowPeek(true)
+                    }
                     className="hidden sm:inline-flex"
                   >
                     <User className="mr-2 h-4 w-4" />
-                    Profile
+                    {studioSide === "customer" ? "Studio" : "Profile"}
                   </Button>
 
                   <ChatMediaGallery messages={messages} name={otherUser.full_name} />
-                  
+
+                  {studioSide === null && (
                   <Dialog open={showProjectDialog} onOpenChange={setShowProjectDialog}>
                     <DialogTrigger asChild>
                       <Button variant="outline" size="sm">
@@ -706,12 +761,17 @@ const Messages = () => {
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
+                  )}
                 </div>
               )}
             </div>
           </CardHeader>
 
-          <ProfilePeekSheet userId={otherUser?.id ?? null} open={showPeek} onOpenChange={setShowPeek} />
+          <ProfilePeekSheet
+            userId={studioSide === "customer" ? null : otherUser?.id ?? null}
+            open={showPeek}
+            onOpenChange={setShowPeek}
+          />
 
           <CardContent
             ref={scrollContainerRef}

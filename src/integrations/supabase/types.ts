@@ -803,20 +803,26 @@ export type Database = {
       conversations: {
         Row: {
           created_at: string | null
+          customer_id: string | null
           id: string
-          match_id: string
+          match_id: string | null
+          studio_id: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
+          customer_id?: string | null
           id?: string
-          match_id: string
+          match_id?: string | null
+          studio_id?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
+          customer_id?: string | null
           id?: string
-          match_id?: string
+          match_id?: string | null
+          studio_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -825,6 +831,13 @@ export type Database = {
             columns: ["match_id"]
             isOneToOne: false
             referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
             referencedColumns: ["id"]
           },
         ]
@@ -2321,6 +2334,54 @@ export type Database = {
           },
         ]
       }
+      project_studios: {
+        Row: {
+          added_by: string
+          created_at: string
+          id: string
+          project_id: string
+          role_label: string | null
+          status: string
+          studio_id: string
+          updated_at: string
+        }
+        Insert: {
+          added_by: string
+          created_at?: string
+          id?: string
+          project_id: string
+          role_label?: string | null
+          status?: string
+          studio_id: string
+          updated_at?: string
+        }
+        Update: {
+          added_by?: string
+          created_at?: string
+          id?: string
+          project_id?: string
+          role_label?: string | null
+          status?: string
+          studio_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_studios_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_studios_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_tasks: {
         Row: {
           assigned_to: string | null
@@ -2609,6 +2670,7 @@ export type Database = {
           id: string
           metadata: Json | null
           status: string | null
+          studio_id: string | null
           type: string
           user_id: string | null
         }
@@ -2620,6 +2682,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           status?: string | null
+          studio_id?: string | null
           type: string
           user_id?: string | null
         }
@@ -2631,10 +2694,19 @@ export type Database = {
           id?: string
           metadata?: Json | null
           status?: string | null
+          studio_id?: string | null
           type?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "revenue_transactions_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       saved_filter_presets: {
         Row: {
@@ -2928,6 +3000,7 @@ export type Database = {
           seller_id: string
           service_id: string
           status: string
+          studio_id: string | null
           updated_at: string
         }
         Insert: {
@@ -2940,6 +3013,7 @@ export type Database = {
           seller_id: string
           service_id: string
           status?: string
+          studio_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -2952,6 +3026,7 @@ export type Database = {
           seller_id?: string
           service_id?: string
           status?: string
+          studio_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -2960,6 +3035,13 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_orders_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
             referencedColumns: ["id"]
           },
         ]
@@ -2974,6 +3056,7 @@ export type Database = {
           reviewer_id: string
           seller_id: string
           service_id: string
+          studio_id: string | null
           updated_at: string
         }
         Insert: {
@@ -2985,6 +3068,7 @@ export type Database = {
           reviewer_id: string
           seller_id: string
           service_id: string
+          studio_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -2996,6 +3080,7 @@ export type Database = {
           reviewer_id?: string
           seller_id?: string
           service_id?: string
+          studio_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -3011,6 +3096,13 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_reviews_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
             referencedColumns: ["id"]
           },
         ]
@@ -4443,6 +4535,10 @@ export type Database = {
       set_studio_active: {
         Args: { _active: boolean; _studio_id: string }
         Returns: undefined
+      }
+      start_studio_conversation: {
+        Args: { _studio_id: string }
+        Returns: string
       }
       studio_management_allowed: {
         Args: { _studio_id: string }

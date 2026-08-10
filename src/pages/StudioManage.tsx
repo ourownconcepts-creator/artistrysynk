@@ -15,6 +15,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAppUser } from "@/hooks/useAppUser";
 import { StudioServicesManager } from "@/components/studio/StudioServicesManager";
+import { StudioOrdersPanel } from "@/components/studio/StudioOrdersPanel";
+import { StudioInboxPanel } from "@/components/studio/StudioInboxPanel";
 import { UPLOAD_BUCKETS, UPLOAD_LIMITS, UPLOAD_RULES, validateUpload, extensionFor } from "@/config/uploads";
 import {
   can,
@@ -272,6 +274,8 @@ const StudioManage = () => {
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="team">Team</TabsTrigger>
           <TabsTrigger value="services">Services</TabsTrigger>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
+          <TabsTrigger value="inbox">Inbox</TabsTrigger>
           <TabsTrigger value="gear">Gear</TabsTrigger>
         </TabsList>
 
@@ -282,6 +286,23 @@ const StudioManage = () => {
             role={role}
             studioActive={studio.is_active !== false}
             userId={user?.id}
+          />
+        </TabsContent>
+
+        <TabsContent value="orders" className="mt-6">
+          <StudioOrdersPanel
+            studioId={studio.id}
+            role={role}
+            studioActive={studio.is_active !== false}
+          />
+        </TabsContent>
+
+        <TabsContent value="inbox" className="mt-6">
+          <StudioInboxPanel
+            studioId={studio.id}
+            userId={user?.id}
+            role={role}
+            studioActive={studio.is_active !== false}
           />
         </TabsContent>
 

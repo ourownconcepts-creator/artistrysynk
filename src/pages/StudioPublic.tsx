@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "@/lib/router-compat";
-import { BadgeCheck, Building2, Heart, Mail, MapPin, Music2, Users } from "lucide-react";
+import { Link, useNavigate, useParams } from "@/lib/router-compat";
+import { BadgeCheck, Building2, Heart, Loader2, Mail, MapPin, MessageSquare, Music2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,7 @@ import {
   fetchStudioServices,
   fetchStudioTeam,
   isFollowingStudio,
+  startStudioConversation,
   toggleStudioFollow,
   type PublicStudio,
   type StudioEquipment,
@@ -29,6 +30,7 @@ import {
 const StudioPublic = () => {
   const { handle = "" } = useParams<{ handle: string }>();
   const { user } = useAppUser();
+  const navigate = useNavigate();
   const [studio, setStudio] = useState<PublicStudio | null>(null);
   const [loading, setLoading] = useState(true);
   const [team, setTeam] = useState<StudioTeamMember[]>([]);
@@ -38,6 +40,7 @@ const StudioPublic = () => {
   const [work, setWork] = useState<StudioPortfolioItem[]>([]);
   const [services, setServices] = useState<StudioService[]>([]);
   const [following, setFollowing] = useState(false);
+  const [messaging, setMessaging] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -80,6 +83,32 @@ const StudioPublic = () => {
       setFollowing(await toggleStudioFollow(studio.id, user.id, following));
     } catch {
       toast.error("Could not update follow");
+    }
+  };
+
+  /**
+   * Opens the studio's business chat. The creator side is derived from the
+   * session inside the database function, so nothing here is trusted.
+   */
+  const onMessageStudio = async () => {
+    if (!studio) return;
+    if (!user) {
+      toast.info("Sign in to message this studio");
+      return;
+    }
+    setMessaging(true);
+    try {
+      const conversationId = await startStudioConversation(studio.id);
+      navigate(`/messages/${conversationId}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "";
+      toast.error(
+        message.includes("already on this studio team")
+          ? "You are on this studio's team — use the studio inbox instead."
+          : "Could not open a chat with this studio",
+      );
+    } finally {
+      setMessaging(false);
     }
   };
 
@@ -140,6 +169,14 @@ const StudioPublic = () => {
               <Button variant={following ? "secondary" : "default"} onClick={onFollow}>
                 <Heart className={`mr-2 h-4 w-4 ${following ? "fill-current" : ""}`} />
                 {following ? "Following" : "Follow"}
+              </Button>
+              <Button variant="outline" onClick={onMessageStudio} disabled={messaging}>
+                {messaging ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                )}
+                Message studio
               </Button>
               {studio.contact_email && (
                 <Button variant="outline" asChild>

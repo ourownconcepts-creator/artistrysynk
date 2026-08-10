@@ -14,7 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ConversationWithMessages {
   id: string;
-  match_id: string;
+  match_id: string | null;
   created_at: string | null;
   updated_at: string | null;
   message_count: number;
@@ -71,7 +71,9 @@ export const MessagesModeration = () => {
       .select("conversation_id, content, created_at, sender_id");
 
     // Fetch matches to get participant info
-    const matchIds = conversationsData.map(c => c.match_id);
+    const matchIds = conversationsData
+      .map(c => c.match_id)
+      .filter((id): id is string => Boolean(id));
     const { data: matches } = await supabase
       .from("matches")
       .select("id, user_id_1, user_id_2")
@@ -98,7 +100,7 @@ export const MessagesModeration = () => {
         new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
       );
       
-      const match = matchMap.get(conv.match_id);
+      const match = conv.match_id ? matchMap.get(conv.match_id) : undefined;
       const participants = match ? [
         { id: match.user_id_1, name: profileMap.get(match.user_id_1) || "Unknown" },
         { id: match.user_id_2, name: profileMap.get(match.user_id_2) || "Unknown" }

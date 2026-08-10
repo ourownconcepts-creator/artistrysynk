@@ -45,6 +45,7 @@ import { RoleApprovals } from "@/components/projects/RoleApprovals";
 import { MeetingsPanel } from "@/components/hub/MeetingsPanel";
 import { NotesPanel } from "@/components/hub/NotesPanel";
 import { DeliverablesPanel, type HubMember } from "@/components/hub/DeliverablesPanel";
+import { ProjectStudioCredits } from "@/components/hub/ProjectStudioCredits";
 
 type Project = {
   id: string;
@@ -303,6 +304,11 @@ export default function CollaborationHub() {
               )}
             </section>
             <ActivityFeed projectId={project.id} />
+            <ProjectStudioCredits
+              projectId={project.id}
+              currentUserId={currentUser}
+              canManage={isCreator}
+            />
           </div>
         ) : null}
 
