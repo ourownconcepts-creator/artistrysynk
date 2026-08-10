@@ -357,6 +357,27 @@ export const SubscriptionManager = () => {
           </Button>
         </div>
 
+        {/* Grant length applied when a tier is changed */}
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-muted/30 p-3">
+          <span className="text-sm font-medium">Grant length</span>
+          <Select value={duration} onValueChange={setDuration}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {DURATIONS.map((d) => (
+                <SelectItem key={d.value} value={d.value}>
+                  {d.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            Applied whenever you set a paid tier below. Expired paid plans drop back to Free automatically;
+            lifetime plans never expire and can only be revoked by a super admin.
+          </p>
+        </div>
+
         {/* Bulk actions — upgrade or downgrade many users in one silent write */}
         {selectedIds.length > 0 ? (
           <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/40 p-3">
@@ -399,8 +420,9 @@ export const SubscriptionManager = () => {
                 <TableHead>Email</TableHead>
                 <TableHead>Tier</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Period End</TableHead>
+                <TableHead>Expires</TableHead>
                 <TableHead>Change Tier</TableHead>
+                <TableHead>Expiry</TableHead>
                 <TableHead>Change Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -428,9 +450,26 @@ export const SubscriptionManager = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {sub.current_period_end 
-                      ? format(new Date(sub.current_period_end), "MMM dd, yyyy")
-                      : "N/A"}
+                    {sub.is_lifetime ? (
+                      <Badge variant="default" className="gap-1">
+                        <InfinityIcon className="h-3 w-3" /> Lifetime
+                      </Badge>
+                    ) : sub.current_period_end ? (
+                      <span
+                        className={
+                          new Date(sub.current_period_end) < new Date() ? "text-destructive" : undefined
+                        }
+                      >
+                        {format(new Date(sub.current_period_end), "MMM dd, yyyy")}
+                        <span className="block text-xs text-muted-foreground">
+                          {new Date(sub.current_period_end) < new Date()
+                            ? "expired"
+                            : `in ${formatDistanceToNowStrict(new Date(sub.current_period_end))}`}
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Select
@@ -451,6 +490,41 @@ export const SubscriptionManager = () => {
                     </Select>
                   </TableCell>
                   <TableCell>
+                    {sub.is_lifetime ? (
+                      isSuperAdmin ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={savingIds.includes(sub.id)}
+                          onClick={() => void revokeLifetime(sub)}
+                        >
+                          Revoke lifetime
+                        </Button>
+                      ) : (
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <ShieldAlert className="h-3 w-3" /> Super admin only
+                        </span>
+                      )
+                    ) : (
+                      <Select
+                        value=""
+                        disabled={sub.tier === "free"}
+                        onValueChange={(value) => void updateExpiry(sub, value)}
+                      >
+                        <SelectTrigger className="w-[130px]">
+                          <SelectValue placeholder="Set expiry" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {DURATIONS.map((d) => (
+                            <SelectItem key={d.value} value={d.value}>
+                              {d.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </TableCell>
+                  <TableCell>
                     <Select
                       value={sub.status}
                       onValueChange={(value) => void updateSubscriptionStatus(sub.id, value)}
@@ -469,7 +543,7 @@ export const SubscriptionManager = () => {
               ))}
               {filteredSubscriptions.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-muted-foreground">
+                  <TableCell colSpan={9} className="text-center text-muted-foreground">
                     No subscriptions found
                   </TableCell>
                 </TableRow>
