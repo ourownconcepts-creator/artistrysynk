@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Send, ArrowLeft, FolderPlus, Flag, MoreVertical, CheckCheck, Check, Clock, AlertCircle, Loader2 } from "lucide-react";
+import { Send, ArrowLeft, FolderPlus, Flag, MoreVertical, CheckCheck, Check, Clock, AlertCircle, Loader2, User } from "lucide-react";
 import { FlagContentDialog } from "@/components/FlagContentDialog";
 import {
   DropdownMenu,
