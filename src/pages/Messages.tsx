@@ -264,10 +264,10 @@ const Messages = () => {
     if (!currentUser || !conversationId) return;
     const ext = file.name.includes(".") ? file.name.split(".").pop() : kind === "image" ? "jpg" : "webm";
     const path = `${conversationId}/${crypto.randomUUID()}.${ext}`;
-    const { error: uploadError } = await supabase.storage
-      .from("voice-notes")
-      .upload(path, file, { contentType: file.type || undefined });
+    setUploadProgress(0);
+    const { error: uploadError } = await uploadWithProgress("voice-notes", path, file, setUploadProgress);
     if (uploadError) {
+      setUploadProgress(null);
       toast.error("Couldn't upload attachment");
       return;
     }
@@ -283,9 +283,11 @@ const Messages = () => {
       .select("*")
       .single();
     if (error || !inserted) {
+      setUploadProgress(null);
       toast.error("Couldn't send attachment");
       return;
     }
+    setUploadProgress(null);
     setMessages((prev) =>
       prev.some((m) => m.id === inserted.id) ? prev : [...prev, { ...(inserted as Message), status: "sent" }],
     );
