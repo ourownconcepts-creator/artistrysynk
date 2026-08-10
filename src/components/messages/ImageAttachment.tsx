@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { UPLOAD_BUCKETS } from "@/config/uploads";
 
-/** Renders a chat image attachment from the private media bucket. */
+/**
+ * Renders a chat image attachment from the private chat-images bucket.
+ * Legacy attachments that were written to the voice-notes bucket keep working
+ * through a fallback signing attempt.
+ */
 export function ImageAttachment({ path, alt }: { path: string; alt: string }) {
   const [url, setUrl] = useState<string | null>(null);
 
@@ -12,8 +17,13 @@ export function ImageAttachment({ path, alt }: { path: string; alt: string }) {
         if (active) setUrl(path);
         return;
       }
-      const { data } = await supabase.storage.from("voice-notes").createSignedUrl(path, 3600);
-      if (active) setUrl(data?.signedUrl ?? null);
+      const { data } = await supabase.storage.from(UPLOAD_BUCKETS.chatImages).createSignedUrl(path, 3600);
+      if (data?.signedUrl) {
+        if (active) setUrl(data.signedUrl);
+        return;
+      }
+      const legacy = await supabase.storage.from(UPLOAD_BUCKETS.voiceNotes).createSignedUrl(path, 3600);
+      if (active) setUrl(legacy.data?.signedUrl ?? null);
     };
     void sign();
     return () => {

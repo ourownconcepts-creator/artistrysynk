@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { UPLOAD_BUCKETS, UPLOAD_LIMITS, safeFileName, validateUpload } from "@/config/uploads";
 import { submitCopyrightClaim, lookupCopyrightClaim } from "@/lib/copyright.functions";
 import { Footer } from "@/components/Footer";
 import { PageSEO } from "@/components/seo";
@@ -79,14 +80,15 @@ const CopyrightClaim = () => {
     try {
       const uploaded: { name: string; path: string }[] = [];
       for (const file of Array.from(chosen).slice(0, room)) {
-        if (file.size > 10 * 1024 * 1024) {
-          toast.error(`${file.name} is larger than 10MB.`);
+        const check = validateUpload(file, ["image", "document", "audio", "video"], UPLOAD_LIMITS.copyrightEvidence);
+        if (!check.ok) {
+          toast.error(check.error);
           continue;
         }
-        const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-80);
+        const safe = safeFileName(file.name);
         const path = `intake/${crypto.randomUUID()}-${safe}`;
         const { error } = await supabase.storage
-          .from("copyright-evidence")
+          .from(UPLOAD_BUCKETS.copyrightEvidence)
           .upload(path, file, { upsert: false, contentType: file.type || "application/octet-stream" });
         if (error) {
           toast.error(`Could not upload ${file.name}.`);
