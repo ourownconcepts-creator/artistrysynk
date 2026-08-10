@@ -30,6 +30,8 @@ const StudioPublic = () => {
   const [loading, setLoading] = useState(true);
   const [team, setTeam] = useState<StudioTeamMember[]>([]);
   const [equipment, setEquipment] = useState<StudioEquipment[]>([]);
+  const [gearDone, setGearDone] = useState(false);
+  const [gearLoadingMore, setGearLoadingMore] = useState(false);
   const [work, setWork] = useState<StudioPortfolioItem[]>([]);
   const [following, setFollowing] = useState(false);
 
@@ -49,6 +51,7 @@ const StudioPublic = () => {
       if (!active) return;
       setTeam(t);
       setEquipment(e);
+      setGearDone(e.length < EQUIPMENT_PAGE_SIZE);
       setWork(w);
     });
     return () => {
