@@ -431,13 +431,25 @@ const Messages = () => {
         <Card className="flex flex-1 flex-col overflow-hidden rounded-none border-0 bg-transparent shadow-none">
           <CardHeader className="app-blur sticky top-0 z-10 border-b border-border/40 py-3">
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate("/messages")}
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate("/messages")}
+                  aria-label={
+                    otherUnreadElsewhere > 0
+                      ? `Back to inbox, ${otherUnreadElsewhere} unread in other chats`
+                      : "Back to inbox"
+                  }
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+                {otherUnreadElsewhere > 0 ? (
+                  <span className="pointer-events-none absolute -right-0.5 -top-0.5 grid min-w-[18px] place-items-center rounded-full bg-primary px-1 text-[10px] font-bold leading-4 text-primary-foreground">
+                    {otherUnreadElsewhere > 99 ? "99+" : otherUnreadElsewhere}
+                  </span>
+                ) : null}
+              </div>
               
               {otherUser && (
                 <div className="flex items-center gap-3 flex-1">
@@ -455,8 +467,16 @@ const Messages = () => {
                     </Avatar>
                     <div className="min-w-0 flex-1">
                     <CardTitle className="truncate text-lg">{otherUser.full_name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      @{otherUser.username}
+                    <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      {otherOnline ? (
+                        <span className="flex items-center gap-1 text-emerald-500">
+                          <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                          Online
+                        </span>
+                      ) : (
+                        <span>{lastSeenLabel}</span>
+                      )}
+                      <span className="truncate">· @{otherUser.username}</span>
                       {realtimeStatus !== "connected" && (
                         <span
                           data-testid="chat-connection-status"
