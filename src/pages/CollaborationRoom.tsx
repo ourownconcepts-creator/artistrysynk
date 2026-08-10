@@ -240,7 +240,12 @@ const CollaborationRoom = () => {
               <p className="text-muted-foreground">{project.description}</p>
             </div>
           </div>
-          <Badge>{project.status}</Badge>
+          <div className="flex items-center gap-2">
+            <Button size="sm" onClick={() => navigate(`/hub/${project.id}`)}>
+              Open Hub
+            </Button>
+            <Badge>{project.status}</Badge>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
