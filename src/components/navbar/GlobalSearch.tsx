@@ -34,6 +34,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { TrustSignals, VerifiedBadge } from "@/components/trust/TrustSignals";
 
 interface SearchResult {
   id: string;
@@ -41,6 +42,8 @@ interface SearchResult {
   title: string;
   subtitle?: string;
   avatar?: string;
+  isVerified?: boolean | null;
+  isFeatured?: boolean | null;
 }
 
 type Availability = "all" | "open" | "closed";
@@ -158,6 +161,8 @@ export const GlobalSearch = () => {
               ? `@${user.username} · ${user.location}`
               : `@${user.username}`,
             avatar: user.avatar_url || undefined,
+            isVerified: user.is_verified,
+            isFeatured: user.is_featured,
           });
         });
       }
@@ -420,8 +425,16 @@ export const GlobalSearch = () => {
                         <AvatarFallback>{result.title.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium">{result.title}</p>
+                        <p className="flex items-center gap-1 font-medium">
+                          {result.title}
+                          {result.isVerified ? <VerifiedBadge className="h-3.5 w-3.5" /> : null}
+                        </p>
                         <p className="text-xs text-muted-foreground">{result.subtitle}</p>
+                        <TrustSignals
+                          className="mt-1"
+                          isVerified={result.isVerified}
+                          isFeatured={result.isFeatured}
+                        />
                       </div>
                     </CommandItem>
                   ))}

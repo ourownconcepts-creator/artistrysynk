@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Heart, X, RotateCcw, Crown, MapPin, Zap, BadgeCheck, Sparkles, Music, Users, Play, Pause, ChevronUp } from "lucide-react";
 import { getRoleLabel } from "@/lib/creativeRoles";
 import { motion, AnimatePresence } from "framer-motion";
+import { TrustSignals, VerifiedBadge } from "@/components/trust/TrustSignals";
 
 interface Profile {
   id: string;
@@ -20,6 +21,7 @@ interface Profile {
   user_creative_roles: { role: string }[];
   user_genres: { genre: string }[];
   user_skill_tags?: { skill: string }[];
+  last_seen_at?: string | null;
   synergyScore?: number;
   matchReason?: string;
 }
@@ -207,8 +209,15 @@ export const DiscoverProfileCard = ({
         <div>
           <h2 className="text-2xl font-bold text-white flex items-center gap-1.5 drop-shadow-lg" title={profile.full_name}>
             {profile.full_name}
-            {profile.is_verified && <BadgeCheck className="w-5 h-5 text-emerald-400 shrink-0" />}
+            {profile.is_verified && <VerifiedBadge className="w-5 h-5 text-emerald-400" />}
           </h2>
+          <TrustSignals
+            className="mt-1.5"
+            tone="onImage"
+            isVerified={profile.is_verified}
+            isFeatured={profile.is_featured}
+            lastSeenAt={profile.last_seen_at}
+          />
           <div className="flex items-center gap-3 mt-0.5">
             <p className="text-white/70 text-sm">@{profile.username}</p>
             {profile.location && (

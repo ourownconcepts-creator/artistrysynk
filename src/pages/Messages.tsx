@@ -30,6 +30,8 @@ import { ProfilePeekSheet } from "@/components/messages/ProfilePeekSheet";
 import { MessageReactions, type Reaction } from "@/components/messages/MessageReactions";
 import { VoiceNoteRecorder } from "@/components/messages/VoiceNoteRecorder";
 import { VoiceNotePlayer } from "@/components/messages/VoiceNotePlayer";
+import { AttachmentPicker } from "@/components/messages/AttachmentPicker";
+import { ImageAttachment } from "@/components/messages/ImageAttachment";
 
 interface Message {
   id: string;
@@ -253,6 +255,39 @@ const Messages = () => {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  /** Upload a picked image or audio clip and post it as a message. */
+  const sendAttachment = async (file: File, kind: "image" | "audio") => {
+    if (!currentUser || !conversationId) return;
+    const ext = file.name.includes(".") ? file.name.split(".").pop() : kind === "image" ? "jpg" : "webm";
+    const path = `${conversationId}/${crypto.randomUUID()}.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from("voice-notes")
+      .upload(path, file, { contentType: file.type || undefined });
+    if (uploadError) {
+      toast.error("Couldn't upload attachment");
+      return;
+    }
+    const { data: inserted, error } = await supabase
+      .from("messages")
+      .insert({
+        conversation_id: conversationId,
+        sender_id: currentUser,
+        content: kind === "image" ? "🖼️ Photo" : "🎧 Audio clip",
+        media_url: path,
+        media_type: kind,
+      })
+      .select("*")
+      .single();
+    if (error || !inserted) {
+      toast.error("Couldn't send attachment");
+      return;
+    }
+    setMessages((prev) =>
+      prev.some((m) => m.id === inserted.id) ? prev : [...prev, { ...(inserted as Message), status: "sent" }],
+    );
+    setTimeout(scrollToBottom, 50);
   };
 
   /** Live last-seen for the person you're chatting with (polled while tab is visible). */
@@ -719,6 +754,8 @@ const Messages = () => {
                               durationSeconds={message.media_duration_seconds}
                               mine={isCurrentUser}
                             />
+                          ) : message.media_type === "image" && message.media_url ? (
+                            <ImageAttachment path={message.media_url} alt={`Attachment from ${senderProfile?.full_name ?? "a collaborator"}`} />
                           ) : (
                             <p className="text-sm">{message.content}</p>
                           )}
@@ -815,6 +852,7 @@ const Messages = () => {
                 placeholder="Message..."
                 className="flex-1 rounded-full bg-surface-2 border-0"
               />
+              <AttachmentPicker onPick={sendAttachment} disabled={!currentUser} />
               <VoiceNoteRecorder onRecorded={sendVoiceNote} disabled={!currentUser} />
               <Button type="submit" variant="hero" disabled={!newMessage.trim()} aria-label="Send message">
                 <Send className="w-4 h-4" />
