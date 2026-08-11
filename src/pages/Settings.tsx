@@ -16,6 +16,7 @@ import { useTheme } from "next-themes";
 import { PushNotificationSettings } from "@/components/notifications/PushNotificationSettings";
 import { PrivacyCenterCard } from "@/components/settings/PrivacyCenterCard";
 import { VisibilityModeCard } from "@/components/settings/VisibilityModeCard";
+import { UsernamePicker } from "@/components/settings/UsernamePicker";
 import { IdentityCard } from "@/components/settings/IdentityCard";
 import { TrustedCircleCard } from "@/components/settings/TrustedCircleCard";
 import { PrivacyRequestsCard } from "@/components/settings/PrivacyRequestsCard";
@@ -339,6 +340,7 @@ const Settings = () => {
           </Card>
 
           <VisibilityModeCard />
+          <UsernamePicker />
           <IdentityCard />
           <TrustedCircleCard />
           <PrivacyCenterCard />

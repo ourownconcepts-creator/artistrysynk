@@ -25,6 +25,9 @@ import {
   submitVerification,
   uploadDocument,
   validateDocument,
+  fetchCorrections,
+  resubmitVerification,
+  type CorrectionRow,
   type VerificationDocument,
   type VerificationRequirement,
 } from "@/lib/verification";
@@ -46,6 +49,8 @@ export const VerificationChecklist = ({
   const [userId, setUserId] = useState<string | null>(null);
   const [requirements, setRequirements] = useState<VerificationRequirement[]>([]);
   const [docs, setDocs] = useState<VerificationDocument[]>([]);
+  const [corrections, setCorrections] = useState<CorrectionRow[]>([]);
+  const [resubmitting, setResubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [missing, setMissing] = useState<string[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
@@ -58,12 +63,14 @@ export const VerificationChecklist = ({
     const { data: auth } = await supabase.auth.getUser();
     const id = auth.user?.id ?? null;
     setUserId(id);
-    const [reqs, mine] = await Promise.all([
+    const [reqs, mine, fixes] = await Promise.all([
       fetchRequirements(level),
       id ? fetchMyDocuments(id) : Promise.resolve([]),
+      fetchCorrections(),
     ]);
     setRequirements(reqs);
     setDocs(mine);
+    setCorrections(fixes);
     setLoading(false);
   }, [level]);
 
@@ -72,6 +79,27 @@ export const VerificationChecklist = ({
   }, [load]);
 
   const docFor = (docType: string) => docs.find((d) => d.doc_type === docType);
+  const correctionFor = (docType: string) => corrections.find((c) => c.doc_type === docType);
+  const flagged = corrections.filter((c) => !c.replaced);
+  const activeCorrection = corrections[0];
+
+  const resubmit = async () => {
+    if (!activeCorrection) return;
+    setResubmitting(true);
+    const result = await resubmitVerification(activeCorrection.verification_id);
+    setResubmitting(false);
+    if (!result.ok) {
+      if (result.outstanding?.length) {
+        toast.error(`Still needed: ${result.outstanding.join(", ")}`);
+      } else {
+        toast.error(result.error ?? "Could not resubmit just yet.");
+      }
+      return;
+    }
+    toast.success("Resubmitted — we'll review the corrected documents.");
+    onSubmitted?.();
+    void load();
+  };
   const required = requirements.filter((r) => r.is_required);
   const done = required.filter((r) => docFor(r.doc_type)).length;
   const progress = required.length === 0 ? 100 : Math.round((done / required.length) * 100);
@@ -161,6 +189,40 @@ export const VerificationChecklist = ({
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {activeCorrection ? (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>
+              {flagged.length > 0
+                ? `${flagged.length} document${flagged.length > 1 ? "s" : ""} need${flagged.length > 1 ? "" : "s"} correcting`
+                : "Ready to resubmit"}
+            </AlertTitle>
+            <AlertDescription className="space-y-2">
+              {activeCorrection.summary ? <p>{activeCorrection.summary}</p> : null}
+              {flagged.length > 0 ? (
+                <ul className="list-disc space-y-1 pl-4">
+                  {flagged.map((c) => (
+                    <li key={c.doc_type}>
+                      <span className="font-medium">{c.label}</span>
+                      {c.reason ? ` — ${c.reason}` : " — please upload a clearer copy."}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Everything the reviewer asked for has been replaced.</p>
+              )}
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={flagged.length > 0 || resubmitting}
+                onClick={() => void resubmit()}
+              >
+                {resubmitting ? "Resubmitting…" : "Resubmit for review"}
+              </Button>
+            </AlertDescription>
+          </Alert>
+        ) : null}
+
         {missing.length > 0 ? (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -175,6 +237,7 @@ export const VerificationChecklist = ({
           {requirements.map((r, index) => {
             const doc = docFor(r.doc_type);
             const error = errors[r.doc_type];
+            const correction = correctionFor(r.doc_type);
             return (
               <li key={r.id} className="rounded-lg border p-4">
                 <div className="flex flex-wrap items-start gap-3">
@@ -206,10 +269,15 @@ export const VerificationChecklist = ({
                     {doc ? (
                       <p className="mt-2 truncate text-xs">
                         Attached: {doc.file_name ?? doc.doc_type}
-                        {doc.review_note ? (
-                          <span className="text-destructive"> — {doc.review_note}</span>
-                        ) : null}
                       </p>
+                    ) : null}
+                    {correction && !correction.replaced ? (
+                      <p className="mt-2 text-xs font-medium text-destructive">
+                        Reviewer asked for this again{correction.reason ? `: ${correction.reason}` : "."} Upload a
+                        replacement to clear it.
+                      </p>
+                    ) : doc?.review_note ? (
+                      <p className="mt-2 text-xs text-muted-foreground">Reviewer note: {doc.review_note}</p>
                     ) : null}
                     {error ? (
                       <p role="alert" className="mt-2 text-xs font-medium text-destructive">

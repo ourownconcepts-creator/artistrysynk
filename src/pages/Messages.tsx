@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { ProfilePeekSheet } from "@/components/messages/ProfilePeekSheet";
+import { IntroContextBanner } from "@/components/messages/IntroContextBanner";
 import { MessageReactions, type Reaction } from "@/components/messages/MessageReactions";
 import { VoiceNoteRecorder } from "@/components/messages/VoiceNoteRecorder";
 import { VoiceNotePlayer } from "@/components/messages/VoiceNotePlayer";
@@ -766,6 +767,8 @@ const Messages = () => {
               )}
             </div>
           </CardHeader>
+
+          <IntroContextBanner conversationId={conversationId} />
 
           <ProfilePeekSheet
             userId={studioSide === "customer" ? null : otherUser?.id ?? null}
