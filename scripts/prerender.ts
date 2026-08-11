@@ -68,7 +68,7 @@ const staticPages: Page[] = [
     path: "/",
     title: "ArtistrySynk – Create, Connect, Collaborate",
     description:
-      "Connect with musicians, producers, dancers and actors worldwide. Match, collaborate, and bring your creative vision to life on ArtistrySynk.",
+      "Connect with creatives worldwide — musicians, designers, photographers, filmmakers, dancers and writers. Match, collaborate and bring your vision to life.",
     content:
       "<h1>ArtistrySynk – Create, Connect, Collaborate</h1><p>Match with musicians, producers, designers, photographers, dancers, actors and developers worldwide, then collaborate on real projects.</p>",
   },
