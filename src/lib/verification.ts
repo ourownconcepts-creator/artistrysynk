@@ -171,6 +171,33 @@ export const fetchTimeline = async (): Promise<TimelineRow[]> => {
   return (data ?? []) as TimelineRow[];
 };
 
+export type CorrectionRow = {
+  verification_id: string;
+  capability: string | null;
+  status: string;
+  summary: string | null;
+  doc_type: string;
+  label: string;
+  reason: string | null;
+  replaced: boolean;
+};
+
+/** Documents a reviewer asked for again, with their written reason. */
+export const fetchCorrections = async (): Promise<CorrectionRow[]> => {
+  const { data } = await supabase.rpc("my_verification_corrections");
+  return (data ?? []) as CorrectionRow[];
+};
+
+/** One-click resubmission; blocked server-side until flagged docs are replaced. */
+export const resubmitVerification = async (
+  verificationId: string,
+): Promise<{ ok: boolean; outstanding?: string[]; error?: string }> => {
+  const { data, error } = await supabase.rpc("resubmit_verification", { _id: verificationId });
+  if (error) return { ok: false, error: error.message };
+  const result = (data ?? {}) as { ok?: boolean; outstanding?: string[] };
+  return { ok: !!result.ok, outstanding: result.outstanding ?? [] };
+};
+
 /** Signed URL so a member can re-check what they uploaded. */
 export const previewDocument = async (doc: VerificationDocument) => {
   const { data } = await supabase.storage
