@@ -1,3 +1,4 @@
+import { ogImageMeta } from "./ogImage";
 import { getRoleLabel } from "@/lib/creativeRoles";
 
 export const PROFILE_SEO_BASE = "https://artistrysynk.app";
