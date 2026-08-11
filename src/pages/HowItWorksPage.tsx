@@ -86,7 +86,7 @@ const HowItWorksPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <PageSEO
-        title="How It Works - Find Your Creative Match | Artistry"
+        title="How It Works - Find Your Creative Match | ArtistrySynk"
         description="Four simple steps to finding your perfect creative collaborator: Create profile, discover creatives, match & connect, and create together."
         canonicalUrl="https://artistrysynk.app/how-it-works"
         keywords="how to find collaborators, creative matching process, artist networking, music collaboration steps, find producers"

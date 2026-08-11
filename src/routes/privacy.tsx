@@ -2,6 +2,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { LegalDocumentView } from "@/components/legal/LegalDocumentView";
 import { getLegalDocument } from "@/lib/legal.functions";
+import { buildPageHead, breadcrumbJsonLd } from "@/lib/seoHead";
 
 /** Canonical, indexable URL for the Privacy Policy. Content is served from the versioned legal document store. */
 export const Route = createFileRoute("/privacy")({
@@ -10,24 +11,19 @@ export const Route = createFileRoute("/privacy")({
     if (!doc) throw notFound();
     return doc;
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: "Privacy Policy | ArtistrySynk" },
-      {
-        name: "description",
-        content:
-          loaderData?.summary ??
-          "The ArtistrySynk Privacy Policy — what it covers and when it took effect.",
-      },
-      { property: "og:title", content: "Privacy Policy | ArtistrySynk" },
-      {
-        property: "og:description",
-        content: loaderData?.summary ?? "The ArtistrySynk Privacy Policy.",
-      },
-      { property: "og:type", content: "article" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: ({ loaderData }) =>
+    buildPageHead({
+      path: "/privacy",
+      title: "Privacy Policy | ArtistrySynk",
+      description: loaderData?.summary ?? "The ArtistrySynk Privacy Policy — what data we collect, how we use it and your rights.",
+      ogType: "article",
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Privacy Policy", path: "/privacy" },
+        ]),
+      ],
+    }),
   errorComponent: () => (
     <main className="container mx-auto px-4 py-16 text-center">
       <p className="text-muted-foreground">We couldn't load this policy. Please refresh.</p>

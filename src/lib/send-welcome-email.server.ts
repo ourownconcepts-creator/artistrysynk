@@ -59,7 +59,7 @@ export async function sendWelcomeEmail({ email, fullName, username }: SendWelcom
                       <table width="100%" cellpadding="0" cellspacing="0">
                         <tr>
                           <td align="center">
-                            <a href="https://artistrysynk.lovable.app/setup-profile" style="display: inline-block; background: linear-gradient(135deg, #c026d3 0%, #7c3aed 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                            <a href="https://artistrysynk.app/setup-profile" style="display: inline-block; background: linear-gradient(135deg, #c026d3 0%, #7c3aed 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: bold; font-size: 16px;">
                               Complete Your Profile
                             </a>
                           </td>
@@ -78,8 +78,8 @@ export async function sendWelcomeEmail({ email, fullName, username }: SendWelcom
                         © ${new Date().getFullYear()} ArtistrySynk – Global Creative Network
                       </p>
                       <p style="color: #52525b; font-size: 12px; margin: 0;">
-                        <a href="https://artistrysynk.lovable.app" style="color: #c026d3; text-decoration: none;">Visit Website</a> •
-                        <a href="https://artistrysynk.lovable.app/discover" style="color: #c026d3; text-decoration: none;">Discover Creatives</a>
+                        <a href="https://artistrysynk.app" style="color: #c026d3; text-decoration: none;">Visit Website</a> •
+                        <a href="https://artistrysynk.app/discover" style="color: #c026d3; text-decoration: none;">Discover Creatives</a>
                       </p>
                     </td>
                   </tr>

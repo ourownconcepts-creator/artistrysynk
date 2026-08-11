@@ -31,11 +31,10 @@ const ORGANIZATION_JSONLD = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "ArtistrySynk",
-  alternateName: "ArtistrySynk Africa",
   url: "https://artistrysynk.app",
   logo: "https://artistrysynk.app/logo.png",
   description:
-    "The ultimate platform connecting musicians, producers, dancers, actors, and creative professionals across Africa.",
+    "Global creative collaboration platform connecting musicians, producers, designers, photographers, filmmakers, dancers, actors and writers.",
   foundingDate: "2024",
   sameAs: [
     "https://instagram.com/artistrysynk",
@@ -128,8 +127,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Connect with creatives worldwide — musicians, designers, photographers, filmmakers, dancers and writers. Match, collaborate and bring your vision to life.",
       },
       { property: "og:image", content: "https://artistrysynk.app/og-image.jpg" },
-      { property: "og:image:width", content: "1200" },
-      { property: "og:image:height", content: "630" },
+      { property: "og:image:type", content: "image/jpeg" },
+      { property: "og:image:width", content: "1920" },
+      { property: "og:image:height", content: "1080" },
+      {
+        property: "og:image:alt",
+        content: "ArtistrySynk — create, connect and collaborate with creatives worldwide",
+      },
       { property: "og:site_name", content: "ArtistrySynk" },
       { property: "og:locale", content: "en_NG" },
       { name: "twitter:card", content: "summary_large_image" },

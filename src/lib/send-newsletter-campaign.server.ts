@@ -70,7 +70,7 @@ export async function sendNewsletterCampaign({
                     <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 30px;">
                       <p style="color: #6b7280; font-size: 14px;">
                         You're receiving this email because you subscribed to our newsletter.<br>
-                        <a href="https://artistrysynk.lovable.app" style="color: #c026d3;">Unsubscribe</a>
+                        <a href="https://artistrysynk.app" style="color: #c026d3;">Unsubscribe</a>
                       </p>
                     </div>
                   </div>

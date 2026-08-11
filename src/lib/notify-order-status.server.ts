@@ -55,7 +55,7 @@ export async function notifyOrderStatus({
             <p style="color: ${statusInfo.color}; margin: 10px 0 0 0; font-size: 14px; font-weight: bold; text-transform: uppercase;">Status: ${newStatus.replace(/_/g, ' ')}</p>
           </div>
           
-          <a href="https://artistrysynk.lovable.app/marketplace" 
+          <a href="https://artistrysynk.app/marketplace" 
              style="display: inline-block; background: linear-gradient(135deg, #c026d3 0%, #7c3aed 100%); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
             View Order Details
           </a>

@@ -12,7 +12,7 @@ export const OrganizationSchema = ({
   name = "ArtistrySynk",
   url = "https://artistrysynk.app",
   logo = "https://artistrysynk.app/logo.png",
-  description = "The ultimate platform connecting musicians, producers, dancers, actors, and creative professionals across Africa. Create, connect, and collaborate with talented creatives.",
+  description = "Global creative collaboration platform connecting musicians, producers, designers, photographers, filmmakers, dancers, actors and writers.",
   sameAs = [
     "https://instagram.com/artistrysynk",
     "https://twitter.com/artistrysynk",
@@ -25,7 +25,7 @@ export const OrganizationSchema = ({
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": name,
-    "alternateName": "ArtistrySynk Africa",
+    
     "url": url,
     "logo": logo,
     "description": description,
