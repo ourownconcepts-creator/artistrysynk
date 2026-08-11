@@ -15,6 +15,9 @@ import { Bell, Shield, User, Moon, Sun, Monitor, Loader2, Scale, FileText, Cooki
 import { useTheme } from "next-themes";
 import { PushNotificationSettings } from "@/components/notifications/PushNotificationSettings";
 import { PrivacyCenterCard } from "@/components/settings/PrivacyCenterCard";
+import { VisibilityModeCard } from "@/components/settings/VisibilityModeCard";
+import { IdentityCard } from "@/components/settings/IdentityCard";
+import { TrustedCircleCard } from "@/components/settings/TrustedCircleCard";
 import { PrivacyRequestsCard } from "@/components/settings/PrivacyRequestsCard";
 import { BlockedUsersList } from "@/components/settings/BlockedUsersList";
 import { MutedUsersList } from "@/components/settings/MutedUsersList";
@@ -335,6 +338,9 @@ const Settings = () => {
             </CardContent>
           </Card>
 
+          <VisibilityModeCard />
+          <IdentityCard />
+          <TrustedCircleCard />
           <PrivacyCenterCard />
           <PrivacyRequestsCard />
 
