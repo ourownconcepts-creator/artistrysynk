@@ -103,6 +103,7 @@ import { Route as StudiosNewRouteImport } from './routes/studios/new'
 import { Route as StudiosHandleIndexRouteImport } from './routes/studios/$handle/index'
 import { Route as StudiosHandleManageRouteImport } from './routes/studios/$handle/manage'
 import { Route as ApiPublicHooksRetentionSweepRouteImport } from './routes/api/public/hooks/retention-sweep'
+import { Route as ApiPublicHooksSeoRefreshRouteImport } from './routes/api/public/hooks/seo-refresh'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -577,6 +578,12 @@ const ApiPublicHooksRetentionSweepRoute =
     path: '/api/public/hooks/retention-sweep',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksSeoRefreshRoute =
+  ApiPublicHooksSeoRefreshRouteImport.update({
+    id: '/api/public/hooks/seo-refresh',
+    path: '/api/public/hooks/seo-refresh',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -673,6 +680,7 @@ export interface FileRoutesByFullPath {
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
   '/studios/$handle/': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
+  '/api/public/hooks/seo-refresh': typeof ApiPublicHooksSeoRefreshRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -769,6 +777,7 @@ export interface FileRoutesByTo {
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
   '/studios/$handle': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
+  '/api/public/hooks/seo-refresh': typeof ApiPublicHooksSeoRefreshRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -866,6 +875,7 @@ export interface FileRoutesById {
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
   '/studios/$handle/': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
+  '/api/public/hooks/seo-refresh': typeof ApiPublicHooksSeoRefreshRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -964,6 +974,7 @@ export interface FileRouteTypes {
     | '/studios/$handle/manage'
     | '/studios/$handle/'
     | '/api/public/hooks/retention-sweep'
+    | '/api/public/hooks/seo-refresh'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1060,6 +1071,7 @@ export interface FileRouteTypes {
     | '/studios/$handle/manage'
     | '/studios/$handle'
     | '/api/public/hooks/retention-sweep'
+    | '/api/public/hooks/seo-refresh'
   id:
     | '__root__'
     | '/'
@@ -1156,6 +1168,7 @@ export interface FileRouteTypes {
     | '/studios/$handle/manage'
     | '/studios/$handle/'
     | '/api/public/hooks/retention-sweep'
+    | '/api/public/hooks/seo-refresh'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1253,6 +1266,7 @@ export interface RootRouteChildren {
   StudiosHandleManageRoute: typeof StudiosHandleManageRoute
   StudiosHandleIndexRoute: typeof StudiosHandleIndexRoute
   ApiPublicHooksRetentionSweepRoute: typeof ApiPublicHooksRetentionSweepRoute
+  ApiPublicHooksSeoRefreshRoute: typeof ApiPublicHooksSeoRefreshRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1915,6 +1929,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksRetentionSweepRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/seo-refresh': {
+      id: '/api/public/hooks/seo-refresh'
+      path: '/api/public/hooks/seo-refresh'
+      fullPath: '/api/public/hooks/seo-refresh'
+      preLoaderRoute: typeof ApiPublicHooksSeoRefreshRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -2014,6 +2035,7 @@ const rootRouteChildren: RootRouteChildren = {
   StudiosHandleManageRoute: StudiosHandleManageRoute,
   StudiosHandleIndexRoute: StudiosHandleIndexRoute,
   ApiPublicHooksRetentionSweepRoute: ApiPublicHooksRetentionSweepRoute,
+  ApiPublicHooksSeoRefreshRoute: ApiPublicHooksSeoRefreshRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
