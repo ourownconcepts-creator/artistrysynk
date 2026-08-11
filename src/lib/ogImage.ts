@@ -37,7 +37,7 @@ export function ogImageUrl(src?: string | null): string {
 }
 
 /** Full og/twitter image meta block for a candidate image. */
-export function ogImageMeta(src: string | null | undefined, alt: string) {
+export function ogImageMeta(src: string | null | undefined, alt: string): Record<string, string>[] {
   const url = ogImageUrl(src);
   return [
     { property: "og:image", content: url },
