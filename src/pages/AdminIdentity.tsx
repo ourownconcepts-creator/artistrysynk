@@ -14,6 +14,17 @@ import {
 import { toast } from "sonner";
 import { BadgeCheck, FileClock, Loader2, ShieldCheck } from "lucide-react";
 import { CAPABILITY_LABELS, LEVEL_LABELS } from "@/lib/capabilities";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+import { notifyVerificationDecision } from "@/lib/notify-verification-decision.functions";
 
 type Summary = { status: string; level: string; total: number };
 type Review = {
@@ -48,6 +59,10 @@ const AdminIdentity = () => {
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [denied, setDenied] = useState(false);
+  const [requestFor, setRequestFor] = useState<Review | null>(null);
+  const [docTypes, setDocTypes] = useState<{ doc_type: string; label: string }[]>([]);
+  const [selectedDocs, setSelectedDocs] = useState<Record<string, string>>({});
+  const [requestSummary, setRequestSummary] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -72,6 +87,7 @@ const AdminIdentity = () => {
 
   const decide = async (id: string, status: "verified" | "failed", level = "identity_verified") => {
     setBusyId(id);
+    const review = reviews.find((r) => r.id === id);
     const { error } = await supabase.rpc("admin_decide_verification", {
       _id: id,
       _status: status,
@@ -81,8 +97,70 @@ const AdminIdentity = () => {
     if (error) toast.error("Could not update that verification.");
     else {
       toast.success(status === "verified" ? "Member verified." : "Verification rejected.");
+      if (review?.subject_type === "user") {
+        void notifyVerificationDecision({
+          data: {
+            subjectId: review.subject_id,
+            status: status === "verified" ? "approved" : "rejected",
+            requestType: review.capability
+              ? (CAPABILITY_LABELS[review.capability] ?? review.capability)
+              : "identity",
+          },
+        }).catch(() => undefined);
+      }
       void load();
     }
+  };
+
+  const openRequest = async (review: Review) => {
+    setRequestFor(review);
+    setSelectedDocs({});
+    setRequestSummary("");
+    const { data } = await supabase
+      .from("verification_requirements")
+      .select("doc_type, label")
+      .order("sort_order", { ascending: true });
+    const unique = new Map<string, string>();
+    for (const row of data ?? []) unique.set(row.doc_type, row.label);
+    setDocTypes([...unique].map(([doc_type, label]) => ({ doc_type, label })));
+  };
+
+  const sendRequest = async () => {
+    if (!requestFor) return;
+    const rejections = Object.entries(selectedDocs).map(([doc_type, reason]) => ({
+      doc_type,
+      reason,
+    }));
+    if (rejections.length === 0) {
+      toast.error("Pick at least one document to request again.");
+      return;
+    }
+    setBusyId(requestFor.id);
+    const { error } = await supabase.rpc("admin_request_documents", {
+      _id: requestFor.id,
+      _rejections: rejections,
+      _summary: requestSummary.trim() || undefined,
+    });
+    setBusyId(null);
+    if (error) {
+      toast.error("Could not request those documents.");
+      return;
+    }
+    toast.success("Member notified with your notes.");
+    void notifyVerificationDecision({
+      data: {
+        subjectId: requestFor.subject_id,
+        status: "rejected",
+        requestType: requestFor.capability
+          ? (CAPABILITY_LABELS[requestFor.capability] ?? requestFor.capability)
+          : "identity",
+        reason:
+          requestSummary.trim() ||
+          `Please replace: ${rejections.map((r) => r.doc_type).join(", ")}`,
+      },
+    }).catch(() => undefined);
+    setRequestFor(null);
+    void load();
   };
 
   if (loading) {
@@ -162,6 +240,7 @@ const AdminIdentity = () => {
               <SelectContent>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="verified">Verified</SelectItem>
+                <SelectItem value="needs_more_info">Needs more info</SelectItem>
                 <SelectItem value="failed">Rejected</SelectItem>
                 <SelectItem value="all">All</SelectItem>
               </SelectContent>
@@ -198,7 +277,7 @@ const AdminIdentity = () => {
                   >
                     {r.status}
                   </Badge>
-                  {r.status === "pending" ? (
+                  {r.status === "pending" || r.status === "needs_more_info" ? (
                     <div className="flex gap-2">
                       <Button
                         size="sm"
@@ -206,6 +285,14 @@ const AdminIdentity = () => {
                         onClick={() => void decide(r.id, "verified")}
                       >
                         Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        disabled={busyId === r.id}
+                        onClick={() => void openRequest(r)}
+                      >
+                        Request docs
                       </Button>
                       <Button
                         size="sm"
@@ -245,6 +332,65 @@ const AdminIdentity = () => {
           )}
         </TabsContent>
       </Tabs>
+
+      <Dialog open={!!requestFor} onOpenChange={(open) => !open && setRequestFor(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Request documents again</DialogTitle>
+            <DialogDescription>
+              Select what needs correcting and say why. The member sees your reason next to each
+              document and can resubmit in one click.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            {docTypes.map((d) => {
+              const checked = d.doc_type in selectedDocs;
+              return (
+                <div key={d.doc_type} className="space-y-2 rounded-lg border p-3">
+                  <label className="flex items-center gap-2 text-sm font-medium">
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={(next) =>
+                        setSelectedDocs((prev) => {
+                          const copy = { ...prev };
+                          if (next) copy[d.doc_type] = "";
+                          else delete copy[d.doc_type];
+                          return copy;
+                        })
+                      }
+                    />
+                    {d.label}
+                  </label>
+                  {checked ? (
+                    <Textarea
+                      value={selectedDocs[d.doc_type] ?? ""}
+                      maxLength={300}
+                      placeholder="e.g. the photo is blurry — resend a well-lit copy"
+                      onChange={(e) =>
+                        setSelectedDocs((prev) => ({ ...prev, [d.doc_type]: e.target.value }))
+                      }
+                    />
+                  ) : null}
+                </div>
+              );
+            })}
+            <Textarea
+              value={requestSummary}
+              maxLength={500}
+              placeholder="Optional summary shown at the top of their checklist"
+              onChange={(e) => setRequestSummary(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRequestFor(null)}>
+              Cancel
+            </Button>
+            <Button onClick={() => void sendRequest()} disabled={busyId === requestFor?.id}>
+              Send request
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
