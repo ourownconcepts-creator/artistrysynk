@@ -4,8 +4,8 @@
  * which stays governed by project_members / is_project_member.
  */
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "@/lib/router-compat";
-import { BadgeCheck, Building2, Loader2, Plus, X } from "lucide-react";
+import { Link, useNavigate } from "@/lib/router-compat";
+import { BadgeCheck, Building2, Loader2, MessageSquare, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,7 @@ import {
   attachStudioToProject,
   detachStudioFromProject,
   fetchProjectStudios,
+  startStudioConversation,
   type ProjectStudioCredit,
 } from "@/lib/studios";
 
@@ -39,6 +40,8 @@ export function ProjectStudioCredits({ projectId, currentUserId, canManage }: Pr
   const [saving, setSaving] = useState(false);
   const [studioId, setStudioId] = useState("");
   const [roleLabel, setRoleLabel] = useState("");
+  const [messagingId, setMessagingId] = useState<string | null>(null);
+  const navigate = useNavigate();
   const { studios } = useMyStudios();
 
   const load = useCallback(async () => {
@@ -90,6 +93,25 @@ export function ProjectStudioCredits({ projectId, currentUserId, canManage }: Pr
       setCredits((prev) => prev.filter((c) => c.id !== rowId));
     } catch {
       toast.error("Could not remove that studio credit");
+    }
+  };
+
+  /** Opens (or reuses) the studio's business thread. The RPC decides whether
+   *  the caller is allowed a customer thread, so team members are rejected. */
+  const onMessageStudio = async (id: string) => {
+    setMessagingId(id);
+    try {
+      const conversationId = await startStudioConversation(id);
+      navigate(`/messages/${conversationId}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "";
+      toast.error(
+        message.includes("already on this studio team")
+          ? "You're on this studio's team — use the studio inbox instead."
+          : "Could not open a chat with this studio",
+      );
+    } finally {
+      setMessagingId(null);
     }
   };
 
@@ -170,6 +192,21 @@ export function ProjectStudioCredits({ projectId, currentUserId, canManage }: Pr
                   {credit.role_label || "Contributor"}
                 </p>
               </div>
+              {!studios.some((s) => s.studio.id === credit.studio_id) ? (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  aria-label={`Message ${credit.studios?.name ?? "studio"}`}
+                  disabled={messagingId === credit.studio_id}
+                  onClick={() => onMessageStudio(credit.studio_id)}
+                >
+                  {messagingId === credit.studio_id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <MessageSquare className="h-4 w-4" />
+                  )}
+                </Button>
+              ) : null}
               {canManage ? (
                 <Button
                   size="icon"
