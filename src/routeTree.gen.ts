@@ -35,6 +35,7 @@ import { Route as DancersRouteImport } from './routes/dancers'
 import { Route as DataDeletionRouteImport } from './routes/data-deletion'
 import { Route as DesignersRouteImport } from './routes/designers'
 import { Route as DiscoverRouteImport } from './routes/discover'
+import { Route as E7f290e9fedb2d290482f1ccc7201237DottxtRouteImport } from './routes/e7f290e9fedb2d290482f1ccc7201237[.]txt'
 import { Route as EditProfileRouteImport } from './routes/edit-profile'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as FeedRouteImport } from './routes/feed'
@@ -57,6 +58,12 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PrivacyRequestsRouteImport } from './routes/privacy-requests'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SetupProfileRouteImport } from './routes/setup-profile'
+import { Route as SitemapBlogDotxmlRouteImport } from './routes/sitemap-blog[.]xml'
+import { Route as SitemapLandingDotxmlRouteImport } from './routes/sitemap-landing[.]xml'
+import { Route as SitemapStaticDotxmlRouteImport } from './routes/sitemap-static[.]xml'
+import { Route as SitemapStudiosDotxmlRouteImport } from './routes/sitemap-studios[.]xml'
+import { Route as SitemapUsersDotxmlRouteImport } from './routes/sitemap-users[.]xml'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SoftwareDevelopersRouteImport } from './routes/software-developers'
 import { Route as SongwritersRouteImport } from './routes/songwriters'
 import { Route as SuccessStoriesRouteImport } from './routes/success-stories'
@@ -96,6 +103,7 @@ import { Route as StudiosNewRouteImport } from './routes/studios/new'
 import { Route as StudiosHandleIndexRouteImport } from './routes/studios/$handle/index'
 import { Route as StudiosHandleManageRouteImport } from './routes/studios/$handle/manage'
 import { Route as ApiPublicHooksRetentionSweepRouteImport } from './routes/api/public/hooks/retention-sweep'
+import { Route as ApiPublicHooksSeoRefreshRouteImport } from './routes/api/public/hooks/seo-refresh'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -227,6 +235,12 @@ const DiscoverRoute = DiscoverRouteImport.update({
   path: '/discover',
   getParentRoute: () => rootRouteImport,
 } as any)
+const E7f290e9fedb2d290482f1ccc7201237DottxtRoute =
+  E7f290e9fedb2d290482f1ccc7201237DottxtRouteImport.update({
+    id: '/e7f290e9fedb2d290482f1ccc7201237.txt',
+    path: '/e7f290e9fedb2d290482f1ccc7201237.txt',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const EditProfileRoute = EditProfileRouteImport.update({
   id: '/edit-profile',
   path: '/edit-profile',
@@ -335,6 +349,36 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const SetupProfileRoute = SetupProfileRouteImport.update({
   id: '/setup-profile',
   path: '/setup-profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapBlogDotxmlRoute = SitemapBlogDotxmlRouteImport.update({
+  id: '/sitemap-blog.xml',
+  path: '/sitemap-blog.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapLandingDotxmlRoute = SitemapLandingDotxmlRouteImport.update({
+  id: '/sitemap-landing.xml',
+  path: '/sitemap-landing.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapStaticDotxmlRoute = SitemapStaticDotxmlRouteImport.update({
+  id: '/sitemap-static.xml',
+  path: '/sitemap-static.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapStudiosDotxmlRoute = SitemapStudiosDotxmlRouteImport.update({
+  id: '/sitemap-studios.xml',
+  path: '/sitemap-studios.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapUsersDotxmlRoute = SitemapUsersDotxmlRouteImport.update({
+  id: '/sitemap-users.xml',
+  path: '/sitemap-users.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SoftwareDevelopersRoute = SoftwareDevelopersRouteImport.update({
@@ -534,6 +578,12 @@ const ApiPublicHooksRetentionSweepRoute =
     path: '/api/public/hooks/retention-sweep',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksSeoRefreshRoute =
+  ApiPublicHooksSeoRefreshRouteImport.update({
+    id: '/api/public/hooks/seo-refresh',
+    path: '/api/public/hooks/seo-refresh',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -562,6 +612,7 @@ export interface FileRoutesByFullPath {
   '/data-deletion': typeof DataDeletionRoute
   '/designers': typeof DesignersRoute
   '/discover': typeof DiscoverRoute
+  '/e7f290e9fedb2d290482f1ccc7201237.txt': typeof E7f290e9fedb2d290482f1ccc7201237DottxtRoute
   '/edit-profile': typeof EditProfileRoute
   '/features': typeof FeaturesRoute
   '/feed': typeof FeedRoute
@@ -584,6 +635,12 @@ export interface FileRoutesByFullPath {
   '/privacy-requests': typeof PrivacyRequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
+  '/sitemap-blog.xml': typeof SitemapBlogDotxmlRoute
+  '/sitemap-landing.xml': typeof SitemapLandingDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
+  '/sitemap-studios.xml': typeof SitemapStudiosDotxmlRoute
+  '/sitemap-users.xml': typeof SitemapUsersDotxmlRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/software-developers': typeof SoftwareDevelopersRoute
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
@@ -623,6 +680,7 @@ export interface FileRoutesByFullPath {
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
   '/studios/$handle/': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
+  '/api/public/hooks/seo-refresh': typeof ApiPublicHooksSeoRefreshRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -651,6 +709,7 @@ export interface FileRoutesByTo {
   '/data-deletion': typeof DataDeletionRoute
   '/designers': typeof DesignersRoute
   '/discover': typeof DiscoverRoute
+  '/e7f290e9fedb2d290482f1ccc7201237.txt': typeof E7f290e9fedb2d290482f1ccc7201237DottxtRoute
   '/edit-profile': typeof EditProfileRoute
   '/features': typeof FeaturesRoute
   '/feed': typeof FeedRoute
@@ -673,6 +732,12 @@ export interface FileRoutesByTo {
   '/privacy-requests': typeof PrivacyRequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
+  '/sitemap-blog.xml': typeof SitemapBlogDotxmlRoute
+  '/sitemap-landing.xml': typeof SitemapLandingDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
+  '/sitemap-studios.xml': typeof SitemapStudiosDotxmlRoute
+  '/sitemap-users.xml': typeof SitemapUsersDotxmlRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/software-developers': typeof SoftwareDevelopersRoute
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
@@ -712,6 +777,7 @@ export interface FileRoutesByTo {
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
   '/studios/$handle': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
+  '/api/public/hooks/seo-refresh': typeof ApiPublicHooksSeoRefreshRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -741,6 +807,7 @@ export interface FileRoutesById {
   '/data-deletion': typeof DataDeletionRoute
   '/designers': typeof DesignersRoute
   '/discover': typeof DiscoverRoute
+  '/e7f290e9fedb2d290482f1ccc7201237.txt': typeof E7f290e9fedb2d290482f1ccc7201237DottxtRoute
   '/edit-profile': typeof EditProfileRoute
   '/features': typeof FeaturesRoute
   '/feed': typeof FeedRoute
@@ -763,6 +830,12 @@ export interface FileRoutesById {
   '/privacy-requests': typeof PrivacyRequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
+  '/sitemap-blog.xml': typeof SitemapBlogDotxmlRoute
+  '/sitemap-landing.xml': typeof SitemapLandingDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
+  '/sitemap-studios.xml': typeof SitemapStudiosDotxmlRoute
+  '/sitemap-users.xml': typeof SitemapUsersDotxmlRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/software-developers': typeof SoftwareDevelopersRoute
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
@@ -802,6 +875,7 @@ export interface FileRoutesById {
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
   '/studios/$handle/': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
+  '/api/public/hooks/seo-refresh': typeof ApiPublicHooksSeoRefreshRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -832,6 +906,7 @@ export interface FileRouteTypes {
     | '/data-deletion'
     | '/designers'
     | '/discover'
+    | '/e7f290e9fedb2d290482f1ccc7201237.txt'
     | '/edit-profile'
     | '/features'
     | '/feed'
@@ -854,6 +929,12 @@ export interface FileRouteTypes {
     | '/privacy-requests'
     | '/reset-password'
     | '/setup-profile'
+    | '/sitemap-blog.xml'
+    | '/sitemap-landing.xml'
+    | '/sitemap-static.xml'
+    | '/sitemap-studios.xml'
+    | '/sitemap-users.xml'
+    | '/sitemap.xml'
     | '/software-developers'
     | '/songwriters'
     | '/success-stories'
@@ -893,6 +974,7 @@ export interface FileRouteTypes {
     | '/studios/$handle/manage'
     | '/studios/$handle/'
     | '/api/public/hooks/retention-sweep'
+    | '/api/public/hooks/seo-refresh'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -921,6 +1003,7 @@ export interface FileRouteTypes {
     | '/data-deletion'
     | '/designers'
     | '/discover'
+    | '/e7f290e9fedb2d290482f1ccc7201237.txt'
     | '/edit-profile'
     | '/features'
     | '/feed'
@@ -943,6 +1026,12 @@ export interface FileRouteTypes {
     | '/privacy-requests'
     | '/reset-password'
     | '/setup-profile'
+    | '/sitemap-blog.xml'
+    | '/sitemap-landing.xml'
+    | '/sitemap-static.xml'
+    | '/sitemap-studios.xml'
+    | '/sitemap-users.xml'
+    | '/sitemap.xml'
     | '/software-developers'
     | '/songwriters'
     | '/success-stories'
@@ -982,6 +1071,7 @@ export interface FileRouteTypes {
     | '/studios/$handle/manage'
     | '/studios/$handle'
     | '/api/public/hooks/retention-sweep'
+    | '/api/public/hooks/seo-refresh'
   id:
     | '__root__'
     | '/'
@@ -1010,6 +1100,7 @@ export interface FileRouteTypes {
     | '/data-deletion'
     | '/designers'
     | '/discover'
+    | '/e7f290e9fedb2d290482f1ccc7201237.txt'
     | '/edit-profile'
     | '/features'
     | '/feed'
@@ -1032,6 +1123,12 @@ export interface FileRouteTypes {
     | '/privacy-requests'
     | '/reset-password'
     | '/setup-profile'
+    | '/sitemap-blog.xml'
+    | '/sitemap-landing.xml'
+    | '/sitemap-static.xml'
+    | '/sitemap-studios.xml'
+    | '/sitemap-users.xml'
+    | '/sitemap.xml'
     | '/software-developers'
     | '/songwriters'
     | '/success-stories'
@@ -1071,6 +1168,7 @@ export interface FileRouteTypes {
     | '/studios/$handle/manage'
     | '/studios/$handle/'
     | '/api/public/hooks/retention-sweep'
+    | '/api/public/hooks/seo-refresh'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1100,6 +1198,7 @@ export interface RootRouteChildren {
   DataDeletionRoute: typeof DataDeletionRoute
   DesignersRoute: typeof DesignersRoute
   DiscoverRoute: typeof DiscoverRoute
+  E7f290e9fedb2d290482f1ccc7201237DottxtRoute: typeof E7f290e9fedb2d290482f1ccc7201237DottxtRoute
   EditProfileRoute: typeof EditProfileRoute
   FeaturesRoute: typeof FeaturesRoute
   FeedRoute: typeof FeedRoute
@@ -1122,6 +1221,12 @@ export interface RootRouteChildren {
   PrivacyRequestsRoute: typeof PrivacyRequestsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SetupProfileRoute: typeof SetupProfileRoute
+  SitemapBlogDotxmlRoute: typeof SitemapBlogDotxmlRoute
+  SitemapLandingDotxmlRoute: typeof SitemapLandingDotxmlRoute
+  SitemapStaticDotxmlRoute: typeof SitemapStaticDotxmlRoute
+  SitemapStudiosDotxmlRoute: typeof SitemapStudiosDotxmlRoute
+  SitemapUsersDotxmlRoute: typeof SitemapUsersDotxmlRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SoftwareDevelopersRoute: typeof SoftwareDevelopersRoute
   SongwritersRoute: typeof SongwritersRoute
   SuccessStoriesRoute: typeof SuccessStoriesRoute
@@ -1161,6 +1266,7 @@ export interface RootRouteChildren {
   StudiosHandleManageRoute: typeof StudiosHandleManageRoute
   StudiosHandleIndexRoute: typeof StudiosHandleIndexRoute
   ApiPublicHooksRetentionSweepRoute: typeof ApiPublicHooksRetentionSweepRoute
+  ApiPublicHooksSeoRefreshRoute: typeof ApiPublicHooksSeoRefreshRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1347,6 +1453,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DiscoverRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/e7f290e9fedb2d290482f1ccc7201237.txt': {
+      id: '/e7f290e9fedb2d290482f1ccc7201237.txt'
+      path: '/e7f290e9fedb2d290482f1ccc7201237.txt'
+      fullPath: '/e7f290e9fedb2d290482f1ccc7201237.txt'
+      preLoaderRoute: typeof E7f290e9fedb2d290482f1ccc7201237DottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/edit-profile': {
       id: '/edit-profile'
       path: '/edit-profile'
@@ -1499,6 +1612,48 @@ declare module '@tanstack/react-router' {
       path: '/setup-profile'
       fullPath: '/setup-profile'
       preLoaderRoute: typeof SetupProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-blog.xml': {
+      id: '/sitemap-blog.xml'
+      path: '/sitemap-blog.xml'
+      fullPath: '/sitemap-blog.xml'
+      preLoaderRoute: typeof SitemapBlogDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-landing.xml': {
+      id: '/sitemap-landing.xml'
+      path: '/sitemap-landing.xml'
+      fullPath: '/sitemap-landing.xml'
+      preLoaderRoute: typeof SitemapLandingDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-static.xml': {
+      id: '/sitemap-static.xml'
+      path: '/sitemap-static.xml'
+      fullPath: '/sitemap-static.xml'
+      preLoaderRoute: typeof SitemapStaticDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-studios.xml': {
+      id: '/sitemap-studios.xml'
+      path: '/sitemap-studios.xml'
+      fullPath: '/sitemap-studios.xml'
+      preLoaderRoute: typeof SitemapStudiosDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-users.xml': {
+      id: '/sitemap-users.xml'
+      path: '/sitemap-users.xml'
+      fullPath: '/sitemap-users.xml'
+      preLoaderRoute: typeof SitemapUsersDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/software-developers': {
@@ -1774,6 +1929,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksRetentionSweepRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/seo-refresh': {
+      id: '/api/public/hooks/seo-refresh'
+      path: '/api/public/hooks/seo-refresh'
+      fullPath: '/api/public/hooks/seo-refresh'
+      preLoaderRoute: typeof ApiPublicHooksSeoRefreshRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1804,6 +1966,8 @@ const rootRouteChildren: RootRouteChildren = {
   DataDeletionRoute: DataDeletionRoute,
   DesignersRoute: DesignersRoute,
   DiscoverRoute: DiscoverRoute,
+  E7f290e9fedb2d290482f1ccc7201237DottxtRoute:
+    E7f290e9fedb2d290482f1ccc7201237DottxtRoute,
   EditProfileRoute: EditProfileRoute,
   FeaturesRoute: FeaturesRoute,
   FeedRoute: FeedRoute,
@@ -1826,6 +1990,12 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRequestsRoute: PrivacyRequestsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SetupProfileRoute: SetupProfileRoute,
+  SitemapBlogDotxmlRoute: SitemapBlogDotxmlRoute,
+  SitemapLandingDotxmlRoute: SitemapLandingDotxmlRoute,
+  SitemapStaticDotxmlRoute: SitemapStaticDotxmlRoute,
+  SitemapStudiosDotxmlRoute: SitemapStudiosDotxmlRoute,
+  SitemapUsersDotxmlRoute: SitemapUsersDotxmlRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SoftwareDevelopersRoute: SoftwareDevelopersRoute,
   SongwritersRoute: SongwritersRoute,
   SuccessStoriesRoute: SuccessStoriesRoute,
@@ -1865,6 +2035,7 @@ const rootRouteChildren: RootRouteChildren = {
   StudiosHandleManageRoute: StudiosHandleManageRoute,
   StudiosHandleIndexRoute: StudiosHandleIndexRoute,
   ApiPublicHooksRetentionSweepRoute: ApiPublicHooksRetentionSweepRoute,
+  ApiPublicHooksSeoRefreshRoute: ApiPublicHooksSeoRefreshRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

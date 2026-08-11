@@ -89,6 +89,15 @@ const StudioCreate = () => {
         facilities,
       });
       toast.success("Studio created");
+      // Announce the new public studio page to search engines (best-effort).
+      void (async () => {
+        try {
+          const { submitPagesForIndexing } = await import("@/lib/seo-indexing.functions");
+          await submitPagesForIndexing({ data: { paths: [`/studios/${studio.handle}`] } });
+        } catch {
+          /* indexing submission is non-critical */
+        }
+      })();
       navigate(`/studios/${studio.handle}/manage`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not create the studio");
