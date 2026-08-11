@@ -70,7 +70,7 @@ export function buildProfileHead(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
-      ...ogImageMeta(image, title),
+      ...ogImageMeta(image, title, { path: new URL(url).pathname }),
     ],
     links: [{ rel: "canonical", href: url }],
     scripts: [
