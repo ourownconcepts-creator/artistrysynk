@@ -829,6 +829,7 @@ export type Database = {
           created_at: string | null
           customer_id: string | null
           id: string
+          intro_id: string | null
           match_id: string | null
           studio_id: string | null
           updated_at: string | null
@@ -837,6 +838,7 @@ export type Database = {
           created_at?: string | null
           customer_id?: string | null
           id?: string
+          intro_id?: string | null
           match_id?: string | null
           studio_id?: string | null
           updated_at?: string | null
@@ -845,11 +847,19 @@ export type Database = {
           created_at?: string | null
           customer_id?: string | null
           id?: string
+          intro_id?: string | null
           match_id?: string | null
           studio_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "conversations_intro_id_fkey"
+            columns: ["intro_id"]
+            isOneToOne: false
+            referencedRelation: "trusted_relationships"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "conversations_match_id_fkey"
             columns: ["match_id"]
@@ -4407,6 +4417,97 @@ export type Database = {
         }
         Relationships: []
       }
+      verification_documents: {
+        Row: {
+          created_at: string
+          doc_type: string
+          file_name: string | null
+          id: string
+          mime_type: string | null
+          review_note: string | null
+          size_bytes: number | null
+          status: string
+          storage_path: string
+          updated_at: string
+          user_id: string
+          verification_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          doc_type: string
+          file_name?: string | null
+          id?: string
+          mime_type?: string | null
+          review_note?: string | null
+          size_bytes?: number | null
+          status?: string
+          storage_path: string
+          updated_at?: string
+          user_id: string
+          verification_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          doc_type?: string
+          file_name?: string | null
+          id?: string
+          mime_type?: string | null
+          review_note?: string | null
+          size_bytes?: number | null
+          status?: string
+          storage_path?: string
+          updated_at?: string
+          user_id?: string
+          verification_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_documents_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "identity_verifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      verification_events: {
+        Row: {
+          actor_role: string
+          created_at: string
+          id: string
+          note: string | null
+          status: string
+          user_id: string
+          verification_id: string
+        }
+        Insert: {
+          actor_role?: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          status: string
+          user_id: string
+          verification_id: string
+        }
+        Update: {
+          actor_role?: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          status?: string
+          user_id?: string
+          verification_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_events_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "identity_verifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       verification_requests: {
         Row: {
           created_at: string | null
@@ -4440,6 +4541,48 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           verification_data?: Json | null
+        }
+        Relationships: []
+      }
+      verification_requirements: {
+        Row: {
+          accepted_mime: string[]
+          created_at: string
+          description: string | null
+          doc_type: string
+          id: string
+          is_required: boolean
+          label: string
+          level: string
+          max_size_mb: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          accepted_mime?: string[]
+          created_at?: string
+          description?: string | null
+          doc_type: string
+          id?: string
+          is_required?: boolean
+          label: string
+          level: string
+          max_size_mb?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          accepted_mime?: string[]
+          created_at?: string
+          description?: string | null
+          doc_type?: string
+          id?: string
+          is_required?: boolean
+          label?: string
+          level?: string
+          max_size_mb?: number
+          sort_order?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -4932,6 +5075,19 @@ export type Database = {
           required_level: string
         }[]
       }
+      my_verification_timeline: {
+        Args: never
+        Returns: {
+          capability: string
+          event_at: string
+          event_status: string
+          note: string
+          requested_at: string
+          status: string
+          verification_id: string
+          verified_at: string
+        }[]
+      }
       normalize_username: { Args: { _raw: string }; Returns: string }
       profile_visible_to: {
         Args: { _target: string; _viewer: string }
@@ -5029,6 +5185,10 @@ export type Database = {
       studio_role_of: {
         Args: { _studio_id: string; _user_id: string }
         Returns: Database["public"]["Enums"]["studio_role"]
+      }
+      submit_verification_request: {
+        Args: { _capability: string; _notes?: string }
+        Returns: Json
       }
       transfer_studio_ownership: {
         Args: { _new_owner_id: string; _studio_id: string }
