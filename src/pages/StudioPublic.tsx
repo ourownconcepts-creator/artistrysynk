@@ -138,7 +138,9 @@ const StudioPublic = () => {
   }
 
   const location = [studio.primary_city, studio.primary_country].filter(Boolean).join(", ");
-  const socials = Object.entries(studio.social_links ?? {}).filter(([, v]) => typeof v === "string" && v);
+  const socials = Object.entries(studio.social_links ?? {})
+    .map(([key, value]) => [key, sanitizeExternalUrl(typeof value === "string" ? value : null)] as const)
+    .filter((entry): entry is readonly [string, string] => Boolean(entry[1]));
 
   return (
     <div className="min-h-screen">
@@ -277,7 +279,7 @@ const StudioPublic = () => {
                       <a
                         href={value}
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel={UGC_LINK_REL}
                         className="capitalize text-primary hover:underline"
                       >
                         {key}
