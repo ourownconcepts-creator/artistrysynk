@@ -22,6 +22,17 @@ export const notifyVerificationDecision = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase, context.userId);
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Respect the member's verification email preference.
+    const { data: settings } = await supabaseAdmin
+      .from("user_settings")
+      .select("email_notifications, notify_email_verification")
+      .eq("user_id", data.subjectId)
+      .maybeSingle();
+    if (settings && (settings.email_notifications === false || settings.notify_email_verification === false)) {
+      return { sent: false as const, reason: "opted-out" };
+    }
+
     const { data: user } = await supabaseAdmin.auth.admin.getUserById(data.subjectId);
     const email = user?.user?.email;
     if (!email) return { sent: false as const, reason: "no-email" };
