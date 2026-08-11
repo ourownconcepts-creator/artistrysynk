@@ -4622,6 +4622,10 @@ export type Database = {
           verified_at: string
         }[]
       }
+      admin_request_documents: {
+        Args: { _id: string; _rejections: Json; _summary?: string }
+        Returns: boolean
+      }
       admin_verification_summary: {
         Args: never
         Returns: {
@@ -4654,7 +4658,12 @@ export type Database = {
         Args: { _target_id: string; _viewer_id: string }
         Returns: boolean
       }
+      check_username_available: { Args: { _username: string }; Returns: Json }
       claim_referral: { Args: { _code: string }; Returns: string }
+      conversation_intro_context: {
+        Args: { _conversation_id: string }
+        Returns: Json
+      }
       create_studio: {
         Args: {
           _bio?: string
@@ -5075,6 +5084,20 @@ export type Database = {
           required_level: string
         }[]
       }
+      my_username_state: { Args: never; Returns: Json }
+      my_verification_corrections: {
+        Args: never
+        Returns: {
+          capability: string
+          doc_type: string
+          label: string
+          reason: string
+          replaced: boolean
+          status: string
+          summary: string
+          verification_id: string
+        }[]
+      }
       my_verification_timeline: {
         Args: never
         Returns: {
@@ -5115,6 +5138,7 @@ export type Database = {
         Args: { _id: string; _status: string }
         Returns: boolean
       }
+      resubmit_verification: { Args: { _id: string }; Returns: Json }
       run_retention_purges: {
         Args: { _triggered_by?: string }
         Returns: {
@@ -5151,6 +5175,7 @@ export type Database = {
           username: string
         }[]
       }
+      set_my_username: { Args: { _username: string }; Returns: Json }
       set_studio_active: {
         Args: { _active: boolean; _studio_id: string }
         Returns: undefined
