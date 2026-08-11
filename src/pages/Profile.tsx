@@ -35,6 +35,7 @@ import { ProfileCompletionProgress } from "@/components/profile/ProfileCompletio
 import { useSessionTracking } from "@/hooks/useSessionTracking";
 import { MyAppeals } from "@/components/content/MyAppeals";
 import { ReferralCard } from "@/components/referral/ReferralCard";
+import { StudioQuickLinks } from "@/components/studio/StudioQuickLinks";
 import { getRoleLabel } from "@/lib/creativeRoles";
 import {
   SegmentedControl,
@@ -358,6 +359,8 @@ const Profile = () => {
               </div>
             </Surface>
           ) : null}
+
+          <StudioQuickLinks />
 
           <Surface inset className="space-y-3">
             <SectionHeader
