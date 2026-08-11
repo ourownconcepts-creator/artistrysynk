@@ -86,3 +86,88 @@ export async function loadOgAsset(ref: string, version: string): Promise<Resolve
     return null;
   }
 }
+
+const SLOT_COLUMNS = {
+  wide: "image_url",
+  square: "square_url",
+  portrait: "portrait_url",
+} as const;
+
+export type OgSlot = keyof typeof SLOT_COLUMNS;
+
+const newVersion = () => Date.now().toString(36);
+
+/** Store an uploaded image in the private brand bucket and return its ref. */
+export async function storeBrandUpload(
+  bytes: Uint8Array,
+  contentType: string,
+  slug: string,
+): Promise<string> {
+  const supabase = await admin();
+  const ext = contentType.includes("png") ? "png" : contentType.includes("webp") ? "webp" : "jpg";
+  const key = `og/${slug}-${Date.now()}.${ext}`;
+  const { error } = await supabase.storage
+    .from(BRAND_BUCKET)
+    .upload(key, bytes as unknown as ArrayBufferView, { contentType, upsert: true });
+  if (error) throw new Error(`Upload failed: ${error.message}`);
+  return `${STORAGE_PREFIX}${key}`;
+}
+
+export async function saveFallback(ref: string, slot: OgSlot, userId: string) {
+  const supabase = await admin();
+  const { error } = await supabase
+    .from("og_image_settings")
+    .update({
+      [SLOT_COLUMNS[slot]]: ref,
+      version: newVersion(),
+      updated_by: userId,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", true);
+  if (error) throw new Error(error.message);
+}
+
+export async function saveOverride(path: string, ref: string, slot: OgSlot, userId: string) {
+  const supabase = await admin();
+  const existing = await getOgOverride(path);
+  const payload: Record<string, unknown> = {
+    path,
+    image_url: existing?.image_url ?? ref,
+    square_url: existing?.square_url ?? null,
+    portrait_url: existing?.portrait_url ?? null,
+    version: newVersion(),
+    updated_by: userId,
+    updated_at: new Date().toISOString(),
+  };
+  payload[SLOT_COLUMNS[slot]] = ref;
+  const { error } = await supabase.from("og_image_overrides").upsert(payload, { onConflict: "path" });
+  if (error) throw new Error(error.message);
+}
+
+export async function removeOverride(path: string) {
+  const supabase = await admin();
+  const { error } = await supabase.from("og_image_overrides").delete().eq("path", path);
+  if (error) throw new Error(error.message);
+}
+
+export async function listOverrides() {
+  const supabase = await admin();
+  const { data } = await supabase
+    .from("og_image_overrides")
+    .select("path, image_url, square_url, portrait_url, version, updated_at")
+    .order("updated_at", { ascending: false })
+    .limit(200);
+  return data ?? [];
+}
+
+/** Bump every version stamp so caches and crawlers refetch the banners. */
+export async function purgeOgCaches(): Promise<{ paths: string[] }> {
+  const supabase = await admin();
+  const version = newVersion();
+  await supabase.from("og_image_settings").update({ version }).eq("id", true);
+  const overrides = await listOverrides();
+  for (const row of overrides) {
+    await supabase.from("og_image_overrides").update({ version }).eq("path", row.path);
+  }
+  return { paths: overrides.map((o) => o.path as string) };
+}
