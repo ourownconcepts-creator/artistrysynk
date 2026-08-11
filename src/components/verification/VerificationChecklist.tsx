@@ -25,6 +25,9 @@ import {
   submitVerification,
   uploadDocument,
   validateDocument,
+  fetchCorrections,
+  resubmitVerification,
+  type CorrectionRow,
   type VerificationDocument,
   type VerificationRequirement,
 } from "@/lib/verification";
@@ -46,6 +49,8 @@ export const VerificationChecklist = ({
   const [userId, setUserId] = useState<string | null>(null);
   const [requirements, setRequirements] = useState<VerificationRequirement[]>([]);
   const [docs, setDocs] = useState<VerificationDocument[]>([]);
+  const [corrections, setCorrections] = useState<CorrectionRow[]>([]);
+  const [resubmitting, setResubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [missing, setMissing] = useState<string[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
@@ -58,12 +63,14 @@ export const VerificationChecklist = ({
     const { data: auth } = await supabase.auth.getUser();
     const id = auth.user?.id ?? null;
     setUserId(id);
-    const [reqs, mine] = await Promise.all([
+    const [reqs, mine, fixes] = await Promise.all([
       fetchRequirements(level),
       id ? fetchMyDocuments(id) : Promise.resolve([]),
+      fetchCorrections(),
     ]);
     setRequirements(reqs);
     setDocs(mine);
+    setCorrections(fixes);
     setLoading(false);
   }, [level]);
 
@@ -72,6 +79,27 @@ export const VerificationChecklist = ({
   }, [load]);
 
   const docFor = (docType: string) => docs.find((d) => d.doc_type === docType);
+  const correctionFor = (docType: string) => corrections.find((c) => c.doc_type === docType);
+  const flagged = corrections.filter((c) => !c.replaced);
+  const activeCorrection = corrections[0];
+
+  const resubmit = async () => {
+    if (!activeCorrection) return;
+    setResubmitting(true);
+    const result = await resubmitVerification(activeCorrection.verification_id);
+    setResubmitting(false);
+    if (!result.ok) {
+      if (result.outstanding?.length) {
+        toast.error(`Still needed: ${result.outstanding.join(", ")}`);
+      } else {
+        toast.error(result.error ?? "Could not resubmit just yet.");
+      }
+      return;
+    }
+    toast.success("Resubmitted — we'll review the corrected documents.");
+    onSubmitted?.();
+    void load();
+  };
   const required = requirements.filter((r) => r.is_required);
   const done = required.filter((r) => docFor(r.doc_type)).length;
   const progress = required.length === 0 ? 100 : Math.round((done / required.length) * 100);
