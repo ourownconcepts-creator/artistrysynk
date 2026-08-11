@@ -242,6 +242,30 @@ export type Database = {
         }
         Relationships: []
       }
+      capability_requirements: {
+        Row: {
+          capability: string
+          description: string | null
+          enabled: boolean
+          required_level: string
+          updated_at: string
+        }
+        Insert: {
+          capability: string
+          description?: string | null
+          enabled?: boolean
+          required_level?: string
+          updated_at?: string
+        }
+        Update: {
+          capability?: string
+          description?: string | null
+          enabled?: boolean
+          required_level?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       career_applications: {
         Row: {
           cover_letter: string
@@ -4424,6 +4448,45 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_decide_verification: {
+        Args: { _id: string; _level?: string; _notes?: string; _status: string }
+        Returns: boolean
+      }
+      admin_list_identity_access: {
+        Args: { _limit?: number }
+        Returns: {
+          accessed_at: string
+          accessor_id: string
+          accessor_username: string
+          id: string
+          reason: string
+          subject_id: string
+          subject_username: string
+        }[]
+      }
+      admin_list_verifications: {
+        Args: { _limit?: number; _status?: string }
+        Returns: {
+          capability: string
+          current_level: string
+          has_legal_details: boolean
+          id: string
+          requested_at: string
+          status: string
+          subject_id: string
+          subject_type: string
+          username: string
+          verified_at: string
+        }[]
+      }
+      admin_verification_summary: {
+        Args: never
+        Returns: {
+          level: string
+          status: string
+          total: number
+        }[]
+      }
       audience_allows: {
         Args: { _choice: string; _owner: string; _viewer: string }
         Returns: boolean
@@ -4465,6 +4528,10 @@ export type Database = {
           handle: string
           id: string
         }[]
+      }
+      create_trusted_introduction: {
+        Args: { _message?: string; _recipient: string; _subject: string }
+        Returns: string
       }
       delete_email: {
         Args: { message_id: number; queue_name: string }
@@ -4648,6 +4715,32 @@ export type Database = {
         Args: { _other: string; _owner: string }
         Returns: boolean
       }
+      list_discovery_deck: {
+        Args: {
+          _city?: string
+          _genre?: string
+          _limit?: number
+          _offset?: number
+          _role?: string
+          _skill?: string
+          _verified_only?: boolean
+        }
+        Returns: {
+          avatar_url: string
+          bio: string
+          cover_image_url: string
+          full_name: string
+          genres: string[]
+          id: string
+          is_featured: boolean
+          is_verified: boolean
+          last_seen_at: string
+          location: string
+          roles: string[]
+          skills: string[]
+          username: string
+        }[]
+      }
       list_my_referrals: {
         Args: never
         Returns: {
@@ -4729,6 +4822,20 @@ export type Database = {
           tagline: string
         }[]
       }
+      list_recommended_creatives: {
+        Args: { _limit?: number }
+        Returns: {
+          avatar_url: string
+          bio: string
+          full_name: string
+          id: string
+          is_verified: boolean
+          location: string
+          roles: string[]
+          shared_roles: number
+          username: string
+        }[]
+      }
       list_studio_public_equipment: {
         Args: { _limit?: number; _offset?: number; _studio_id: string }
         Returns: {
@@ -4803,6 +4910,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      meets_verification: {
+        Args: { _capability: string; _user_id: string }
+        Returns: boolean
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -4811,6 +4922,15 @@ export type Database = {
           source_queue: string
         }
         Returns: number
+      }
+      my_capabilities: {
+        Args: never
+        Returns: {
+          allowed: boolean
+          capability: string
+          my_level: string
+          required_level: string
+        }[]
       }
       normalize_username: { Args: { _raw: string }; Returns: string }
       profile_visible_to: {
@@ -4825,11 +4945,20 @@ export type Database = {
           read_ct: number
         }[]
       }
+      request_capability_verification: {
+        Args: { _capability: string; _notes?: string }
+        Returns: string
+      }
       request_introduction: {
         Args: { _message?: string; _reference: string }
         Returns: boolean
       }
+      requires_verification: { Args: { _capability: string }; Returns: string }
       resolve_overdue_role_changes: { Args: never; Returns: number }
+      respond_to_trust_request: {
+        Args: { _id: string; _status: string }
+        Returns: boolean
+      }
       run_retention_purges: {
         Args: { _triggered_by?: string }
         Returns: {
@@ -4838,6 +4967,32 @@ export type Database = {
           error_message: string
           status: string
           target: string
+        }[]
+      }
+      search_creatives: {
+        Args: {
+          _city?: string
+          _genre?: string
+          _limit?: number
+          _offset?: number
+          _query?: string
+          _role?: string
+          _skill?: string
+          _verified_only?: boolean
+        }
+        Returns: {
+          avatar_url: string
+          bio: string
+          full_name: string
+          genres: string[]
+          id: string
+          is_featured: boolean
+          is_verified: boolean
+          last_seen_at: string
+          location: string
+          roles: string[]
+          skills: string[]
+          username: string
         }[]
       }
       set_studio_active: {
@@ -4879,6 +5034,8 @@ export type Database = {
         Args: { _new_owner_id: string; _studio_id: string }
         Returns: undefined
       }
+      user_verification_level: { Args: { _user_id: string }; Returns: string }
+      verification_rank: { Args: { _level: string }; Returns: number }
     }
     Enums: {
       app_role:
