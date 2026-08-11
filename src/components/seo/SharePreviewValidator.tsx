@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { AlertTriangle, CheckCircle2, Loader2, RefreshCw, XCircle } from "lucide-react";
 import { auditSharePreviews } from "@/lib/seo-audit.functions";
@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 type AuditResponse = Awaited<ReturnType<typeof auditSharePreviews>>;
 
-export function SharePreviewValidator() {
+export function SharePreviewValidator({ autoRunKey = 0 }: { autoRunKey?: number }) {
   const runAudit = useServerFn(auditSharePreviews);
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState<AuditResponse | null>(null);
@@ -30,6 +30,12 @@ export function SharePreviewValidator() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // Re-validate automatically after an admin replaces a share image.
+    if (autoRunKey > 0) void run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRunKey]);
 
   return (
     <Card>
