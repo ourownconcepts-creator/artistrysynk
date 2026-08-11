@@ -10,19 +10,10 @@ import { PartnersCarousel } from "@/components/home/PartnersCarousel";
 import { NewsletterSignup } from "@/components/home/NewsletterSignup";
 import { StatsCounter } from "@/components/home/StatsCounter";
 import { RecentSignups } from "@/components/home/RecentSignups";
-import { OrganizationSchema, WebsiteSchema, PageSEO } from "@/components/seo";
 
 const Index = () => {
   return (
     <div className="min-h-screen">
-      <PageSEO
-        title="ArtistrySynk – Create, Connect, Collaborate"
-        description="Connect with creatives worldwide — musicians, designers, photographers, filmmakers, dancers and writers. Match, collaborate and bring your vision to life."
-        canonicalUrl="https://artistrysynk.app/"
-        keywords="creative collaboration, artists, musicians, producers, dancers, actors, music, creative professionals, talent network"
-      />
-      <OrganizationSchema />
-      <WebsiteSchema />
       <Hero />
       <PartnersCarousel />
       <StatsCounter />
