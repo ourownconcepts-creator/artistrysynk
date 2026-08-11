@@ -88,6 +88,7 @@ import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as ProjectsProjectIdRouteImport } from './routes/projects/$projectId'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
+import { Route as SettingsUsernameRouteImport } from './routes/settings/username'
 import { Route as StudioItemIdRouteImport } from './routes/studio/$itemId'
 import { Route as StudiosIndexRouteImport } from './routes/studios/index'
 import { Route as StudiosNewRouteImport } from './routes/studios/new'
@@ -491,6 +492,11 @@ const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
   path: '/settings/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsUsernameRoute = SettingsUsernameRouteImport.update({
+  id: '/settings/username',
+  path: '/settings/username',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudioItemIdRoute = StudioItemIdRouteImport.update({
   id: '/studio/$itemId',
   path: '/studio/$itemId',
@@ -594,6 +600,7 @@ export interface FileRoutesByFullPath {
   '/profile/$userId': typeof ProfileUserIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
+  '/settings/username': typeof SettingsUsernameRoute
   '/studio/$itemId': typeof StudioItemIdRoute
   '/studios/new': typeof StudiosNewRoute
   '/auth/': typeof AuthIndexRoute
@@ -681,6 +688,7 @@ export interface FileRoutesByTo {
   '/profile/$userId': typeof ProfileUserIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
+  '/settings/username': typeof SettingsUsernameRoute
   '/studio/$itemId': typeof StudioItemIdRoute
   '/studios/new': typeof StudiosNewRoute
   '/auth': typeof AuthIndexRoute
@@ -769,6 +777,7 @@ export interface FileRoutesById {
   '/profile/$userId': typeof ProfileUserIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
+  '/settings/username': typeof SettingsUsernameRoute
   '/studio/$itemId': typeof StudioItemIdRoute
   '/studios/new': typeof StudiosNewRoute
   '/auth/': typeof AuthIndexRoute
@@ -858,6 +867,7 @@ export interface FileRouteTypes {
     | '/profile/$userId'
     | '/projects/$projectId'
     | '/settings/notifications'
+    | '/settings/username'
     | '/studio/$itemId'
     | '/studios/new'
     | '/auth/'
@@ -945,6 +955,7 @@ export interface FileRouteTypes {
     | '/profile/$userId'
     | '/projects/$projectId'
     | '/settings/notifications'
+    | '/settings/username'
     | '/studio/$itemId'
     | '/studios/new'
     | '/auth'
@@ -1032,6 +1043,7 @@ export interface FileRouteTypes {
     | '/profile/$userId'
     | '/projects/$projectId'
     | '/settings/notifications'
+    | '/settings/username'
     | '/studio/$itemId'
     | '/studios/new'
     | '/auth/'
@@ -1120,6 +1132,7 @@ export interface RootRouteChildren {
   ProfileUserIdRoute: typeof ProfileUserIdRoute
   ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
+  SettingsUsernameRoute: typeof SettingsUsernameRoute
   StudioItemIdRoute: typeof StudioItemIdRoute
   StudiosNewRoute: typeof StudiosNewRoute
   AuthIndexRoute: typeof AuthIndexRoute
@@ -1692,6 +1705,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/username': {
+      id: '/settings/username'
+      path: '/settings/username'
+      fullPath: '/settings/username'
+      preLoaderRoute: typeof SettingsUsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/studio/$itemId': {
       id: '/studio/$itemId'
       path: '/studio/$itemId'
@@ -1808,6 +1828,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileUserIdRoute: ProfileUserIdRoute,
   ProjectsProjectIdRoute: ProjectsProjectIdRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
+  SettingsUsernameRoute: SettingsUsernameRoute,
   StudioItemIdRoute: StudioItemIdRoute,
   StudiosNewRoute: StudiosNewRoute,
   AuthIndexRoute: AuthIndexRoute,
