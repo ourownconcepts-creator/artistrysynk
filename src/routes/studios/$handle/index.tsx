@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageTransition } from "@/components/layout/PageTransition";
 import StudioPublic from "@/pages/StudioPublic";
 import { fetchPublicStudio, type PublicStudio } from "@/lib/studios";
+import { ogImageMeta } from "@/lib/ogImage";
 
 const BASE = "https://artistrysynk.app";
 
@@ -33,12 +34,7 @@ export const Route = createFileRoute("/studios/$handle/")({
         { property: "og:type", content: "profile" },
         { property: "og:url", content: `${BASE}/studios/${handle}` },
         { name: "twitter:card", content: "summary_large_image" },
-        ...(image && image.startsWith("https://")
-          ? [
-              { property: "og:image", content: image },
-              { name: "twitter:image", content: image },
-            ]
-          : []),
+        ...ogImageMeta(image, title),
       ],
       links: [{ rel: "canonical", href: `${BASE}/studios/${handle}` }],
       ...(studio

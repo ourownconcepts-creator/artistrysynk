@@ -3,9 +3,11 @@
  * canonical, OpenGraph and Twitter tags). Only artistrysynk.app is ever
  * referenced as the canonical host.
  */
+import { OG_FALLBACK_URL, ogImageMeta } from "./ogImage";
+
 export const SITE_URL = "https://artistrysynk.app";
 export const SITE_NAME = "ArtistrySynk";
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.jpg`;
+export const DEFAULT_OG_IMAGE = OG_FALLBACK_URL;
 
 type Meta = Record<string, string>;
 
@@ -49,7 +51,7 @@ export function buildPageHead({
   title,
   description,
   ogType = "website",
-  image = DEFAULT_OG_IMAGE,
+  image,
   keywords,
   noIndex = false,
   jsonLd,
@@ -72,13 +74,11 @@ export function buildPageHead({
     { property: "og:url", content: url },
     { property: "og:title", content: fullTitle },
     { property: "og:description", content: description },
-    { property: "og:image", content: image },
-    { property: "og:image:alt", content: fullTitle },
+    ...ogImageMeta(image, fullTitle),
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:site", content: "@artistrysynk" },
     { name: "twitter:title", content: fullTitle },
     { name: "twitter:description", content: description },
-    { name: "twitter:image", content: image },
   ];
 
   return {

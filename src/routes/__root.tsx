@@ -126,10 +126,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Connect with creatives worldwide — musicians, designers, photographers, filmmakers, dancers and writers. Match, collaborate and bring your vision to life.",
       },
-      { property: "og:image", content: "https://artistrysynk.app/og-image.jpg" },
+      { property: "og:image", content: "https://artistrysynk.app/og-fallback.jpg" },
       { property: "og:image:type", content: "image/jpeg" },
-      { property: "og:image:width", content: "1920" },
-      { property: "og:image:height", content: "1080" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
       {
         property: "og:image:alt",
         content: "ArtistrySynk — create, connect and collaborate with creatives worldwide",
@@ -146,7 +146,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Connect with creatives worldwide — musicians, designers, photographers, filmmakers, dancers and writers. Match, collaborate and bring your vision to life.",
       },
-      { name: "twitter:image", content: "https://artistrysynk.app/og-image.jpg" },
+      { name: "twitter:image", content: "https://artistrysynk.app/og-fallback.jpg" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "ArtistrySynk" },

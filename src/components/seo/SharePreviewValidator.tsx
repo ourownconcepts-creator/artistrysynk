@@ -38,7 +38,8 @@ export function SharePreviewValidator() {
           <CardTitle className="text-lg">Share preview check</CardTitle>
           <p className="mt-1 text-sm text-muted-foreground">
             Fetches the most important public pages and flags missing og:image, wrong dimensions or
-            incomplete Twitter tags.
+            incomplete Twitter tags. Pages whose own image is missing or too small automatically fall
+            back to the branded 1200x630 share banner.
           </p>
         </div>
         <Button onClick={run} disabled={loading} size="sm">
@@ -76,6 +77,11 @@ export function SharePreviewValidator() {
                       <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                     )}
                     <span className="font-mono text-sm">{r.path}</span>
+                    {r.ogImageFallback ? (
+                      <Badge variant="outline" className="text-xs">
+                        fallback image
+                      </Badge>
+                    ) : null}
                     {r.ogImageWidth && r.ogImageHeight ? (
                       <span className="text-xs text-muted-foreground">
                         og:image {r.ogImageWidth}×{r.ogImageHeight}

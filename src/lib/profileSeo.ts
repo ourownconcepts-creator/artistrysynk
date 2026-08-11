@@ -1,3 +1,4 @@
+import { ogImageMeta } from "./ogImage";
 import { getRoleLabel } from "@/lib/creativeRoles";
 
 export const PROFILE_SEO_BASE = "https://artistrysynk.app";
@@ -56,7 +57,6 @@ export function buildProfileHead(
   ).trim();
   const url = `${PROFILE_SEO_BASE}/profile/${profile.username || slug}`;
   const image = profile.cover_image_url || profile.avatar_url;
-  const hasImage = Boolean(image && image.startsWith("https://"));
 
   return {
     meta: [
@@ -70,12 +70,7 @@ export function buildProfileHead(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
-      ...(hasImage
-        ? [
-            { property: "og:image", content: image as string },
-            { name: "twitter:image", content: image as string },
-          ]
-        : []),
+      ...ogImageMeta(image, title),
     ],
     links: [{ rel: "canonical", href: url }],
     scripts: [
