@@ -4639,7 +4639,12 @@ export type Database = {
         Returns: boolean
       }
       admin_username_change_stats: {
-        Args: { _limit?: number; _search?: string }
+        Args: {
+          _from?: string
+          _limit?: number
+          _search?: string
+          _to?: string
+        }
         Returns: {
           change_count: number
           display_name: string
@@ -5166,6 +5171,7 @@ export type Database = {
       }
       requires_verification: { Args: { _capability: string }; Returns: string }
       resolve_overdue_role_changes: { Args: never; Returns: number }
+      resolve_username_redirect: { Args: { _handle: string }; Returns: string }
       respond_to_trust_request: {
         Args: { _id: string; _status: string }
         Returns: boolean

@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, AtSign } from "lucide-react";
+import { Loader2, AtSign, X } from "lucide-react";
+import { Label } from "@/components/ui/label";
 
 type Row = {
   user_id: string;
@@ -22,34 +23,95 @@ type Row = {
 export const UsernameChangesPanel = () => {
   const [rows, setRows] = useState<Row[]>([]);
   const [search, setSearch] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
   const [loading, setLoading] = useState(true);
   const [openId, setOpenId] = useState<string | null>(null);
 
-  const load = useCallback(async (term: string) => {
-    setLoading(true);
-    const { data, error } = await supabase.rpc("admin_username_change_stats", {
-      _search: term || undefined,
-      _limit: 100,
-    });
-    setLoading(false);
-    if (error) return;
-    setRows((data ?? []) as unknown as Row[]);
-  }, []);
+  const load = useCallback(
+    async (term: string, fromDate: string, toDate: string) => {
+      setLoading(true);
+      const { data, error } = await supabase.rpc("admin_username_change_stats", {
+        _search: term || undefined,
+        _limit: 100,
+        _from: fromDate ? new Date(`${fromDate}T00:00:00`).toISOString() : undefined,
+        _to: toDate ? new Date(`${toDate}T23:59:59`).toISOString() : undefined,
+      });
+      setLoading(false);
+      if (error) return;
+      setRows((data ?? []) as unknown as Row[]);
+    },
+    [],
+  );
 
   useEffect(() => {
-    const t = setTimeout(() => void load(search.trim()), 350);
+    const t = setTimeout(() => void load(search.trim(), from, to), 350);
     return () => clearTimeout(t);
-  }, [search, load]);
+  }, [search, from, to, load]);
+
+  const hasFilters = search !== "" || from !== "" || to !== "";
 
   return (
     <div className="space-y-4">
-      <Input
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search by username or display name"
-        aria-label="Search members by username"
-        className="max-w-sm"
-      />
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="min-w-[16rem] flex-1 space-y-1">
+          <Label htmlFor="uc-search" className="text-xs">
+            Search
+          </Label>
+          <Input
+            id="uc-search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Current or previous username, display name"
+            aria-label="Search members by username or display name"
+          />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="uc-from" className="text-xs">
+            Changed from
+          </Label>
+          <Input
+            id="uc-from"
+            type="date"
+            value={from}
+            max={to || undefined}
+            onChange={(e) => setFrom(e.target.value)}
+          />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="uc-to" className="text-xs">
+            Changed to
+          </Label>
+          <Input
+            id="uc-to"
+            type="date"
+            value={to}
+            min={from || undefined}
+            onChange={(e) => setTo(e.target.value)}
+          />
+        </div>
+        {hasFilters ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSearch("");
+              setFrom("");
+              setTo("");
+            }}
+          >
+            <X className="mr-1 h-4 w-4" aria-hidden="true" />
+            Clear
+          </Button>
+        ) : null}
+      </div>
+
+      {!loading && rows.length > 0 ? (
+        <p className="text-xs text-muted-foreground">
+          {rows.length} member{rows.length === 1 ? "" : "s"} matched
+          {from || to ? " in the selected window" : ""}.
+        </p>
+      ) : null}
 
       {loading ? (
         <div className="flex justify-center py-8">
@@ -57,7 +119,9 @@ export const UsernameChangesPanel = () => {
         </div>
       ) : rows.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">
-          No member has changed their username yet.
+          {hasFilters
+            ? "No username changes match these filters."
+            : "No member has changed their username yet."}
         </p>
       ) : (
         <ul className="divide-y rounded-lg border">
