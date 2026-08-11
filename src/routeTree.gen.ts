@@ -19,6 +19,7 @@ import { Route as AdminComplianceRouteImport } from './routes/admin-compliance'
 import { Route as AdminCopyrightRouteImport } from './routes/admin-copyright'
 import { Route as AdminDiagnosticsRouteImport } from './routes/admin-diagnostics'
 import { Route as AdminFunctionLogsRouteImport } from './routes/admin-function-logs'
+import { Route as AdminIdentityRouteImport } from './routes/admin-identity'
 import { Route as AdminReportsRouteImport } from './routes/admin-reports'
 import { Route as AdminRetentionRouteImport } from './routes/admin-retention'
 import { Route as AdminSettingsRouteImport } from './routes/admin-settings'
@@ -141,6 +142,11 @@ const AdminDiagnosticsRoute = AdminDiagnosticsRouteImport.update({
 const AdminFunctionLogsRoute = AdminFunctionLogsRouteImport.update({
   id: '/admin-function-logs',
   path: '/admin-function-logs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIdentityRoute = AdminIdentityRouteImport.update({
+  id: '/admin-identity',
+  path: '/admin-identity',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminReportsRoute = AdminReportsRouteImport.update({
@@ -522,6 +528,7 @@ export interface FileRoutesByFullPath {
   '/admin-copyright': typeof AdminCopyrightRoute
   '/admin-diagnostics': typeof AdminDiagnosticsRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
+  '/admin-identity': typeof AdminIdentityRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-retention': typeof AdminRetentionRoute
   '/admin-settings': typeof AdminSettingsRoute
@@ -607,6 +614,7 @@ export interface FileRoutesByTo {
   '/admin-copyright': typeof AdminCopyrightRoute
   '/admin-diagnostics': typeof AdminDiagnosticsRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
+  '/admin-identity': typeof AdminIdentityRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-retention': typeof AdminRetentionRoute
   '/admin-settings': typeof AdminSettingsRoute
@@ -693,6 +701,7 @@ export interface FileRoutesById {
   '/admin-copyright': typeof AdminCopyrightRoute
   '/admin-diagnostics': typeof AdminDiagnosticsRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
+  '/admin-identity': typeof AdminIdentityRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-retention': typeof AdminRetentionRoute
   '/admin-settings': typeof AdminSettingsRoute
@@ -780,6 +789,7 @@ export interface FileRouteTypes {
     | '/admin-copyright'
     | '/admin-diagnostics'
     | '/admin-function-logs'
+    | '/admin-identity'
     | '/admin-reports'
     | '/admin-retention'
     | '/admin-settings'
@@ -865,6 +875,7 @@ export interface FileRouteTypes {
     | '/admin-copyright'
     | '/admin-diagnostics'
     | '/admin-function-logs'
+    | '/admin-identity'
     | '/admin-reports'
     | '/admin-retention'
     | '/admin-settings'
@@ -950,6 +961,7 @@ export interface FileRouteTypes {
     | '/admin-copyright'
     | '/admin-diagnostics'
     | '/admin-function-logs'
+    | '/admin-identity'
     | '/admin-reports'
     | '/admin-retention'
     | '/admin-settings'
@@ -1036,6 +1048,7 @@ export interface RootRouteChildren {
   AdminCopyrightRoute: typeof AdminCopyrightRoute
   AdminDiagnosticsRoute: typeof AdminDiagnosticsRoute
   AdminFunctionLogsRoute: typeof AdminFunctionLogsRoute
+  AdminIdentityRoute: typeof AdminIdentityRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminRetentionRoute: typeof AdminRetentionRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -1181,6 +1194,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-function-logs'
       fullPath: '/admin-function-logs'
       preLoaderRoute: typeof AdminFunctionLogsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-identity': {
+      id: '/admin-identity'
+      path: '/admin-identity'
+      fullPath: '/admin-identity'
+      preLoaderRoute: typeof AdminIdentityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-reports': {
@@ -1708,6 +1728,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCopyrightRoute: AdminCopyrightRoute,
   AdminDiagnosticsRoute: AdminDiagnosticsRoute,
   AdminFunctionLogsRoute: AdminFunctionLogsRoute,
+  AdminIdentityRoute: AdminIdentityRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminRetentionRoute: AdminRetentionRoute,
   AdminSettingsRoute: AdminSettingsRoute,
