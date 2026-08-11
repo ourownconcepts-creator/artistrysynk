@@ -35,6 +35,7 @@ import { Route as DancersRouteImport } from './routes/dancers'
 import { Route as DataDeletionRouteImport } from './routes/data-deletion'
 import { Route as DesignersRouteImport } from './routes/designers'
 import { Route as DiscoverRouteImport } from './routes/discover'
+import { Route as E7f290e9fedb2d290482f1ccc7201237DottxtRouteImport } from './routes/e7f290e9fedb2d290482f1ccc7201237[.]txt'
 import { Route as EditProfileRouteImport } from './routes/edit-profile'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as FeedRouteImport } from './routes/feed'
@@ -233,6 +234,12 @@ const DiscoverRoute = DiscoverRouteImport.update({
   path: '/discover',
   getParentRoute: () => rootRouteImport,
 } as any)
+const E7f290e9fedb2d290482f1ccc7201237DottxtRoute =
+  E7f290e9fedb2d290482f1ccc7201237DottxtRouteImport.update({
+    id: '/e7f290e9fedb2d290482f1ccc7201237.txt',
+    path: '/e7f290e9fedb2d290482f1ccc7201237.txt',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const EditProfileRoute = EditProfileRouteImport.update({
   id: '/edit-profile',
   path: '/edit-profile',
@@ -598,6 +605,7 @@ export interface FileRoutesByFullPath {
   '/data-deletion': typeof DataDeletionRoute
   '/designers': typeof DesignersRoute
   '/discover': typeof DiscoverRoute
+  '/e7f290e9fedb2d290482f1ccc7201237.txt': typeof E7f290e9fedb2d290482f1ccc7201237DottxtRoute
   '/edit-profile': typeof EditProfileRoute
   '/features': typeof FeaturesRoute
   '/feed': typeof FeedRoute
@@ -693,6 +701,7 @@ export interface FileRoutesByTo {
   '/data-deletion': typeof DataDeletionRoute
   '/designers': typeof DesignersRoute
   '/discover': typeof DiscoverRoute
+  '/e7f290e9fedb2d290482f1ccc7201237.txt': typeof E7f290e9fedb2d290482f1ccc7201237DottxtRoute
   '/edit-profile': typeof EditProfileRoute
   '/features': typeof FeaturesRoute
   '/feed': typeof FeedRoute
@@ -789,6 +798,7 @@ export interface FileRoutesById {
   '/data-deletion': typeof DataDeletionRoute
   '/designers': typeof DesignersRoute
   '/discover': typeof DiscoverRoute
+  '/e7f290e9fedb2d290482f1ccc7201237.txt': typeof E7f290e9fedb2d290482f1ccc7201237DottxtRoute
   '/edit-profile': typeof EditProfileRoute
   '/features': typeof FeaturesRoute
   '/feed': typeof FeedRoute
@@ -886,6 +896,7 @@ export interface FileRouteTypes {
     | '/data-deletion'
     | '/designers'
     | '/discover'
+    | '/e7f290e9fedb2d290482f1ccc7201237.txt'
     | '/edit-profile'
     | '/features'
     | '/feed'
@@ -981,6 +992,7 @@ export interface FileRouteTypes {
     | '/data-deletion'
     | '/designers'
     | '/discover'
+    | '/e7f290e9fedb2d290482f1ccc7201237.txt'
     | '/edit-profile'
     | '/features'
     | '/feed'
@@ -1076,6 +1088,7 @@ export interface FileRouteTypes {
     | '/data-deletion'
     | '/designers'
     | '/discover'
+    | '/e7f290e9fedb2d290482f1ccc7201237.txt'
     | '/edit-profile'
     | '/features'
     | '/feed'
@@ -1172,6 +1185,7 @@ export interface RootRouteChildren {
   DataDeletionRoute: typeof DataDeletionRoute
   DesignersRoute: typeof DesignersRoute
   DiscoverRoute: typeof DiscoverRoute
+  E7f290e9fedb2d290482f1ccc7201237DottxtRoute: typeof E7f290e9fedb2d290482f1ccc7201237DottxtRoute
   EditProfileRoute: typeof EditProfileRoute
   FeaturesRoute: typeof FeaturesRoute
   FeedRoute: typeof FeedRoute
@@ -1423,6 +1437,13 @@ declare module '@tanstack/react-router' {
       path: '/discover'
       fullPath: '/discover'
       preLoaderRoute: typeof DiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/e7f290e9fedb2d290482f1ccc7201237.txt': {
+      id: '/e7f290e9fedb2d290482f1ccc7201237.txt'
+      path: '/e7f290e9fedb2d290482f1ccc7201237.txt'
+      fullPath: '/e7f290e9fedb2d290482f1ccc7201237.txt'
+      preLoaderRoute: typeof E7f290e9fedb2d290482f1ccc7201237DottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/edit-profile': {
@@ -1924,6 +1945,8 @@ const rootRouteChildren: RootRouteChildren = {
   DataDeletionRoute: DataDeletionRoute,
   DesignersRoute: DesignersRoute,
   DiscoverRoute: DiscoverRoute,
+  E7f290e9fedb2d290482f1ccc7201237DottxtRoute:
+    E7f290e9fedb2d290482f1ccc7201237DottxtRoute,
   EditProfileRoute: EditProfileRoute,
   FeaturesRoute: FeaturesRoute,
   FeedRoute: FeedRoute,
