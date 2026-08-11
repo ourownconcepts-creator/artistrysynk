@@ -100,6 +100,7 @@ import { Route as SettingsUsernameRouteImport } from './routes/settings/username
 import { Route as StudioItemIdRouteImport } from './routes/studio/$itemId'
 import { Route as StudiosIndexRouteImport } from './routes/studios/index'
 import { Route as StudiosNewRouteImport } from './routes/studios/new'
+import { Route as ApiPublicOgImageRouteImport } from './routes/api/public/og-image'
 import { Route as StudiosHandleIndexRouteImport } from './routes/studios/$handle/index'
 import { Route as StudiosHandleManageRouteImport } from './routes/studios/$handle/manage'
 import { Route as ApiPublicHooksRetentionSweepRouteImport } from './routes/api/public/hooks/retention-sweep'
@@ -562,6 +563,11 @@ const StudiosNewRoute = StudiosNewRouteImport.update({
   path: '/studios/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicOgImageRoute = ApiPublicOgImageRouteImport.update({
+  id: '/api/public/og-image',
+  path: '/api/public/og-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudiosHandleIndexRoute = StudiosHandleIndexRouteImport.update({
   id: '/studios/$handle/',
   path: '/studios/$handle/',
@@ -677,6 +683,7 @@ export interface FileRoutesByFullPath {
   '/projects/': typeof ProjectsIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/studios/': typeof StudiosIndexRoute
+  '/api/public/og-image': typeof ApiPublicOgImageRoute
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
   '/studios/$handle/': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
@@ -774,6 +781,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/studios': typeof StudiosIndexRoute
+  '/api/public/og-image': typeof ApiPublicOgImageRoute
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
   '/studios/$handle': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
@@ -872,6 +880,7 @@ export interface FileRoutesById {
   '/projects/': typeof ProjectsIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/studios/': typeof StudiosIndexRoute
+  '/api/public/og-image': typeof ApiPublicOgImageRoute
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
   '/studios/$handle/': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
@@ -971,6 +980,7 @@ export interface FileRouteTypes {
     | '/projects/'
     | '/settings/'
     | '/studios/'
+    | '/api/public/og-image'
     | '/studios/$handle/manage'
     | '/studios/$handle/'
     | '/api/public/hooks/retention-sweep'
@@ -1068,6 +1078,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/settings'
     | '/studios'
+    | '/api/public/og-image'
     | '/studios/$handle/manage'
     | '/studios/$handle'
     | '/api/public/hooks/retention-sweep'
@@ -1165,6 +1176,7 @@ export interface FileRouteTypes {
     | '/projects/'
     | '/settings/'
     | '/studios/'
+    | '/api/public/og-image'
     | '/studios/$handle/manage'
     | '/studios/$handle/'
     | '/api/public/hooks/retention-sweep'
@@ -1263,6 +1275,7 @@ export interface RootRouteChildren {
   ProjectsIndexRoute: typeof ProjectsIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   StudiosIndexRoute: typeof StudiosIndexRoute
+  ApiPublicOgImageRoute: typeof ApiPublicOgImageRoute
   StudiosHandleManageRoute: typeof StudiosHandleManageRoute
   StudiosHandleIndexRoute: typeof StudiosHandleIndexRoute
   ApiPublicHooksRetentionSweepRoute: typeof ApiPublicHooksRetentionSweepRoute
@@ -1908,6 +1921,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudiosNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/og-image': {
+      id: '/api/public/og-image'
+      path: '/api/public/og-image'
+      fullPath: '/api/public/og-image'
+      preLoaderRoute: typeof ApiPublicOgImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/studios/$handle/': {
       id: '/studios/$handle/'
       path: '/studios/$handle'
@@ -2032,6 +2052,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsIndexRoute: ProjectsIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   StudiosIndexRoute: StudiosIndexRoute,
+  ApiPublicOgImageRoute: ApiPublicOgImageRoute,
   StudiosHandleManageRoute: StudiosHandleManageRoute,
   StudiosHandleIndexRoute: StudiosHandleIndexRoute,
   ApiPublicHooksRetentionSweepRoute: ApiPublicHooksRetentionSweepRoute,
