@@ -22,6 +22,7 @@ import { Route as AdminFunctionLogsRouteImport } from './routes/admin-function-l
 import { Route as AdminIdentityRouteImport } from './routes/admin-identity'
 import { Route as AdminReportsRouteImport } from './routes/admin-reports'
 import { Route as AdminRetentionRouteImport } from './routes/admin-retention'
+import { Route as AdminSeoPreviewRouteImport } from './routes/admin-seo-preview'
 import { Route as AdminSettingsRouteImport } from './routes/admin-settings'
 import { Route as AdminSupportRouteImport } from './routes/admin-support'
 import { Route as ApiAccessRouteImport } from './routes/api-access'
@@ -159,6 +160,11 @@ const AdminReportsRoute = AdminReportsRouteImport.update({
 const AdminRetentionRoute = AdminRetentionRouteImport.update({
   id: '/admin-retention',
   path: '/admin-retention',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSeoPreviewRoute = AdminSeoPreviewRouteImport.update({
+  id: '/admin-seo-preview',
+  path: '/admin-seo-preview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
@@ -543,6 +549,7 @@ export interface FileRoutesByFullPath {
   '/admin-identity': typeof AdminIdentityRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-retention': typeof AdminRetentionRoute
+  '/admin-seo-preview': typeof AdminSeoPreviewRoute
   '/admin-settings': typeof AdminSettingsRoute
   '/admin-support': typeof AdminSupportRoute
   '/api-access': typeof ApiAccessRoute
@@ -631,6 +638,7 @@ export interface FileRoutesByTo {
   '/admin-identity': typeof AdminIdentityRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-retention': typeof AdminRetentionRoute
+  '/admin-seo-preview': typeof AdminSeoPreviewRoute
   '/admin-settings': typeof AdminSettingsRoute
   '/admin-support': typeof AdminSupportRoute
   '/api-access': typeof ApiAccessRoute
@@ -720,6 +728,7 @@ export interface FileRoutesById {
   '/admin-identity': typeof AdminIdentityRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-retention': typeof AdminRetentionRoute
+  '/admin-seo-preview': typeof AdminSeoPreviewRoute
   '/admin-settings': typeof AdminSettingsRoute
   '/admin-support': typeof AdminSupportRoute
   '/api-access': typeof ApiAccessRoute
@@ -810,6 +819,7 @@ export interface FileRouteTypes {
     | '/admin-identity'
     | '/admin-reports'
     | '/admin-retention'
+    | '/admin-seo-preview'
     | '/admin-settings'
     | '/admin-support'
     | '/api-access'
@@ -898,6 +908,7 @@ export interface FileRouteTypes {
     | '/admin-identity'
     | '/admin-reports'
     | '/admin-retention'
+    | '/admin-seo-preview'
     | '/admin-settings'
     | '/admin-support'
     | '/api-access'
@@ -986,6 +997,7 @@ export interface FileRouteTypes {
     | '/admin-identity'
     | '/admin-reports'
     | '/admin-retention'
+    | '/admin-seo-preview'
     | '/admin-settings'
     | '/admin-support'
     | '/api-access'
@@ -1075,6 +1087,7 @@ export interface RootRouteChildren {
   AdminIdentityRoute: typeof AdminIdentityRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminRetentionRoute: typeof AdminRetentionRoute
+  AdminSeoPreviewRoute: typeof AdminSeoPreviewRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSupportRoute: typeof AdminSupportRoute
   ApiAccessRoute: typeof ApiAccessRoute
@@ -1241,6 +1254,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-retention'
       fullPath: '/admin-retention'
       preLoaderRoute: typeof AdminRetentionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-seo-preview': {
+      id: '/admin-seo-preview'
+      path: '/admin-seo-preview'
+      fullPath: '/admin-seo-preview'
+      preLoaderRoute: typeof AdminSeoPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-settings': {
@@ -1771,6 +1791,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIdentityRoute: AdminIdentityRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminRetentionRoute: AdminRetentionRoute,
+  AdminSeoPreviewRoute: AdminSeoPreviewRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSupportRoute: AdminSupportRoute,
   ApiAccessRoute: ApiAccessRoute,
@@ -1848,13 +1869,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
