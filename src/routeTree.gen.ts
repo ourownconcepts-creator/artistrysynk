@@ -57,6 +57,12 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PrivacyRequestsRouteImport } from './routes/privacy-requests'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SetupProfileRouteImport } from './routes/setup-profile'
+import { Route as SitemapBlogDotxmlRouteImport } from './routes/sitemap-blog[.]xml'
+import { Route as SitemapLandingDotxmlRouteImport } from './routes/sitemap-landing[.]xml'
+import { Route as SitemapStaticDotxmlRouteImport } from './routes/sitemap-static[.]xml'
+import { Route as SitemapStudiosDotxmlRouteImport } from './routes/sitemap-studios[.]xml'
+import { Route as SitemapUsersDotxmlRouteImport } from './routes/sitemap-users[.]xml'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SoftwareDevelopersRouteImport } from './routes/software-developers'
 import { Route as SongwritersRouteImport } from './routes/songwriters'
 import { Route as SuccessStoriesRouteImport } from './routes/success-stories'
@@ -337,6 +343,36 @@ const SetupProfileRoute = SetupProfileRouteImport.update({
   path: '/setup-profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapBlogDotxmlRoute = SitemapBlogDotxmlRouteImport.update({
+  id: '/sitemap-blog.xml',
+  path: '/sitemap-blog.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapLandingDotxmlRoute = SitemapLandingDotxmlRouteImport.update({
+  id: '/sitemap-landing.xml',
+  path: '/sitemap-landing.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapStaticDotxmlRoute = SitemapStaticDotxmlRouteImport.update({
+  id: '/sitemap-static.xml',
+  path: '/sitemap-static.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapStudiosDotxmlRoute = SitemapStudiosDotxmlRouteImport.update({
+  id: '/sitemap-studios.xml',
+  path: '/sitemap-studios.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapUsersDotxmlRoute = SitemapUsersDotxmlRouteImport.update({
+  id: '/sitemap-users.xml',
+  path: '/sitemap-users.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SoftwareDevelopersRoute = SoftwareDevelopersRouteImport.update({
   id: '/software-developers',
   path: '/software-developers',
@@ -584,6 +620,12 @@ export interface FileRoutesByFullPath {
   '/privacy-requests': typeof PrivacyRequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
+  '/sitemap-blog.xml': typeof SitemapBlogDotxmlRoute
+  '/sitemap-landing.xml': typeof SitemapLandingDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
+  '/sitemap-studios.xml': typeof SitemapStudiosDotxmlRoute
+  '/sitemap-users.xml': typeof SitemapUsersDotxmlRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/software-developers': typeof SoftwareDevelopersRoute
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
@@ -673,6 +715,12 @@ export interface FileRoutesByTo {
   '/privacy-requests': typeof PrivacyRequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
+  '/sitemap-blog.xml': typeof SitemapBlogDotxmlRoute
+  '/sitemap-landing.xml': typeof SitemapLandingDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
+  '/sitemap-studios.xml': typeof SitemapStudiosDotxmlRoute
+  '/sitemap-users.xml': typeof SitemapUsersDotxmlRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/software-developers': typeof SoftwareDevelopersRoute
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
@@ -763,6 +811,12 @@ export interface FileRoutesById {
   '/privacy-requests': typeof PrivacyRequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
+  '/sitemap-blog.xml': typeof SitemapBlogDotxmlRoute
+  '/sitemap-landing.xml': typeof SitemapLandingDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
+  '/sitemap-studios.xml': typeof SitemapStudiosDotxmlRoute
+  '/sitemap-users.xml': typeof SitemapUsersDotxmlRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/software-developers': typeof SoftwareDevelopersRoute
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
@@ -854,6 +908,12 @@ export interface FileRouteTypes {
     | '/privacy-requests'
     | '/reset-password'
     | '/setup-profile'
+    | '/sitemap-blog.xml'
+    | '/sitemap-landing.xml'
+    | '/sitemap-static.xml'
+    | '/sitemap-studios.xml'
+    | '/sitemap-users.xml'
+    | '/sitemap.xml'
     | '/software-developers'
     | '/songwriters'
     | '/success-stories'
@@ -943,6 +1003,12 @@ export interface FileRouteTypes {
     | '/privacy-requests'
     | '/reset-password'
     | '/setup-profile'
+    | '/sitemap-blog.xml'
+    | '/sitemap-landing.xml'
+    | '/sitemap-static.xml'
+    | '/sitemap-studios.xml'
+    | '/sitemap-users.xml'
+    | '/sitemap.xml'
     | '/software-developers'
     | '/songwriters'
     | '/success-stories'
@@ -1032,6 +1098,12 @@ export interface FileRouteTypes {
     | '/privacy-requests'
     | '/reset-password'
     | '/setup-profile'
+    | '/sitemap-blog.xml'
+    | '/sitemap-landing.xml'
+    | '/sitemap-static.xml'
+    | '/sitemap-studios.xml'
+    | '/sitemap-users.xml'
+    | '/sitemap.xml'
     | '/software-developers'
     | '/songwriters'
     | '/success-stories'
@@ -1122,6 +1194,12 @@ export interface RootRouteChildren {
   PrivacyRequestsRoute: typeof PrivacyRequestsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SetupProfileRoute: typeof SetupProfileRoute
+  SitemapBlogDotxmlRoute: typeof SitemapBlogDotxmlRoute
+  SitemapLandingDotxmlRoute: typeof SitemapLandingDotxmlRoute
+  SitemapStaticDotxmlRoute: typeof SitemapStaticDotxmlRoute
+  SitemapStudiosDotxmlRoute: typeof SitemapStudiosDotxmlRoute
+  SitemapUsersDotxmlRoute: typeof SitemapUsersDotxmlRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SoftwareDevelopersRoute: typeof SoftwareDevelopersRoute
   SongwritersRoute: typeof SongwritersRoute
   SuccessStoriesRoute: typeof SuccessStoriesRoute
@@ -1501,6 +1579,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SetupProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap-blog.xml': {
+      id: '/sitemap-blog.xml'
+      path: '/sitemap-blog.xml'
+      fullPath: '/sitemap-blog.xml'
+      preLoaderRoute: typeof SitemapBlogDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-landing.xml': {
+      id: '/sitemap-landing.xml'
+      path: '/sitemap-landing.xml'
+      fullPath: '/sitemap-landing.xml'
+      preLoaderRoute: typeof SitemapLandingDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-static.xml': {
+      id: '/sitemap-static.xml'
+      path: '/sitemap-static.xml'
+      fullPath: '/sitemap-static.xml'
+      preLoaderRoute: typeof SitemapStaticDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-studios.xml': {
+      id: '/sitemap-studios.xml'
+      path: '/sitemap-studios.xml'
+      fullPath: '/sitemap-studios.xml'
+      preLoaderRoute: typeof SitemapStudiosDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-users.xml': {
+      id: '/sitemap-users.xml'
+      path: '/sitemap-users.xml'
+      fullPath: '/sitemap-users.xml'
+      preLoaderRoute: typeof SitemapUsersDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/software-developers': {
       id: '/software-developers'
       path: '/software-developers'
@@ -1826,6 +1946,12 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRequestsRoute: PrivacyRequestsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SetupProfileRoute: SetupProfileRoute,
+  SitemapBlogDotxmlRoute: SitemapBlogDotxmlRoute,
+  SitemapLandingDotxmlRoute: SitemapLandingDotxmlRoute,
+  SitemapStaticDotxmlRoute: SitemapStaticDotxmlRoute,
+  SitemapStudiosDotxmlRoute: SitemapStudiosDotxmlRoute,
+  SitemapUsersDotxmlRoute: SitemapUsersDotxmlRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SoftwareDevelopersRoute: SoftwareDevelopersRoute,
   SongwritersRoute: SongwritersRoute,
   SuccessStoriesRoute: SuccessStoriesRoute,
@@ -1869,13 +1995,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
