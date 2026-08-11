@@ -2,6 +2,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { LegalDocumentView } from "@/components/legal/LegalDocumentView";
 import { getLegalDocument } from "@/lib/legal.functions";
+import { buildPageHead, breadcrumbJsonLd } from "@/lib/seoHead";
 
 /** Canonical, indexable URL for the Cookie Policy. Content is served from the versioned legal document store. */
 export const Route = createFileRoute("/cookies")({
@@ -10,24 +11,19 @@ export const Route = createFileRoute("/cookies")({
     if (!doc) throw notFound();
     return doc;
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: "Cookie Policy | ArtistrySynk" },
-      {
-        name: "description",
-        content:
-          loaderData?.summary ??
-          "The ArtistrySynk Cookie Policy — what it covers and when it took effect.",
-      },
-      { property: "og:title", content: "Cookie Policy | ArtistrySynk" },
-      {
-        property: "og:description",
-        content: loaderData?.summary ?? "The ArtistrySynk Cookie Policy.",
-      },
-      { property: "og:type", content: "article" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: ({ loaderData }) =>
+    buildPageHead({
+      path: "/cookies",
+      title: "Cookie Policy | ArtistrySynk",
+      description: loaderData?.summary ?? "How ArtistrySynk uses cookies and similar technologies, and how to manage your preferences.",
+      ogType: "article",
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Cookie Policy", path: "/cookies" },
+        ]),
+      ],
+    }),
   errorComponent: () => (
     <main className="container mx-auto px-4 py-16 text-center">
       <p className="text-muted-foreground">We couldn't load this policy. Please refresh.</p>

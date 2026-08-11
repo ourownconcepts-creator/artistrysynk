@@ -46,7 +46,7 @@ export async function notifyJobApplication({
             </div>
           ` : ''}
           
-          <a href="https://artistrysynk.lovable.app/jobs" 
+          <a href="https://artistrysynk.app/jobs" 
              style="display: inline-block; background: linear-gradient(135deg, #c026d3 0%, #7c3aed 100%); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
             View Application
           </a>

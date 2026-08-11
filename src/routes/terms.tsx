@@ -2,6 +2,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { LegalDocumentView } from "@/components/legal/LegalDocumentView";
 import { getLegalDocument } from "@/lib/legal.functions";
+import { buildPageHead, breadcrumbJsonLd } from "@/lib/seoHead";
 
 /** Canonical, indexable URL for the Terms of Service. Content is served from the versioned legal document store. */
 export const Route = createFileRoute("/terms")({
@@ -10,24 +11,19 @@ export const Route = createFileRoute("/terms")({
     if (!doc) throw notFound();
     return doc;
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: "Terms of Service | ArtistrySynk" },
-      {
-        name: "description",
-        content:
-          loaderData?.summary ??
-          "The ArtistrySynk Terms of Service — what it covers and when it took effect.",
-      },
-      { property: "og:title", content: "Terms of Service | ArtistrySynk" },
-      {
-        property: "og:description",
-        content: loaderData?.summary ?? "The ArtistrySynk Terms of Service.",
-      },
-      { property: "og:type", content: "article" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: ({ loaderData }) =>
+    buildPageHead({
+      path: "/terms",
+      title: "Terms of Service | ArtistrySynk",
+      description: loaderData?.summary ?? "The ArtistrySynk Terms of Service — the rules and guidelines for using our creative collaboration platform.",
+      ogType: "article",
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Terms of Service", path: "/terms" },
+        ]),
+      ],
+    }),
   errorComponent: () => (
     <main className="container mx-auto px-4 py-16 text-center">
       <p className="text-muted-foreground">We couldn't load this policy. Please refresh.</p>
