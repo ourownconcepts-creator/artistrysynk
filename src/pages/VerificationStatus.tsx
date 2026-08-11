@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, ShieldCheck } from "lucide-react";
-import { RouteSEO } from "@/components/RouteSEO";
+import { PageSEO } from "@/components/seo/PageSEO";
 import { VerificationChecklist } from "@/components/verification/VerificationChecklist";
 import {
   CAPABILITY_LABELS,
@@ -46,10 +46,10 @@ const VerificationStatus = () => {
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-8">
-      <RouteSEO
-        title="Verification status | ArtistrySynk"
+      <PageSEO
+        title="Verification status"
         description="Track your ArtistrySynk verification, upload the required documents and see what happens next."
-        noindex
+        noIndex
       />
 
       <header className="mb-6">
