@@ -56,11 +56,11 @@ const Talent = () => {
   const search = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase.rpc("list_talent_candidates", {
-      _role: role === "all" ? null : role,
-      _skill: skill.trim() || null,
-      _city: city.trim() || null,
+      _role: role === "all" ? undefined : role,
+      _skill: skill.trim() || undefined,
+      _city: city.trim() || undefined,
       _verified_only: verifiedOnly,
-      _opportunity: opportunity === "all" ? null : opportunity,
+      _opportunity: opportunity === "all" ? undefined : opportunity,
       _limit: 24,
       _offset: 0,
     });
@@ -90,7 +90,7 @@ const Talent = () => {
       <PageSEO
         title="Talent scouting — ArtistrySynk"
         description="Search creatives who are open to opportunities, with privacy-preserving candidate profiles."
-        noindex
+        noIndex
       />
       <header className="mb-6 space-y-1">
         <h1 className="flex items-center gap-2 text-2xl font-bold">
@@ -118,8 +118,8 @@ const Talent = () => {
               <SelectContent className="max-h-72">
                 <SelectItem value="all">All disciplines</SelectItem>
                 {allRoles.map((r) => (
-                  <SelectItem key={r} value={r}>
-                    {getRoleLabel(r)}
+                  <SelectItem key={r.value} value={r.value}>
+                    {r.label}
                   </SelectItem>
                 ))}
               </SelectContent>
