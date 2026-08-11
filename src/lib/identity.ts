@@ -128,7 +128,26 @@ export const fetchTrustedCircle = async (userId: string) => {
 };
 
 export const respondToTrust = async (id: string, status: "accepted" | "declined" | "revoked") => {
-  const { error } = await supabase.from("trusted_relationships").update({ status }).eq("id", id);
+  // Goes through the RPC so the decision is checked and the requester notified.
+  const { error } = await supabase.rpc("respond_to_trust_request", { _id: id, _status: status });
+  return error;
+};
+
+/**
+ * Introduce someone from your trusted circle to another member. The database
+ * verifies you are actually trusted by them and that their settings allow
+ * introductions from you.
+ */
+export const createTrustedIntroduction = async (
+  subjectUserId: string,
+  recipientUserId: string,
+  message?: string,
+) => {
+  const { error } = await supabase.rpc("create_trusted_introduction", {
+    _subject: subjectUserId,
+    _recipient: recipientUserId,
+    _message: message ?? undefined,
+  });
   return error;
 };
 
