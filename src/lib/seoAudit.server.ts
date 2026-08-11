@@ -20,6 +20,8 @@ export interface ShareAuditIssue {
 }
 
 export interface ShareAuditResult {
+  /** True when the page is served the automatic branded fallback banner. */
+  ogImageFallback: boolean;
   path: string;
   status: number | null;
   title: string | null;
@@ -81,15 +83,16 @@ function toInt(value: string | undefined): number | null {
 async function probeImage(url: string) {
   try {
     const res = await fetch(url, { method: "GET", headers: { Range: "bytes=0-0" } });
-    return { status: res.status, contentType: res.headers.get("content-type") };
+    return { status: res.status, contentType: res.headers.get("content-type"), finalUrl: res.url };
   } catch {
-    return { status: null as number | null, contentType: null as string | null };
+    return { status: null as number | null, contentType: null as string | null, finalUrl: null as string | null };
   }
 }
 
 export async function auditSharePreview(baseUrl: string, path: string): Promise<ShareAuditResult> {
   const result: ShareAuditResult = {
     path,
+    ogImageFallback: false,
     status: null,
     title: null,
     description: null,
@@ -155,13 +158,21 @@ export async function auditSharePreview(baseUrl: string, path: string): Promise<
       message: `twitter:card is "${result.twitterCard}" (summary_large_image renders best)`,
     });
 
+  const { isProxiedOgImage, OG_FALLBACK_PATH } = await import("./ogImage");
+
   if (!result.ogImage) {
     result.issues.push({ level: "error", message: "Missing og:image" });
   } else {
     if (!/^https:\/\//i.test(result.ogImage))
       result.issues.push({ level: "error", message: "og:image must be an absolute https URL" });
+    result.ogImageFallback = isProxiedOgImage(result.ogImage);
     const probe = await probeImage(result.ogImage);
     result.ogImageStatus = probe.status;
+    if (result.ogImageFallback && probe.finalUrl?.includes(OG_FALLBACK_PATH))
+      result.issues.push({
+        level: "warning",
+        message: "Original image was missing or too small — the branded 1200x630 fallback is served automatically",
+      });
     result.ogImageContentType = probe.contentType;
     if (probe.status === null || probe.status >= 400)
       result.issues.push({
