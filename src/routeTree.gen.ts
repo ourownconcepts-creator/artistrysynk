@@ -64,6 +64,7 @@ import { Route as SynkAiRouteImport } from './routes/synk-ai'
 import { Route as TalentRouteImport } from './routes/talent'
 import { Route as TeamsRouteImport } from './routes/teams'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as VideographersRouteImport } from './routes/videographers'
 import { Route as WhoLikedYouRouteImport } from './routes/who-liked-you'
 import { Route as AccountConfirmDeletionRouteImport } from './routes/account/confirm-deletion'
@@ -369,6 +370,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VerificationRoute = VerificationRouteImport.update({
+  id: '/verification',
+  path: '/verification',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VideographersRoute = VideographersRouteImport.update({
   id: '/videographers',
   path: '/videographers',
@@ -573,6 +579,7 @@ export interface FileRoutesByFullPath {
   '/talent': typeof TalentRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
+  '/verification': typeof VerificationRoute
   '/videographers': typeof VideographersRoute
   '/who-liked-you': typeof WhoLikedYouRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
@@ -659,6 +666,7 @@ export interface FileRoutesByTo {
   '/talent': typeof TalentRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
+  '/verification': typeof VerificationRoute
   '/videographers': typeof VideographersRoute
   '/who-liked-you': typeof WhoLikedYouRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
@@ -746,6 +754,7 @@ export interface FileRoutesById {
   '/talent': typeof TalentRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
+  '/verification': typeof VerificationRoute
   '/videographers': typeof VideographersRoute
   '/who-liked-you': typeof WhoLikedYouRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
@@ -834,6 +843,7 @@ export interface FileRouteTypes {
     | '/talent'
     | '/teams'
     | '/terms'
+    | '/verification'
     | '/videographers'
     | '/who-liked-you'
     | '/account/confirm-deletion'
@@ -920,6 +930,7 @@ export interface FileRouteTypes {
     | '/talent'
     | '/teams'
     | '/terms'
+    | '/verification'
     | '/videographers'
     | '/who-liked-you'
     | '/account/confirm-deletion'
@@ -1006,6 +1017,7 @@ export interface FileRouteTypes {
     | '/talent'
     | '/teams'
     | '/terms'
+    | '/verification'
     | '/videographers'
     | '/who-liked-you'
     | '/account/confirm-deletion'
@@ -1093,6 +1105,7 @@ export interface RootRouteChildren {
   TalentRoute: typeof TalentRoute
   TeamsRoute: typeof TeamsRoute
   TermsRoute: typeof TermsRoute
+  VerificationRoute: typeof VerificationRoute
   VideographersRoute: typeof VideographersRoute
   WhoLikedYouRoute: typeof WhoLikedYouRoute
   AccountConfirmDeletionRoute: typeof AccountConfirmDeletionRoute
@@ -1511,6 +1524,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/verification': {
+      id: '/verification'
+      path: '/verification'
+      fullPath: '/verification'
+      preLoaderRoute: typeof VerificationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/videographers': {
       id: '/videographers'
       path: '/videographers'
@@ -1773,6 +1793,7 @@ const rootRouteChildren: RootRouteChildren = {
   TalentRoute: TalentRoute,
   TeamsRoute: TeamsRoute,
   TermsRoute: TermsRoute,
+  VerificationRoute: VerificationRoute,
   VideographersRoute: VideographersRoute,
   WhoLikedYouRoute: WhoLikedYouRoute,
   AccountConfirmDeletionRoute: AccountConfirmDeletionRoute,

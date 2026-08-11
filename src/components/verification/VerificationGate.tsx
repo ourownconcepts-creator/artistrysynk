@@ -49,8 +49,9 @@ export const VerificationGate = ({
       toast.error("Could not start verification. Please try again.");
       return;
     }
-    toast.success("Verification requested — our team will review it shortly.");
+    toast.success("Verification started — upload your documents to finish.");
     void refresh();
+    navigate("/verification");
   };
 
   return (
@@ -74,15 +75,16 @@ export const VerificationGate = ({
             <Badge variant="outline">Your level: {LEVEL_LABELS[myLevel] ?? myLevel}</Badge>
           </div>
           <p className="text-sm text-muted-foreground">
-            Add your legal name and country in Settings → Privacy, then request a review. Your legal
-            details are never shown to other members and every staff access is logged.
+            Upload the documents on your verification checklist and we'll review them within 2
+            business days. Your legal details are never shown to other members and every staff
+            access is logged.
           </p>
           <div className="flex flex-wrap gap-2">
             <Button onClick={() => void submit()} disabled={submitting}>
-              {submitting ? "Requesting…" : "Request verification"}
+              {submitting ? "Starting…" : "Start verification"}
             </Button>
-            <Button variant="outline" onClick={() => navigate("/settings")}>
-              Add identity details
+            <Button variant="outline" onClick={() => navigate("/verification")}>
+              View checklist & status
             </Button>
           </div>
         </CardContent>
