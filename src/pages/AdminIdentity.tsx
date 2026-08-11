@@ -335,9 +335,11 @@ const AdminIdentity = () => {
             </ul>
           )}
         </TabsContent>
-      </Tabs>
-*** placeholder
 
+        <TabsContent value="usernames" className="pt-4">
+          <UsernameChangesPanel />
+        </TabsContent>
+      </Tabs>
 
       <Dialog open={!!requestFor} onOpenChange={(open) => !open && setRequestFor(null)}>
         <DialogContent>
