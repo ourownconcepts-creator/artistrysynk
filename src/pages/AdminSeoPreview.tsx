@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { MetadataPreview } from "@/components/seo/MetadataPreview";
 import { SharePreviewValidator } from "@/components/seo/SharePreviewValidator";
+import { IndexingSubmitCard } from "@/components/seo/IndexingSubmitCard";
 
 const AdminSeoPreview = () => {
   return (
@@ -24,6 +25,7 @@ const AdminSeoPreview = () => {
       <div className="space-y-8">
         <MetadataPreview />
         <SharePreviewValidator />
+        <IndexingSubmitCard />
       </div>
     </div>
   );
