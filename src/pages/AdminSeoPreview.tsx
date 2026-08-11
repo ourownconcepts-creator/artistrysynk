@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { MetadataPreview } from "@/components/seo/MetadataPreview";
 import { SharePreviewValidator } from "@/components/seo/SharePreviewValidator";
 import { IndexingSubmitCard } from "@/components/seo/IndexingSubmitCard";
+import { OgFallbackManager } from "@/components/seo/OgFallbackManager";
 
 const AdminSeoPreview = () => {
+  const [revalidateKey, setRevalidateKey] = useState(0);
+
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
       <div className="mb-6 flex items-center gap-3">
@@ -24,7 +28,8 @@ const AdminSeoPreview = () => {
       </header>
       <div className="space-y-8">
         <MetadataPreview />
-        <SharePreviewValidator />
+        <OgFallbackManager onChanged={() => setRevalidateKey((k) => k + 1)} />
+        <SharePreviewValidator autoRunKey={revalidateKey} />
         <IndexingSubmitCard />
       </div>
     </div>

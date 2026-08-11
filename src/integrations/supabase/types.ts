@@ -1869,6 +1869,66 @@ export type Database = {
         }
         Relationships: []
       }
+      og_image_overrides: {
+        Row: {
+          image_url: string
+          path: string
+          portrait_url: string | null
+          square_url: string | null
+          updated_at: string
+          updated_by: string | null
+          version: string
+        }
+        Insert: {
+          image_url: string
+          path: string
+          portrait_url?: string | null
+          square_url?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          version?: string
+        }
+        Update: {
+          image_url?: string
+          path?: string
+          portrait_url?: string | null
+          square_url?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
+      og_image_settings: {
+        Row: {
+          id: boolean
+          image_url: string | null
+          portrait_url: string | null
+          square_url: string | null
+          updated_at: string
+          updated_by: string | null
+          version: string
+        }
+        Insert: {
+          id?: boolean
+          image_url?: string | null
+          portrait_url?: string | null
+          square_url?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          version?: string
+        }
+        Update: {
+          id?: boolean
+          image_url?: string | null
+          portrait_url?: string | null
+          square_url?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
       portfolio_items: {
         Row: {
           created_at: string | null

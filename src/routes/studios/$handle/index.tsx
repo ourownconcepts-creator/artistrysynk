@@ -34,7 +34,7 @@ export const Route = createFileRoute("/studios/$handle/")({
         { property: "og:type", content: "profile" },
         { property: "og:url", content: `${BASE}/studios/${handle}` },
         { name: "twitter:card", content: "summary_large_image" },
-        ...ogImageMeta(image, title),
+        ...ogImageMeta(image, title, { path: `/studios/${handle}` }),
       ],
       links: [{ rel: "canonical", href: `${BASE}/studios/${handle}` }],
       ...(studio

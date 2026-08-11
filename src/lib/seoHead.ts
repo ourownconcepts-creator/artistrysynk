@@ -74,7 +74,7 @@ export function buildPageHead({
     { property: "og:url", content: url },
     { property: "og:title", content: fullTitle },
     { property: "og:description", content: description },
-    ...ogImageMeta(image, fullTitle),
+    ...ogImageMeta(image, fullTitle, { path }),
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:site", content: "@artistrysynk" },
     { name: "twitter:title", content: fullTitle },
