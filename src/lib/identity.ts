@@ -67,6 +67,9 @@ export type VisibilityControls = {
   opportunity_types: string[];
   allow_search_indexing: boolean;
   anonymous_talent_profile: boolean;
+  discoverable_in_discovery: boolean;
+  discoverable_in_search: boolean;
+  discoverable_in_recommendations: boolean;
 };
 
 export const VISIBILITY_DEFAULTS: VisibilityControls = {
