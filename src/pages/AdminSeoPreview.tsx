@@ -2,6 +2,7 @@ import { Link } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { MetadataPreview } from "@/components/seo/MetadataPreview";
+import { SharePreviewValidator } from "@/components/seo/SharePreviewValidator";
 
 const AdminSeoPreview = () => {
   return (
@@ -20,7 +21,10 @@ const AdminSeoPreview = () => {
           render them, read straight from this page&apos;s head tags.
         </p>
       </header>
-      <MetadataPreview />
+      <div className="space-y-8">
+        <MetadataPreview />
+        <SharePreviewValidator />
+      </div>
     </div>
   );
 };
