@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
 import { ChevronLeft, Sparkles, User, Settings, LogOut, Building2 } from "lucide-react";
-import logoImg from "@/assets/logo.png";
+import logoImg from "@/assets/logo-mark.png";
 import { cn } from "@/lib/utils";
 import { Pressable } from "@/components/native-ui";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
@@ -52,7 +52,7 @@ export function AppTopBar({
         transparent ? "bg-transparent" : "app-blur border-b border-border/40",
       )}
     >
-      <div className="mx-auto flex h-20 max-w-2xl items-center gap-2 px-3 lg:max-w-5xl">
+      <div className="mx-auto flex h-16 max-w-2xl items-center gap-2 px-3 lg:max-w-5xl">
         {back ? (
           <Pressable
             aria-label="Go back"
@@ -63,7 +63,7 @@ export function AppTopBar({
           </Pressable>
         ) : (
           <Link to="/home" aria-label="ArtistrySynk home" className="shrink-0">
-            <img src={logoImg} alt="ArtistrySynk" className="h-16 w-auto" />
+            <img src={logoImg} alt="ArtistrySynk" className="h-9 w-auto" />
           </Link>
         )}
 
