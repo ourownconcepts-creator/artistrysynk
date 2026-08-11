@@ -63,7 +63,14 @@ export function AppTopBar({
           </Pressable>
         ) : (
           <Link to="/home" aria-label="ArtistrySynk home" className="shrink-0">
-            <img src={logoImg} alt="ArtistrySynk" className="h-9 w-auto" />
+            <img
+              src={logoImg}
+              alt="ArtistrySynk"
+              width={1062}
+              height={286}
+              decoding="async"
+              className="h-11 w-auto max-w-[52vw] object-contain sm:h-12 lg:h-[52px] [image-rendering:-webkit-optimize-contrast]"
+            />
           </Link>
         )}
 
