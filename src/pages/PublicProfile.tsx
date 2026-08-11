@@ -1,4 +1,5 @@
 import { openExternalUrl } from "@/lib/nativeMedia";
+import { UGC_LINK_REL, sanitizeExternalUrl } from "@/lib/safeLinks";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
@@ -139,7 +140,9 @@ const PublicProfile = () => {
   const roles = profile.roles ?? [];
   const genres = profile.genres ?? [];
   const skills = profile.skills ?? [];
-  const socialLinks = Object.entries(profile.social_links ?? {}).filter(([, url]) => Boolean(url));
+  const socialLinks = Object.entries(profile.social_links ?? {})
+    .map(([platform, url]) => [platform, sanitizeExternalUrl(url)] as const)
+    .filter((entry): entry is readonly [string, string] => Boolean(entry[1]));
   const profileUrl = `${BASE}/profile/${profile.username || profile.id}`;
   const roleLabels = roles.map((r) => getRoleLabel(r as never));
   const metaDescription =
@@ -294,10 +297,8 @@ const PublicProfile = () => {
                       size="sm"
                       aria-label={`Open ${platform} profile of ${profile.full_name} in a new tab`}
                       className="max-w-full gap-1 rounded-xl text-[10px] font-bold uppercase tracking-widest"
-                      onClick={() => {
-                        const fullUrl = url.startsWith("http") ? url : `https://${url}`;
-                        void openExternalUrl(fullUrl);
-                      }}
+                      rel={UGC_LINK_REL}
+                      onClick={() => void openExternalUrl(url)}
                     >
                       <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
                       <span className="truncate">{platform}</span>

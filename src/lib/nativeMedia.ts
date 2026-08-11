@@ -1,6 +1,7 @@
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { Browser } from "@capacitor/browser";
 import { isNativeApp } from "@/lib/native";
+import { sanitizeExternalUrl } from "@/lib/safeLinks";
 
 /**
  * Picks an image with the native camera/photo library and returns it as a File
@@ -27,11 +28,18 @@ export const pickNativeImage = async (
   });
 };
 
-/** Opens an external URL in the system browser on native, a new tab on web. */
+/**
+ * Opens an external URL in the system browser on native, a new tab on web.
+ * Unsafe schemes and executable downloads are refused, since many of these
+ * URLs come from user-generated content.
+ */
 export const openExternalUrl = async (url: string) => {
+  const safe = sanitizeExternalUrl(url);
+  if (!safe) return;
+
   if (isNativeApp()) {
-    await Browser.open({ url, presentationStyle: "popover" });
+    await Browser.open({ url: safe, presentationStyle: "popover" });
     return;
   }
-  window.open(url, "_blank", "noopener,noreferrer");
+  window.open(safe, "_blank", "noopener,noreferrer");
 };

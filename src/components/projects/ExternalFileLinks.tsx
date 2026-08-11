@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Link2, Plus, ExternalLink, Trash2, Cloud } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { UGC_LINK_REL, sanitizeExternalUrl } from "@/lib/safeLinks";
 
 interface ExternalLink {
   id: string;
@@ -204,15 +205,16 @@ export const ExternalFileLinks = ({ projectId, currentUserId }: ExternalFileLink
           <div className="space-y-2">
             {links.map((link) => {
               const provider = getProviderInfo(link.provider);
+              const safeUrl = sanitizeExternalUrl(link.file_url);
               return (
                 <div
                   key={link.id}
                   className="flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
                 >
                   <a
-                    href={link.file_url}
+                    href={safeUrl ?? undefined}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel={UGC_LINK_REL}
                     className="flex items-center gap-3 flex-1 min-w-0"
                   >
                     <span className="text-xl">{provider.icon}</span>
@@ -220,19 +222,18 @@ export const ExternalFileLinks = ({ projectId, currentUserId }: ExternalFileLink
                       <p className="font-medium truncate">{link.file_name}</p>
                       <p className="text-xs text-muted-foreground">
                         {provider.label} • {formatDistanceToNow(new Date(link.created_at), { addSuffix: true })}
+                        {!safeUrl && " • link blocked for safety"}
                       </p>
                     </div>
                   </a>
                   <div className="flex items-center gap-2">
-                    <a
-                      href={link.file_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button variant="ghost" size="sm">
-                        <ExternalLink className="w-4 h-4" />
-                      </Button>
-                    </a>
+                    {safeUrl && (
+                      <a href={safeUrl} target="_blank" rel={UGC_LINK_REL}>
+                        <Button variant="ghost" size="sm">
+                          <ExternalLink className="w-4 h-4" />
+                        </Button>
+                      </a>
+                    )}
                     {link.added_by === currentUserId && (
                       <Button
                         variant="ghost"

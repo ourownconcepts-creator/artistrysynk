@@ -47,9 +47,8 @@ export const UPLOAD_RULES: Record<UploadCategory, UploadRule> = {
       "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "text/plain",
-      "application/zip",
     ],
-    ".pdf,.doc,.docx,.txt,.zip",
+    ".pdf,.doc,.docx,.txt",
   ),
 };
 

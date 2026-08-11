@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { UGC_LINK_REL, sanitizeExternalUrl } from "@/lib/safeLinks";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -180,11 +181,11 @@ export const CareerApplicationsManager = () => {
                               </div>
                               <div>
                                 <strong>Portfolio:</strong>
-                                {app.portfolio_url ? (
+                                {sanitizeExternalUrl(app.portfolio_url) ? (
                                   <a 
-                                    href={app.portfolio_url} 
+                                    href={sanitizeExternalUrl(app.portfolio_url)!} 
                                     target="_blank" 
-                                    rel="noopener noreferrer"
+                                    rel={UGC_LINK_REL}
                                     className="text-primary hover:underline flex items-center gap-1"
                                   >
                                     View <ExternalLink className="w-3 h-3" />

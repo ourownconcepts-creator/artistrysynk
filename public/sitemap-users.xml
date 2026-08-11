@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://artistrysynk.app/profile/lomodogsstudios</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://artistrysynk.app/profile/Hohladray</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://artistrysynk.app/profile/admin_artistry</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://artistrysynk.app/profile/lomodogs</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -11,27 +26,12 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://artistrysynk.app/profile/admin_artistry</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://artistrysynk.app/profile/Beaty</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://artistrysynk.app/profile/Hohladray</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://artistrysynk.app/profile/ourownconcepts</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://artistrysynk.app/profile/lomodogsstudios</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
