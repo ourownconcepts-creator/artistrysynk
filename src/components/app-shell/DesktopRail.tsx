@@ -14,7 +14,7 @@ import {
   Settings,
   Building2,
 } from "lucide-react";
-import logoImg from "@/assets/logo.png";
+import logoImg from "@/assets/logo-mark.png";
 import { cn } from "@/lib/utils";
 import { useMyStudios } from "@/hooks/useMyStudios";
 
@@ -72,7 +72,7 @@ export function DesktopRail({ onCreate }: { onCreate: () => void }) {
   return (
     <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col gap-1 border-r border-border/40 px-3 py-4 lg:flex">
       <Link to="/home" className="mb-4 px-2" aria-label="ArtistrySynk home">
-        <img src={logoImg} alt="ArtistrySynk" className="h-[4.5rem] w-auto" />
+        <img src={logoImg} alt="ArtistrySynk" className="h-10 w-auto" />
       </Link>
       <nav aria-label="Main" className="flex flex-col gap-1">
         {PRIMARY.map(item)}
