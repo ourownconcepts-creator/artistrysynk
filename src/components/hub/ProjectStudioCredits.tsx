@@ -4,8 +4,7 @@
  * which stays governed by project_members / is_project_member.
  */
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "@/lib/router-compat";
-import { useNavigate } from "@/lib/router-compat";
+import { Link, useNavigate } from "@/lib/router-compat";
 import { BadgeCheck, Building2, Loader2, MessageSquare, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
