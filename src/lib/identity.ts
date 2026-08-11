@@ -83,10 +83,13 @@ export const VISIBILITY_DEFAULTS: VisibilityControls = {
   opportunity_types: [],
   allow_search_indexing: true,
   anonymous_talent_profile: false,
+  discoverable_in_discovery: true,
+  discoverable_in_search: true,
+  discoverable_in_recommendations: true,
 };
 
 export const VISIBILITY_COLUMNS =
-  "visibility_mode, who_can_discover, who_can_match, who_can_contact, who_can_scout, who_can_introduce, open_to_opportunities, opportunity_types, allow_search_indexing, anonymous_talent_profile";
+  "visibility_mode, who_can_discover, who_can_match, who_can_contact, who_can_scout, who_can_introduce, open_to_opportunities, opportunity_types, allow_search_indexing, anonymous_talent_profile, discoverable_in_discovery, discoverable_in_search, discoverable_in_recommendations";
 
 /** Persist a single visibility control for the signed-in member. */
 export const saveVisibilityControl = async (
