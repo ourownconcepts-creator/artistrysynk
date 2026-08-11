@@ -12,7 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { BadgeCheck, FileClock, Loader2, ShieldCheck } from "lucide-react";
+import { AtSign, BadgeCheck, FileClock, Loader2, ShieldCheck } from "lucide-react";
+import { UsernameChangesPanel } from "@/components/admin/UsernameChangesPanel";
 import { CAPABILITY_LABELS, LEVEL_LABELS } from "@/lib/capabilities";
 import {
   Dialog,
@@ -229,6 +230,9 @@ const AdminIdentity = () => {
           <TabsTrigger value="audit" className="gap-2">
             <FileClock className="h-4 w-4" /> Access log
           </TabsTrigger>
+          <TabsTrigger value="usernames" className="gap-2">
+            <AtSign className="h-4 w-4" /> Username changes
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="queue" className="space-y-4 pt-4">
@@ -332,6 +336,7 @@ const AdminIdentity = () => {
           )}
         </TabsContent>
       </Tabs>
+
 
       <Dialog open={!!requestFor} onOpenChange={(open) => !open && setRequestFor(null)}>
         <DialogContent>
