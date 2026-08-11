@@ -1329,6 +1329,117 @@ export type Database = {
         }
         Relationships: []
       }
+      identity_access_logs: {
+        Row: {
+          accessed_at: string
+          accessor_id: string
+          id: string
+          reason: string | null
+          subject_user_id: string
+        }
+        Insert: {
+          accessed_at?: string
+          accessor_id: string
+          id?: string
+          reason?: string | null
+          subject_user_id: string
+        }
+        Update: {
+          accessed_at?: string
+          accessor_id?: string
+          id?: string
+          reason?: string | null
+          subject_user_id?: string
+        }
+        Relationships: []
+      }
+      identity_profiles: {
+        Row: {
+          created_at: string
+          date_of_birth: string | null
+          expires_at: string | null
+          legal_country: string | null
+          legal_name: string | null
+          updated_at: string
+          user_id: string
+          verification_level: string
+          verification_status: string
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          date_of_birth?: string | null
+          expires_at?: string | null
+          legal_country?: string | null
+          legal_name?: string | null
+          updated_at?: string
+          user_id: string
+          verification_level?: string
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          date_of_birth?: string | null
+          expires_at?: string | null
+          legal_country?: string | null
+          legal_name?: string | null
+          updated_at?: string
+          user_id?: string
+          verification_level?: string
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
+      identity_verifications: {
+        Row: {
+          document_type: string | null
+          expires_at: string | null
+          id: string
+          issuing_country: string | null
+          notes: string | null
+          provider: string | null
+          requested_at: string
+          requested_by: string | null
+          status: string
+          subject_id: string
+          subject_type: string
+          verification_reference: string | null
+          verified_at: string | null
+        }
+        Insert: {
+          document_type?: string | null
+          expires_at?: string | null
+          id?: string
+          issuing_country?: string | null
+          notes?: string | null
+          provider?: string | null
+          requested_at?: string
+          requested_by?: string | null
+          status?: string
+          subject_id: string
+          subject_type?: string
+          verification_reference?: string | null
+          verified_at?: string | null
+        }
+        Update: {
+          document_type?: string | null
+          expires_at?: string | null
+          id?: string
+          issuing_country?: string | null
+          notes?: string | null
+          provider?: string | null
+          requested_at?: string
+          requested_by?: string | null
+          status?: string
+          subject_id?: string
+          subject_type?: string
+          verification_reference?: string | null
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       job_applications: {
         Row: {
           applicant_id: string
@@ -1840,6 +1951,8 @@ export type Database = {
           country: string | null
           cover_image_url: string | null
           created_at: string | null
+          display_name: string | null
+          display_name_mode: string
           email: string | null
           featured_until: string | null
           full_name: string
@@ -1852,10 +1965,12 @@ export type Database = {
           location: string | null
           longitude: number | null
           looking_for: string[] | null
+          nickname: string | null
           social_links: Json | null
           synergy_boost_score: number | null
           updated_at: string | null
           username: string
+          username_changed_at: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -1864,6 +1979,8 @@ export type Database = {
           country?: string | null
           cover_image_url?: string | null
           created_at?: string | null
+          display_name?: string | null
+          display_name_mode?: string
           email?: string | null
           featured_until?: string | null
           full_name: string
@@ -1876,10 +1993,12 @@ export type Database = {
           location?: string | null
           longitude?: number | null
           looking_for?: string[] | null
+          nickname?: string | null
           social_links?: Json | null
           synergy_boost_score?: number | null
           updated_at?: string | null
           username: string
+          username_changed_at?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -1888,6 +2007,8 @@ export type Database = {
           country?: string | null
           cover_image_url?: string | null
           created_at?: string | null
+          display_name?: string | null
+          display_name_mode?: string
           email?: string | null
           featured_until?: string | null
           full_name?: string
@@ -1900,10 +2021,12 @@ export type Database = {
           location?: string | null
           longitude?: number | null
           looking_for?: string[] | null
+          nickname?: string | null
           social_links?: Json | null
           synergy_boost_score?: number | null
           updated_at?: string | null
           username?: string
+          username_changed_at?: string | null
         }
         Relationships: []
       }
@@ -2557,6 +2680,24 @@ export type Database = {
           referred_id?: string | null
           referrer_id?: string
           status?: string
+        }
+        Relationships: []
+      }
+      reserved_usernames: {
+        Row: {
+          created_at: string
+          reason: string | null
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          reason?: string | null
+          username: string
+        }
+        Update: {
+          created_at?: string
+          reason?: string | null
+          username?: string
         }
         Relationships: []
       }
@@ -3705,6 +3846,48 @@ export type Database = {
         }
         Relationships: []
       }
+      trusted_relationships: {
+        Row: {
+          created_at: string
+          id: string
+          introduced_by: string | null
+          kind: string
+          message: string | null
+          related_user_id: string
+          responded_at: string | null
+          source: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          introduced_by?: string | null
+          kind?: string
+          message?: string | null
+          related_user_id: string
+          responded_at?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          introduced_by?: string | null
+          kind?: string
+          message?: string | null
+          related_user_id?: string
+          responded_at?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_consents: {
         Row: {
           app_version: string | null
@@ -3910,6 +4093,8 @@ export type Database = {
         Row: {
           ai_features_enabled: boolean
           allow_messages_from: string | null
+          allow_search_indexing: boolean
+          anonymous_talent_profile: boolean
           created_at: string
           discoverable_in_discovery: boolean
           discoverable_in_recommendations: boolean
@@ -3942,6 +4127,8 @@ export type Database = {
           notify_push_role_requests: boolean
           notify_push_room_activity: boolean
           onboarding_completed: boolean | null
+          open_to_opportunities: boolean
+          opportunity_types: string[]
           personalisation_enabled: boolean
           profile_visibility: string | null
           project_notifications: boolean | null
@@ -3950,10 +4137,18 @@ export type Database = {
           theme_preference: string | null
           updated_at: string
           user_id: string
+          visibility_mode: string
+          who_can_contact: string
+          who_can_discover: string
+          who_can_introduce: string
+          who_can_match: string
+          who_can_scout: string
         }
         Insert: {
           ai_features_enabled?: boolean
           allow_messages_from?: string | null
+          allow_search_indexing?: boolean
+          anonymous_talent_profile?: boolean
           created_at?: string
           discoverable_in_discovery?: boolean
           discoverable_in_recommendations?: boolean
@@ -3986,6 +4181,8 @@ export type Database = {
           notify_push_role_requests?: boolean
           notify_push_room_activity?: boolean
           onboarding_completed?: boolean | null
+          open_to_opportunities?: boolean
+          opportunity_types?: string[]
           personalisation_enabled?: boolean
           profile_visibility?: string | null
           project_notifications?: boolean | null
@@ -3994,10 +4191,18 @@ export type Database = {
           theme_preference?: string | null
           updated_at?: string
           user_id: string
+          visibility_mode?: string
+          who_can_contact?: string
+          who_can_discover?: string
+          who_can_introduce?: string
+          who_can_match?: string
+          who_can_scout?: string
         }
         Update: {
           ai_features_enabled?: boolean
           allow_messages_from?: string | null
+          allow_search_indexing?: boolean
+          anonymous_talent_profile?: boolean
           created_at?: string
           discoverable_in_discovery?: boolean
           discoverable_in_recommendations?: boolean
@@ -4030,6 +4235,8 @@ export type Database = {
           notify_push_role_requests?: boolean
           notify_push_room_activity?: boolean
           onboarding_completed?: boolean | null
+          open_to_opportunities?: boolean
+          opportunity_types?: string[]
           personalisation_enabled?: boolean
           profile_visibility?: string | null
           project_notifications?: boolean | null
@@ -4038,6 +4245,12 @@ export type Database = {
           theme_preference?: string | null
           updated_at?: string
           user_id?: string
+          visibility_mode?: string
+          who_can_contact?: string
+          who_can_discover?: string
+          who_can_introduce?: string
+          who_can_match?: string
+          who_can_scout?: string
         }
         Relationships: []
       }
@@ -4146,6 +4359,30 @@ export type Database = {
         }
         Relationships: []
       }
+      username_history: {
+        Row: {
+          changed_at: string
+          id: string
+          new_username: string
+          old_username: string
+          user_id: string
+        }
+        Insert: {
+          changed_at?: string
+          id?: string
+          new_username: string
+          old_username: string
+          user_id: string
+        }
+        Update: {
+          changed_at?: string
+          id?: string
+          new_username?: string
+          old_username?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       verification_requests: {
         Row: {
           created_at: string | null
@@ -4187,8 +4424,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      audience_allows: {
+        Args: { _choice: string; _owner: string; _viewer: string }
+        Returns: boolean
+      }
       can_approve_project_roles: {
         Args: { _project_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_contact_user: {
+        Args: { _target: string; _viewer: string }
+        Returns: boolean
+      }
+      can_discover: {
+        Args: { _surface: string; _target: string; _viewer: string }
+        Returns: boolean
+      }
+      can_match_with: {
+        Args: { _target: string; _viewer: string }
         Returns: boolean
       }
       can_see_user: {
@@ -4223,6 +4476,17 @@ export type Database = {
         Returns: number
       }
       expire_due_subscriptions: { Args: never; Returns: number }
+      get_identity_record: {
+        Args: { _reason: string; _subject: string }
+        Returns: {
+          legal_country: string
+          legal_name: string
+          user_id: string
+          verification_level: string
+          verification_status: string
+          verified_at: string
+        }[]
+      }
       get_match_activity_since: {
         Args: { _since: string; _user_id: string }
         Returns: {
@@ -4343,6 +4607,10 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      has_existing_relationship: {
+        Args: { _a: string; _b: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -4363,6 +4631,7 @@ export type Database = {
         Args: { _surface: string; _user_id: string }
         Returns: boolean
       }
+      is_identity_officer: { Args: { _user_id: string }; Returns: boolean }
       is_project_creator: {
         Args: { _project_id: string; _user_id: string }
         Returns: boolean
@@ -4373,6 +4642,10 @@ export type Database = {
       }
       is_studio_member: {
         Args: { _studio_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_trusted_by: {
+        Args: { _other: string; _owner: string }
         Returns: boolean
       }
       list_my_referrals: {
@@ -4495,6 +4768,32 @@ export type Database = {
           username: string
         }[]
       }
+      list_talent_candidates: {
+        Args: {
+          _city?: string
+          _limit?: number
+          _offset?: number
+          _opportunity?: string
+          _role?: string
+          _skill?: string
+          _verified_only?: boolean
+        }
+        Returns: {
+          anonymous: boolean
+          avatar_url: string
+          city: string
+          collaborations: number
+          country: string
+          display_label: string
+          identity_verified: boolean
+          is_verified: boolean
+          opportunity_types: string[]
+          reference: string
+          roles: string[]
+          skills: string[]
+          user_id: string
+        }[]
+      }
       log_studio_audit: {
         Args: {
           _action: string
@@ -4513,6 +4812,11 @@ export type Database = {
         }
         Returns: number
       }
+      normalize_username: { Args: { _raw: string }; Returns: string }
+      profile_visible_to: {
+        Args: { _target: string; _viewer: string }
+        Returns: boolean
+      }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
@@ -4520,6 +4824,10 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      request_introduction: {
+        Args: { _message?: string; _reference: string }
+        Returns: boolean
       }
       resolve_overdue_role_changes: { Args: never; Returns: number }
       run_retention_purges: {
