@@ -17,7 +17,7 @@ const Index = () => {
     <div className="min-h-screen">
       <PageSEO
         title="ArtistrySynk – Create, Connect, Collaborate"
-        description="Connect with musicians, producers, dancers and actors worldwide. Match, collaborate, and bring your creative vision to life on ArtistrySynk."
+        description="Connect with creatives worldwide — musicians, designers, photographers, filmmakers, dancers and writers. Match, collaborate and bring your vision to life."
         canonicalUrl="https://artistrysynk.app/"
         keywords="creative collaboration, artists, musicians, producers, dancers, actors, music, creative professionals, talent network"
       />

@@ -68,7 +68,7 @@ const WEBSITE_JSONLD = JSON.stringify({
   name: "ArtistrySynk",
   url: "https://artistrysynk.app",
   description:
-    "Connect with musicians, producers, dancers, actors, and creative professionals across Africa.",
+    "Connect with creatives worldwide — musicians, designers, photographers, filmmakers, dancers and writers. Match, collaborate and bring your vision to life.",
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -104,7 +104,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Connect with musicians, producers, dancers and actors worldwide. Match, collaborate, and bring your creative vision to life on ArtistrySynk.",
+          "Connect with creatives worldwide — musicians, designers, photographers, filmmakers, dancers and writers. Match, collaborate and bring your vision to life.",
       },
       {
         name: "keywords",
@@ -125,7 +125,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "Match with musicians, producers, dancers and actors. Collaborate and bring your creative vision to life.",
+          "Connect with creatives worldwide — musicians, designers, photographers, filmmakers, dancers and writers. Match, collaborate and bring your vision to life.",
       },
       { property: "og:image", content: "https://artistrysynk.app/og-image.jpg" },
       { property: "og:image:width", content: "1200" },
@@ -136,11 +136,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:url", content: "https://artistrysynk.app/" },
       { name: "twitter:site", content: "@artistrysynk" },
       { name: "twitter:creator", content: "@artistrysynk" },
-      { name: "twitter:title", content: "ArtistrySynk - Create • Connect • Collaborate" },
+      { name: "twitter:title", content: "ArtistrySynk – Create, Connect, Collaborate" },
       {
         name: "twitter:description",
         content:
-          "Connect with musicians, producers, dancers, actors, and creative professionals across Africa.",
+          "Connect with creatives worldwide — musicians, designers, photographers, filmmakers, dancers and writers. Match, collaborate and bring your vision to life.",
       },
       { name: "twitter:image", content: "https://artistrysynk.app/og-image.jpg" },
       { name: "mobile-web-app-capable", content: "yes" },
