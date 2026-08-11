@@ -251,6 +251,7 @@ const StudioCreate = () => {
         </CardContent>
       </Card>
     </div>
+    </VerificationGate>
   );
 };
 
