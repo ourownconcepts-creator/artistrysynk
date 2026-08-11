@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UpgradePrompt } from "@/components/subscription/UpgradePrompt";
+import { VerificationGate } from "@/components/verification/VerificationGate";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAppUser } from "@/hooks/useAppUser";
 import {
@@ -116,6 +117,10 @@ const StudioCreate = () => {
   }
 
   return (
+    <VerificationGate
+      capability="studio_create"
+      description="Creating a studio, agency or label requires a verified identity so clients can trust who they are booking."
+    >
     <div className="container mx-auto max-w-3xl px-4 py-10">
       <h1 className="text-3xl font-bold tracking-tight">Create your studio</h1>
       <p className="mt-2 text-muted-foreground">
