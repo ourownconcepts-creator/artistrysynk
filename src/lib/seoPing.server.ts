@@ -69,11 +69,16 @@ export async function submitUrlsForIndexing(paths: string[]): Promise<IndexingSu
   };
 
   try {
-    const { logFunctionRun } = await import("@/lib/functionRunLog.server");
-    await logFunctionRun({
+    const { recordFunctionRun } = await import("@/lib/functionRunLog.server");
+    await recordFunctionRun({
       functionName: "seo-indexing-submit",
       status: results.some((r) => r.ok) ? "success" : "error",
-      detail: JSON.stringify({ count: urls.length, results }).slice(0, 2000),
+      durationMs: 0,
+      context: {
+        urlCount: urls.length,
+        indexnow: results[0]?.status ?? null,
+        sitemapPing: results[results.length - 1]?.status ?? null,
+      },
     });
   } catch {
     // logging is best-effort only
