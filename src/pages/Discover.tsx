@@ -87,47 +87,30 @@ const Discover = () => {
       if (append) setLoadingMore(true);
       else setSearching(true);
 
-      const { all: hiddenIds } = await fetchHiddenUserIds(userId);
-      const optedOutIds = await fetchOptedOutIds("discovery");
-      const excludeIds = [...new Set([userId, ...hiddenIds, ...optedOutIds])];
-
       const pageSize = 24;
-      let request = supabase
-        .from("profiles")
-        .select("id, full_name, username, bio, location, avatar_url, is_verified, is_featured, last_seen_at, user_creative_roles(role), user_genres(genre)")
-        .not("id", "in", `(${excludeIds.join(",")})`)
-        .order("last_seen_at", { ascending: false, nullsFirst: false })
-        .range(pageIndex * pageSize, pageIndex * pageSize + pageSize - 1);
+      // Privacy is applied server-side by search_creatives → can_discover().
+      const { data } = await supabase.rpc("search_creatives", {
+        _query: query.trim() || undefined,
+        _role: roleFilter === "all" ? undefined : roleFilter,
+        _genre: genreFilter === "all" ? undefined : genreFilter,
+        _skill: skillFilter.trim() || undefined,
+        _city: locationFilter.trim() || undefined,
+        _verified_only: verifiedOnly,
+        _limit: pageSize,
+        _offset: pageIndex * pageSize,
+      });
 
-      const needle = query.trim();
-      if (needle) {
-        const safe = needle.replace(/[%,()]/g, "");
-        request = request.or(
-          `full_name.ilike.%${safe}%,username.ilike.%${safe}%,bio.ilike.%${safe}%,location.ilike.%${safe}%`,
-        );
-      }
-      if (locationFilter.trim()) request = request.ilike("location", `%${locationFilter.trim()}%`);
-      if (verifiedOnly) request = request.eq("is_verified", true);
-
-      const { data } = await request;
-      let rows = (data as any[]) ?? [];
-      const fetched = rows.length;
-
-      if (roleFilter !== "all") {
-        rows = rows.filter((p) => (p.user_creative_roles ?? []).some((r: any) => r.role === roleFilter));
-      }
-      if (genreFilter !== "all") {
-        rows = rows.filter((p) => (p.user_genres ?? []).some((g: any) => g.genre === genreFilter));
-      }
-      if (skillFilter.trim() && rows.length > 0) {
-        const { data: skillRows } = await supabase
-          .from("user_skill_tags")
-          .select("user_id")
-          .in("user_id", rows.map((p) => p.id))
-          .ilike("skill", `%${skillFilter.trim()}%`);
-        const matched = new Set((skillRows ?? []).map((r: any) => r.user_id));
-        rows = rows.filter((p) => matched.has(p.id));
-      }
+      const raw = (data as any[]) ?? [];
+      const fetched = raw.length;
+      const { all: hiddenIds } = await fetchHiddenUserIds(userId);
+      const hidden = new Set(hiddenIds);
+      const rows = raw
+        .filter((p) => !hidden.has(p.id))
+        .map((p) => ({
+          ...p,
+          user_creative_roles: (p.roles ?? []).map((role: string) => ({ role })),
+          user_genres: (p.genres ?? []).map((genre: string) => ({ genre })),
+        }));
 
       setResults((prev) => {
         if (!append) return rows as SearchProfile[];
@@ -176,35 +159,17 @@ const Discover = () => {
     async (userId: string) => {
       setLoading(true);
 
-      const { data: swipedIds } = await supabase
-        .from("swipes")
-        .select("swiped_id")
-        .eq("swiper_id", userId);
-
-      const { all: hiddenIds } = await fetchHiddenUserIds(userId);
-      // Respect the "don't show me in discovery" privacy preference.
-      const optedOutIds = await fetchOptedOutIds("discovery");
-
-      const excludeIds = [
-        ...new Set([
-          userId,
-          ...(swipedIds?.map((s) => s.swiped_id) || []),
-          ...hiddenIds,
-          ...optedOutIds,
-        ]),
-      ];
-
-      let query = supabase
-        .from("profiles")
-        .select(`*, user_creative_roles(role), user_genres(genre)`)
-        .not("id", "in", `(${excludeIds.join(",")})`)
-        .limit(20);
-
-      if (locationFilter) {
-        query = query.ilike("location", `%${locationFilter}%`);
-      }
-
-      const { data, error } = await query;
+      // The deck comes from list_discovery_deck: it applies can_match_with(),
+      // skips already-swiped profiles and never returns private/invisible people.
+      const { data, error } = await supabase.rpc("list_discovery_deck", {
+        _role: roleFilter === "all" ? undefined : roleFilter,
+        _genre: genreFilter === "all" ? undefined : genreFilter,
+        _skill: skillFilter.trim() || undefined,
+        _city: locationFilter.trim() || undefined,
+        _verified_only: false,
+        _limit: 20,
+        _offset: 0,
+      });
 
       if (error) {
         toast.error("Failed to load profiles");
@@ -212,33 +177,16 @@ const Discover = () => {
         return;
       }
 
-      let filteredData: any[] = data || [];
-
-      if (roleFilter !== "all") {
-        filteredData = filteredData.filter((p) =>
-          p.user_creative_roles.some((r: any) => r.role === roleFilter),
-        );
-      }
-
-      if (genreFilter !== "all") {
-        filteredData = filteredData.filter((p) =>
-          p.user_genres.some((g: any) => g.genre === genreFilter),
-        );
-      }
-
-      if (skillFilter.trim()) {
-        const needle = skillFilter.trim().toLowerCase();
-        const ids = filteredData.map((p: any) => p.id);
-        if (ids.length > 0) {
-          const { data: skillRows } = await supabase
-            .from("user_skill_tags")
-            .select("user_id, skill")
-            .in("user_id", ids)
-            .ilike("skill", `%${needle}%`);
-          const matchedIds = new Set((skillRows || []).map((r: any) => r.user_id));
-          filteredData = filteredData.filter((p: any) => matchedIds.has(p.id));
-        }
-      }
+      const { all: hiddenIds } = await fetchHiddenUserIds(userId);
+      const hidden = new Set(hiddenIds);
+      let filteredData: any[] = ((data as any[]) ?? [])
+        .filter((p) => !hidden.has(p.id))
+        .map((p) => ({
+          ...p,
+          user_creative_roles: (p.roles ?? []).map((role: string) => ({ role })),
+          user_genres: (p.genres ?? []).map((genre: string) => ({ genre })),
+          user_skill_tags: (p.skills ?? []).map((skill: string) => ({ skill })),
+        }));
 
       if (aiMatchingEnabled && hasAdvancedMatching && currentUserProfile && filteredData.length > 0) {
         try {
