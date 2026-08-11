@@ -140,7 +140,7 @@ export async function saveOverride(path: string, ref: string, slot: OgSlot, user
     updated_at: new Date().toISOString(),
   };
   payload[SLOT_COLUMNS[slot]] = ref;
-  const { error } = await supabase.from("og_image_overrides").upsert(payload, { onConflict: "path" });
+  const { error } = await supabase.from("og_image_overrides").upsert(payload as never, { onConflict: "path" });
   if (error) throw new Error(error.message);
 }
 

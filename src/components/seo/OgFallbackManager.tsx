@@ -47,7 +47,7 @@ export function OgFallbackManager({ onChanged }: { onChanged?: () => void }) {
 
   const refresh = async () => {
     try {
-      setConfig(await loadConfig({ data: {} }));
+      setConfig(await loadConfig());
     } catch (err) {
       toast.error((err as Error).message || "Could not load share image settings");
     }
@@ -91,7 +91,7 @@ export function OgFallbackManager({ onChanged }: { onChanged?: () => void }) {
   const handlePurge = async () => {
     setBusy(true);
     try {
-      const res = await purge({ data: {} });
+      const res = await purge();
       toast.success(`Caches busted for ${res.purgedPaths.length + 1} page(s)`);
       await refresh();
       onChanged?.();
