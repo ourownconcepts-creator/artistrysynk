@@ -60,6 +60,7 @@ import { Route as SongwritersRouteImport } from './routes/songwriters'
 import { Route as SuccessStoriesRouteImport } from './routes/success-stories'
 import { Route as SuperAdminRouteImport } from './routes/super-admin'
 import { Route as SynkAiRouteImport } from './routes/synk-ai'
+import { Route as TalentRouteImport } from './routes/talent'
 import { Route as TeamsRouteImport } from './routes/teams'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VideographersRouteImport } from './routes/videographers'
@@ -347,6 +348,11 @@ const SynkAiRoute = SynkAiRouteImport.update({
   path: '/synk-ai',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TalentRoute = TalentRouteImport.update({
+  id: '/talent',
+  path: '/talent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TeamsRoute = TeamsRouteImport.update({
   id: '/teams',
   path: '/teams',
@@ -557,6 +563,7 @@ export interface FileRoutesByFullPath {
   '/success-stories': typeof SuccessStoriesRoute
   '/super-admin': typeof SuperAdminRoute
   '/synk-ai': typeof SynkAiRoute
+  '/talent': typeof TalentRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
   '/videographers': typeof VideographersRoute
@@ -641,6 +648,7 @@ export interface FileRoutesByTo {
   '/success-stories': typeof SuccessStoriesRoute
   '/super-admin': typeof SuperAdminRoute
   '/synk-ai': typeof SynkAiRoute
+  '/talent': typeof TalentRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
   '/videographers': typeof VideographersRoute
@@ -726,6 +734,7 @@ export interface FileRoutesById {
   '/success-stories': typeof SuccessStoriesRoute
   '/super-admin': typeof SuperAdminRoute
   '/synk-ai': typeof SynkAiRoute
+  '/talent': typeof TalentRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
   '/videographers': typeof VideographersRoute
@@ -812,6 +821,7 @@ export interface FileRouteTypes {
     | '/success-stories'
     | '/super-admin'
     | '/synk-ai'
+    | '/talent'
     | '/teams'
     | '/terms'
     | '/videographers'
@@ -896,6 +906,7 @@ export interface FileRouteTypes {
     | '/success-stories'
     | '/super-admin'
     | '/synk-ai'
+    | '/talent'
     | '/teams'
     | '/terms'
     | '/videographers'
@@ -980,6 +991,7 @@ export interface FileRouteTypes {
     | '/success-stories'
     | '/super-admin'
     | '/synk-ai'
+    | '/talent'
     | '/teams'
     | '/terms'
     | '/videographers'
@@ -1065,6 +1077,7 @@ export interface RootRouteChildren {
   SuccessStoriesRoute: typeof SuccessStoriesRoute
   SuperAdminRoute: typeof SuperAdminRoute
   SynkAiRoute: typeof SynkAiRoute
+  TalentRoute: typeof TalentRoute
   TeamsRoute: typeof TeamsRoute
   TermsRoute: typeof TermsRoute
   VideographersRoute: typeof VideographersRoute
@@ -1457,6 +1470,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SynkAiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/talent': {
+      id: '/talent'
+      path: '/talent'
+      fullPath: '/talent'
+      preLoaderRoute: typeof TalentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/teams': {
       id: '/teams'
       path: '/teams'
@@ -1729,6 +1749,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuccessStoriesRoute: SuccessStoriesRoute,
   SuperAdminRoute: SuperAdminRoute,
   SynkAiRoute: SynkAiRoute,
+  TalentRoute: TalentRoute,
   TeamsRoute: TeamsRoute,
   TermsRoute: TermsRoute,
   VideographersRoute: VideographersRoute,
@@ -1764,13 +1785,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
