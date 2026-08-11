@@ -6,7 +6,7 @@ import { Session, User } from "@supabase/supabase-js";
 
 interface AdminProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles: ('admin' | 'master_admin' | 'super_admin')[];
+  allowedRoles: ('admin' | 'master_admin' | 'super_admin' | 'compliance_admin')[];
 }
 
 export const AdminProtectedRoute = ({ children, allowedRoles }: AdminProtectedRouteProps) => {
