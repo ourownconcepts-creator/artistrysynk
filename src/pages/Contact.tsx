@@ -302,16 +302,22 @@ const Contact = () => {
                     className="absolute left-[-9999px] h-0 w-0 opacity-0"
                   />
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Full Name</label>
+                    <label htmlFor="contact-name" className="text-sm font-medium mb-2 block">Full Name</label>
                     <Input 
+                      id="contact-name"
+                      name="name"
+                      autoComplete="name"
                       placeholder="John Doe"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Email Address</label>
+                    <label htmlFor="contact-email" className="text-sm font-medium mb-2 block">Email Address</label>
                     <Input 
+                      id="contact-email"
+                      name="email"
+                      autoComplete="email"
                       type="email" 
                       placeholder="john@example.com"
                       value={formData.email}
@@ -319,8 +325,11 @@ const Contact = () => {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Phone Number (Optional)</label>
+                    <label htmlFor="contact-phone" className="text-sm font-medium mb-2 block">Phone Number (Optional)</label>
                     <Input 
+                      id="contact-phone"
+                      name="phone"
+                      autoComplete="tel"
                       type="tel" 
                       placeholder="+234 800 000 0000"
                       value={formData.phone}
@@ -328,23 +337,28 @@ const Contact = () => {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Subject</label>
+                    <label htmlFor="contact-subject" className="text-sm font-medium mb-2 block">Subject</label>
                     <Input 
+                      id="contact-subject"
+                      name="subject"
                       placeholder="How can we help?"
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Message</label>
+                    <label htmlFor="contact-message" className="text-sm font-medium mb-2 block">Message</label>
                     <Textarea 
+                      id="contact-message"
+                      name="message"
+                      aria-describedby="contact-message-count"
                       placeholder="Tell us more about your inquiry..."
                       className="min-h-[150px]"
                       maxLength={2000}
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     />
-                    <p className="mt-1 text-xs text-muted-foreground">{formData.message.length}/2000 characters</p>
+                    <p id="contact-message-count" className="mt-1 text-xs text-muted-foreground">{formData.message.length}/2000 characters</p>
                   </div>
                   <Button variant="hero" className="w-full" disabled={isSubmitting}>
                     {isSubmitting ? (
