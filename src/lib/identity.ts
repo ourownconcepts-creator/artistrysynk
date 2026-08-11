@@ -67,6 +67,9 @@ export type VisibilityControls = {
   opportunity_types: string[];
   allow_search_indexing: boolean;
   anonymous_talent_profile: boolean;
+  discoverable_in_discovery: boolean;
+  discoverable_in_search: boolean;
+  discoverable_in_recommendations: boolean;
 };
 
 export const VISIBILITY_DEFAULTS: VisibilityControls = {
@@ -80,10 +83,13 @@ export const VISIBILITY_DEFAULTS: VisibilityControls = {
   opportunity_types: [],
   allow_search_indexing: true,
   anonymous_talent_profile: false,
+  discoverable_in_discovery: true,
+  discoverable_in_search: true,
+  discoverable_in_recommendations: true,
 };
 
 export const VISIBILITY_COLUMNS =
-  "visibility_mode, who_can_discover, who_can_match, who_can_contact, who_can_scout, who_can_introduce, open_to_opportunities, opportunity_types, allow_search_indexing, anonymous_talent_profile";
+  "visibility_mode, who_can_discover, who_can_match, who_can_contact, who_can_scout, who_can_introduce, open_to_opportunities, opportunity_types, allow_search_indexing, anonymous_talent_profile, discoverable_in_discovery, discoverable_in_search, discoverable_in_recommendations";
 
 /** Persist a single visibility control for the signed-in member. */
 export const saveVisibilityControl = async (
@@ -128,7 +134,26 @@ export const fetchTrustedCircle = async (userId: string) => {
 };
 
 export const respondToTrust = async (id: string, status: "accepted" | "declined" | "revoked") => {
-  const { error } = await supabase.from("trusted_relationships").update({ status }).eq("id", id);
+  // Goes through the RPC so the decision is checked and the requester notified.
+  const { error } = await supabase.rpc("respond_to_trust_request", { _id: id, _status: status });
+  return error;
+};
+
+/**
+ * Introduce someone from your trusted circle to another member. The database
+ * verifies you are actually trusted by them and that their settings allow
+ * introductions from you.
+ */
+export const createTrustedIntroduction = async (
+  subjectUserId: string,
+  recipientUserId: string,
+  message?: string,
+) => {
+  const { error } = await supabase.rpc("create_trusted_introduction", {
+    _subject: subjectUserId,
+    _recipient: recipientUserId,
+    _message: message ?? undefined,
+  });
   return error;
 };
 
