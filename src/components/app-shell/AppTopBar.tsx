@@ -52,7 +52,7 @@ export function AppTopBar({
         transparent ? "bg-transparent" : "app-blur border-b border-border/40",
       )}
     >
-      <div className="mx-auto flex h-14 max-w-2xl items-center gap-2 px-3 lg:max-w-5xl">
+      <div className="mx-auto flex h-20 max-w-2xl items-center gap-2 px-3 lg:max-w-5xl">
         {back ? (
           <Pressable
             aria-label="Go back"
@@ -63,7 +63,7 @@ export function AppTopBar({
           </Pressable>
         ) : (
           <Link to="/home" aria-label="ArtistrySynk home" className="shrink-0">
-            <img src={logoImg} alt="ArtistrySynk" className="h-8 w-auto" />
+            <img src={logoImg} alt="ArtistrySynk" className="h-16 w-auto" />
           </Link>
         )}
 

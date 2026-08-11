@@ -3,7 +3,7 @@
  * Public content is read through the Data API (anon key) so only rows that
  * public RLS policies expose can ever reach the sitemap.
  */
-import { writeFileSync } from "fs";
+import { readdirSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { CITY_LANDINGS, DISCIPLINE_LANDINGS } from "../src/lib/seoLandings";
 
@@ -38,10 +38,23 @@ const staticEntries: Entry[] = [
   { path: "/data-deletion", changefreq: "yearly", priority: "0.3" },
 ];
 
-const blogEntries: Entry[] = [
-  { path: "/blog", changefreq: "weekly", priority: "0.7" },
-  { path: "/blog/how-to-find-a-music-producer", changefreq: "monthly", priority: "0.7" },
-];
+/** Blog posts are file routes — discover them so new posts land in the sitemap automatically. */
+function discoverBlogEntries(): Entry[] {
+  const entries: Entry[] = [{ path: "/blog", changefreq: "weekly", priority: "0.7" }];
+  try {
+    for (const file of readdirSync(resolve("src/routes/blog"))) {
+      if (!file.endsWith(".tsx")) continue;
+      const slug = file.replace(/\.tsx$/, "");
+      if (slug === "index" || slug.startsWith("$") || slug.startsWith("_")) continue;
+      entries.push({ path: `/blog/${slug}`, changefreq: "monthly", priority: "0.7" });
+    }
+  } catch (err) {
+    console.warn(`sitemap: blog discovery skipped (${(err as Error).message})`);
+  }
+  return entries;
+}
+
+const blogEntries: Entry[] = discoverBlogEntries();
 
 async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<T[]> {
   const path = `rpc/${fn}`;

@@ -77,9 +77,5 @@ Disallow: /explore
 # Block non-existent assets (stale cached URLs)
 Disallow: /og-image.png
 
-# Sitemaps
+# Sitemaps — index file lists every child sitemap (static, blog, landing, users, studios)
 Sitemap: https://artistrysynk.app/sitemap.xml
-Sitemap: https://artistrysynk.app/sitemap-static.xml
-Sitemap: https://artistrysynk.app/sitemap-blog.xml
-Sitemap: https://artistrysynk.app/sitemap-users.xml
-Sitemap: https://artistrysynk.app/sitemap-landing.xml
