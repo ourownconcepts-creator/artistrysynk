@@ -28,7 +28,7 @@ export const UsernameChangesPanel = () => {
   const load = useCallback(async (term: string) => {
     setLoading(true);
     const { data, error } = await supabase.rpc("admin_username_change_stats", {
-      _search: term || null,
+      _search: term || undefined,
       _limit: 100,
     });
     setLoading(false);
