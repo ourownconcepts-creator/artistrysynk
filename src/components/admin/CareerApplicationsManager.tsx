@@ -180,11 +180,11 @@ export const CareerApplicationsManager = () => {
                               </div>
                               <div>
                                 <strong>Portfolio:</strong>
-                                {app.portfolio_url ? (
+                                {sanitizeExternalUrl(app.portfolio_url) ? (
                                   <a 
-                                    href={app.portfolio_url} 
+                                    href={sanitizeExternalUrl(app.portfolio_url)!} 
                                     target="_blank" 
-                                    rel="noopener noreferrer"
+                                    rel={UGC_LINK_REL}
                                     className="text-primary hover:underline flex items-center gap-1"
                                   >
                                     View <ExternalLink className="w-3 h-3" />
