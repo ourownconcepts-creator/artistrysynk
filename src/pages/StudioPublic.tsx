@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "@/lib/router-compat";
+import { UGC_LINK_REL, sanitizeExternalUrl } from "@/lib/safeLinks";
 import { BadgeCheck, Building2, Heart, Loader2, Mail, MapPin, MessageSquare, Music2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
