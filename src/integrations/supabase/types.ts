@@ -4144,18 +4144,22 @@ export type Database = {
           match_online_notifications: boolean
           message_notifications: boolean | null
           notify_email_discovery: boolean
+          notify_email_intros: boolean
           notify_email_likes: boolean
           notify_email_matches: boolean
           notify_email_messages: boolean
           notify_email_online: boolean
           notify_email_projects: boolean
+          notify_email_verification: boolean
           notify_inapp_discovery: boolean
+          notify_inapp_intros: boolean
           notify_inapp_likes: boolean
           notify_inapp_matches: boolean
           notify_inapp_messages: boolean
           notify_inapp_online: boolean
           notify_inapp_projects: boolean
           notify_inapp_room_activity: boolean
+          notify_inapp_verification: boolean
           notify_push_invite_responses: boolean
           notify_push_invites: boolean
           notify_push_role_requests: boolean
@@ -4198,18 +4202,22 @@ export type Database = {
           match_online_notifications?: boolean
           message_notifications?: boolean | null
           notify_email_discovery?: boolean
+          notify_email_intros?: boolean
           notify_email_likes?: boolean
           notify_email_matches?: boolean
           notify_email_messages?: boolean
           notify_email_online?: boolean
           notify_email_projects?: boolean
+          notify_email_verification?: boolean
           notify_inapp_discovery?: boolean
+          notify_inapp_intros?: boolean
           notify_inapp_likes?: boolean
           notify_inapp_matches?: boolean
           notify_inapp_messages?: boolean
           notify_inapp_online?: boolean
           notify_inapp_projects?: boolean
           notify_inapp_room_activity?: boolean
+          notify_inapp_verification?: boolean
           notify_push_invite_responses?: boolean
           notify_push_invites?: boolean
           notify_push_role_requests?: boolean
@@ -4252,18 +4260,22 @@ export type Database = {
           match_online_notifications?: boolean
           message_notifications?: boolean | null
           notify_email_discovery?: boolean
+          notify_email_intros?: boolean
           notify_email_likes?: boolean
           notify_email_matches?: boolean
           notify_email_messages?: boolean
           notify_email_online?: boolean
           notify_email_projects?: boolean
+          notify_email_verification?: boolean
           notify_inapp_discovery?: boolean
+          notify_inapp_intros?: boolean
           notify_inapp_likes?: boolean
           notify_inapp_matches?: boolean
           notify_inapp_messages?: boolean
           notify_inapp_online?: boolean
           notify_inapp_projects?: boolean
           notify_inapp_room_activity?: boolean
+          notify_inapp_verification?: boolean
           notify_push_invite_responses?: boolean
           notify_push_invites?: boolean
           notify_push_role_requests?: boolean
@@ -4625,6 +4637,18 @@ export type Database = {
       admin_request_documents: {
         Args: { _id: string; _rejections: Json; _summary?: string }
         Returns: boolean
+      }
+      admin_username_change_stats: {
+        Args: { _limit?: number; _search?: string }
+        Returns: {
+          change_count: number
+          display_name: string
+          first_changed_at: string
+          history: Json
+          last_changed_at: string
+          user_id: string
+          username: string
+        }[]
       }
       admin_verification_summary: {
         Args: never
@@ -5082,6 +5106,14 @@ export type Database = {
           capability: string
           my_level: string
           required_level: string
+        }[]
+      }
+      my_username_history: {
+        Args: never
+        Returns: {
+          changed_at: string
+          new_username: string
+          old_username: string
         }[]
       }
       my_username_state: { Args: never; Returns: Json }

@@ -19,6 +19,8 @@ import {
   Mail,
   Loader2,
   ArrowLeft,
+  BadgeCheck,
+  Handshake,
 } from "lucide-react";
 
 type PrefKey =
@@ -27,7 +29,9 @@ type PrefKey =
   | "notify_email_matches" | "notify_inapp_matches"
   | "notify_email_messages" | "notify_inapp_messages"
   | "notify_email_online" | "notify_inapp_online"
-  | "notify_email_projects" | "notify_inapp_projects";
+  | "notify_email_projects" | "notify_inapp_projects"
+  | "notify_email_verification" | "notify_inapp_verification"
+  | "notify_email_intros" | "notify_inapp_intros";
 
 type PushKey =
   | "notify_push_invites"
@@ -55,6 +59,10 @@ const defaults: Prefs = {
   notify_inapp_online: true,
   notify_email_projects: true,
   notify_inapp_projects: true,
+  notify_email_verification: true,
+  notify_inapp_verification: true,
+  notify_email_intros: true,
+  notify_inapp_intros: true,
   notify_push_invites: true,
   notify_push_invite_responses: true,
   notify_push_role_requests: true,
@@ -139,6 +147,24 @@ const TYPES: Array<{
     icon: FolderKanban,
     email: "notify_email_projects",
     inApp: "notify_inapp_projects",
+  },
+  {
+    id: "verification",
+    label: "Verification updates",
+    description:
+      "Review progress, requests for more documents, approvals and rejections with next steps.",
+    icon: BadgeCheck,
+    email: "notify_email_verification",
+    inApp: "notify_inapp_verification",
+  },
+  {
+    id: "intros",
+    label: "Trusted introductions",
+    description:
+      "When someone vouches for you, requests an introduction, or accepts your intro request.",
+    icon: Handshake,
+    email: "notify_email_intros",
+    inApp: "notify_inapp_intros",
   },
 ];
 

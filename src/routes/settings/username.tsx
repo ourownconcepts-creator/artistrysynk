@@ -3,6 +3,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Navbar } from "@/components/Navbar";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { UsernamePicker } from "@/components/settings/UsernamePicker";
+import { UsernameHistoryCard } from "@/components/settings/UsernameHistoryCard";
 
 export const Route = createFileRoute("/settings/username")({
   head: () => ({
@@ -26,9 +27,10 @@ export const Route = createFileRoute("/settings/username")({
     <ProtectedRoute>
       <Navbar />
       <PageTransition>
-        <div className="container mx-auto max-w-2xl px-4 py-8">
+        <div className="container mx-auto max-w-2xl space-y-6 px-4 py-8">
           <h1 className="mb-4 text-2xl font-bold">Username</h1>
           <UsernamePicker />
+          <UsernameHistoryCard />
         </div>
       </PageTransition>
     </ProtectedRoute>
