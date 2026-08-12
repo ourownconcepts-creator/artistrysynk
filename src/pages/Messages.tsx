@@ -813,6 +813,7 @@ const Messages = () => {
               return (
                 <div
                   key={message.id}
+                  id={`message-${message.id}`}
                   className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
                 >
                   <div className={`flex items-start gap-2 max-w-[70%] ${isCurrentUser ? 'flex-row-reverse' : ''}`}>
