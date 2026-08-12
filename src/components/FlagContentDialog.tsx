@@ -85,14 +85,16 @@ export const FlagContentDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
-            <Flag className="h-4 w-4 mr-1" />
-            Report
-          </Button>
-        )}
-      </DialogTrigger>
+      {openProp === undefined && (
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+              <Flag className="h-4 w-4 mr-1" />
+              Report
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
