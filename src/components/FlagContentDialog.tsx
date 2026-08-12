@@ -12,6 +12,9 @@ interface FlagContentDialogProps {
   contentType: 'message' | 'portfolio' | 'profile' | 'service' | 'project' | 'project_file';
   contentId: string;
   trigger?: React.ReactNode;
+  /** Optional controlled mode, e.g. when opened from a dropdown menu item. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const REASONS = [
@@ -23,8 +26,19 @@ const REASONS = [
   { value: 'other', label: 'Other', description: 'Other violation not listed above' },
 ];
 
-export const FlagContentDialog = ({ contentType, contentId, trigger }: FlagContentDialogProps) => {
-  const [open, setOpen] = useState(false);
+export const FlagContentDialog = ({
+  contentType,
+  contentId,
+  trigger,
+  open: openProp,
+  onOpenChange,
+}: FlagContentDialogProps) => {
+  const [openState, setOpenState] = useState(false);
+  const open = openProp ?? openState;
+  const setOpen = (next: boolean) => {
+    setOpenState(next);
+    onOpenChange?.(next);
+  };
   const [reason, setReason] = useState('');
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,14 +85,16 @@ export const FlagContentDialog = ({ contentType, contentId, trigger }: FlagConte
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
-            <Flag className="h-4 w-4 mr-1" />
-            Report
-          </Button>
-        )}
-      </DialogTrigger>
+      {openProp === undefined && (
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+              <Flag className="h-4 w-4 mr-1" />
+              Report
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

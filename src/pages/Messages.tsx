@@ -34,6 +34,7 @@ import { VoiceNotePlayer } from "@/components/messages/VoiceNotePlayer";
 import { AttachmentPicker } from "@/components/messages/AttachmentPicker";
 import { ImageAttachment } from "@/components/messages/ImageAttachment";
 import { ChatMediaGallery } from "@/components/messages/ChatMediaGallery";
+import { ChatSafetyMenu } from "@/components/messages/ChatSafetyMenu";
 import { uploadWithProgress } from "@/lib/uploadWithProgress";
 import { UPLOAD_BUCKETS, extensionFor } from "@/config/uploads";
 
@@ -713,6 +714,14 @@ const Messages = () => {
                   </Button>
 
                   <ChatMediaGallery messages={messages} name={otherUser.full_name} />
+
+                  {studioSide === null && currentUser && (
+                    <ChatSafetyMenu
+                      currentUserId={currentUser}
+                      targetUserId={otherUser.id}
+                      targetUserName={otherUser.full_name}
+                    />
+                  )}
 
                   {studioSide === null && (
                   <Dialog open={showProjectDialog} onOpenChange={setShowProjectDialog}>

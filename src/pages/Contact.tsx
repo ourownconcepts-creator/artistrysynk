@@ -288,6 +288,9 @@ const Contact = () => {
                           ? "A confirmation email is on its way — quote this reference in any follow-up."
                           : "Save this reference — quote it in any follow-up email."}
                       </p>
+                      <a href="/settings/support" className="text-primary hover:underline">
+                        Track this request in My support requests
+                      </a>
                     </div>
                   )}
                   {/* Honeypot: hidden from users, filled by bots */}

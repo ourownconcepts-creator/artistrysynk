@@ -97,6 +97,7 @@ import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as ProjectsProjectIdRouteImport } from './routes/projects/$projectId'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
+import { Route as SettingsSupportRouteImport } from './routes/settings/support'
 import { Route as SettingsUsernameRouteImport } from './routes/settings/username'
 import { Route as StudioItemIdRouteImport } from './routes/studio/$itemId'
 import { Route as StudiosIndexRouteImport } from './routes/studios/index'
@@ -549,6 +550,11 @@ const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
   path: '/settings/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsSupportRoute = SettingsSupportRouteImport.update({
+  id: '/settings/support',
+  path: '/settings/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsUsernameRoute = SettingsUsernameRouteImport.update({
   id: '/settings/username',
   path: '/settings/username',
@@ -677,6 +683,7 @@ export interface FileRoutesByFullPath {
   '/profile/$userId': typeof ProfileUserIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
+  '/settings/support': typeof SettingsSupportRoute
   '/settings/username': typeof SettingsUsernameRoute
   '/studio/$itemId': typeof StudioItemIdRoute
   '/studios/new': typeof StudiosNewRoute
@@ -776,6 +783,7 @@ export interface FileRoutesByTo {
   '/profile/$userId': typeof ProfileUserIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
+  '/settings/support': typeof SettingsSupportRoute
   '/settings/username': typeof SettingsUsernameRoute
   '/studio/$itemId': typeof StudioItemIdRoute
   '/studios/new': typeof StudiosNewRoute
@@ -876,6 +884,7 @@ export interface FileRoutesById {
   '/profile/$userId': typeof ProfileUserIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
+  '/settings/support': typeof SettingsSupportRoute
   '/settings/username': typeof SettingsUsernameRoute
   '/studio/$itemId': typeof StudioItemIdRoute
   '/studios/new': typeof StudiosNewRoute
@@ -977,6 +986,7 @@ export interface FileRouteTypes {
     | '/profile/$userId'
     | '/projects/$projectId'
     | '/settings/notifications'
+    | '/settings/support'
     | '/settings/username'
     | '/studio/$itemId'
     | '/studios/new'
@@ -1076,6 +1086,7 @@ export interface FileRouteTypes {
     | '/profile/$userId'
     | '/projects/$projectId'
     | '/settings/notifications'
+    | '/settings/support'
     | '/settings/username'
     | '/studio/$itemId'
     | '/studios/new'
@@ -1175,6 +1186,7 @@ export interface FileRouteTypes {
     | '/profile/$userId'
     | '/projects/$projectId'
     | '/settings/notifications'
+    | '/settings/support'
     | '/settings/username'
     | '/studio/$itemId'
     | '/studios/new'
@@ -1275,6 +1287,7 @@ export interface RootRouteChildren {
   ProfileUserIdRoute: typeof ProfileUserIdRoute
   ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
+  SettingsSupportRoute: typeof SettingsSupportRoute
   SettingsUsernameRoute: typeof SettingsUsernameRoute
   StudioItemIdRoute: typeof StudioItemIdRoute
   StudiosNewRoute: typeof StudiosNewRoute
@@ -1913,6 +1926,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/support': {
+      id: '/settings/support'
+      path: '/settings/support'
+      fullPath: '/settings/support'
+      preLoaderRoute: typeof SettingsSupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings/username': {
       id: '/settings/username'
       path: '/settings/username'
@@ -2060,6 +2080,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileUserIdRoute: ProfileUserIdRoute,
   ProjectsProjectIdRoute: ProjectsProjectIdRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
+  SettingsSupportRoute: SettingsSupportRoute,
   SettingsUsernameRoute: SettingsUsernameRoute,
   StudioItemIdRoute: StudioItemIdRoute,
   StudiosNewRoute: StudiosNewRoute,

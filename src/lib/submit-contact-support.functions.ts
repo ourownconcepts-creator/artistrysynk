@@ -15,7 +15,12 @@ const submitContactSupportSchema = z.object({
 export const submitContactSupport = createServerFn({ method: "POST" })
   .validator(submitContactSupportSchema)
   .handler(async ({ data }) => {
-    const { submitContactSupport } = await import("@/lib/submit-contact-support.server");
+    const { submitContactSupport, resolveOptionalUserId } = await import(
+      "@/lib/submit-contact-support.server"
+    );
     const { withRunLog } = await import("@/lib/functionRunLog.server");
-    return withRunLog("submit-contact-support", { subject: data.subject }, () => submitContactSupport(data));
+    const userId = await resolveOptionalUserId();
+    return withRunLog("submit-contact-support", { subject: data.subject }, () =>
+      submitContactSupport({ ...data, userId }),
+    );
   });

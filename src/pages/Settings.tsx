@@ -24,6 +24,7 @@ import { BlockedUsersList } from "@/components/settings/BlockedUsersList";
 import { MutedUsersList } from "@/components/settings/MutedUsersList";
 import { UserSessions } from "@/components/profile/UserSessions";
 import { DataExportCard } from "@/components/settings/DataExportCard";
+import { MySupportTicketsCard } from "@/components/support/MySupportTicketsCard";
 import { AccountDeletionCard } from "@/components/settings/AccountDeletionCard";
 
 interface UserSettings {
@@ -412,6 +413,8 @@ const Settings = () => {
           {userId && <UserSessions userId={userId} />}
 
           <DataExportCard />
+
+          <MySupportTicketsCard />
 
           <AccountDeletionCard />
         </TabsContent>
