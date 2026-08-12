@@ -68,6 +68,7 @@ import { Route as SoftwareDevelopersRouteImport } from './routes/software-develo
 import { Route as SongwritersRouteImport } from './routes/songwriters'
 import { Route as SuccessStoriesRouteImport } from './routes/success-stories'
 import { Route as SuperAdminRouteImport } from './routes/super-admin'
+import { Route as SupportRouteImport } from './routes/support'
 import { Route as SynkAiRouteImport } from './routes/synk-ai'
 import { Route as TalentRouteImport } from './routes/talent'
 import { Route as TeamsRouteImport } from './routes/teams'
@@ -402,6 +403,11 @@ const SuperAdminRoute = SuperAdminRouteImport.update({
   path: '/super-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SupportRoute = SupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SynkAiRoute = SynkAiRouteImport.update({
   id: '/synk-ai',
   path: '/synk-ai',
@@ -651,6 +657,7 @@ export interface FileRoutesByFullPath {
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/super-admin': typeof SuperAdminRoute
+  '/support': typeof SupportRoute
   '/synk-ai': typeof SynkAiRoute
   '/talent': typeof TalentRoute
   '/teams': typeof TeamsRoute
@@ -749,6 +756,7 @@ export interface FileRoutesByTo {
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/super-admin': typeof SuperAdminRoute
+  '/support': typeof SupportRoute
   '/synk-ai': typeof SynkAiRoute
   '/talent': typeof TalentRoute
   '/teams': typeof TeamsRoute
@@ -848,6 +856,7 @@ export interface FileRoutesById {
   '/songwriters': typeof SongwritersRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/super-admin': typeof SuperAdminRoute
+  '/support': typeof SupportRoute
   '/synk-ai': typeof SynkAiRoute
   '/talent': typeof TalentRoute
   '/teams': typeof TeamsRoute
@@ -948,6 +957,7 @@ export interface FileRouteTypes {
     | '/songwriters'
     | '/success-stories'
     | '/super-admin'
+    | '/support'
     | '/synk-ai'
     | '/talent'
     | '/teams'
@@ -1046,6 +1056,7 @@ export interface FileRouteTypes {
     | '/songwriters'
     | '/success-stories'
     | '/super-admin'
+    | '/support'
     | '/synk-ai'
     | '/talent'
     | '/teams'
@@ -1144,6 +1155,7 @@ export interface FileRouteTypes {
     | '/songwriters'
     | '/success-stories'
     | '/super-admin'
+    | '/support'
     | '/synk-ai'
     | '/talent'
     | '/teams'
@@ -1243,6 +1255,7 @@ export interface RootRouteChildren {
   SongwritersRoute: typeof SongwritersRoute
   SuccessStoriesRoute: typeof SuccessStoriesRoute
   SuperAdminRoute: typeof SuperAdminRoute
+  SupportRoute: typeof SupportRoute
   SynkAiRoute: typeof SynkAiRoute
   TalentRoute: typeof TalentRoute
   TeamsRoute: typeof TeamsRoute
@@ -1697,6 +1710,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuperAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/support': {
+      id: '/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/synk-ai': {
       id: '/synk-ai'
       path: '/synk-ai'
@@ -2020,6 +2040,7 @@ const rootRouteChildren: RootRouteChildren = {
   SongwritersRoute: SongwritersRoute,
   SuccessStoriesRoute: SuccessStoriesRoute,
   SuperAdminRoute: SuperAdminRoute,
+  SupportRoute: SupportRoute,
   SynkAiRoute: SynkAiRoute,
   TalentRoute: TalentRoute,
   TeamsRoute: TeamsRoute,
@@ -2061,3 +2082,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
