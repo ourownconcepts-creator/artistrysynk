@@ -35,6 +35,7 @@ import { AttachmentPicker } from "@/components/messages/AttachmentPicker";
 import { ImageAttachment } from "@/components/messages/ImageAttachment";
 import { ChatMediaGallery } from "@/components/messages/ChatMediaGallery";
 import { ChatSafetyMenu } from "@/components/messages/ChatSafetyMenu";
+import { useSafetyListSync } from "@/hooks/useSafetyListSync";
 import { uploadWithProgress } from "@/lib/uploadWithProgress";
 import { UPLOAD_BUCKETS, extensionFor } from "@/config/uploads";
 
