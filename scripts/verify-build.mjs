@@ -9,7 +9,7 @@
  * instead.
  */
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { join, sep } from "node:path";
 
 const root = process.cwd();
 const errors = [];
@@ -53,7 +53,9 @@ checkSymbol(serverFiles, "UPLOAD_BUCKETS", "SSR bundle");
 
 // 2. Generic sweep: any `$`-suffixed deconflicted identifier that is referenced
 //    inside a chunk but neither declared nor imported in that chunk.
-for (const file of [...serverFiles, ...clientFiles]) {
+// Restricted to first-party chunks: vendor chunks use minified name shapes
+// that make this heuristic noisy without adding signal.
+for (const file of [...serverFiles, ...clientFiles].filter((f) => !f.includes(`${sep}_libs${sep}`))) {
   const code = readFileSync(file, "utf8");
   // Bindings brought in by import/export-from statements are legitimate.
   const imported = new Set();
