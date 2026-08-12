@@ -13,6 +13,12 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    build: {
+      // Vite 8/Rolldown can drop shared declarations while retaining their
+      // references in the SSR bundle. Keep the standard chunk graph, but
+      // disable tree-shaking until the upstream bundler defect is resolved.
+      rollupOptions: { treeshake: false },
+    },
     ssr: {
       // CJS packages that need bundling so named exports resolve during SSR.
       noExternal: ["react-helmet-async"],
