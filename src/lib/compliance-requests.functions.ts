@@ -103,7 +103,7 @@ export const updatePrivacyRequest = createServerFn({ method: "POST" })
 
     const { data: existing } = await supabaseAdmin
       .from("privacy_requests")
-      .select("reference_id, status")
+      .select("reference_id, status, contact_email, request_type")
       .eq("id", data.requestId)
       .maybeSingle();
     if (!existing) throw new Error("That request no longer exists.");
@@ -118,6 +118,15 @@ export const updatePrivacyRequest = createServerFn({ method: "POST" })
       })
       .eq("id", data.requestId);
     if (error) throw new Error("Could not update the request.");
+
+    const { sendPrivacyStatusEmail } = await import("./privacy-requests.server");
+    await sendPrivacyStatusEmail({
+      to: existing.contact_email ?? "",
+      referenceId: existing.reference_id,
+      requestType: existing.request_type,
+      status: data.status,
+      notes: data.resolutionNotes ?? null,
+    }).catch(() => undefined);
 
     await supabaseAdmin.from("admin_audit_logs").insert({
       actor_id: context.userId,
