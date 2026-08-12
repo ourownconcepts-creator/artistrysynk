@@ -232,10 +232,17 @@ const AdminSupport = () => {
           <div>
             <h1 className="text-2xl font-bold">Support &amp; Privacy Inbox</h1>
             <p className="text-sm text-muted-foreground">
-              Review, search, and respond to tickets submitted through the contact form.
+              Review and reply to support tickets, and action chat safety reports from one place.
             </p>
           </div>
         </div>
+
+        <Tabs defaultValue="tickets" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="tickets">Support tickets</TabsTrigger>
+            <TabsTrigger value="safety">Chat safety reports</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tickets" className="space-y-6">
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           {(["pending", "reviewed", "resolved", "spam"] as const).map((s) => (
@@ -404,6 +411,11 @@ const AdminSupport = () => {
             )}
           </CardContent>
         </Card>
+          </TabsContent>
+          <TabsContent value="safety">
+            <ContentFlagsManager />
+          </TabsContent>
+        </Tabs>
       </div>
 
       <Dialog open={!!active} onOpenChange={(open) => !open && setActive(null)}>
