@@ -692,6 +692,7 @@ export type Database = {
           responded_by: string | null
           status: string | null
           subject: string
+          user_id: string | null
         }
         Insert: {
           admin_response?: string | null
@@ -707,6 +708,7 @@ export type Database = {
           responded_by?: string | null
           status?: string | null
           subject: string
+          user_id?: string | null
         }
         Update: {
           admin_response?: string | null
@@ -722,6 +724,7 @@ export type Database = {
           responded_by?: string | null
           status?: string | null
           subject?: string
+          user_id?: string | null
         }
         Relationships: []
       }
