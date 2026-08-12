@@ -9,6 +9,8 @@ export interface SubmitContactSupportInput {
   honeypot?: string;
   elapsedMs?: number;
   captchaToken?: string;
+  /** Resolved server-side from the bearer token; never taken from the client. */
+  userId?: string | null;
 }
 
 export interface SubmitContactSupportResult {
