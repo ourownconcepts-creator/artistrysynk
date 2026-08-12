@@ -6,6 +6,7 @@ import {
   type AdminCopyrightClaim,
 } from "@/lib/copyright.functions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { sanitizeExternalUrl, UGC_LINK_REL } from "@/lib/safeLinks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -249,15 +250,21 @@ const AdminCopyright = () => {
                 </div>
 
                 <p className="flex items-center gap-2 break-all">
+                  {sanitizeExternalUrl(active.contentUrl) ? (
                   <a
-                    href={active.contentUrl}
+                    href={sanitizeExternalUrl(active.contentUrl)!}
                     target="_blank"
-                    rel="noreferrer noopener"
+                    rel={UGC_LINK_REL}
                     className="text-primary underline inline-flex items-center gap-1"
                   >
                     {active.contentUrl}
                     <ExternalLink className="w-3 h-3" aria-hidden="true" />
                   </a>
+                  ) : (
+                    <span className="text-muted-foreground">
+                      {active.contentUrl} (link blocked as unsafe)
+                    </span>
+                  )}
                 </p>
 
                 <div>
