@@ -17,6 +17,7 @@ export function renderErrorPage(correlationId?: string): string {
       a, button { padding: 0.5rem 1rem; border-radius: 0.375rem; font: inherit; cursor: pointer; text-decoration: none; border: 1px solid transparent; }
       .primary { background: #111; color: #fff; }
       .secondary { background: #fff; color: #111; border-color: #d1d5db; }
+      .note { font-size: 12px; color: #6b7280; margin: 1rem 0 0; }
     </style>
   </head>
   <body>
@@ -28,7 +29,26 @@ export function renderErrorPage(correlationId?: string): string {
         <a class="secondary" href="/">Go home</a>
       </div>
       ${reference}
+      <p class="note" id="auto-retry-note"></p>
     </div>
+    <script>
+      (function () {
+        // Most 500s here are transient (a server restart or deploy caught mid-request).
+        // Retry the exact URL once automatically, then stop so we never loop.
+        try {
+          var key = "as:error-retry:" + location.pathname + location.search;
+          var last = Number(sessionStorage.getItem(key) || 0);
+          if (!last || Date.now() - last > 30000) {
+            sessionStorage.setItem(key, String(Date.now()));
+            var note = document.getElementById("auto-retry-note");
+            if (note) note.textContent = "Retrying automatically…";
+            setTimeout(function () { location.reload(); }, 1200);
+          } else {
+            sessionStorage.removeItem(key);
+          }
+        } catch (e) {}
+      })();
+    </script>
   </body>
 </html>`;
 }
