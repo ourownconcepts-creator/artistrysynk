@@ -352,6 +352,11 @@ const Messages = () => {
     };
   }, [currentUser, conversationId, messages.length]);
 
+  /** Block/mute changes made on another device refresh this conversation. */
+  useSafetyListSync(currentUser, () => {
+    if (currentUser) void loadConversation(currentUser);
+  });
+
   const loadCurrentUserProfile = async (userId: string) => {
     const { data: profile } = await supabase
       .from('profiles')
