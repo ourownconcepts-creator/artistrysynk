@@ -27,6 +27,8 @@ interface ContentFlag {
   reviewed_at: string | null;
   admin_notes: string | null;
   created_at: string;
+  risk_level?: string | null;
+  evidence_urls?: string[] | null;
   reporter?: { id: string; full_name: string; email: string | null };
 }
 
@@ -610,10 +612,43 @@ export const ContentFlagsManager = () => {
                   <p className="text-sm text-muted-foreground">{selectedFlag.reporter?.email}</p>
                 </div>
 
+                {selectedFlag.risk_level && selectedFlag.risk_level !== 'standard' && (
+                  <div>
+                    <label className="text-sm font-medium">Severity</label>
+                    <p>
+                      <Badge variant="destructive" className="capitalize">
+                        {selectedFlag.risk_level}
+                      </Badge>
+                    </p>
+                  </div>
+                )}
+
                 {selectedFlag.description && (
                   <div>
                     <label className="text-sm font-medium">Reporter's Description</label>
-                    <p className="text-sm bg-muted p-3 rounded-lg">{selectedFlag.description}</p>
+                    <p className="text-sm bg-muted p-3 rounded-lg whitespace-pre-wrap">
+                      {selectedFlag.description}
+                    </p>
+                  </div>
+                )}
+
+                {(selectedFlag.evidence_urls?.length ?? 0) > 0 && (
+                  <div>
+                    <label className="text-sm font-medium">Linked evidence</label>
+                    <ul className="mt-1 space-y-1">
+                      {selectedFlag.evidence_urls!.map((url) => (
+                        <li key={url}>
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-primary underline break-all"
+                          >
+                            {url}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 )}
 

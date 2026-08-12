@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ContentFlagsManager } from "@/components/admin/ContentFlagsManager";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PageSEO } from "@/components/seo";
 import { toast } from "sonner";
@@ -232,10 +234,17 @@ const AdminSupport = () => {
           <div>
             <h1 className="text-2xl font-bold">Support &amp; Privacy Inbox</h1>
             <p className="text-sm text-muted-foreground">
-              Review, search, and respond to tickets submitted through the contact form.
+              Review and reply to support tickets, and action chat safety reports from one place.
             </p>
           </div>
         </div>
+
+        <Tabs defaultValue="tickets" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="tickets">Support tickets</TabsTrigger>
+            <TabsTrigger value="safety">Chat safety reports</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tickets" className="space-y-6">
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           {(["pending", "reviewed", "resolved", "spam"] as const).map((s) => (
@@ -404,6 +413,11 @@ const AdminSupport = () => {
             )}
           </CardContent>
         </Card>
+          </TabsContent>
+          <TabsContent value="safety">
+            <ContentFlagsManager />
+          </TabsContent>
+        </Tabs>
       </div>
 
       <Dialog open={!!active} onOpenChange={(open) => !open && setActive(null)}>

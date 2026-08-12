@@ -73,7 +73,7 @@ export const exportMyData = createServerFn({ method: "POST" })
 
     const exportedAt = new Date().toISOString();
 
-    return {
+    const result: DataExport = {
       exportedAt,
       userId,
       json: JSON.stringify(
@@ -101,4 +101,15 @@ export const exportMyData = createServerFn({ method: "POST" })
       ),
       mediaUrls: [...mediaUrls],
     };
+
+    // Receipt so a data download is never silent on the account.
+    const email = (context.claims as { email?: string } | null)?.email;
+    if (email) {
+      const { sendDataExportEmail } = await import("./privacy-requests.server");
+      await sendDataExportEmail({ to: email, itemCount: result.mediaUrls.length }).catch(
+        () => undefined,
+      );
+    }
+
+    return result;
   });

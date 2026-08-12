@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { notifyPrivacyPreferenceChange } from "@/lib/privacy-notifications.functions";
 import { Eye, Loader2, MapPin, Sparkles } from "lucide-react";
 
 type Controls = {
@@ -110,7 +111,13 @@ export const PrivacyCenterCard = () => {
       setControls((prev) => ({ ...prev, [key]: previous }));
       toast.error("Could not save that preference.");
     } else {
-      toast.success("Privacy preference saved.");
+      toast.success("Privacy preference saved.", {
+        description: "We have emailed you a receipt of this change.",
+      });
+      const label = toggles.find((t) => t.key === key)?.label ?? "Location sharing";
+      void notifyPrivacyPreferenceChange({
+        data: { changes: [`${label}: ${String(value)}`] },
+      }).catch(() => undefined);
     }
   };
 

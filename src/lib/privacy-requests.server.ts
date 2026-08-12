@@ -74,3 +74,96 @@ export async function sendPrivacyRequestEmails(opts: {
     replyTo: opts.to,
   }).catch(() => undefined);
 }
+
+const STATUS_COPY: Record<string, { subject: string; heading: string; body: string }> = {
+  received: {
+    subject: "we have your privacy request",
+    heading: "Request received",
+    body: "Your request is logged and queued for review.",
+  },
+  verifying: {
+    subject: "we are verifying your privacy request",
+    heading: "Verifying your identity",
+    body: "We need to confirm the request came from you before we act on it. If anything else is needed we will email you here.",
+  },
+  in_progress: {
+    subject: "your privacy request is in progress",
+    heading: "Work has started",
+    body: "Our team is now working on your request. No action is needed from you.",
+  },
+  completed: {
+    subject: "your privacy request is complete",
+    heading: "Request completed",
+    body: "We have finished handling your request. If you believe anything is outstanding, reply to this email.",
+  },
+  rejected: {
+    subject: "an update on your privacy request",
+    heading: "Request closed",
+    body: "We were unable to action this request. The reason is below — you can reply if you would like us to look again.",
+  },
+  withdrawn: {
+    subject: "your privacy request was withdrawn",
+    heading: "Request withdrawn",
+    body: "This request has been withdrawn and no further action will be taken.",
+  },
+};
+
+/** Emails the requester whenever staff move a DSAR to a new status. */
+export async function sendPrivacyStatusEmail(opts: {
+  to: string;
+  referenceId: string;
+  requestType: string;
+  status: string;
+  notes?: string | null;
+}) {
+  if (!hasResend() || !opts.to) return;
+  const copy = STATUS_COPY[opts.status];
+  if (!copy) return;
+  const label = REQUEST_TYPE_LABELS[opts.requestType] ?? opts.requestType;
+
+  await sendEmail({
+    to: opts.to,
+    subject: `${opts.referenceId}: ${copy.subject}`,
+    html: shell(`
+      <h2 style="margin:0 0 12px">${copy.heading}</h2>
+      <p><strong>Reference:</strong> ${opts.referenceId}</p>
+      <p><strong>Request:</strong> ${label}</p>
+      <p>${copy.body}</p>
+      ${opts.notes ? `<p style="background:#f7f7f7;border-radius:8px;padding:12px"><strong>Notes from our team:</strong><br/>${opts.notes.replace(/</g, "&lt;")}</p>` : ""}
+      <p style="color:#666;font-size:13px">Questions? Reply to this email or write to ${PRIVACY_INBOX}.</p>
+    `),
+    replyTo: PRIVACY_INBOX,
+  }).catch(() => undefined);
+}
+
+/** Confirms a self-service data download was generated. */
+export async function sendDataExportEmail(opts: { to: string; itemCount: number }) {
+  if (!hasResend() || !opts.to) return;
+  await sendEmail({
+    to: opts.to,
+    subject: "Your ArtistrySynk data download is ready",
+    html: shell(`
+      <h2 style="margin:0 0 12px">Data download ready</h2>
+      <p>You requested a copy of your ArtistrySynk data and it has been generated and downloaded in your browser.</p>
+      <p>It includes your profile, settings, portfolio, projects, messages metadata and links to your uploaded media (${opts.itemCount} media links).</p>
+      <p>If this was not you, change your password and contact us immediately at ${PRIVACY_INBOX}.</p>
+    `),
+    replyTo: PRIVACY_INBOX,
+  }).catch(() => undefined);
+}
+
+/** Confirms a privacy preference change so silent account changes are visible. */
+export async function sendPrivacyPreferenceEmail(opts: { to: string; changes: string[] }) {
+  if (!hasResend() || !opts.to || opts.changes.length === 0) return;
+  await sendEmail({
+    to: opts.to,
+    subject: "Your ArtistrySynk privacy settings were updated",
+    html: shell(`
+      <h2 style="margin:0 0 12px">Privacy settings updated</h2>
+      <p>These privacy preferences on your account were just changed and are already in effect:</p>
+      <ul>${opts.changes.map((c) => `<li>${c.replace(/</g, "&lt;")}</li>`).join("")}</ul>
+      <p>If you did not make this change, secure your account and contact ${PRIVACY_INBOX}.</p>
+    `),
+    replyTo: PRIVACY_INBOX,
+  }).catch(() => undefined);
+}

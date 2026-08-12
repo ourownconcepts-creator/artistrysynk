@@ -35,6 +35,7 @@ import { AttachmentPicker } from "@/components/messages/AttachmentPicker";
 import { ImageAttachment } from "@/components/messages/ImageAttachment";
 import { ChatMediaGallery } from "@/components/messages/ChatMediaGallery";
 import { ChatSafetyMenu } from "@/components/messages/ChatSafetyMenu";
+import { useSafetyListSync } from "@/hooks/useSafetyListSync";
 import { uploadWithProgress } from "@/lib/uploadWithProgress";
 import { UPLOAD_BUCKETS, extensionFor } from "@/config/uploads";
 
@@ -351,6 +352,11 @@ const Messages = () => {
       clearInterval(interval);
     };
   }, [currentUser, conversationId, messages.length]);
+
+  /** Block/mute changes made on another device refresh this conversation. */
+  useSafetyListSync(currentUser, () => {
+    if (currentUser) void loadConversation(currentUser);
+  });
 
   const loadCurrentUserProfile = async (userId: string) => {
     const { data: profile } = await supabase
@@ -720,6 +726,13 @@ const Messages = () => {
                       currentUserId={currentUser}
                       targetUserId={otherUser.id}
                       targetUserName={otherUser.full_name}
+                      conversationId={conversationId ?? ""}
+                      messages={messages.map((m) => ({
+                        id: m.id,
+                        content: m.content,
+                        sender_id: m.sender_id,
+                        created_at: m.created_at,
+                      }))}
                     />
                   )}
 
@@ -806,6 +819,7 @@ const Messages = () => {
               return (
                 <div
                   key={message.id}
+                  id={`message-${message.id}`}
                   className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
                 >
                   <div className={`flex items-start gap-2 max-w-[70%] ${isCurrentUser ? 'flex-row-reverse' : ''}`}>
