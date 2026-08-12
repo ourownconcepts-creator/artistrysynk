@@ -8,7 +8,7 @@ const sendWelcomeEmailSchema = z.object({
 });
 
 export const sendWelcomeEmail = createServerFn({ method: "POST" })
-  .inputValidator(sendWelcomeEmailSchema)
+  .validator(sendWelcomeEmailSchema)
   .handler(async ({ data }) => {
     const { sendWelcomeEmail } = await import("@/lib/send-welcome-email.server");
     const { withRunLog } = await import("@/lib/functionRunLog.server");

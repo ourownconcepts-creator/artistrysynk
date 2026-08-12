@@ -28,7 +28,7 @@ const createSchema = z.object({
 /** Creates the studio and its owner membership in one transactional server step. */
 export const createStudioFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => createSchema.parse(input))
+  .validator((input: unknown) => createSchema.parse(input))
   .handler(async ({ data, context }): Promise<{ id: string; handle: string }> => {
     const { data: rows, error } = await context.supabase.rpc("create_studio", {
       _handle: data.handle,
@@ -50,7 +50,7 @@ export const createStudioFn = createServerFn({ method: "POST" })
 /** Owner-only: hands the studio to an active member and demotes the old owner to admin. */
 export const transferStudioOwnershipFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z.object({ studioId: z.string().uuid(), newOwnerId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }): Promise<{ ok: true }> => {
@@ -65,7 +65,7 @@ export const transferStudioOwnershipFn = createServerFn({ method: "POST" })
 /** Owner-only: deactivate/reactivate. Nothing is deleted — the studio leaves public surfaces. */
 export const setStudioActiveFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ studioId: z.string().uuid(), active: z.boolean() }).parse(input))
+  .validator((input: unknown) => z.object({ studioId: z.string().uuid(), active: z.boolean() }).parse(input))
   .handler(async ({ data, context }): Promise<{ ok: true }> => {
     const { error } = await context.supabase.rpc("set_studio_active", {
       _studio_id: data.studioId,

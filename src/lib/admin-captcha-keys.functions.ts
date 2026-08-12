@@ -10,7 +10,7 @@ const adminCaptchaKeysSchema = z.object({
 
 export const adminCaptchaKeys = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(adminCaptchaKeysSchema)
+  .validator(adminCaptchaKeysSchema)
   .handler(async ({ data, context }) => {
     const { assertAdmin } = await import("@/lib/authz.server");
     await assertAdmin(context.supabase, context.userId);

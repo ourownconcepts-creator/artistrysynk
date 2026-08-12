@@ -56,7 +56,7 @@ export const listLegalDocuments = createServerFn({ method: "GET" }).handler(
 
 /** Public — one policy, latest published version or a specific historical version. */
 export const getLegalDocument = createServerFn({ method: "GET" })
-  .inputValidator(
+  .validator(
     z.object({ slug: z.string().min(2).max(64), version: z.number().int().positive().optional() }),
   )
   .handler(async ({ data }): Promise<LegalDocumentDetail | null> => {
@@ -123,7 +123,7 @@ const consentSchema = z.object({
 /** Records consent decisions against the exact document versions in force. */
 export const recordConsents = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(consentSchema)
+  .validator(consentSchema)
   .handler(async ({ data, context }) => {
     const { publicClient, hashIp } = await import("./legal.server");
     const { getRequestIP, getRequestHeader } = await import("@tanstack/react-start/server");

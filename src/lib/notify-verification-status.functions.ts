@@ -12,7 +12,7 @@ const notifyVerificationStatusSchema = z.object({
 
 export const notifyVerificationStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(notifyVerificationStatusSchema)
+  .validator(notifyVerificationStatusSchema)
   .handler(async ({ data, context }) => {
     const { assertAdmin } = await import("@/lib/authz.server");
     await assertAdmin(context.supabase, context.userId);

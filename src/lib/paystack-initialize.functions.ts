@@ -11,7 +11,7 @@ const paystackInitializeInput = z.object({
 
 export const initializePaystackTransaction = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(paystackInitializeInput)
+  .validator(paystackInitializeInput)
   .handler(async ({ data, context }) => {
     const { initializePaystackTransaction } = await import("@/lib/paystack-initialize.server");
     const request = getRequest();

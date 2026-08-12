@@ -10,7 +10,7 @@ const auditSchema = z.object({
 /** Admin-only: fetch key public pages and validate their share-preview tags. */
 export const auditSharePreviews = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(auditSchema)
+  .validator(auditSchema)
   .handler(async ({ data, context }) => {
     const { assertAdmin } = await import("@/lib/authz.server");
     await assertAdmin(context.supabase, context.userId);

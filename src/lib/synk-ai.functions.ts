@@ -17,7 +17,7 @@ const synkAiInput = z.object({
 
 export const askSynkAi = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(synkAiInput)
+  .validator(synkAiInput)
   .handler(async ({ data }) => {
     const { askSynkAi } = await import("@/lib/synk-ai.server");
     return askSynkAi(data.messages, data.context);

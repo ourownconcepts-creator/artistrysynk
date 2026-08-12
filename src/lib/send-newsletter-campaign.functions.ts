@@ -11,7 +11,7 @@ const sendNewsletterCampaignSchema = z.object({
 
 export const sendNewsletterCampaign = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(sendNewsletterCampaignSchema)
+  .validator(sendNewsletterCampaignSchema)
   .handler(async ({ data, context }) => {
     const { assertAdmin } = await import("@/lib/authz.server");
     await assertAdmin(context.supabase, context.userId);
