@@ -29,6 +29,23 @@ export interface SubmitContactSupportResult {
 
 const IP_SALT = process.env["CONTACT_IP_SALT"] ?? "artistrysynk-contact";
 
+/**
+ * Support submissions stay open to signed-out visitors, so the sender is
+ * derived from the bearer token when one is present and ignored otherwise.
+ */
+export async function resolveOptionalUserId(): Promise<string | null> {
+  const header = getRequestHeader("authorization") ?? "";
+  const token = header.toLowerCase().startsWith("bearer ") ? header.slice(7).trim() : "";
+  if (!token) return null;
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin.auth.getUser(token);
+    return data?.user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
 const SPAM_PATTERNS = [
   /\b(seo services|guest post|backlinks?|crypto investment|forex signals|viagra|casino|loan offer)\b/i,
   /\b(bitcoin|usdt|binary options)\b.*\b(profit|invest|double)\b/i,
