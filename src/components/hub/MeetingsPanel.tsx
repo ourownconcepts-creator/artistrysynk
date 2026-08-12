@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { EmptyState, SectionHeader, Surface, Chip } from "@/components/native-ui";
+import { sanitizeExternalUrl, UGC_LINK_REL } from "@/lib/safeLinks";
 
 type Meeting = {
   id: string;
