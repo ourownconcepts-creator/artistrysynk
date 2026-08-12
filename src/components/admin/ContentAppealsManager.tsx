@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertTriangle, Search, Eye, CheckCircle, XCircle, RefreshCw, Undo2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { sanitizeExternalUrl, UGC_LINK_REL } from '@/lib/safeLinks';
 import { useServerFn } from '@tanstack/react-start';
 import { notifyContentStatus } from '@/lib/notify-content-status.functions';
 import { toast } from 'sonner';

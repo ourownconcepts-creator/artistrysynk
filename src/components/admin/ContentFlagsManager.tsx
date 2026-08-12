@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Flag, Search, Eye, CheckCircle, XCircle, AlertTriangle, RefreshCw, Bell, Undo2, History, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
+import { sanitizeExternalUrl, UGC_LINK_REL } from '@/lib/safeLinks';
 import { useServerFn } from '@tanstack/react-start';
 import { notifyContentStatus } from '@/lib/notify-content-status.functions';
 import { toast } from 'sonner';
