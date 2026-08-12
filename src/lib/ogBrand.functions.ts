@@ -35,7 +35,7 @@ export const getOgBrandConfig = createServerFn({ method: "POST" })
 /** Admin: replace the brand fallback image, or a single page's share image. */
 export const uploadOgImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(uploadSchema)
+  .validator(uploadSchema)
   .handler(async ({ data, context }) => {
     const { assertAdmin } = await import("@/lib/authz.server");
     await assertAdmin(context.supabase, context.userId);
@@ -66,7 +66,7 @@ export const uploadOgImage = createServerFn({ method: "POST" })
 /** Admin: remove a per-page override so the page falls back to the brand image. */
 export const deleteOgOverride = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(z.object({ path: z.string().min(1).max(300) }))
+  .validator(z.object({ path: z.string().min(1).max(300) }))
   .handler(async ({ data, context }) => {
     const { assertAdmin } = await import("@/lib/authz.server");
     await assertAdmin(context.supabase, context.userId);

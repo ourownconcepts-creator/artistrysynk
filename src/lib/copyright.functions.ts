@@ -27,7 +27,7 @@ export type CopyrightClaimSummary = {
  * are usually not members — so the handler enforces its own IP rate limit.
  */
 export const submitCopyrightClaim = createServerFn({ method: "POST" })
-  .inputValidator(claimSchema)
+  .validator(claimSchema)
   .handler(async ({ data }): Promise<CopyrightClaimSummary> => {
     const { getRequestIP } = await import("@tanstack/react-start/server");
     const { buildClaimReference, getAdmin, hashIp, sendClaimEmails } = await import(
@@ -92,7 +92,7 @@ export const submitCopyrightClaim = createServerFn({ method: "POST" })
 
 /** Reference-only status lookup so claimants can track a notice without an account. */
 export const lookupCopyrightClaim = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ referenceId: z.string().trim().min(6).max(20) }))
+  .validator(z.object({ referenceId: z.string().trim().min(6).max(20) }))
   .handler(async ({ data }) => {
     const { getAdmin } = await import("./copyright.server");
     const admin = await getAdmin();
@@ -148,7 +148,7 @@ export type AdminCopyrightClaim = {
 
 export const listCopyrightClaims = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { status?: string } | undefined) => input ?? {})
+  .validator((input: { status?: string } | undefined) => input ?? {})
   .handler(async ({ data, context }): Promise<AdminCopyrightClaim[]> => {
     await assertModerator(context);
     const { getAdmin } = await import("./copyright.server");
@@ -195,7 +195,7 @@ const decisionSchema = z.object({
 /** Records a moderator decision, optionally hides the content, and audits the action. */
 export const decideCopyrightClaim = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(decisionSchema)
+  .validator(decisionSchema)
   .handler(async ({ data, context }) => {
     const actorRole = await assertModerator(context);
     const { getAdmin, hashIp, sendClaimOutcomeEmail } = await import("./copyright.server");

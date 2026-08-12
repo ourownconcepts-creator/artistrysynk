@@ -11,7 +11,7 @@ const listFunctionRunsSchema = z.object({
 
 export const listFunctionRuns = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(listFunctionRunsSchema)
+  .validator(listFunctionRunsSchema)
   .handler(async ({ data, context }) => {
     const { assertAdmin } = await import("@/lib/authz.server");
     await assertAdmin(context.supabase, context.userId);

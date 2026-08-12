@@ -13,7 +13,7 @@ const reportSchema = z.object({
 
 /** Client runtime errors are posted here; the handler logs + alerts. */
 export const reportClientError = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => reportSchema.parse(input))
+  .validator((input: unknown) => reportSchema.parse(input))
   .handler(async ({ data }) => {
     const { reportError } = await import("@/lib/error-monitoring.server");
     const { sanitizeCorrelationId } = await import("@/lib/correlation");

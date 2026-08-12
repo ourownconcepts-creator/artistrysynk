@@ -86,7 +86,7 @@ export const getRetentionOverview = createServerFn({ method: "POST" })
 /** Lets a compliance admin run the sweep immediately instead of waiting for the schedule. */
 export const runRetentionSweepNow = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(z.object({}).default({}))
+  .validator(z.object({}).default({}))
   .handler(async ({ context }) => {
     const { assertComplianceAdmin, auditCompliance } = await import("./compliance.server");
     const role = await assertComplianceAdmin(context.supabase, context.userId);

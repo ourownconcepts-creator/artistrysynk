@@ -16,7 +16,7 @@ const schema = z.object({
  */
 export const notifyVerificationDecision = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(schema)
+  .validator(schema)
   .handler(async ({ data, context }) => {
     const { assertAdmin } = await import("@/lib/authz.server");
     await assertAdmin(context.supabase, context.userId);

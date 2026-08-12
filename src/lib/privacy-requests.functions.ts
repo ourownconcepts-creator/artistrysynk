@@ -29,7 +29,7 @@ export type PrivacyRequestRow = {
 /** Submits a data-subject request; the session proves identity. */
 export const submitPrivacyRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(requestSchema)
+  .validator(requestSchema)
   .handler(async ({ data, context }): Promise<PrivacyRequestRow> => {
     const { buildReferenceId, getAdmin, sendPrivacyRequestEmails } = await import(
       "./privacy-requests.server"

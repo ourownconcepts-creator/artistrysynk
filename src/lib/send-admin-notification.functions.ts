@@ -12,7 +12,7 @@ const sendAdminNotificationSchema = z.object({
 
 export const sendAdminNotification = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(sendAdminNotificationSchema)
+  .validator(sendAdminNotificationSchema)
   .handler(async ({ data, context }) => {
     const { assertAdmin } = await import("@/lib/authz.server");
     await assertAdmin(context.supabase, context.userId);

@@ -13,7 +13,7 @@ const submitSchema = z.object({
  */
 export const submitPagesForIndexing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(submitSchema)
+  .validator(submitSchema)
   .handler(async ({ data }) => {
     const paths = data.paths
       .map((p) => (p.startsWith("/") ? p : `/${p}`))

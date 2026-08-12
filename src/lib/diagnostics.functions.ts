@@ -15,7 +15,7 @@ const reportSchema = z.object({
  * Writes a diagnostics row only — never user data, never an alert.
  */
 export const reportClientDisconnect = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => reportSchema.parse(input))
+  .validator((input: unknown) => reportSchema.parse(input))
   .handler(async ({ data }) => {
     const { recordDiagnosticEvent } = await import("@/lib/diagnostics.server");
     const { sanitizeCorrelationId } = await import("@/lib/correlation");
@@ -38,7 +38,7 @@ const listSchema = z.object({
 
 export const listDiagnosticEvents = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(listSchema)
+  .validator(listSchema)
   .handler(async ({ data, context }) => {
     const { assertAdmin } = await import("@/lib/authz.server");
     await assertAdmin(context.supabase, context.userId);

@@ -19,7 +19,7 @@ const aiMatchScoringInput = z.object({
 
 export const scoreMatches = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(aiMatchScoringInput)
+  .validator(aiMatchScoringInput)
   .handler(async ({ data }) => {
     const { scoreMatches } = await import("@/lib/ai-match-scoring.server");
     return scoreMatches(data.currentUser, data.candidates);

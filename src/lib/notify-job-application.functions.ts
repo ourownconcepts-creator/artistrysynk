@@ -13,7 +13,7 @@ const notifyJobApplicationSchema = z.object({
 
 export const notifyJobApplication = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(notifyJobApplicationSchema)
+  .validator(notifyJobApplicationSchema)
   .handler(async ({ data }) => {
     const { notifyJobApplication } = await import("@/lib/notify-job-application.server");
     const { withRunLog } = await import("@/lib/functionRunLog.server");

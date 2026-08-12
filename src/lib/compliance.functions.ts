@@ -143,7 +143,7 @@ export const listComplianceRegisters = createServerFn({ method: "POST" })
  */
 export const saveComplianceRecord = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(recordSchema)
+  .validator(recordSchema)
   .handler(async ({ data, context }): Promise<ComplianceRecord> => {
     const { assertComplianceAdmin, auditCompliance } = await import("./compliance.server");
     const role = await assertComplianceAdmin(context.supabase, context.userId);
@@ -189,7 +189,7 @@ export const saveComplianceRecord = createServerFn({ method: "POST" })
 /** Records a completed periodic review and rolls the next review date forward. */
 export const reviewComplianceRecord = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
+  .validator(
     z.object({
       id: z.string().uuid(),
       nextReviewDue: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -227,7 +227,7 @@ export const reviewComplianceRecord = createServerFn({ method: "POST" })
 
 export const deleteComplianceRecord = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(z.object({ id: z.string().uuid() }))
+  .validator(z.object({ id: z.string().uuid() }))
   .handler(async ({ data, context }) => {
     const { assertComplianceAdmin, auditCompliance } = await import("./compliance.server");
     const role = await assertComplianceAdmin(context.supabase, context.userId);

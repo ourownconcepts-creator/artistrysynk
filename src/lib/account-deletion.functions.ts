@@ -15,7 +15,7 @@ export type DeletionRequestState = {
 /** Step 1 — email confirmation required before anything is deleted. */
 export const requestAccountDeletion = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(originSchema)
+  .validator(originSchema)
   .handler(async ({ data, context }): Promise<DeletionRequestState> => {
     const {
       GRACE_PERIOD_DAYS,
@@ -82,7 +82,7 @@ export const requestAccountDeletion = createServerFn({ method: "POST" })
 
 /** Step 2 — the emailed link lands here (no session required) and starts the grace period. */
 export const confirmAccountDeletion = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ token: z.string().min(20).max(200) }))
+  .validator(z.object({ token: z.string().min(20).max(200) }))
   .handler(async ({ data }) => {
     const { GRACE_PERIOD_DAYS, getAdmin, sendDeletionScheduledEmail, safeOrigin } = await import(
       "./account-deletion.server"

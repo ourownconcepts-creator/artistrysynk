@@ -89,7 +89,7 @@ export const listRequestQueues = createServerFn({ method: "POST" })
 /** Moves a DSAR through its lifecycle and records who did it. */
 export const updatePrivacyRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
+  .validator(
     z.object({
       requestId: z.string().uuid(),
       status: z.enum(["received", "verifying", "in_progress", "completed", "rejected", "withdrawn"]),
@@ -136,7 +136,7 @@ export const updatePrivacyRequest = createServerFn({ method: "POST" })
 /** Short-lived signed link so staff can open uploaded copyright evidence. */
 export const getEvidenceLink = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(z.object({ path: z.string().trim().min(1).max(400) }))
+  .validator(z.object({ path: z.string().trim().min(1).max(400) }))
   .handler(async ({ data, context }): Promise<string> => {
     const { assertComplianceAdmin } = await import("./compliance.server");
     await assertComplianceAdmin(context.supabase, context.userId);

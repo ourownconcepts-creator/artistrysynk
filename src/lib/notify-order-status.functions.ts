@@ -12,7 +12,7 @@ const notifyOrderStatusSchema = z.object({
 });
 
 export const notifyOrderStatus = createServerFn({ method: "POST" })
-  .inputValidator(notifyOrderStatusSchema)
+  .validator(notifyOrderStatusSchema)
   .handler(async ({ data }) => {
     const { notifyOrderStatus } = await import("@/lib/notify-order-status.server");
     const { withRunLog } = await import("@/lib/functionRunLog.server");

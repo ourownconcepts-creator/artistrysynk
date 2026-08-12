@@ -13,7 +13,7 @@ const submitContactSupportSchema = z.object({
 });
 
 export const submitContactSupport = createServerFn({ method: "POST" })
-  .inputValidator(submitContactSupportSchema)
+  .validator(submitContactSupportSchema)
   .handler(async ({ data }) => {
     const { submitContactSupport } = await import("@/lib/submit-contact-support.server");
     const { withRunLog } = await import("@/lib/functionRunLog.server");

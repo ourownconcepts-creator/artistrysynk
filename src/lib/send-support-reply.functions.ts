@@ -10,7 +10,7 @@ const sendSupportReplySchema = z.object({
 
 export const sendSupportReply = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(sendSupportReplySchema)
+  .validator(sendSupportReplySchema)
   .handler(async ({ data, context }) => {
     const { assertAdmin } = await import("@/lib/authz.server");
     await assertAdmin(context.supabase, context.userId);
