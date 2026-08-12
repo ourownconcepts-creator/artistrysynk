@@ -720,6 +720,13 @@ const Messages = () => {
                       currentUserId={currentUser}
                       targetUserId={otherUser.id}
                       targetUserName={otherUser.full_name}
+                      conversationId={conversationId ?? ""}
+                      messages={messages.map((m) => ({
+                        id: m.id,
+                        content: m.content,
+                        sender_id: m.sender_id,
+                        created_at: m.created_at,
+                      }))}
                     />
                   )}
 
