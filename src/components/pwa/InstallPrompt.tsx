@@ -36,6 +36,19 @@ export const InstallPrompt = () => {
     const android = /Android/i.test(ua);
     setIsAndroid(android);
 
+    // Non-Chrome Android browsers generate legacy home-screen packages that
+    // Google Play Protect blocks ("built for an older version of Android").
+    if (android) {
+      if (/SamsungBrowser/i.test(ua)) setInAppBrowser('Samsung Internet');
+      else if (/FBAN|FBAV/i.test(ua)) setInAppBrowser('Facebook');
+      else if (/Instagram/i.test(ua)) setInAppBrowser('Instagram');
+      else if (/TikTok/i.test(ua)) setInAppBrowser('TikTok');
+      else if (/OPR|OPT\//i.test(ua)) setInAppBrowser('Opera');
+      else if (/UCBrowser|MiuiBrowser|HuaweiBrowser|YaBrowser|Puffin|DuckDuckGo/i.test(ua))
+        setInAppBrowser('this browser');
+      else if (!/Chrome\//i.test(ua) || /wv/i.test(ua)) setInAppBrowser('this browser');
+    }
+
     // Detect in-app browsers where Add to Home Screen is unavailable
     if (ios) {
       if (/FBAN|FBAV/i.test(ua)) setInAppBrowser('Facebook');
@@ -147,6 +160,12 @@ export const InstallPrompt = () => {
               <Download className="w-4 h-4 mr-2" />
               Install ArtistrySynk
             </Button>
+          ) : isAndroid && inAppBrowser ? (
+            <p className="text-xs text-muted-foreground">
+              You're using {inAppBrowser}. Installing from here can be blocked by Google Play
+              Protect. Open <strong>artistrysynk.app</strong> in <strong>Google Chrome</strong>,
+              then tap the menu (⋮) → <strong>"Install app"</strong>.
+            </p>
           ) : isAndroid ? (
             <p className="text-xs text-muted-foreground">
               Open your browser menu (⋮) and tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.
