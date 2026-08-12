@@ -210,6 +210,7 @@ export async function submitContactSupport(
         category,
         reference_id: reference,
         status: "pending",
+        user_id: data.userId ?? null,
       })
       .select("id, created_at")
       .single();
