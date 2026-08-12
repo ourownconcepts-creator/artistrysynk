@@ -12,6 +12,9 @@ interface FlagContentDialogProps {
   contentType: 'message' | 'portfolio' | 'profile' | 'service' | 'project' | 'project_file';
   contentId: string;
   trigger?: React.ReactNode;
+  /** Optional controlled mode, e.g. when opened from a dropdown menu item. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const REASONS = [
@@ -23,8 +26,19 @@ const REASONS = [
   { value: 'other', label: 'Other', description: 'Other violation not listed above' },
 ];
 
-export const FlagContentDialog = ({ contentType, contentId, trigger }: FlagContentDialogProps) => {
-  const [open, setOpen] = useState(false);
+export const FlagContentDialog = ({
+  contentType,
+  contentId,
+  trigger,
+  open: openProp,
+  onOpenChange,
+}: FlagContentDialogProps) => {
+  const [openState, setOpenState] = useState(false);
+  const open = openProp ?? openState;
+  const setOpen = (next: boolean) => {
+    setOpenState(next);
+    onOpenChange?.(next);
+  };
   const [reason, setReason] = useState('');
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
