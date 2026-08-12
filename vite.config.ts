@@ -17,33 +17,5 @@ export default defineConfig({
       // CJS packages that need bundling so named exports resolve during SSR.
       noExternal: ["react-helmet-async"],
     },
-    build: {
-      // Rolldown splits @tanstack/start-server-core and start-client-core into
-      // two circular chunks, so `createCsrfMiddleware` is undefined when the
-      // server entry evaluates → every SSR request 500s. Disabling tree-shaking
-      // keeps the declarations in one initialization order.
-      rollupOptions: {
-        treeshake: false,
-        output: {
-          // Keep the TanStack Start runtime (createSsrRpc, server-fn plumbing) in a
-          // dedicated vendor chunk. Otherwise it gets inlined into an app chunk that
-          // is itself imported by the route chunk, creating a circular chunk pair —
-          // `createSsrRpc` is then undefined while the route chunk initializes and
-          // every SSR request 500s with "createSsrRpc is not a function".
-          manualChunks(id: string) {
-            if (
-              id.includes("node_modules/@tanstack/react-start/") ||
-              id.includes("node_modules/@tanstack/start-server-core/") ||
-              id.includes("node_modules/@tanstack/start-client-core/") ||
-              id.includes("node_modules/@tanstack/react-start-client/") ||
-              id.includes("node_modules/@tanstack/react-start-server/")
-            ) {
-              return "tanstack-start-runtime";
-            }
-            return undefined;
-          },
-        },
-      },
-    },
   },
 });
