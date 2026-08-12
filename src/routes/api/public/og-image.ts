@@ -43,6 +43,11 @@ export const Route = createFileRoute("/api/public/og-image")({
             status: 200,
             headers: {
               "Content-Type": contentType,
+              // Never let a proxied byte stream be sniffed or executed as
+              // active content served from our own origin.
+              "X-Content-Type-Options": "nosniff",
+              "Content-Security-Policy": "default-src 'none'; sandbox",
+              "Content-Disposition": 'inline; filename="share-image"',
               ETag: `"${version}-${ratio}-${bytes.byteLength}"`,
               "Cache-Control": long
                 ? "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400"

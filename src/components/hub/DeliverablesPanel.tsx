@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { EmptyState, SectionHeader, Surface } from "@/components/native-ui";
+import { sanitizeExternalUrl, UGC_LINK_REL } from "@/lib/safeLinks";
 
 type Deliverable = {
   id: string;
@@ -215,11 +216,11 @@ export function DeliverablesPanel({
                       ))}
                     </SelectContent>
                   </Select>
-                  {d.review_url ? (
+                  {sanitizeExternalUrl(d.review_url) ? (
                     <a
-                      href={d.review_url}
+                      href={sanitizeExternalUrl(d.review_url)!}
                       target="_blank"
-                      rel="noreferrer"
+                      rel={UGC_LINK_REL}
                       className="flex items-center gap-1 text-xs font-medium text-primary"
                     >
                       <ExternalLink className="h-3.5 w-3.5" /> Review

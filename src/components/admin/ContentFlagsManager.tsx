@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Flag, Search, Eye, CheckCircle, XCircle, AlertTriangle, RefreshCw, Bell, Undo2, History, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
+import { sanitizeExternalUrl, UGC_LINK_REL } from '@/lib/safeLinks';
 import { useServerFn } from '@tanstack/react-start';
 import { notifyContentStatus } from '@/lib/notify-content-status.functions';
 import { toast } from 'sonner';
@@ -638,14 +639,20 @@ export const ContentFlagsManager = () => {
                     <ul className="mt-1 space-y-1">
                       {selectedFlag.evidence_urls!.map((url) => (
                         <li key={url}>
+                          {sanitizeExternalUrl(url) ? (
                           <a
-                            href={url}
+                            href={sanitizeExternalUrl(url)!}
                             target="_blank"
-                            rel="noopener noreferrer"
+                            rel={UGC_LINK_REL}
                             className="text-sm text-primary underline break-all"
                           >
                             {url}
                           </a>
+                          ) : (
+                            <span className="text-sm text-muted-foreground break-all">
+                              {url} (link blocked as unsafe)
+                            </span>
+                          )}
                         </li>
                       ))}
                     </ul>

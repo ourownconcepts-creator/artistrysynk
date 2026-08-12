@@ -65,25 +65,74 @@ export function readImageSize(buf: Uint8Array): { width: number; height: number 
 
 const MAX_BYTES = 6 * 1024 * 1024;
 
+/**
+ * Raster image types we are willing to re-serve from our own origin.
+ * SVG is deliberately excluded: it can carry script and would be
+ * same-origin active content, which Safe Browsing treats as harmful.
+ */
+const SAFE_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/avif",
+]);
+
+/** Hosts whose images we are willing to proxy (our own + our storage). */
+function isAllowedImageHost(host: string): boolean {
+  const h = host.toLowerCase();
+  const storageHost = (() => {
+    try {
+      return new URL(process.env["VITE_SUPABASE_URL"] ?? "").hostname.toLowerCase();
+    } catch {
+      return null;
+    }
+  })();
+  return (
+    h === "artistrysynk.app" ||
+    h === "www.artistrysynk.app" ||
+    h.endsWith(".lovable.app") ||
+    h.endsWith(".supabase.co") ||
+    (storageHost !== null && h === storageHost)
+  );
+}
+
+export function isProxyableImageSource(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:" && isAllowedImageHost(parsed.hostname);
+  } catch {
+    return false;
+  }
+}
+
 export async function probeRemoteImage(url: string): Promise<ProbedImage> {
   try {
+    if (!isProxyableImageSource(url)) {
+      return { ok: false, status: null, contentType: null, width: null, height: null, bytes: null };
+    }
     const res = await fetch(url, {
       headers: { "User-Agent": "ArtistrySynkOgImage/1.0 (+https://artistrysynk.app)" },
-      redirect: "follow",
+      redirect: "manual",
     });
     const contentType = res.headers.get("content-type");
     if (!res.ok) return { ok: false, status: res.status, contentType, width: null, height: null, bytes: null };
     const buf = new Uint8Array(await res.arrayBuffer());
-    if (buf.byteLength > MAX_BYTES || !contentType?.startsWith("image/")) {
+    const baseType = contentType?.split(";")[0]?.trim().toLowerCase() ?? "";
+    if (buf.byteLength > MAX_BYTES || !SAFE_IMAGE_TYPES.has(baseType)) {
       return { ok: false, status: res.status, contentType, width: null, height: null, bytes: null };
     }
     const size = readImageSize(buf);
+    // Magic bytes must parse: guarantees real raster data, not a disguised file.
+    if (!size) {
+      return { ok: false, status: res.status, contentType: baseType, width: null, height: null, bytes: null };
+    }
     return {
       ok: true,
       status: res.status,
-      contentType,
-      width: size?.width ?? null,
-      height: size?.height ?? null,
+      contentType: baseType,
+      width: size.width,
+      height: size.height,
       bytes: buf,
     };
   } catch {

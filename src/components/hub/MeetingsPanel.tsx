@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { EmptyState, SectionHeader, Surface, Chip } from "@/components/native-ui";
+import { sanitizeExternalUrl, UGC_LINK_REL } from "@/lib/safeLinks";
 
 type Meeting = {
   id: string;
@@ -191,8 +192,13 @@ export function MeetingsPanel({
                       <MapPin className="h-3.5 w-3.5" /> {m.location}
                     </span>
                   ) : null}
-                  {m.meeting_url ? (
-                    <a href={m.meeting_url} target="_blank" rel="noreferrer" className="flex items-center gap-1 font-medium text-primary">
+                  {sanitizeExternalUrl(m.meeting_url) ? (
+                    <a
+                      href={sanitizeExternalUrl(m.meeting_url)!}
+                      target="_blank"
+                      rel={UGC_LINK_REL}
+                      className="flex items-center gap-1 font-medium text-primary"
+                    >
                       <Video className="h-3.5 w-3.5" /> Join call
                     </a>
                   ) : null}
