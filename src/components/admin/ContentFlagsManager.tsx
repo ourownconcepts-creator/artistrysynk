@@ -638,14 +638,20 @@ export const ContentFlagsManager = () => {
                     <ul className="mt-1 space-y-1">
                       {selectedFlag.evidence_urls!.map((url) => (
                         <li key={url}>
+                          {sanitizeExternalUrl(url) ? (
                           <a
-                            href={url}
+                            href={sanitizeExternalUrl(url)!}
                             target="_blank"
-                            rel="noopener noreferrer"
+                            rel={UGC_LINK_REL}
                             className="text-sm text-primary underline break-all"
                           >
                             {url}
                           </a>
+                          ) : (
+                            <span className="text-sm text-muted-foreground break-all">
+                              {url} (link blocked as unsafe)
+                            </span>
+                          )}
                         </li>
                       ))}
                     </ul>
