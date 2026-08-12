@@ -58,14 +58,14 @@ for (const file of [...serverFiles, ...clientFiles]) {
   // Bindings brought in by import/export-from statements are legitimate.
   const imported = new Set();
   for (const stmt of code.match(/(?:^|[;\n])\s*(?:import|export)[^;]*?from\s*["'][^"']+["']/g) ?? []) {
-    for (const name of stmt.match(/\b[A-Za-z_][A-Za-z0-9_]*\$\d+\b/g) ?? []) imported.add(name);
+    for (const name of stmt.match(/[A-Za-z_$][A-Za-z0-9_$]*\$\d+/g) ?? []) imported.add(name);
   }
-  const referenced = new Set(code.match(/\b[A-Za-z_][A-Za-z0-9_]*\$\d+\b/g) ?? []);
+  const referenced = new Set(code.match(/[A-Za-z_$][A-Za-z0-9_$]*\$\d+/g) ?? []);
   for (const name of referenced) {
     if (imported.has(name)) continue;
-    const escaped = name.replace("$", "\\$");
+    const escaped = name.replace(/\$/g, "\\$");
     const declared = new RegExp(
-      `(?:var|let|const|function|class)\\s+${escaped}\\b|${escaped}\\s*(?:=[^=]|,|\\)|:)|as\\s+${escaped}\\b`,
+      `(?:var|let|const|function|class)\\s+${escaped}[^A-Za-z0-9_$]|${escaped}\\s*(?:=[^=]|,|\\)|\\]|\\}|:)|as\\s+${escaped}[^A-Za-z0-9_$]`,
     ).test(code);
     if (!declared) {
       errors.push(`${file}: "${name}" referenced but never declared in the chunk.`);
