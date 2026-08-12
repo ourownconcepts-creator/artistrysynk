@@ -22,12 +22,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { FlagContentDialog } from "@/components/FlagContentDialog";
+import { ChatReportDialog, type ReportableMessage } from "@/components/messages/ChatReportDialog";
 
 interface ChatSafetyMenuProps {
   currentUserId: string;
   targetUserId: string;
   targetUserName: string;
+  conversationId: string;
+  messages?: ReportableMessage[];
 }
 
 /** Report, block or mute the other participant straight from a conversation. */
@@ -35,11 +37,43 @@ export const ChatSafetyMenu = ({
   currentUserId,
   targetUserId,
   targetUserName,
+  conversationId,
+  messages = [],
 }: ChatSafetyMenuProps) => {
   const navigate = useNavigate();
   const [confirmBlock, setConfirmBlock] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [muted, setMuted] = useState(false);
+
+  const unblock = async () => {
+    const { error } = await supabase
+      .from("blocked_users")
+      .delete()
+      .eq("blocker_id", currentUserId)
+      .eq("blocked_id", targetUserId);
+    if (error) {
+      toast.error("Could not unblock this account");
+      return;
+    }
+    toast.success(`${targetUserName} is unblocked`, {
+      description: "You can message each other again.",
+    });
+  };
+
+  const unmute = async () => {
+    const { error } = await supabase
+      .from("muted_users")
+      .delete()
+      .eq("muter_id", currentUserId)
+      .eq("muted_id", targetUserId);
+    if (error) {
+      toast.error("Could not unmute this account");
+      return;
+    }
+    setMuted(false);
+    toast.success(`Notifications from ${targetUserName} are back on`);
+  };
 
   const block = async () => {
     setBusy(true);
@@ -54,7 +88,10 @@ export const ChatSafetyMenu = ({
       return;
     }
     toast.success(`${targetUserName} is blocked`, {
-      description: "They can no longer message you or see you in discovery.",
+      description:
+        "They can no longer message you or see you in discovery. This applies on all your devices.",
+      duration: 8000,
+      action: { label: "Undo", onClick: () => void unblock() },
     });
     void navigate({ to: "/messages" });
   };
@@ -67,8 +104,12 @@ export const ChatSafetyMenu = ({
       toast.error("Could not mute this account");
       return;
     }
+    setMuted(true);
     toast.success(`Muted ${targetUserName}`, {
-      description: "You will stop getting notifications from them.",
+      description:
+        "You will stop getting notifications from them — the chat stays open and synced on all your devices.",
+      duration: 8000,
+      action: { label: "Undo", onClick: () => void unmute() },
     });
   };
 
@@ -87,9 +128,9 @@ export const ChatSafetyMenu = ({
             <Flag className="mr-2 h-4 w-4" />
             Report {targetUserName.split(" ")[0]}
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => void mute()}>
+          <DropdownMenuItem onSelect={() => void (muted ? unmute() : mute())}>
             <BellOff className="mr-2 h-4 w-4" />
-            Mute notifications
+            {muted ? "Unmute notifications" : "Mute notifications"}
           </DropdownMenuItem>
           <DropdownMenuItem
             className="text-destructive focus:text-destructive"
@@ -102,11 +143,14 @@ export const ChatSafetyMenu = ({
       </DropdownMenu>
 
       {reportOpen && (
-        <FlagContentDialog
-          contentType="profile"
-          contentId={targetUserId}
+        <ChatReportDialog
           open={reportOpen}
           onOpenChange={setReportOpen}
+          currentUserId={currentUserId}
+          targetUserId={targetUserId}
+          targetUserName={targetUserName}
+          conversationId={conversationId}
+          messages={messages}
         />
       )}
 
