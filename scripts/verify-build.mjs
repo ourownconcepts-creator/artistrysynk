@@ -52,14 +52,20 @@ checkSymbol(serverFiles, "createSsrRpc", "SSR bundle");
 checkSymbol(serverFiles, "UPLOAD_BUCKETS", "SSR bundle");
 
 // 2. Generic sweep: any `$`-suffixed deconflicted identifier that is referenced
-//    inside a chunk but declared nowhere in that chunk.
+//    inside a chunk but neither declared nor imported in that chunk.
 for (const file of [...serverFiles, ...clientFiles]) {
   const code = readFileSync(file, "utf8");
+  // Bindings brought in by import/export-from statements are legitimate.
+  const imported = new Set();
+  for (const stmt of code.match(/(?:^|[;\n])\s*(?:import|export)[^;]*?from\s*["'][^"']+["']/g) ?? []) {
+    for (const name of stmt.match(/\b[A-Za-z_][A-Za-z0-9_]*\$\d+\b/g) ?? []) imported.add(name);
+  }
   const referenced = new Set(code.match(/\b[A-Za-z_][A-Za-z0-9_]*\$\d+\b/g) ?? []);
   for (const name of referenced) {
+    if (imported.has(name)) continue;
     const escaped = name.replace("$", "\\$");
     const declared = new RegExp(
-      `(?:var|let|const|function|class)\\s+${escaped}\\b|${escaped}\\s*(?:=[^=]|,|\\))`,
+      `(?:var|let|const|function|class)\\s+${escaped}\\b|${escaped}\\s*(?:=[^=]|,|\\)|:)|as\\s+${escaped}\\b`,
     ).test(code);
     if (!declared) {
       errors.push(`${file}: "${name}" referenced but never declared in the chunk.`);
