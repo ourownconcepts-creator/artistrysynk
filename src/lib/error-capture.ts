@@ -85,6 +85,27 @@ if (typeof globalThis.addEventListener === "function") {
   );
 }
 
+// Node raises client disconnects (`Error: aborted` from abortIncoming) as a
+// process-level uncaughtException, which bypasses console.error entirely and is
+// printed straight to stderr by Node's fatal handler — where the platform's log
+// scraper picks it up as an app runtime error. Intercept those here: swallow
+// transport noise, and route real failures through console.error so they keep
+// their stack and cause chain.
+type NodeProcess = {
+  on?: (event: string, listener: (value: unknown) => void) => unknown;
+};
+const nodeProcess = (globalThis as { process?: NodeProcess }).process;
+if (typeof nodeProcess?.on === "function") {
+  nodeProcess.on("uncaughtException", (error: unknown) => {
+    if (isBenignTransportError(error)) return;
+    console.error(error);
+  });
+  nodeProcess.on("unhandledRejection", (reason: unknown) => {
+    if (isBenignTransportError(reason)) return;
+    console.error(reason);
+  });
+}
+
 export function consumeLastCapturedError(): unknown {
   if (!lastCapturedError) return undefined;
   if (Date.now() - lastCapturedError.at > TTL_MS) {
