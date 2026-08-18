@@ -198,8 +198,10 @@ const Discover = () => {
 
       const { all: hiddenIds } = await fetchHiddenUserIds(userId);
       const hidden = new Set(hiddenIds);
+      const beautyIds = await fetchBeautyIds();
       let filteredData: any[] = ((data as any[]) ?? [])
         .filter((p) => !hidden.has(p.id))
+        .filter((p) => !beautyIds || beautyIds.has(p.id))
         .map((p) => ({
           ...p,
           user_creative_roles: (p.roles ?? []).map((role: string) => ({ role })),
@@ -244,7 +246,7 @@ const Discover = () => {
       setLoading(false);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [roleFilter, genreFilter, skillFilter, locationFilter, aiMatchingEnabled, hasAdvancedMatching, currentUserProfile],
+    [roleFilter, genreFilter, skillFilter, locationFilter, fetchBeautyIds, aiMatchingEnabled, hasAdvancedMatching, currentUserProfile],
   );
 
   useEffect(() => {
