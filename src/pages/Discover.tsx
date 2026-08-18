@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BEAUTY_SPECIALTIES, BEAUTY_SERVICE_MODES, specialtyLabel } from "@/lib/beauty";
 import { Constants } from "@/integrations/supabase/types";
 import { getRoleLabel } from "@/lib/creativeRoles";
 import { useSubscription } from "@/hooks/useSubscription";
