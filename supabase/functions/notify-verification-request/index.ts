@@ -11,7 +11,7 @@ class QueenSMTP {
       const text = a.text ?? (a.html ?? "").replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, " ").replace(/\s{2,}/g, " ").trim();
       const m = a.from.match(/^\s*(.*?)\s*<([^>]+)>\s*$/);
       const fromEmail = (m ? m[2] : a.from).trim();
-      const fromName = m ? m[1].replace(/^"|"$/g, "").trim() : "";
+      const fromName = (m ? m[1].replace(/^"|"$/g, "").trim() : "") || "ArtistrySynk";
       let last = "";
       for (let i = 0; i < 3; i++) {
         if (i) await new Promise((r) => setTimeout(r, 400 * 2 ** (i - 1)));
@@ -94,7 +94,7 @@ serve(async (req) => {
       
       if (user?.email) {
         await resend.emails.send({
-          from: 'Admin Notifications <notifications@artistrysynk.app>',
+          from: 'ArtistrySynk <notifications@artistrysynk.app>',
           to: [user.email],
           subject: 'New Verification Request',
           html: `
