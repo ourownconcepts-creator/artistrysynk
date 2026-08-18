@@ -1,4 +1,4 @@
-import { sendEmail, LOGO_URL, DEFAULT_FROM } from "@/lib/email/resend.server";
+import { sendEmail, LOGO_URL, DEFAULT_FROM } from "@/lib/email/queensmtp.server";
 
 export interface SendContactConfirmationInput {
   name: string;

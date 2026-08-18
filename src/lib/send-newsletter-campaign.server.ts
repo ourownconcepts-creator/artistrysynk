@@ -1,4 +1,4 @@
-import { LOGO_URL, DEFAULT_FROM, sendEmail } from "@/lib/email/resend.server";
+import { LOGO_URL, DEFAULT_FROM, sendEmail } from "@/lib/email/queensmtp.server";
 
 export interface SendNewsletterCampaignInput {
   subject: string;

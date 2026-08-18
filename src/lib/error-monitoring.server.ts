@@ -4,7 +4,7 @@
  * emails an alert to the ops inbox, throttled per error fingerprint.
  */
 import { recordFunctionRun } from "@/lib/functionRunLog.server";
-import { hasResend, sendEmail } from "@/lib/email/resend.server";
+import { hasResend, sendEmail } from "@/lib/email/queensmtp.server";
 import { isBenignTransportError } from "@/lib/benignErrors";
 
 export type ErrorReport = {

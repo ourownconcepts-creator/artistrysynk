@@ -4,7 +4,7 @@ export async function notifyContentStatus(input: {
   action: "auto_hidden" | "restored" | "appeal_rejected";
   adminResponse?: string;
 }) {
-  const { sendEmail, LOGO_URL } = await import("@/lib/email/resend.server");
+  const { sendEmail, LOGO_URL } = await import("@/lib/email/queensmtp.server");
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { userId, contentType, action, adminResponse } = input;
 

@@ -5,7 +5,7 @@ export async function notifyVerificationStatus(input: {
   requestType: string;
   reason?: string;
 }) {
-  const { sendEmail, LOGO_URL } = await import("@/lib/email/resend.server");
+  const { sendEmail, LOGO_URL } = await import("@/lib/email/queensmtp.server");
   const { email, fullName, status, requestType, reason } = input;
 
   const brandedHeader = `

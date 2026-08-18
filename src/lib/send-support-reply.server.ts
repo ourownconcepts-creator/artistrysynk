@@ -5,7 +5,7 @@ export async function sendSupportReply(
   userId: string,
   input: { submissionId: string; reply: string; status: string },
 ) {
-  const { sendEmail, LOGO_URL } = await import("@/lib/email/resend.server");
+  const { sendEmail, LOGO_URL } = await import("@/lib/email/queensmtp.server");
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
   const { submissionId, reply, status } = input;

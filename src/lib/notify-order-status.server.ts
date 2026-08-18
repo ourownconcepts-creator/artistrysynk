@@ -1,4 +1,4 @@
-import { sendEmail, LOGO_URL } from "@/lib/email/resend.server";
+import { sendEmail, LOGO_URL } from "@/lib/email/queensmtp.server";
 
 export interface NotifyOrderStatusInput {
   orderId: string;
