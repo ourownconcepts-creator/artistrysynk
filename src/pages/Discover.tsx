@@ -613,6 +613,40 @@ const Discover = () => {
           </div>
 
           <div className="space-y-2">
+            <Label>Beauty &amp; Grooming specialty</Label>
+            <Select value={specialtyFilter} onValueChange={setSpecialtyFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="All specialties" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All specialties</SelectItem>
+                {BEAUTY_SPECIALTIES.map((specialty) => (
+                  <SelectItem key={specialty.value} value={specialty.value}>
+                    {specialty.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Service style</Label>
+            <Select value={serviceModeFilter} onValueChange={setServiceModeFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Any service style" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Any service style</SelectItem>
+                {BEAUTY_SERVICE_MODES.map((serviceMode) => (
+                  <SelectItem key={serviceMode.value} value={serviceMode.value}>
+                    {serviceMode.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="skill-filter">Skill</Label>
             <Input
               id="skill-filter"
