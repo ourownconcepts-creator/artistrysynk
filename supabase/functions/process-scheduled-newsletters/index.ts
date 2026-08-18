@@ -128,7 +128,7 @@ const handler = async (req: Request): Promise<Response> => {
         for (const email of uniqueEmails) {
           try {
             await resend.emails.send({
-              from: "ArtistrySynk <newsletter@artistrysynk.app>",
+              from: "ArtistrySynk <notifications@artistrysynk.app>",
               to: [email],
               subject: newsletter.subject,
               html: newsletter.content,
