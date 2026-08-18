@@ -1,4 +1,4 @@
-import { sendEmail, LOGO_URL } from "@/lib/email/resend.server";
+import { sendEmail, LOGO_URL } from "@/lib/email/queensmtp.server";
 
 export interface SendAdminNotificationInput {
   recipientEmail: string;
@@ -19,8 +19,8 @@ export async function sendAdminNotification({
   targetUser,
   details,
 }: SendAdminNotificationInput) {
-  if (!process.env["RESEND_API_KEY"]) {
-    console.error("RESEND_API_KEY is not configured");
+  if (!process.env["QUEENSMTP_API_KEY"]) {
+    console.error("QUEENSMTP_API_KEY is not configured");
     throw new Error("Email service not configured");
   }
 

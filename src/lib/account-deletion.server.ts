@@ -1,4 +1,4 @@
-import { LOGO_URL, sendEmail, hasResend } from "./email/resend.server";
+import { LOGO_URL, sendEmail, hasEmailProvider } from "./email/queensmtp.server";
 
 const ALLOWED_ORIGIN_SUFFIXES = [".lovable.app", "artistrysynk.app"];
 const DEFAULT_ORIGIN = "https://artistrysynk.app";
@@ -85,7 +85,7 @@ export async function sendDeletionConfirmationEmail(opts: {
   name?: string | null;
   confirmUrl: string;
 }) {
-  if (!hasResend()) throw new Error("Email service not configured");
+  if (!hasEmailProvider()) throw new Error("Email service not configured");
   await sendEmail({
     to: opts.to,
     subject: "Confirm your ArtistrySynk account deletion",
@@ -107,7 +107,7 @@ export async function sendDeletionScheduledEmail(opts: {
   scheduledFor: string;
   settingsUrl: string;
 }) {
-  if (!hasResend()) return;
+  if (!hasEmailProvider()) return;
   await sendEmail({
     to: opts.to,
     subject: `Your ArtistrySynk account will be deleted in ${GRACE_PERIOD_DAYS} days`,
@@ -124,7 +124,7 @@ export async function sendDeletionScheduledEmail(opts: {
 }
 
 export async function sendDeletionCancelledEmail(to: string) {
-  if (!hasResend()) return;
+  if (!hasEmailProvider()) return;
   await sendEmail({
     to,
     subject: "Your ArtistrySynk account deletion was cancelled",

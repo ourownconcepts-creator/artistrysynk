@@ -1,4 +1,4 @@
-import { LOGO_URL, sendEmail } from "@/lib/email/resend.server";
+import { LOGO_URL, sendEmail } from "@/lib/email/queensmtp.server";
 
 const brandedHeader = `
   <div style="text-align: center; padding: 30px 0 20px 0; background: linear-gradient(135deg, #c026d3 0%, #7c3aed 50%, #f97316 100%); border-radius: 12px 12px 0 0;">

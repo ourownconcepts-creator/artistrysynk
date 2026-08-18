@@ -4,7 +4,7 @@
  * emails an alert to the ops inbox, throttled per error fingerprint.
  */
 import { recordFunctionRun } from "@/lib/functionRunLog.server";
-import { hasResend, sendEmail } from "@/lib/email/resend.server";
+import { hasEmailProvider, sendEmail } from "@/lib/email/queensmtp.server";
 import { isBenignTransportError } from "@/lib/benignErrors";
 
 export type ErrorReport = {
@@ -81,7 +81,7 @@ export async function reportError(report: ErrorReport): Promise<{ logged: boolea
     },
   });
 
-  if (!shouldAlert(key) || !hasResend()) return { logged: true, alerted: false };
+  if (!shouldAlert(key) || !hasEmailProvider()) return { logged: true, alerted: false };
 
   try {
     await sendEmail({

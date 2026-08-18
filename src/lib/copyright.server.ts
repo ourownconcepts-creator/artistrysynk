@@ -1,4 +1,4 @@
-import { LOGO_URL, sendEmail, hasResend } from "./email/resend.server";
+import { LOGO_URL, sendEmail, hasEmailProvider } from "./email/queensmtp.server";
 
 export const COPYRIGHT_INBOX = process.env["COPYRIGHT_INBOX"] || "copyright@artistrysynk.app";
 
@@ -44,7 +44,7 @@ export async function sendClaimEmails(claim: {
   workDescription: string;
   infringementExplanation: string;
 }) {
-  if (!hasResend()) return;
+  if (!hasEmailProvider()) return;
 
   await sendEmail({
     to: claim.contactEmail,
@@ -82,7 +82,7 @@ export async function sendClaimOutcomeEmail(opts: {
   outcome: string | null;
   note: string | null;
 }) {
-  if (!hasResend()) return;
+  if (!hasEmailProvider()) return;
   const headline =
     opts.status === "actioned"
       ? "We have acted on your copyright notice"

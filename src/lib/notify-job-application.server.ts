@@ -1,4 +1,4 @@
-import { sendEmail, LOGO_URL } from "@/lib/email/resend.server";
+import { sendEmail, LOGO_URL } from "@/lib/email/queensmtp.server";
 
 export interface NotifyJobApplicationInput {
   jobTitle: string;
@@ -16,7 +16,7 @@ export async function notifyJobApplication({
   applicantName,
   coverLetter,
 }: NotifyJobApplicationInput) {
-  if (!process.env["RESEND_API_KEY"]) {
+  if (!process.env["QUEENSMTP_API_KEY"]) {
     throw new Error("Email service not configured");
   }
 

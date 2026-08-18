@@ -1,4 +1,4 @@
-import { sendEmail, LOGO_URL } from "@/lib/email/resend.server";
+import { sendEmail, LOGO_URL } from "@/lib/email/queensmtp.server";
 
 export interface NotifyOrderStatusInput {
   orderId: string;
@@ -31,7 +31,7 @@ export async function notifyOrderStatus({
   newStatus,
   amount,
 }: NotifyOrderStatusInput) {
-  if (!process.env["RESEND_API_KEY"]) {
+  if (!process.env["QUEENSMTP_API_KEY"]) {
     throw new Error("Email service not configured");
   }
 

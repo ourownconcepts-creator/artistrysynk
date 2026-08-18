@@ -1,4 +1,4 @@
-import { LOGO_URL, sendEmail, hasResend } from "./email/resend.server";
+import { LOGO_URL, sendEmail, hasEmailProvider } from "./email/queensmtp.server";
 
 export const PRIVACY_INBOX = process.env["PRIVACY_INBOX"] || "privacy@artistrysynk.app";
 
@@ -43,7 +43,7 @@ export async function sendPrivacyRequestEmails(opts: {
   details?: string | null;
   dueAt: string;
 }) {
-  if (!hasResend()) return;
+  if (!hasEmailProvider()) return;
   const label = REQUEST_TYPE_LABELS[opts.requestType] ?? opts.requestType;
 
   await sendEmail({
@@ -116,7 +116,7 @@ export async function sendPrivacyStatusEmail(opts: {
   status: string;
   notes?: string | null;
 }) {
-  if (!hasResend() || !opts.to) return;
+  if (!hasEmailProvider() || !opts.to) return;
   const copy = STATUS_COPY[opts.status];
   if (!copy) return;
   const label = REQUEST_TYPE_LABELS[opts.requestType] ?? opts.requestType;
@@ -138,7 +138,7 @@ export async function sendPrivacyStatusEmail(opts: {
 
 /** Confirms a self-service data download was generated. */
 export async function sendDataExportEmail(opts: { to: string; itemCount: number }) {
-  if (!hasResend() || !opts.to) return;
+  if (!hasEmailProvider() || !opts.to) return;
   await sendEmail({
     to: opts.to,
     subject: "Your ArtistrySynk data download is ready",
@@ -154,7 +154,7 @@ export async function sendDataExportEmail(opts: { to: string; itemCount: number 
 
 /** Confirms a privacy preference change so silent account changes are visible. */
 export async function sendPrivacyPreferenceEmail(opts: { to: string; changes: string[] }) {
-  if (!hasResend() || !opts.to || opts.changes.length === 0) return;
+  if (!hasEmailProvider() || !opts.to || opts.changes.length === 0) return;
   await sendEmail({
     to: opts.to,
     subject: "Your ArtistrySynk privacy settings were updated",
