@@ -15,6 +15,10 @@ interface PortfolioItem {
   media_type: string;
   media_url: string;
   created_at: string | null;
+  before_media_url?: string | null;
+  after_media_url?: string | null;
+  is_transformation?: boolean | null;
+  captured_on?: string | null;
 }
 
 interface PortfolioGridProps {
@@ -105,7 +109,21 @@ export const PortfolioGrid = ({ userId, editable = false, onItemClick, showRepor
             onClick={() => onItemClick?.(item)}
           >
             <div className="aspect-square relative bg-gradient-to-br from-primary/10 to-secondary/10">
-              {item.media_type === "image" ? (
+              {item.is_transformation && item.before_media_url && item.after_media_url ? (
+                <div className="grid h-full w-full grid-cols-2">
+                  {([
+                    { label: "Before", src: item.before_media_url },
+                    { label: "After", src: item.after_media_url },
+                  ] as const).map(({ label, src }) => (
+                    <div key={label} className="relative h-full w-full overflow-hidden">
+                      <img src={src} alt={`${label}: ${item.title}`} className="h-full w-full object-cover" />
+                      <span className="absolute bottom-1 left-1 rounded-full bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                        {label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : item.media_type === "image" ? (
                 <img 
                   src={item.media_url} 
                   alt={item.title}
@@ -131,7 +149,7 @@ export const PortfolioGrid = ({ userId, editable = false, onItemClick, showRepor
                 <div className="absolute bottom-0 left-0 right-0 p-3">
                   <div className="flex items-center justify-between">
                     <Badge variant="secondary" className="text-xs">
-                      {item.media_type}
+                      {item.is_transformation ? "before & after" : item.media_type}
                     </Badge>
                     <div className="flex gap-1">
                       <Button 
@@ -180,6 +198,15 @@ export const PortfolioGrid = ({ userId, editable = false, onItemClick, showRepor
               <h3 className="font-medium truncate">{item.title}</h3>
               {item.description && (
                 <p className="text-xs text-muted-foreground truncate">{item.description}</p>
+              )}
+              {item.captured_on && (
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {new Date(item.captured_on).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </p>
               )}
             </CardContent>
           </Card>

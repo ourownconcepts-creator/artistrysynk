@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.sync_professional_verification() FROM PUBLIC, anon, authenticated;

@@ -13,6 +13,10 @@ import { toast } from "sonner";
 import { Camera, Upload, Link, Instagram, Twitter, Youtube, Music, Headphones, Code } from "lucide-react";
 import { SkillTagsInput } from "@/components/profile/SkillTagsInput";
 import { roleCategories, allRoles } from "@/lib/creativeRoles";
+import { CustomRoleRequestDialog } from "@/components/profile/CustomRoleRequestDialog";
+import { BeautyProfileFields } from "@/components/profile/BeautyProfileFields";
+import { BeautyCredentialUpload } from "@/components/profile/BeautyCredentialUpload";
+import { isBeautyRole } from "@/lib/beauty";
 
 const genres = [
   { value: 'afrobeats', label: 'Afrobeats' },
@@ -61,6 +65,7 @@ const EditProfile = () => {
   const [lookingFor, setLookingFor] = useState<string[]>([]);
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
+  const [professionalVerified, setProfessionalVerified] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -89,6 +94,7 @@ const EditProfile = () => {
       setLocation(profile.location || "");
       setAvatarUrl(profile.avatar_url || "");
       setCoverImageUrl(profile.cover_image_url || "");
+      setProfessionalVerified(Boolean(profile.professional_verified));
       setLookingFor((profile as any).looking_for || []);
       setCountry((profile as any).country || "");
       setCity((profile as any).city || "");
@@ -431,6 +437,22 @@ const EditProfile = () => {
                   </div>
                 ))}
               </div>
+
+              {userId && (
+                <div className="flex flex-wrap items-center gap-3 rounded-lg border border-dashed p-3">
+                  <p className="text-sm text-muted-foreground">
+                    Can't find your exact role? Ask us to add it.
+                  </p>
+                  <CustomRoleRequestDialog userId={userId} />
+                </div>
+              )}
+
+              {userId && selectedRoles.some(isBeautyRole) && (
+                <div className="space-y-6">
+                  <BeautyProfileFields userId={userId} />
+                  <BeautyCredentialUpload userId={userId} professionalVerified={professionalVerified} />
+                </div>
+              )}
 
               {/* Genres */}
               <div className="space-y-2">

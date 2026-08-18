@@ -22,6 +22,7 @@ const mediaTypes = [
   { value: "audio", label: "Audio", icon: Music, accept: "audio/*" },
   { value: "video", label: "Video", icon: Video, accept: "video/*" },
   { value: "image", label: "Image", icon: Image, accept: "image/*" },
+  { value: "before_after", label: "Before & After", icon: Images, accept: "image/*" },
   { value: "document", label: "Document", icon: FileText, accept: ".pdf,.doc,.docx" },
 ];
 
@@ -32,6 +33,24 @@ export const PortfolioUpload = ({ userId, onUploadComplete }: PortfolioUploadPro
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [beforeFile, setBeforeFile] = useState<File | null>(null);
+  const [afterFile, setAfterFile] = useState<File | null>(null);
+  const [capturedOn, setCapturedOn] = useState("");
+
+  const isTransformation = mediaType === "before_after";
+
+  const uploadToStorage = async (fileToUpload: File) => {
+    const fileExt = extensionFor(fileToUpload, "bin");
+    const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${fileExt}`;
+    const { error } = await supabase.storage
+      .from(UPLOAD_BUCKETS.portfolios)
+      .upload(fileName, fileToUpload);
+    if (error) throw error;
+    const { data: { publicUrl } } = supabase.storage
+      .from(UPLOAD_BUCKETS.portfolios)
+      .getPublicUrl(fileName);
+    return publicUrl;
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -60,8 +79,53 @@ export const PortfolioUpload = ({ userId, onUploadComplete }: PortfolioUploadPro
   };
 
   const handleUpload = async () => {
-    if (!title || !mediaType || !file) {
+    if (!title || !mediaType || (isTransformation ? !beforeFile || !afterFile : !file)) {
       toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (isTransformation) {
+      const cap = UPLOAD_LIMITS.portfolioImage;
+      for (const pick of [beforeFile!, afterFile!]) {
+        if (pick.size > cap) {
+          toast.error(`${pick.name} is larger than ${formatBytes(cap)}`);
+          return;
+        }
+      }
+
+      setUploading(true);
+      try {
+        const [beforeUrl, afterUrl] = await Promise.all([
+          uploadToStorage(beforeFile!),
+          uploadToStorage(afterFile!),
+        ]);
+
+        const { error: dbError } = await supabase.from("portfolio_items").insert({
+          user_id: userId,
+          title,
+          description,
+          media_type: "image",
+          media_url: afterUrl,
+          before_media_url: beforeUrl,
+          after_media_url: afterUrl,
+          is_transformation: true,
+          captured_on: capturedOn || null,
+        });
+        if (dbError) throw dbError;
+
+        toast.success("Transformation added to your portfolio!");
+        setTitle("");
+        setDescription("");
+        setMediaType("");
+        setBeforeFile(null);
+        setAfterFile(null);
+        setCapturedOn("");
+        onUploadComplete?.();
+      } catch (error: any) {
+        toast.error(error.message || "Failed to upload");
+      } finally {
+        setUploading(false);
+      }
       return;
     }
 
@@ -72,20 +136,22 @@ export const PortfolioUpload = ({ userId, onUploadComplete }: PortfolioUploadPro
       document: UPLOAD_RULES.document.maxBytes,
     };
     const cap = caps[mediaType] ?? UPLOAD_RULES.document.maxBytes;
-    if (file.size > cap) {
-      toast.error(`${file.name} is larger than ${formatBytes(cap)}`);
+    const picked = file;
+    if (!picked) return;
+    if (picked.size > cap) {
+      toast.error(`${picked.name} is larger than ${formatBytes(cap)}`);
       return;
     }
 
     setUploading(true);
 
     try {
-      const fileExt = extensionFor(file, "bin");
+      const fileExt = extensionFor(picked, "bin");
       const fileName = `${userId}/${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from(UPLOAD_BUCKETS.portfolios)
-        .upload(fileName, file);
+        .upload(fileName, picked);
 
       if (uploadError) throw uploadError;
 
@@ -146,7 +212,7 @@ export const PortfolioUpload = ({ userId, onUploadComplete }: PortfolioUploadPro
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe your work..."
+            placeholder={isTransformation ? "Caption this transformation — technique, products, client goals…" : "Describe your work..."}
           />
         </div>
 
@@ -169,7 +235,66 @@ export const PortfolioUpload = ({ userId, onUploadComplete }: PortfolioUploadPro
           </Select>
         </div>
 
-        {mediaType && (
+        {isTransformation && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              {([
+                { key: "before", label: "Before", value: beforeFile, setter: setBeforeFile },
+                { key: "after", label: "After", value: afterFile, setter: setAfterFile },
+              ] as const).map(({ key, label, value, setter }) => (
+                <div key={key} className="space-y-2">
+                  <Label htmlFor={`ba-${key}`}>{label} *</Label>
+                  {value ? (
+                    <div className="relative rounded-lg border p-2">
+                      <img
+                        src={URL.createObjectURL(value)}
+                        alt={`${label} preview`}
+                        className="mx-auto max-h-40 rounded-sm"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-1 top-1"
+                        aria-label={`Remove ${label} image`}
+                        onClick={() => setter(null)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <input
+                        id={`ba-${key}`}
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) => setter(e.target.files?.[0] ?? null)}
+                      />
+                      <label
+                        htmlFor={`ba-${key}`}
+                        className="flex h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed text-sm text-muted-foreground"
+                      >
+                        <Image className="w-6 h-6" />
+                        Add {label.toLowerCase()} photo
+                      </label>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="captured-on">Date of work</Label>
+              <Input
+                id="captured-on"
+                type="date"
+                value={capturedOn}
+                onChange={(e) => setCapturedOn(e.target.value)}
+              />
+            </div>
+          </div>
+        )}
+
+        {mediaType && !isTransformation && (
           <div className="space-y-2">
             <Label>File *</Label>
             {file ? (
@@ -229,7 +354,7 @@ export const PortfolioUpload = ({ userId, onUploadComplete }: PortfolioUploadPro
 
         <Button 
           onClick={handleUpload} 
-          disabled={uploading || !title || !mediaType || !file}
+          disabled={uploading || !title || !mediaType || (isTransformation ? !beforeFile || !afterFile : !file)}
           className="w-full"
         >
           {uploading ? (

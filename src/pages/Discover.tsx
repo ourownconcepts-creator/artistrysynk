@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BEAUTY_SPECIALTIES, BEAUTY_SERVICE_MODES, specialtyLabel } from "@/lib/beauty";
 import { Constants } from "@/integrations/supabase/types";
 import { getRoleLabel } from "@/lib/creativeRoles";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -61,6 +62,8 @@ const Discover = () => {
   const [genreFilter, setGenreFilter] = useState<string>("all");
   const [skillFilter, setSkillFilter] = useState<string>("");
   const [locationFilter, setLocationFilter] = useState<string>("");
+  const [specialtyFilter, setSpecialtyFilter] = useState<string>("all");
+  const [serviceModeFilter, setServiceModeFilter] = useState<string>("all");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [lastSwipe, setLastSwipe] = useState<{ id: string; swipedId: string } | null>(null);
   const [mode, setMode] = useState<"deck" | "grid">("deck");
@@ -79,7 +82,22 @@ const Discover = () => {
     (genreFilter !== "all" ? 1 : 0) +
     (skillFilter.trim() ? 1 : 0) +
     (locationFilter.trim() ? 1 : 0) +
+    (specialtyFilter !== "all" ? 1 : 0) +
+    (serviceModeFilter !== "all" ? 1 : 0) +
     (verifiedOnly ? 1 : 0);
+
+  /**
+   * Beauty & Grooming filters live on beauty_profiles, so resolve the matching
+   * creator ids first and intersect them with the discovery results.
+   */
+  const fetchBeautyIds = useCallback(async (): Promise<Set<string> | null> => {
+    if (specialtyFilter === "all" && serviceModeFilter === "all") return null;
+    let request = supabase.from("beauty_profiles").select("user_id");
+    if (specialtyFilter !== "all") request = request.contains("specialties", [specialtyFilter]);
+    if (serviceModeFilter !== "all") request = request.contains("service_modes", [serviceModeFilter]);
+    const { data } = await request;
+    return new Set(((data as { user_id: string }[] | null) ?? []).map((row) => row.user_id));
+  }, [specialtyFilter, serviceModeFilter]);
 
   /** Instant search — runs on every keystroke (debounced) and on filter changes. */
   const runSearch = useCallback(
@@ -104,8 +122,10 @@ const Discover = () => {
       const fetched = raw.length;
       const { all: hiddenIds } = await fetchHiddenUserIds(userId);
       const hidden = new Set(hiddenIds);
+      const beautyIds = await fetchBeautyIds();
       const rows = raw
         .filter((p) => !hidden.has(p.id))
+        .filter((p) => !beautyIds || beautyIds.has(p.id))
         .map((p) => ({
           ...p,
           user_creative_roles: (p.roles ?? []).map((role: string) => ({ role })),
@@ -122,7 +142,7 @@ const Discover = () => {
       setSearching(false);
       setLoadingMore(false);
     },
-    [query, roleFilter, genreFilter, skillFilter, locationFilter, verifiedOnly],
+    [query, roleFilter, genreFilter, skillFilter, locationFilter, verifiedOnly, fetchBeautyIds],
   );
 
   const loadMoreResults = useCallback(() => {
@@ -179,8 +199,10 @@ const Discover = () => {
 
       const { all: hiddenIds } = await fetchHiddenUserIds(userId);
       const hidden = new Set(hiddenIds);
+      const beautyIds = await fetchBeautyIds();
       let filteredData: any[] = ((data as any[]) ?? [])
         .filter((p) => !hidden.has(p.id))
+        .filter((p) => !beautyIds || beautyIds.has(p.id))
         .map((p) => ({
           ...p,
           user_creative_roles: (p.roles ?? []).map((role: string) => ({ role })),
@@ -225,7 +247,7 @@ const Discover = () => {
       setLoading(false);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [roleFilter, genreFilter, skillFilter, locationFilter, aiMatchingEnabled, hasAdvancedMatching, currentUserProfile],
+    [roleFilter, genreFilter, skillFilter, locationFilter, fetchBeautyIds, aiMatchingEnabled, hasAdvancedMatching, currentUserProfile],
   );
 
   useEffect(() => {
@@ -278,6 +300,8 @@ const Discover = () => {
     setGenreFilter("all");
     setSkillFilter("");
     setLocationFilter("");
+    setSpecialtyFilter("all");
+    setServiceModeFilter("all");
     setVerifiedOnly(false);
   };
 
@@ -483,6 +507,9 @@ const Discover = () => {
         <Chip active={roleFilter !== "all"} onClick={() => setFiltersOpen(true)}>
           {roleFilter !== "all" ? getRoleLabel(roleFilter as any) : "Role"}
         </Chip>
+        <Chip active={specialtyFilter !== "all"} onClick={() => setFiltersOpen(true)}>
+          {specialtyFilter !== "all" ? specialtyLabel(specialtyFilter) : "Beauty"}
+        </Chip>
         <Chip active={genreFilter !== "all"} onClick={() => setFiltersOpen(true)}>
           {genreFilter !== "all" ? genreFilter : "Genre"}
         </Chip>
@@ -585,6 +612,40 @@ const Discover = () => {
                 {Constants.public.Enums.genre.map((genre) => (
                   <SelectItem key={genre} value={genre}>
                     {genre}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Beauty &amp; Grooming specialty</Label>
+            <Select value={specialtyFilter} onValueChange={setSpecialtyFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="All specialties" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All specialties</SelectItem>
+                {BEAUTY_SPECIALTIES.map((specialty) => (
+                  <SelectItem key={specialty.value} value={specialty.value}>
+                    {specialty.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Service style</Label>
+            <Select value={serviceModeFilter} onValueChange={setServiceModeFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Any service style" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Any service style</SelectItem>
+                {BEAUTY_SERVICE_MODES.map((serviceMode) => (
+                  <SelectItem key={serviceMode.value} value={serviceMode.value}>
+                    {serviceMode.label}
                   </SelectItem>
                 ))}
               </SelectContent>
