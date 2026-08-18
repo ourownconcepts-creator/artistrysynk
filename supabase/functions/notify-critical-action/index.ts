@@ -95,7 +95,7 @@ serve(async (req) => {
       
       if (user?.email) {
         await resend.emails.send({
-          from: 'ArtistrySynk <notifications@artistrysynk.app>',
+          from: 'Admin Notifications <notifications@artistrysynk.app>',
           to: [user.email],
           subject: `Critical Admin Action: ${actionType}`,
           html: `
