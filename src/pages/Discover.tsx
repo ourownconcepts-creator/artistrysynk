@@ -300,6 +300,8 @@ const Discover = () => {
     setGenreFilter("all");
     setSkillFilter("");
     setLocationFilter("");
+    setSpecialtyFilter("all");
+    setServiceModeFilter("all");
     setVerifiedOnly(false);
   };
 
@@ -504,6 +506,9 @@ const Discover = () => {
         </Chip>
         <Chip active={roleFilter !== "all"} onClick={() => setFiltersOpen(true)}>
           {roleFilter !== "all" ? getRoleLabel(roleFilter as any) : "Role"}
+        </Chip>
+        <Chip active={specialtyFilter !== "all"} onClick={() => setFiltersOpen(true)}>
+          {specialtyFilter !== "all" ? specialtyLabel(specialtyFilter) : "Beauty"}
         </Chip>
         <Chip active={genreFilter !== "all"} onClick={() => setFiltersOpen(true)}>
           {genreFilter !== "all" ? genreFilter : "Genre"}
