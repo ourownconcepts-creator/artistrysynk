@@ -7,7 +7,7 @@ export interface SendWelcomeEmailInput {
 }
 
 export async function sendWelcomeEmail({ email, fullName, username }: SendWelcomeEmailInput) {
-  if (!process.env["RESEND_API_KEY"]) {
+  if (!process.env["QUEENSMTP_API_KEY"]) {
     throw new Error("Email service not configured");
   }
 
