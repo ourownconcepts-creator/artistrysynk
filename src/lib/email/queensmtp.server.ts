@@ -53,7 +53,7 @@ export async function sendEmail(input: SendEmailInput): Promise<{ id?: string }>
   const rawFrom = input.from ?? DEFAULT_FROM;
   const match = rawFrom.match(/^\s*(.*?)\s*<([^>]+)>\s*$/);
   const fromEmail = (match ? match[2] : rawFrom).trim();
-  const fromName = match ? match[1].replace(/^"|"$/g, "").trim() : "";
+  const fromName = (match ? match[1].replace(/^"|"$/g, "").trim() : "") || "ArtistrySynk";
 
   const payload: Record<string, unknown> = {
     from: fromEmail,
