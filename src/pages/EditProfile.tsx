@@ -65,6 +65,7 @@ const EditProfile = () => {
   const [lookingFor, setLookingFor] = useState<string[]>([]);
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
+  const [professionalVerified, setProfessionalVerified] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -93,6 +94,7 @@ const EditProfile = () => {
       setLocation(profile.location || "");
       setAvatarUrl(profile.avatar_url || "");
       setCoverImageUrl(profile.cover_image_url || "");
+      setProfessionalVerified(Boolean(profile.professional_verified));
       setLookingFor((profile as any).looking_for || []);
       setCountry((profile as any).country || "");
       setCity((profile as any).city || "");
