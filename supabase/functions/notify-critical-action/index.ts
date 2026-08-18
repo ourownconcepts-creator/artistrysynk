@@ -9,6 +9,9 @@ class QueenSMTP {
       if (!this.key) throw new Error("Email service not configured");
       const to = (Array.isArray(a.to) ? a.to : [a.to]).map((t) => t.trim()).filter(Boolean);
       const text = a.text ?? (a.html ?? "").replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, " ").replace(/\s{2,}/g, " ").trim();
+      const m = a.from.match(/^\s*(.*?)\s*<([^>]+)>\s*$/);
+      const fromEmail = (m ? m[2] : a.from).trim();
+      const fromName = m ? m[1].replace(/^"|"$/g, "").trim() : "";
       let last = "";
       for (let i = 0; i < 3; i++) {
         if (i) await new Promise((r) => setTimeout(r, 400 * 2 ** (i - 1)));
@@ -16,7 +19,7 @@ class QueenSMTP {
           const res = await fetch("https://queensmtp.com/v1/send", {
             method: "POST",
             headers: { Authorization: `Bearer ${this.key}`, "Content-Type": "application/json", Accept: "application/json" },
-            body: JSON.stringify({ from: a.from, to, subject: a.subject, html: a.html, text, ...(a.reply_to ? { reply_to: a.reply_to } : {}) }),
+            body: JSON.stringify({ from: fromEmail, fromName, from_name: fromName, to, subject: a.subject, html: a.html, text, ...(a.reply_to ? { reply_to: a.reply_to } : {}) }),
           });
           const b = (await res.json().catch(() => null)) as { id?: string; success?: boolean; error?: string } | null;
           if (res.ok && b?.success !== false) return { id: b?.id };
