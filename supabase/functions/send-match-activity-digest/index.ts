@@ -153,7 +153,7 @@ serve(async (req) => {
 
       try {
         await resend.emails.send({
-          from: "ArtistrySynk <hello@artistrysynk.app>",
+          from: "ArtistrySynk <notifications@artistrysynk.app>",
           to: [email],
           subject: `Your matches have been active ✨`,
           html: `
