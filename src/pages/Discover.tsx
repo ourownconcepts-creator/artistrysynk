@@ -614,6 +614,9 @@ const Discover = () => {
 
           <div className="space-y-2">
             <Label htmlFor="skill-filter">Skill</Label>
+          </div>
+          <div className="hidden" />
+          <div className="space-y-2">
             <Input
               id="skill-filter"
               placeholder="e.g. mixing, guitar, photoshop"
