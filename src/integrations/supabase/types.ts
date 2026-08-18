@@ -218,6 +218,65 @@ export type Database = {
         }
         Relationships: []
       }
+      beauty_profiles: {
+        Row: {
+          booking_url: string | null
+          created_at: string
+          currency: string
+          is_accepting_clients: boolean
+          price_max: number | null
+          price_min: number | null
+          service_areas: string[]
+          service_modes: string[]
+          services: Json
+          specialties: string[]
+          travel_radius_km: number | null
+          updated_at: string
+          user_id: string
+          years_experience: number | null
+        }
+        Insert: {
+          booking_url?: string | null
+          created_at?: string
+          currency?: string
+          is_accepting_clients?: boolean
+          price_max?: number | null
+          price_min?: number | null
+          service_areas?: string[]
+          service_modes?: string[]
+          services?: Json
+          specialties?: string[]
+          travel_radius_km?: number | null
+          updated_at?: string
+          user_id: string
+          years_experience?: number | null
+        }
+        Update: {
+          booking_url?: string | null
+          created_at?: string
+          currency?: string
+          is_accepting_clients?: boolean
+          price_max?: number | null
+          price_min?: number | null
+          service_areas?: string[]
+          service_modes?: string[]
+          services?: Json
+          specialties?: string[]
+          travel_radius_km?: number | null
+          updated_at?: string
+          user_id?: string
+          years_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beauty_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blocked_users: {
         Row: {
           blocked_id: string
@@ -985,6 +1044,56 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_role_requests: {
+        Row: {
+          admin_note: string | null
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          requested_role: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_note?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          requested_role: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_note?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          requested_role?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_role_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1934,10 +2043,14 @@ export type Database = {
       }
       portfolio_items: {
         Row: {
+          after_media_url: string | null
+          before_media_url: string | null
+          captured_on: string | null
           created_at: string | null
           description: string | null
           id: string
           is_hidden: boolean | null
+          is_transformation: boolean
           media_type: string
           media_url: string
           studio_id: string | null
@@ -1947,10 +2060,14 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          after_media_url?: string | null
+          before_media_url?: string | null
+          captured_on?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           is_hidden?: boolean | null
+          is_transformation?: boolean
           media_type: string
           media_url: string
           studio_id?: string | null
@@ -1960,10 +2077,14 @@ export type Database = {
           user_id: string
         }
         Update: {
+          after_media_url?: string | null
+          before_media_url?: string | null
+          captured_on?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           is_hidden?: boolean | null
+          is_transformation?: boolean
           media_type?: string
           media_url?: string
           studio_id?: string | null
@@ -2063,6 +2184,8 @@ export type Database = {
           longitude: number | null
           looking_for: string[] | null
           nickname: string | null
+          professional_verified: boolean
+          professional_verified_at: string | null
           social_links: Json | null
           synergy_boost_score: number | null
           updated_at: string | null
@@ -2091,6 +2214,8 @@ export type Database = {
           longitude?: number | null
           looking_for?: string[] | null
           nickname?: string | null
+          professional_verified?: boolean
+          professional_verified_at?: string | null
           social_links?: Json | null
           synergy_boost_score?: number | null
           updated_at?: string | null
@@ -2119,6 +2244,8 @@ export type Database = {
           longitude?: number | null
           looking_for?: string[] | null
           nickname?: string | null
+          professional_verified?: boolean
+          professional_verified_at?: string | null
           social_links?: Json | null
           synergy_boost_score?: number | null
           updated_at?: string | null
@@ -5397,6 +5524,23 @@ export type Database = {
         | "devops_engineer"
         | "game_developer"
         | "content_creator"
+        | "nail_technician"
+        | "nail_artist"
+        | "lash_technician"
+        | "brow_artist"
+        | "hair_stylist"
+        | "barber"
+        | "wig_maker"
+        | "braider"
+        | "sfx_makeup_artist"
+        | "body_painter"
+        | "esthetician"
+        | "skincare_specialist"
+        | "tattoo_artist"
+        | "piercing_artist"
+        | "beauty_content_creator"
+        | "pedicurist"
+        | "wardrobe_stylist"
       genre:
         | "afrobeats"
         | "hip_hop"
@@ -5626,6 +5770,23 @@ export const Constants = {
         "devops_engineer",
         "game_developer",
         "content_creator",
+        "nail_technician",
+        "nail_artist",
+        "lash_technician",
+        "brow_artist",
+        "hair_stylist",
+        "barber",
+        "wig_maker",
+        "braider",
+        "sfx_makeup_artist",
+        "body_painter",
+        "esthetician",
+        "skincare_specialist",
+        "tattoo_artist",
+        "piercing_artist",
+        "beauty_content_creator",
+        "pedicurist",
+        "wardrobe_stylist",
       ],
       genre: [
         "afrobeats",
