@@ -1,4 +1,4 @@
-import { Music, Mic, Users, Camera, Film, Palette, Headphones, Pen, Scissors, Monitor, Code, Smartphone, Brain, Blocks, Layout, Layers, Box, Briefcase, Rocket, TrendingUp, Search, Megaphone, Database, Server, Gamepad2, Video } from "lucide-react";
+import { Music, Mic, Users, Camera, Film, Palette, Headphones, Pen, Scissors, Monitor, Code, Smartphone, Brain, Blocks, Layout, Layers, Box, Briefcase, Rocket, TrendingUp, Search, Megaphone, Database, Server, Gamepad2, Video, Sparkles, Hand, Eye, Brush, Flower2, Droplet, Footprints, Shirt } from "lucide-react";
 
 export interface RoleCategory {
   label: string;
@@ -91,6 +91,28 @@ export const roleCategories: RoleCategory[] = [
       { value: "makeup_artist", label: "Makeup Artist", icon: Palette },
       { value: "vixen", label: "Vixen", icon: Camera },
       { value: "dancer", label: "Dancer", icon: Users },
+    ],
+  },
+  {
+    label: "Beauty & Grooming",
+    roles: [
+      { value: "nail_technician", label: "Nail Technician", icon: Hand },
+      { value: "nail_artist", label: "Nail Artist", icon: Sparkles },
+      { value: "lash_technician", label: "Lash Technician", icon: Eye },
+      { value: "brow_artist", label: "Brow Artist", icon: Eye },
+      { value: "hair_stylist", label: "Hair Stylist", icon: Scissors },
+      { value: "barber", label: "Barber", icon: Scissors },
+      { value: "wig_maker", label: "Wig Maker", icon: Sparkles },
+      { value: "braider", label: "Braider", icon: Sparkles },
+      { value: "sfx_makeup_artist", label: "SFX Makeup Artist", icon: Brush },
+      { value: "body_painter", label: "Body Painter", icon: Brush },
+      { value: "esthetician", label: "Esthetician", icon: Flower2 },
+      { value: "skincare_specialist", label: "Skincare Specialist", icon: Droplet },
+      { value: "tattoo_artist", label: "Tattoo Artist", icon: Pen },
+      { value: "piercing_artist", label: "Piercing Artist", icon: Sparkles },
+      { value: "beauty_content_creator", label: "Beauty Content Creator", icon: Video },
+      { value: "pedicurist", label: "Pedicurist", icon: Footprints },
+      { value: "wardrobe_stylist", label: "Wardrobe Stylist", icon: Shirt },
     ],
   },
   {
