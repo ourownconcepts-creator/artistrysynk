@@ -49,8 +49,16 @@ export async function sendEmail(input: SendEmailInput): Promise<{ id?: string }>
     .filter(Boolean);
   if (recipients.length === 0) throw new Error("No email recipient provided");
 
+  // QueenSMTP requires a bare address in `from`; the display name goes in its own field.
+  const rawFrom = input.from ?? DEFAULT_FROM;
+  const match = rawFrom.match(/^\s*(.*?)\s*<([^>]+)>\s*$/);
+  const fromEmail = (match ? match[2] : rawFrom).trim();
+  const fromName = match ? match[1].replace(/^"|"$/g, "").trim() : "";
+
   const payload: Record<string, unknown> = {
-    from: input.from ?? DEFAULT_FROM,
+    from: fromEmail,
+    fromName,
+    from_name: fromName,
     to: recipients,
     subject: input.subject,
     html: input.html,
