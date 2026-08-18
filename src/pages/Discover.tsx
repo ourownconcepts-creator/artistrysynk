@@ -61,6 +61,8 @@ const Discover = () => {
   const [genreFilter, setGenreFilter] = useState<string>("all");
   const [skillFilter, setSkillFilter] = useState<string>("");
   const [locationFilter, setLocationFilter] = useState<string>("");
+  const [specialtyFilter, setSpecialtyFilter] = useState<string>("all");
+  const [serviceModeFilter, setServiceModeFilter] = useState<string>("all");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [lastSwipe, setLastSwipe] = useState<{ id: string; swipedId: string } | null>(null);
   const [mode, setMode] = useState<"deck" | "grid">("deck");
@@ -79,7 +81,22 @@ const Discover = () => {
     (genreFilter !== "all" ? 1 : 0) +
     (skillFilter.trim() ? 1 : 0) +
     (locationFilter.trim() ? 1 : 0) +
+    (specialtyFilter !== "all" ? 1 : 0) +
+    (serviceModeFilter !== "all" ? 1 : 0) +
     (verifiedOnly ? 1 : 0);
+
+  /**
+   * Beauty & Grooming filters live on beauty_profiles, so resolve the matching
+   * creator ids first and intersect them with the discovery results.
+   */
+  const fetchBeautyIds = useCallback(async (): Promise<Set<string> | null> => {
+    if (specialtyFilter === "all" && serviceModeFilter === "all") return null;
+    let request = supabase.from("beauty_profiles").select("user_id");
+    if (specialtyFilter !== "all") request = request.contains("specialties", [specialtyFilter]);
+    if (serviceModeFilter !== "all") request = request.contains("service_modes", [serviceModeFilter]);
+    const { data } = await request;
+    return new Set(((data as { user_id: string }[] | null) ?? []).map((row) => row.user_id));
+  }, [specialtyFilter, serviceModeFilter]);
 
   /** Instant search — runs on every keystroke (debounced) and on filter changes. */
   const runSearch = useCallback(
@@ -104,8 +121,10 @@ const Discover = () => {
       const fetched = raw.length;
       const { all: hiddenIds } = await fetchHiddenUserIds(userId);
       const hidden = new Set(hiddenIds);
+      const beautyIds = await fetchBeautyIds();
       const rows = raw
         .filter((p) => !hidden.has(p.id))
+        .filter((p) => !beautyIds || beautyIds.has(p.id))
         .map((p) => ({
           ...p,
           user_creative_roles: (p.roles ?? []).map((role: string) => ({ role })),
@@ -122,7 +141,7 @@ const Discover = () => {
       setSearching(false);
       setLoadingMore(false);
     },
-    [query, roleFilter, genreFilter, skillFilter, locationFilter, verifiedOnly],
+    [query, roleFilter, genreFilter, skillFilter, locationFilter, verifiedOnly, fetchBeautyIds],
   );
 
   const loadMoreResults = useCallback(() => {
