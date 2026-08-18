@@ -112,7 +112,7 @@ serve(async (req) => {
 
     const resend = new QueenSMTP(EMAIL_API_KEY);
     await resend.emails.send({
-      from: "ArtistrySynk <hello@artistrysynk.app>",
+      from: "ArtistrySynk <notifications@artistrysynk.app>",
       to: [recipient.email],
       subject: `New message from ${senderName}`,
       html: `<!DOCTYPE html><html><body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;margin:0;padding:0;background:#f4f4f5;">
