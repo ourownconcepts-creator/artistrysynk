@@ -1,4 +1,4 @@
-import { Music, Mic, Users, Camera, Film, Palette, Headphones, Pen, Scissors, Monitor, Code, Smartphone, Brain, Blocks, Layout, Layers, Box, Briefcase, Rocket, TrendingUp, Search, Megaphone, Database, Server, Gamepad2, Video, Sparkles, Hand, Eye, Brush, Flower2, Droplet, Footprints, Shirt } from "lucide-react";
+import { Music, Mic, Users, Camera, Film, Palette, Headphones, Pen, Scissors, Monitor, Code, Smartphone, Brain, Blocks, Layout, Layers, Box, Briefcase, Rocket, TrendingUp, Search, Megaphone, Database, Server, Gamepad2, Video, Sparkles, Hand, Eye, Brush, Flower2, Droplet, Footprints, Shirt, Dumbbell, Trophy, Bike, Waves, Timer, Activity, Flame, Target, Flag, Award, PersonStanding, HeartPulse, Wind, BarChart3 } from "lucide-react";
 
 export interface RoleCategory {
   label: string;
@@ -121,6 +121,38 @@ export const roleCategories: RoleCategory[] = [
       { value: "writer", label: "Writer", icon: Pen },
       { value: "creative_director", label: "Creative Director", icon: Users },
       { value: "choreographer", label: "Choreographer", icon: Users },
+    ],
+  },
+  {
+    label: "Sports & Performance",
+    roles: [
+      { value: "athlete", label: "Athlete", icon: Trophy },
+      { value: "footballer", label: "Footballer", icon: Target },
+      { value: "basketball_player", label: "Basketball Player", icon: Activity },
+      { value: "boxer", label: "Boxer", icon: Flame },
+      { value: "martial_artist", label: "Martial Artist", icon: Flame },
+      { value: "wrestler", label: "Wrestler", icon: Dumbbell },
+      { value: "gymnast", label: "Gymnast", icon: PersonStanding },
+      { value: "acrobat", label: "Acrobat", icon: PersonStanding },
+      { value: "swimmer", label: "Swimmer", icon: Waves },
+      { value: "track_athlete", label: "Track & Field Athlete", icon: Timer },
+      { value: "cyclist", label: "Cyclist", icon: Bike },
+      { value: "skateboarder", label: "Skateboarder", icon: Wind },
+      { value: "esports_player", label: "Esports Player", icon: Gamepad2 },
+      { value: "stunt_performer", label: "Stunt Performer", icon: Flame },
+      { value: "cheerleader", label: "Cheerleader", icon: Sparkles },
+      { value: "personal_trainer", label: "Personal Trainer", icon: Dumbbell },
+      { value: "fitness_coach", label: "Fitness Coach", icon: Dumbbell },
+      { value: "sports_coach", label: "Sports Coach", icon: Award },
+      { value: "athletic_trainer", label: "Athletic Trainer", icon: Activity },
+      { value: "yoga_instructor", label: "Yoga Instructor", icon: Flower2 },
+      { value: "pilates_instructor", label: "Pilates Instructor", icon: PersonStanding },
+      { value: "physiotherapist", label: "Physiotherapist", icon: HeartPulse },
+      { value: "sports_nutritionist", label: "Sports Nutritionist", icon: HeartPulse },
+      { value: "sports_agent", label: "Sports Agent", icon: Briefcase },
+      { value: "sports_analyst", label: "Sports Analyst", icon: BarChart3 },
+      { value: "sports_commentator", label: "Sports Commentator", icon: Mic },
+      { value: "referee", label: "Referee", icon: Flag },
     ],
   },
 ];
