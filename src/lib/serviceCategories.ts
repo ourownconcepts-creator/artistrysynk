@@ -41,6 +41,10 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     subcategories: ["Playlist Pitching", "Press & PR", "Radio Plugging", "Influencer Campaigns", "Blog Placement"],
   },
   {
+    label: "Sports & Performance",
+    subcategories: ["Personal Training", "Sports Coaching", "Fitness Programmes", "Choreography & Movement", "Performance Filming", "Athlete Branding", "Event Performance", "Recovery & Physiotherapy", "Scouting & Representation"],
+  },
+  {
     label: "Other",
     subcategories: ["Consultation", "Voiceover", "Podcast Production", "Web & App Development", "Custom Request"],
   },
