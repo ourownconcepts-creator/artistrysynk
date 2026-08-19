@@ -1,9 +1,9 @@
 # artistrysynk
 
-Prompt for Lovable AI: “Artistry.ng”
+Prompt for Lovable AI: “artistrysynk.app”
 Project Name:
 
-🖌️ Artistry.ng
+🖌️ artistrysynk.app
 
 
 
@@ -15,13 +15,13 @@ Tagline:
 Mission
 
 
-Build Artistry.ng, a sleek, creative collaboration web app that connects musicians, producers, songwriters, performers, dancers, actors, directors, and other entertainment professionals in one vibrant ecosystem — to match, collaborate, and create projects together.
+Build artistrysynk.app, a sleek, creative collaboration web app that connects musicians, producers, songwriters, performers, dancers, actors, directors, and other entertainment professionals in one vibrant ecosystem — to match, collaborate, and create projects together.
 
 🌍 
 Concept Overview
 
 
-Artistry.ng is a match + collaboration platform built for the entertainment and creative industry — a space where users can:
+artistrysynk.app is a match + collaboration platform built for the entertainment and creative industry — a space where users can:
 
 Discover other creatives by role, skills, location, or project needs.
 
@@ -158,7 +158,7 @@ Style: A mix of Tinder’s simplicity + Behance’s showcase style
 
 Tone: Premium, inclusive, artistic, and inspiring
 
-Logo Idea: Wordmark “Artistry.ng” in smooth, futuristic typography with a dot accent highlighting the “.ng”
+Logo Idea: Wordmark “artistrysynk.app” in smooth, futuristic typography with a dot accent highlighting the “.app”
 
 💡 
 User Experience (UX) Flow
@@ -236,10 +236,10 @@ Design system: TailwindCSS
 Summary
 
 
-Build Artistry.ng — an all-in-one creative network for music, film, and performance.
+Build artistrysynk.app — an all-in-one creative network for music, film, and performance.
 A place where artists, producers, dancers, songwriters, actors, and directors connect through talent, build together, and bring ideas to life.
 
-It’s not just a social app — it’s the home of African creativity.
+It’s not just a social app — it’s the global home of creativity.
 
 This project was built with [Lovable](https://lovable.dev).
 
