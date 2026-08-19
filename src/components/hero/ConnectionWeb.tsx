@@ -204,7 +204,7 @@ export const ConnectionWeb = ({ query = '', isPro = true, highlightedCount = 1, 
           return (
             <motion.path
               key={i}
-              d={`M ${fromNode.x} ${fromNode.y} Q ${(fromNode.x + toNode.x) / 2 + (Math.random() - 0.5) * 20} ${(fromNode.y + toNode.y) / 2 + (Math.random() - 0.5) * 20} ${toNode.x} ${toNode.y}`}
+              d={`M ${fromNode.x} ${fromNode.y} Q ${(fromNode.x + toNode.x) / 2 + curveOffset(i)} ${(fromNode.y + toNode.y) / 2 + curveOffset(i + 7)} ${toNode.x} ${toNode.y}`}
               stroke="url(#connectionGradient)"
               strokeWidth={isActive ? 3 : 1.5}
               fill="none"
