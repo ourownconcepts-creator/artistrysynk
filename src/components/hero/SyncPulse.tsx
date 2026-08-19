@@ -160,10 +160,10 @@ export const SyncPulse = () => {
             <motion.div
               className="w-full bg-gradient-to-t from-secondary/70 to-primary/50 rounded-full"
               animate={{
-                height: [6, 16 + Math.random() * 12, 6],
+                height: [6, 16 + ((i * 7) % 12), 6],
               }}
               transition={{
-                duration: 0.3 + Math.random() * 0.3,
+                duration: 0.3 + ((i % 5) * 0.06),
                 repeat: Infinity,
                 delay: i * 0.04,
                 ease: "easeInOut"
