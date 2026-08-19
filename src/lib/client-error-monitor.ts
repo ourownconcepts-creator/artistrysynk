@@ -3,7 +3,7 @@
  * server monitor (deduped client-side to avoid flooding on repeated errors).
  */
 import { reportClientError } from "@/lib/error-monitoring.functions";
-import { isBenignTransportError } from "@/lib/benignErrors";
+import { isBenignTransportError, isRecoveredReactError } from "@/lib/benignErrors";
 import { reportClientDisconnect } from "@/lib/diagnostics.functions";
 import { getClientCorrelationId } from "@/lib/correlation";
 
@@ -88,6 +88,7 @@ export function captureClientError(error: unknown, mechanism = "manual") {
     reportDisconnect(describe(error).message || "client abort", "abort");
     return;
   }
+  if (isRecoveredReactError(error)) return;
   if (isAssetLoadFailure(error)) {
     reportDisconnect(describe(error).message || "asset load failure", "asset");
     if (recoverFromAssetLoadFailure()) return;

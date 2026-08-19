@@ -22,6 +22,23 @@ const BENIGN_PATTERNS: RegExp[] = [
   /ResizeObserver loop/i,
 ];
 
+/**
+ * React error #520 is a *recovery* notice: concurrent rendering hit a problem and
+ * React re-rendered the root synchronously. The UI is intact, so it must not be
+ * recorded as a runtime fault.
+ */
+const RECOVERED_REACT_PATTERNS: RegExp[] = [
+  /Minified React error #520\b/i,
+  /error during concurrent rendering but React was able to recover/i,
+];
+
+export function isRecoveredReactError(error: unknown): boolean {
+  const message =
+    error instanceof Error ? error.message : typeof error === "string" ? error : "";
+  if (!message) return false;
+  return RECOVERED_REACT_PATTERNS.some((pattern) => pattern.test(message));
+}
+
 const BENIGN_CODES = new Set([
   "ABORT_ERR",
   "ECONNABORTED",
