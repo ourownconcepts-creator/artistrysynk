@@ -5541,6 +5541,33 @@ export type Database = {
         | "beauty_content_creator"
         | "pedicurist"
         | "wardrobe_stylist"
+        | "athlete"
+        | "footballer"
+        | "basketball_player"
+        | "boxer"
+        | "martial_artist"
+        | "wrestler"
+        | "gymnast"
+        | "swimmer"
+        | "track_athlete"
+        | "cyclist"
+        | "skateboarder"
+        | "esports_player"
+        | "personal_trainer"
+        | "fitness_coach"
+        | "sports_coach"
+        | "athletic_trainer"
+        | "physiotherapist"
+        | "sports_nutritionist"
+        | "yoga_instructor"
+        | "pilates_instructor"
+        | "sports_agent"
+        | "sports_analyst"
+        | "sports_commentator"
+        | "referee"
+        | "cheerleader"
+        | "stunt_performer"
+        | "acrobat"
       genre:
         | "afrobeats"
         | "hip_hop"
@@ -5787,6 +5814,33 @@ export const Constants = {
         "beauty_content_creator",
         "pedicurist",
         "wardrobe_stylist",
+        "athlete",
+        "footballer",
+        "basketball_player",
+        "boxer",
+        "martial_artist",
+        "wrestler",
+        "gymnast",
+        "swimmer",
+        "track_athlete",
+        "cyclist",
+        "skateboarder",
+        "esports_player",
+        "personal_trainer",
+        "fitness_coach",
+        "sports_coach",
+        "athletic_trainer",
+        "physiotherapist",
+        "sports_nutritionist",
+        "yoga_instructor",
+        "pilates_instructor",
+        "sports_agent",
+        "sports_analyst",
+        "sports_commentator",
+        "referee",
+        "cheerleader",
+        "stunt_performer",
+        "acrobat",
       ],
       genre: [
         "afrobeats",
