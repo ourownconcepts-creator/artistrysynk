@@ -21,6 +21,12 @@ interface Connection {
 
 const creativeLabels = allRoles.map((r) => r.label);
 
+/**
+ * Deterministic curve jitter. Render-time Math.random() breaks concurrent
+ * rendering / hydration (React error #520), so derive it from the index.
+ */
+const curveOffset = (seed: number) => ((Math.sin(seed * 12.9898) * 43758.5453) % 1) * 20 - 10;
+
 const colors = [
   'hsl(var(--primary))',
   'hsl(var(--secondary))',
