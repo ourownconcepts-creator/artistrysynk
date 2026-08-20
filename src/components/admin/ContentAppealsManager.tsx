@@ -89,7 +89,9 @@ export const ContentAppealsManager = () => {
         .select('id, full_name')
         .in('id', userIds);
 
-      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      const { data: emailRows } = await supabase.rpc('get_profile_emails', { _user_ids: userIds });
+      const emailMap = new Map<string, string>((emailRows ?? []).map((r: any) => [r.id ?? r.user_id, r.email]));
+      const profileMap = new Map(profiles?.map(p => [p.id, { ...p, email: emailMap.get(p.id) ?? null }]) || []);
       
       const appealsWithUser = data?.map(appeal => ({
         ...appeal,

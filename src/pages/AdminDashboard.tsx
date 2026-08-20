@@ -103,11 +103,17 @@ const AdminDashboard = () => {
       .select('user_id, role')
       .in('user_id', ids);
 
+    // Emails are admin-only and never exposed through the profiles table.
+    const { data: emailRows } = await supabase.rpc('get_profile_emails', { _user_ids: ids });
+    const emailMap = new Map<string, string>(
+      (emailRows ?? []).map((r: any) => [r.id ?? r.user_id, r.email]),
+    );
+
     const formattedUsers: UserWithRole[] = (profiles ?? []).map((p) => ({
       id: p.id,
       full_name: p.full_name || 'Unknown',
       username: p.username || 'unknown',
-      email: (p as any).email ?? undefined,
+      email: emailMap.get(p.id) ?? undefined,
       role: roles?.find((r) => r.user_id === p.id)?.role ?? 'user',
       created_at: p.created_at,
     }));
