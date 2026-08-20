@@ -124,7 +124,7 @@ export const ContentFlagsManager = () => {
       const reporterIds = [...new Set(data?.map(f => f.reporter_id) || [])];
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, full_name, email')
+        .select('id, full_name')
         .in('id', reporterIds);
 
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);

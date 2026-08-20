@@ -88,7 +88,7 @@ const AdminDashboard = () => {
     // Source from profiles so every account is visible, even without a role row
     const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
-      .select('id, full_name, username, email, created_at')
+      .select('id, full_name, username, created_at')
       .order('created_at', { ascending: false });
 
     if (profilesError) {

@@ -38,6 +38,7 @@ import { ReferralCard } from "@/components/referral/ReferralCard";
 import { StudioQuickLinks } from "@/components/studio/StudioQuickLinks";
 import { getRoleLabel } from "@/lib/creativeRoles";
 import {
+import { PROFILE_COLUMNS } from "@/lib/profileColumns";
   SegmentedControl,
   SectionHeader,
   StatBlock,
@@ -82,7 +83,7 @@ const Profile = () => {
 
   const loadProfile = useCallback(async (uid: string) => {
     const [{ data: profileData }, { data: rolesData }, { data: genresData }] = await Promise.all([
-      supabase.from("profiles").select("*").eq("id", uid).single(),
+      supabase.from("profiles").select(PROFILE_COLUMNS).eq("id", uid).single(),
       supabase.from("user_creative_roles").select("role").eq("user_id", uid),
       supabase.from("user_genres").select("genre").eq("user_id", uid),
     ]);

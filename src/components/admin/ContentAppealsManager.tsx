@@ -86,7 +86,7 @@ export const ContentAppealsManager = () => {
       const userIds = [...new Set(data?.map(a => a.user_id) || [])];
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, full_name, email')
+        .select('id, full_name')
         .in('id', userIds);
 
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);

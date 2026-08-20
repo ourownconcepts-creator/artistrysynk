@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
+import { PROFILE_COLUMNS } from "@/lib/profileColumns";
   CheckCircle2, 
   Circle, 
   User, 
@@ -46,7 +47,7 @@ export const ProfileCompletionProgress = ({ userId }: ProfileCompletionProgressP
 
     // Fetch all profile data in parallel
     const [profileResult, rolesResult, genresResult, portfolioResult] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id', userId).single(),
+      supabase.from('profiles').select(PROFILE_COLUMNS).eq('id', userId).single(),
       supabase.from('user_creative_roles').select('role').eq('user_id', userId),
       supabase.from('user_genres').select('genre').eq('user_id', userId),
       supabase.from('portfolio_items').select('id').eq('user_id', userId).limit(1),
