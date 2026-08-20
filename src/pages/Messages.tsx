@@ -134,6 +134,9 @@ const Messages = () => {
   // backoff and the conversation is refetched so no message is silently missed.
   const realtimeStatus = useRealtimeChannel({
     name: conversationId && currentUser ? `conversation-${conversationId}` : null,
+    // Private channel: typing broadcasts are authorized by realtime.messages RLS
+    // so only conversation participants can read or send them.
+    private: true,
     onReconnect: () => {
       if (currentUser) loadConversation(currentUser);
     },
@@ -230,7 +233,7 @@ const Messages = () => {
     if (now - typingSentAt.current < 1500) return;
     typingSentAt.current = now;
     void supabase
-      .channel(`conversation-${conversationId}`)
+      .channel(`conversation-${conversationId}`, { config: { private: true } })
       .send({ type: "broadcast", event: "typing", payload: { userId: currentUser } });
   };
 

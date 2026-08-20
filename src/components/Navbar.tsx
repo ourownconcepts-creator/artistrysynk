@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { useSubscription } from "@/hooks/useSubscription";
+import { PROFILE_COLUMNS } from "@/lib/profileColumns";
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ export const Navbar = () => {
   const loadProfile = async (userId: string) => {
     const { data } = await supabase
       .from('profiles')
-      .select('*')
+      .select(PROFILE_COLUMNS)
       .eq('id', userId)
       .single();
     

@@ -11,6 +11,11 @@ type Options = {
   setup: (channel: RealtimeChannel) => RealtimeChannel;
   /** Called after a successful re-subscribe so callers can refetch missed rows. */
   onReconnect?: () => void;
+  /**
+   * Subscribe as a private channel so broadcast/presence traffic is authorized
+   * by RLS policies on `realtime.messages` instead of being world-readable.
+   */
+  private?: boolean;
 };
 
 const BASE_DELAY_MS = 1_000;
@@ -21,7 +26,7 @@ const MAX_DELAY_MS = 15_000;
  * transient drops (sleep/wake, network switch, server restart) by resubscribing
  * with exponential backoff and refetching state once the channel is live again.
  */
-export function useRealtimeChannel({ name, setup, onReconnect }: Options): RealtimeStatus {
+export function useRealtimeChannel({ name, setup, onReconnect, private: isPrivate }: Options): RealtimeStatus {
   const [status, setStatus] = useState<RealtimeStatus>("connecting");
   const setupRef = useRef(setup);
   const reconnectRef = useRef(onReconnect);
@@ -64,7 +69,9 @@ export function useRealtimeChannel({ name, setup, onReconnect }: Options): Realt
     const connect = () => {
       if (disposed) return;
       teardown();
-      const next = setupRef.current(supabase.channel(name));
+      const next = setupRef.current(
+        isPrivate ? supabase.channel(name, { config: { private: true } }) : supabase.channel(name),
+      );
       channel = next;
       next.subscribe((state) => {
         if (disposed) return;
@@ -113,7 +120,7 @@ export function useRealtimeChannel({ name, setup, onReconnect }: Options): Realt
     };
     // `status` is intentionally excluded: it would recreate the channel on every state change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name]);
+  }, [name, isPrivate]);
 
   return status;
 }

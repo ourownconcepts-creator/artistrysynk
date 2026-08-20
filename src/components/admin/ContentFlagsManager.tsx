@@ -124,10 +124,12 @@ export const ContentFlagsManager = () => {
       const reporterIds = [...new Set(data?.map(f => f.reporter_id) || [])];
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, full_name, email')
+        .select('id, full_name')
         .in('id', reporterIds);
 
-      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      const { data: emailRows } = await supabase.rpc('get_profile_emails', { _user_ids: reporterIds });
+      const emailMap = new Map<string, string>((emailRows ?? []).map((r: any) => [r.id ?? r.user_id, r.email]));
+      const profileMap = new Map(profiles?.map(p => [p.id, { ...p, email: emailMap.get(p.id) ?? null }]) || []);
       
       const flagsWithReporter = data?.map(flag => ({
         ...flag,

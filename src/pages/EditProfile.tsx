@@ -17,6 +17,7 @@ import { CustomRoleRequestDialog } from "@/components/profile/CustomRoleRequestD
 import { BeautyProfileFields } from "@/components/profile/BeautyProfileFields";
 import { BeautyCredentialUpload } from "@/components/profile/BeautyCredentialUpload";
 import { isBeautyRole } from "@/lib/beauty";
+import { PROFILE_COLUMNS } from "@/lib/profileColumns";
 
 const genres = [
   { value: 'afrobeats', label: 'Afrobeats' },
@@ -83,7 +84,7 @@ const EditProfile = () => {
     setEmail(user?.email || "");
     const { data: profile } = await supabase
       .from('profiles')
-      .select('*')
+      .select(PROFILE_COLUMNS)
       .eq('id', uid)
       .single();
 
