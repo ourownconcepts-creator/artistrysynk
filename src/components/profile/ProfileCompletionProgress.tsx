@@ -1,3 +1,4 @@
+import { PROFILE_COLUMNS } from "@/lib/profileColumns";
 import { useState, useEffect } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,7 +7,6 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
-import { PROFILE_COLUMNS } from "@/lib/profileColumns";
   CheckCircle2, 
   Circle, 
   User, 
