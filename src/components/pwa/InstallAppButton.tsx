@@ -98,13 +98,23 @@ export const InstallAppButton = ({ className }: { className?: string }) => {
       trackEvent("pwa_install_choice", { outcome, source: "home_button" });
       window.__installPromptEvent = null;
       setCanPrompt(false);
+      if (outcome === "dismissed") {
+        try {
+          window.localStorage.setItem(DISMISS_KEY, String(Date.now()));
+        } catch {
+          /* storage unavailable */
+        }
+        setDismissed(true);
+      }
       return;
     }
     trackEvent("pwa_install_help_opened", { platform });
     setShowHelp(true);
   }, [platform]);
 
-  if (isStandalone) return null;
+  // Only render when the app is genuinely installable and not dismissed:
+  // a captured install prompt, or iOS Safari's Add to Home Screen path.
+  if (isStandalone || dismissed || (!canPrompt && !iosSafari)) return null;
 
   return (
     <>
