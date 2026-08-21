@@ -31,6 +31,7 @@ import {
 } from "@/components/native-ui";
 import { DiscoverSearchResults, type SearchProfile } from "@/components/discover/DiscoverSearchResults";
 import { StudioSearchResults } from "@/components/discover/StudioSearchResults";
+import { DiscoverOnboardingPrompt } from "@/components/discover/DiscoverOnboardingPrompt";
 
 interface Profile {
   id: string;
@@ -447,6 +448,8 @@ const Discover = () => {
         canonicalUrl="https://artistrysynk.app/discover"
         noIndex
       />
+
+      {currentUser ? <DiscoverOnboardingPrompt userId={currentUser} /> : null}
 
       {/* Instant search */}
       <div className="mb-3 flex items-center gap-2">
