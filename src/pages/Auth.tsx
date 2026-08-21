@@ -191,8 +191,10 @@ const Auth = () => {
       return;
     }
 
-    // Check if user already exists (Supabase returns user without error for existing users)
-    if (data.user && !data.session) {
+    // Supabase returns a user with an EMPTY identities array (and no error) when
+    // the email is already registered. A brand-new signup with email
+    // confirmation on also has no session, so only identities can tell them apart.
+    if (data.user && (data.user.identities?.length ?? 0) === 0) {
       toast.error("An account with this email already exists. Please sign in instead.");
       setLoading(false);
       return;
@@ -200,6 +202,12 @@ const Auth = () => {
 
     // Send welcome email (fire-and-forget, never block signup)
     sendWelcomeEmail({ data: { email, fullName, username } }).catch(() => {});
+
+    if (!data.session) {
+      toast.success("Account created! Check your email to confirm your address, then sign in.");
+      setLoading(false);
+      return;
+    }
 
     toast.success("Account created! Complete your profile to get started.");
     navigate("/setup-profile");
