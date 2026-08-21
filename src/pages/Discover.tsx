@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { PROFILE_COLUMNS } from "@/lib/profileColumns";
 import { fetchHiddenUserIds } from "@/lib/hiddenUsers";
 import { fetchOptedOutIds } from "@/lib/discoverability";
 import { Button } from "@/components/ui/button";
@@ -153,7 +154,7 @@ const Discover = () => {
   const loadCurrentUserProfile = async (userId: string) => {
     const { data: profile } = await supabase
       .from("profiles")
-      .select(`*, user_creative_roles(role), user_genres(genre)`)
+      .select(`${PROFILE_COLUMNS}, user_creative_roles(role), user_genres(genre)`)
       .eq("id", userId)
       .single();
 
@@ -396,7 +397,7 @@ const Discover = () => {
 
     let request = supabase
       .from("profiles")
-      .select(`*, user_creative_roles(role), user_genres(genre)`)
+      .select(`${PROFILE_COLUMNS}, user_creative_roles(role), user_genres(genre)`)
       .not("id", "in", `(${excludeIds.join(",")})`)
       .limit(20);
     if (locationFilter) request = request.ilike("location", `%${locationFilter}%`);
