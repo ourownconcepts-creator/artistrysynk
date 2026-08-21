@@ -33,9 +33,25 @@ if (typeof window !== "undefined" && !window.__installPromptEvent) {
   });
 }
 
+const DISMISS_KEY = "as_install_dismissed_at";
+/** Re-offer the install button 30 days after a dismissal. */
+const DISMISS_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+const isDismissed = () => {
+  try {
+    const raw = window.localStorage.getItem(DISMISS_KEY);
+    if (!raw) return false;
+    return Date.now() - Number(raw) < DISMISS_TTL_MS;
+  } catch {
+    return false;
+  }
+};
+
 export const InstallAppButton = ({ className }: { className?: string }) => {
   const [canPrompt, setCanPrompt] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(true);
+  const [dismissed, setDismissed] = useState(true);
+  const [iosSafari, setIosSafari] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [platform, setPlatform] = useState<"ios" | "android" | "desktop">("desktop");
 
@@ -44,14 +60,20 @@ export const InstallAppButton = ({ className }: { className?: string }) => {
       window.matchMedia("(display-mode: standalone)").matches ||
       (navigator as unknown as { standalone?: boolean }).standalone === true;
     setIsStandalone(!!standalone);
+    setDismissed(isDismissed());
 
     const ua = navigator.userAgent;
     const isIPadOS =
       navigator.platform === "MacIntel" &&
       (navigator as unknown as { maxTouchPoints?: number }).maxTouchPoints! > 1;
-    if (/iPad|iPhone|iPod/.test(ua) || isIPadOS) setPlatform("ios");
+    const isIOS = /iPad|iPhone|iPod/.test(ua) || isIPadOS;
+    if (isIOS) setPlatform("ios");
     else if (/Android/i.test(ua)) setPlatform("android");
     else setPlatform("desktop");
+
+    // iOS never fires beforeinstallprompt, but Safari does support
+    // Add to Home Screen — so it is installable via the help sheet.
+    setIosSafari(isIOS && /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua));
 
     setCanPrompt(!!window.__installPromptEvent);
     const ready = () => setCanPrompt(true);
@@ -76,13 +98,23 @@ export const InstallAppButton = ({ className }: { className?: string }) => {
       trackEvent("pwa_install_choice", { outcome, source: "home_button" });
       window.__installPromptEvent = null;
       setCanPrompt(false);
+      if (outcome === "dismissed") {
+        try {
+          window.localStorage.setItem(DISMISS_KEY, String(Date.now()));
+        } catch {
+          /* storage unavailable */
+        }
+        setDismissed(true);
+      }
       return;
     }
     trackEvent("pwa_install_help_opened", { platform });
     setShowHelp(true);
   }, [platform]);
 
-  if (isStandalone) return null;
+  // Only render when the app is genuinely installable and not dismissed:
+  // a captured install prompt, or iOS Safari's Add to Home Screen path.
+  if (isStandalone || dismissed || (!canPrompt && !iosSafari)) return null;
 
   return (
     <>
