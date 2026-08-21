@@ -300,7 +300,10 @@ export const Hero = () => {
               <Sparkles className="w-5 h-5 mr-2 text-secondary group-hover:rotate-12 transition-transform" />
               Discover Creatives
             </Button>
+
+            <InstallAppButton className="backdrop-blur-xs" />
           </motion.div>
+
 
 
           {/* Trust indicators */}
