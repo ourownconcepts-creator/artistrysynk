@@ -7,6 +7,8 @@ import { allRoles } from "@/lib/creativeRoles";
 import { useSubscription } from "@/hooks/useSubscription";
 import { Link } from "@/lib/router-compat";
 import logoImg from "@/assets/logo.png";
+import { InstallAppButton } from "@/components/pwa/InstallAppButton";
+
 import { MorphingBlobs } from './hero/MorphingBlobs';
 import { SyncPulse } from './hero/SyncPulse';
 import { AnimatedText, GlowText } from './hero/AnimatedText';
