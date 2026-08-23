@@ -184,8 +184,17 @@ const Pricing = () => {
       <FAQSchema faqs={faqs} />
       
       {/* Hero Section */}
-      <section className="py-20 px-4">
+      <section className="py-20 px-4 relative">
         <div className="container mx-auto max-w-6xl text-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="absolute left-4 top-4 md:left-8 md:top-8"
+            onClick={() => navigate({ to: ".." })}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
           <img src={logoImg} alt="ArtistrySynk" className="h-80 w-auto mx-auto mb-6" />
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
             Simple, Transparent Pricing
