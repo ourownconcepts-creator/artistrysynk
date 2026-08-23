@@ -190,7 +190,7 @@ const Pricing = () => {
             variant="ghost"
             size="sm"
             className="absolute left-4 top-4 md:left-8 md:top-8"
-            onClick={() => navigate({ to: ".." })}
+            onClick={() => navigate(-1)}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
