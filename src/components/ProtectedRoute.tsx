@@ -23,7 +23,7 @@ export const ProtectedRoute = ({ children, requireAuth = true }: ProtectedRouteP
       if (requireAuth && !session) {
         navigate("/auth");
       } else if (!requireAuth && session) {
-        navigate("/discover");
+        navigate("/home");
       }
     });
 
@@ -35,7 +35,7 @@ export const ProtectedRoute = ({ children, requireAuth = true }: ProtectedRouteP
       if (requireAuth && !session) {
         navigate("/auth");
       } else if (!requireAuth && session) {
-        navigate("/discover");
+        navigate("/home");
       }
       
       setLoading(false);
