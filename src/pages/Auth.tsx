@@ -51,14 +51,14 @@ const Auth = () => {
       if (session) {
         void flushPendingConsents()
           .then(() => claimStoredReferral())
-          .finally(() => navigate("/discover"));
+          .finally(() => navigate("/home"));
       }
     });
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/discover");
+        navigate("/home");
       }
     });
 
@@ -256,7 +256,7 @@ const Auth = () => {
       if (result?.redirected) return;
 
       toast.success("Signed in with Google");
-      navigate("/discover");
+      navigate("/home");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Google sign-in failed. Please try again.");
       setLoading(false);
@@ -281,7 +281,7 @@ const Auth = () => {
       if (result?.redirected) return;
 
       toast.success("Signed in with Apple");
-      navigate("/discover");
+      navigate("/home");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Apple sign-in failed. Please try again.");
       setLoading(false);
