@@ -21,11 +21,11 @@ const AuthCallback = () => {
     };
 
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) void claimStoredReferral().finally(() => go("/discover"));
+      if (session) void claimStoredReferral().finally(() => go("/home"));
     });
 
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) void claimStoredReferral().finally(() => go("/discover"));
+      if (data.session) void claimStoredReferral().finally(() => go("/home"));
     });
 
     const timeout = window.setTimeout(() => go("/auth"), 8000);
