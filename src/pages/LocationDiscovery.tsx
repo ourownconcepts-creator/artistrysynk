@@ -48,14 +48,10 @@ const LocationDiscovery = () => {
 
   const initLocation = async (uid: string) => {
     // Check saved coordinates
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("latitude, longitude")
-      .eq("id", uid)
-      .single();
+    const profile = await fetchMyLocation();
 
-    let lat = (profile as any)?.latitude;
-    let lng = (profile as any)?.longitude;
+    let lat = profile?.latitude ?? null;
+    let lng = profile?.longitude ?? null;
 
     if (!lat || !lng) {
       try {

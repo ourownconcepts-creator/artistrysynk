@@ -33,14 +33,10 @@ export const CreatorsNearYou = ({ currentUserId }: { currentUserId: string }) =>
     setLoading(true);
 
     // Try to get user's saved coordinates first
-    const { data: myProfile } = await supabase
-      .from("profiles")
-      .select("latitude, longitude, city, country, location")
-      .eq("id", currentUserId)
-      .single();
+    const myProfile = await fetchMyLocation();
 
-    let lat = (myProfile as any)?.latitude;
-    let lng = (myProfile as any)?.longitude;
+    let lat = myProfile?.latitude ?? null;
+    let lng = myProfile?.longitude ?? null;
 
     // If no saved coordinates, try browser geolocation
     if (!lat || !lng) {

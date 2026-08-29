@@ -103,11 +103,7 @@ export async function fetchOpenProjects() {
 }
 
 export async function fetchNearby(userId: string) {
-  const { data: me } = await supabase
-    .from("profiles")
-    .select("latitude, longitude, city")
-    .eq("id", userId)
-    .maybeSingle();
+  const me = await fetchMyLocation();
 
   if (me?.latitude != null && me?.longitude != null) {
     const { data } = await supabase.rpc("get_nearby_creators", {
@@ -119,6 +115,7 @@ export async function fetchNearby(userId: string) {
     });
     if (data?.length) return data;
   }
+
 
   const { data: fallback } = await supabase
     .from("profiles")
