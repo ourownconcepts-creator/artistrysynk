@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchMyLocation } from "@/lib/myLocation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -33,14 +34,10 @@ export const CreatorsNearYou = ({ currentUserId }: { currentUserId: string }) =>
     setLoading(true);
 
     // Try to get user's saved coordinates first
-    const { data: myProfile } = await supabase
-      .from("profiles")
-      .select("latitude, longitude, city, country, location")
-      .eq("id", currentUserId)
-      .single();
+    const myProfile = await fetchMyLocation();
 
-    let lat = (myProfile as any)?.latitude;
-    let lng = (myProfile as any)?.longitude;
+    let lat = myProfile?.latitude ?? null;
+    let lng = myProfile?.longitude ?? null;
 
     // If no saved coordinates, try browser geolocation
     if (!lat || !lng) {

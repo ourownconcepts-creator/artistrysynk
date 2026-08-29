@@ -4938,6 +4938,16 @@ export type Database = {
           username: string
         }[]
       }
+      get_my_location: {
+        Args: never
+        Returns: {
+          city: string
+          country: string
+          latitude: number
+          location: string
+          longitude: number
+        }[]
+      }
       get_nearby_creators: {
         Args: {
           _lat: number

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchMyLocation } from "@/lib/myLocation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -48,14 +49,10 @@ const LocationDiscovery = () => {
 
   const initLocation = async (uid: string) => {
     // Check saved coordinates
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("latitude, longitude")
-      .eq("id", uid)
-      .single();
+    const profile = await fetchMyLocation();
 
-    let lat = (profile as any)?.latitude;
-    let lng = (profile as any)?.longitude;
+    let lat = profile?.latitude ?? null;
+    let lng = profile?.longitude ?? null;
 
     if (!lat || !lng) {
       try {
