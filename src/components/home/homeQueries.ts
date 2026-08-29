@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { fetchMyLocation } from "@/lib/myLocation";
 
 export type HomeSnapshot = {
   unreadMessages: number;
