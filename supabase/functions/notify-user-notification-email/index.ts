@@ -134,6 +134,26 @@ serve(async (req) => {
       .maybeSingle();
     if (suppressed) return json({ skipped: "suppressed" });
 
+    // Deliverability guard: high-frequency types are capped per recipient so
+    // repeated identical emails don't trigger spam strikes at Gmail etc.
+    const EMAIL_COOLDOWN: Record<string, number> = {
+      match_online: 24 * 60 * 60 * 1000, // 1 per day
+      like: 6 * 60 * 60 * 1000, // 1 per 6h
+    };
+    const cooldownMs = EMAIL_COOLDOWN[notification.type];
+    if (cooldownMs) {
+      const since = new Date(Date.now() - cooldownMs).toISOString();
+      const { data: recent } = await supabase
+        .from("email_send_log")
+        .select("id")
+        .eq("template_name", `notification:${notification.type}`)
+        .eq("recipient_email", profile.email)
+        .eq("status", "sent")
+        .gte("created_at", since)
+        .limit(1);
+      if (recent?.length) return json({ skipped: "cooldown" });
+    }
+
     const link = linkFor(notification.type, notification.data || {});
     const firstName =
       (profile.full_name || profile.username || "there").split(" ")[0];
