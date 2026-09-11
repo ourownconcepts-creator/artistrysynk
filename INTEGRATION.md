@@ -12,23 +12,23 @@ Partner browser → partner server → ArtistrySynk Integration API → identity
 
 Zik's Got Talent has an **active production** client using the generic integration-client model (no ZGT-specific logic exists in ArtistrySynk identity code).
 
-| Item                          | Value                                                                                                              |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Integration client ID         | `zgt-prod-aa3c2403c67a4cb6` (HTTP Basic, server-side only)                                                          |
-| OAuth client ID               | `79f6a1ca-bbcf-48f9-9d36-61fdcb65a85a`                                                                             |
-| Registered redirect URIs      | `https://ziksgottalent.com/oauth/artistrysynk/return`, `https://www.ziksgottalent.com/oauth/artistrysynk/return`    |
-| Integration scopes            | `identity:create`, `identity:read`, `identity:link`, `profile:read`                                                 |
-| OAuth token scopes            | `openid profile email` (the authorization server issues OIDC scopes; integration scopes are enforced by this layer) |
-| Environment                   | production                                                                                                          |
+| Item                     | Value                                                                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Integration client ID    | `zgt-prod-aa3c2403c67a4cb6` (HTTP Basic, server-side only)                                                          |
+| OAuth client ID          | `79f6a1ca-bbcf-48f9-9d36-61fdcb65a85a`                                                                              |
+| Registered redirect URIs | `https://ziksgottalent.com/oauth/artistrysynk/return`, `https://www.ziksgottalent.com/oauth/artistrysynk/return`    |
+| Integration scopes       | `identity:create`, `identity:read`, `identity:link`, `profile:read`                                                 |
+| OAuth token scopes       | `openid profile email` (the authorization server issues OIDC scopes; integration scopes are enforced by this layer) |
+| Environment              | production                                                                                                          |
 
 Staging/preview callbacks are registered only when the partner supplies exact URLs; wildcards are never accepted.
 
 ## Discovery
 
-| Document                     | URL                                                            |
-| ---------------------------- | -------------------------------------------------------------- |
-| Protected resource metadata  | `https://artistrysynk.app/.well-known/oauth-protected-resource` |
-| Authorization server mirror  | `https://artistrysynk.app/.well-known/oauth-authorization-server` |
+| Document                    | URL                                                               |
+| --------------------------- | ----------------------------------------------------------------- |
+| Protected resource metadata | `https://artistrysynk.app/.well-known/oauth-protected-resource`   |
+| Authorization server mirror | `https://artistrysynk.app/.well-known/oauth-authorization-server` |
 
 Both documents are generated at request time from the live issuer's OpenID configuration — no static values. They expose the issuer, authorization endpoint, token endpoint, JWKS, registration endpoint, supported scopes, grant types, client authentication methods, and PKCE methods (`S256`, `plain`).
 
