@@ -1586,6 +1586,331 @@ export type Database = {
         }
         Relationships: []
       }
+      integration_applications: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          operational_contact: string | null
+          slug: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          operational_contact?: string | null
+          slug: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          operational_contact?: string | null
+          slug?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      integration_audit_events: {
+        Row: {
+          application_id: string | null
+          client_id: string | null
+          created_at: string
+          event_type: string
+          external_subject_hash: string | null
+          id: string
+          ip_hash: string | null
+          metadata: Json
+          outcome: string
+          request_id: string
+          subject_user_id: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          client_id?: string | null
+          created_at?: string
+          event_type: string
+          external_subject_hash?: string | null
+          id?: string
+          ip_hash?: string | null
+          metadata?: Json
+          outcome: string
+          request_id: string
+          subject_user_id?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          client_id?: string | null
+          created_at?: string
+          event_type?: string
+          external_subject_hash?: string | null
+          id?: string
+          ip_hash?: string | null
+          metadata?: Json
+          outcome?: string
+          request_id?: string
+          subject_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_audit_events_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "integration_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "integration_audit_events_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "integration_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      integration_clients: {
+        Row: {
+          allowed_scopes: string[]
+          application_id: string
+          client_id: string
+          client_secret_hash: string | null
+          created_at: string
+          environment: string
+          id: string
+          last_used_at: string | null
+          oauth_client_id: string | null
+          revoked_at: string | null
+          secret_expires_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          allowed_scopes?: string[]
+          application_id: string
+          client_id: string
+          client_secret_hash?: string | null
+          created_at?: string
+          environment: string
+          id?: string
+          last_used_at?: string | null
+          oauth_client_id?: string | null
+          revoked_at?: string | null
+          secret_expires_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          allowed_scopes?: string[]
+          application_id?: string
+          client_id?: string
+          client_secret_hash?: string | null
+          created_at?: string
+          environment?: string
+          id?: string
+          last_used_at?: string | null
+          oauth_client_id?: string | null
+          revoked_at?: string | null
+          secret_expires_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_clients_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "integration_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      integration_identity_links: {
+        Row: {
+          client_id: string
+          created_at: string
+          external_subject: string
+          granted_scopes: string[]
+          id: string
+          linked_at: string
+          revoked_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          external_subject: string
+          granted_scopes?: string[]
+          id?: string
+          linked_at?: string
+          revoked_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          external_subject?: string
+          granted_scopes?: string[]
+          id?: string
+          linked_at?: string
+          revoked_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_identity_links_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "integration_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      integration_intents: {
+        Row: {
+          client_id: string
+          code_hash: string
+          consumed_at: string | null
+          created_at: string
+          email_hash: string | null
+          expires_at: string
+          external_subject: string
+          id: string
+          idempotency_key_hash: string | null
+          intent_type: string
+          redirect_uri: string
+          requested_scopes: string[]
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          client_id: string
+          code_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          email_hash?: string | null
+          expires_at: string
+          external_subject: string
+          id?: string
+          idempotency_key_hash?: string | null
+          intent_type: string
+          redirect_uri: string
+          requested_scopes?: string[]
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          client_id?: string
+          code_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          email_hash?: string | null
+          expires_at?: string
+          external_subject?: string
+          id?: string
+          idempotency_key_hash?: string | null
+          intent_type?: string
+          redirect_uri?: string
+          requested_scopes?: string[]
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_intents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "integration_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      integration_rate_limits: {
+        Row: {
+          client_id: string
+          endpoint: string
+          id: string
+          request_count: number
+          updated_at: string
+          window_started_at: string
+        }
+        Insert: {
+          client_id: string
+          endpoint: string
+          id?: string
+          request_count?: number
+          updated_at?: string
+          window_started_at: string
+        }
+        Update: {
+          client_id?: string
+          endpoint?: string
+          id?: string
+          request_count?: number
+          updated_at?: string
+          window_started_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_rate_limits_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "integration_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      integration_redirect_uris: {
+        Row: {
+          client_id: string
+          created_at: string
+          environment: string
+          id: string
+          is_active: boolean
+          redirect_uri: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          environment: string
+          id?: string
+          is_active?: boolean
+          redirect_uri: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          environment?: string
+          id?: string
+          is_active?: boolean
+          redirect_uri?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_redirect_uris_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "integration_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_applications: {
         Row: {
           applicant_id: string

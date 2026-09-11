@@ -3,7 +3,7 @@ import { useSearchParams } from "@/lib/router-compat";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { sendWelcomeEmail } from "@/lib/send-welcome-email.functions";
-import { getOAuthRedirectUri } from "@/lib/native";
+import { getOAuthRedirectUri, isNativeApp } from "@/lib/native";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,12 +20,17 @@ import { emailSchema, passwordSchema, usernameSchema } from "@/lib/authValidatio
 import { storeReferralCode, getStoredReferralCode, claimStoredReferral } from "@/lib/referral";
 import { SignupConsent } from "@/components/legal/SignupConsent";
 import { buildSignupConsents, flushPendingConsents, storePendingConsents } from "@/lib/consent";
+import { rememberAuthReturn, sanitizeAuthReturn } from "@/lib/authReturn";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const referralCode = useMemo(
     () => searchParams.get("ref") || getStoredReferralCode(),
+    [searchParams],
+  );
+  const returnPath = useMemo(
+    () => sanitizeAuthReturn(searchParams.get("next")),
     [searchParams],
   );
   const [loading, setLoading] = useState(false);
@@ -51,19 +56,19 @@ const Auth = () => {
       if (session) {
         void flushPendingConsents()
           .then(() => claimStoredReferral())
-          .finally(() => navigate("/discover"));
+          .finally(() => navigate(returnPath));
       }
     });
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/discover");
+        navigate(returnPath);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, returnPath]);
 
   const validateSignInForm = () => {
     const newErrors: Record<string, string> = {};
@@ -177,7 +182,7 @@ const Auth = () => {
           username: username,
           ...(referralCode ? { referral_code: referralCode } : {}),
         },
-        emailRedirectTo: `${window.location.origin}/setup-profile`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(returnPath === "/discover" ? "/setup-profile" : returnPath)}`,
       },
     });
 
@@ -243,8 +248,9 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      rememberAuthReturn(returnPath);
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: getOAuthRedirectUri(),
+        redirect_uri: isNativeApp() ? getOAuthRedirectUri() : `${window.location.origin}/auth/callback`,
       });
 
       if (result?.error) {
@@ -256,7 +262,7 @@ const Auth = () => {
       if (result?.redirected) return;
 
       toast.success("Signed in with Google");
-      navigate("/discover");
+      navigate(returnPath);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Google sign-in failed. Please try again.");
       setLoading(false);
@@ -268,8 +274,9 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      rememberAuthReturn(returnPath);
       const result = await lovable.auth.signInWithOAuth("apple", {
-        redirect_uri: getOAuthRedirectUri(),
+        redirect_uri: isNativeApp() ? getOAuthRedirectUri() : `${window.location.origin}/auth/callback`,
       });
 
       if (result?.error) {
@@ -281,7 +288,7 @@ const Auth = () => {
       if (result?.redirected) return;
 
       toast.success("Signed in with Apple");
-      navigate("/discover");
+      navigate(returnPath);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Apple sign-in failed. Please try again.");
       setLoading(false);

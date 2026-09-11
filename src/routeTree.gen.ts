@@ -76,6 +76,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as VideographersRouteImport } from './routes/videographers'
 import { Route as WhoLikedYouRouteImport } from './routes/who-liked-you'
+import { Route as DotwellKnownOauthProtectedResourceRouteImport } from './routes/[.]well-known/oauth-protected-resource'
 import { Route as AccountConfirmDeletionRouteImport } from './routes/account/confirm-deletion'
 import { Route as AuthIndexRouteImport } from './routes/auth/index'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
@@ -102,11 +103,22 @@ import { Route as SettingsUsernameRouteImport } from './routes/settings/username
 import { Route as StudioItemIdRouteImport } from './routes/studio/$itemId'
 import { Route as StudiosIndexRouteImport } from './routes/studios/index'
 import { Route as StudiosNewRouteImport } from './routes/studios/new'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as ApiPublicOgImageRouteImport } from './routes/api/public/og-image'
+import { Route as IntegrationV1IndexRouteImport } from './routes/integration/v1/index'
+import { Route as IntegrationV1ClaimRouteImport } from './routes/integration/v1/claim'
+import { Route as IntegrationV1DocsRouteImport } from './routes/integration/v1/docs'
+import { Route as IntegrationV1HealthRouteImport } from './routes/integration/v1/health'
+import { Route as IntegrationV1RevokeRouteImport } from './routes/integration/v1/revoke'
 import { Route as StudiosHandleIndexRouteImport } from './routes/studios/$handle/index'
 import { Route as StudiosHandleManageRouteImport } from './routes/studios/$handle/manage'
 import { Route as ApiPublicHooksRetentionSweepRouteImport } from './routes/api/public/hooks/retention-sweep'
 import { Route as ApiPublicHooksSeoRefreshRouteImport } from './routes/api/public/hooks/seo-refresh'
+import { Route as IntegrationV1IdentityCreateRouteImport } from './routes/integration/v1/identity/create'
+import { Route as IntegrationV1IdentityLookupRouteImport } from './routes/integration/v1/identity/lookup'
+import { Route as IntegrationV1ProfileUserIdRouteImport } from './routes/integration/v1/profile/$userId'
+import { Route as IntegrationV1IdentityLinkCompleteRouteImport } from './routes/integration/v1/identity/link/complete'
+import { Route as IntegrationV1IdentityLinkStartRouteImport } from './routes/integration/v1/identity/link/start'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -444,6 +456,12 @@ const WhoLikedYouRoute = WhoLikedYouRouteImport.update({
   path: '/who-liked-you',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotwellKnownOauthProtectedResourceRoute =
+  DotwellKnownOauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AccountConfirmDeletionRoute = AccountConfirmDeletionRouteImport.update({
   id: '/account/confirm-deletion',
   path: '/account/confirm-deletion',
@@ -575,9 +593,39 @@ const StudiosNewRoute = StudiosNewRouteImport.update({
   path: '/studios/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicOgImageRoute = ApiPublicOgImageRouteImport.update({
   id: '/api/public/og-image',
   path: '/api/public/og-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegrationV1IndexRoute = IntegrationV1IndexRouteImport.update({
+  id: '/integration/v1/',
+  path: '/integration/v1/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegrationV1ClaimRoute = IntegrationV1ClaimRouteImport.update({
+  id: '/integration/v1/claim',
+  path: '/integration/v1/claim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegrationV1DocsRoute = IntegrationV1DocsRouteImport.update({
+  id: '/integration/v1/docs',
+  path: '/integration/v1/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegrationV1HealthRoute = IntegrationV1HealthRouteImport.update({
+  id: '/integration/v1/health',
+  path: '/integration/v1/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegrationV1RevokeRoute = IntegrationV1RevokeRouteImport.update({
+  id: '/integration/v1/revoke',
+  path: '/integration/v1/revoke',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudiosHandleIndexRoute = StudiosHandleIndexRouteImport.update({
@@ -600,6 +648,36 @@ const ApiPublicHooksSeoRefreshRoute =
   ApiPublicHooksSeoRefreshRouteImport.update({
     id: '/api/public/hooks/seo-refresh',
     path: '/api/public/hooks/seo-refresh',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const IntegrationV1IdentityCreateRoute =
+  IntegrationV1IdentityCreateRouteImport.update({
+    id: '/integration/v1/identity/create',
+    path: '/integration/v1/identity/create',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const IntegrationV1IdentityLookupRoute =
+  IntegrationV1IdentityLookupRouteImport.update({
+    id: '/integration/v1/identity/lookup',
+    path: '/integration/v1/identity/lookup',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const IntegrationV1ProfileUserIdRoute =
+  IntegrationV1ProfileUserIdRouteImport.update({
+    id: '/integration/v1/profile/$userId',
+    path: '/integration/v1/profile/$userId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const IntegrationV1IdentityLinkCompleteRoute =
+  IntegrationV1IdentityLinkCompleteRouteImport.update({
+    id: '/integration/v1/identity/link/complete',
+    path: '/integration/v1/identity/link/complete',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const IntegrationV1IdentityLinkStartRoute =
+  IntegrationV1IdentityLinkStartRouteImport.update({
+    id: '/integration/v1/identity/link/start',
+    path: '/integration/v1/identity/link/start',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -671,6 +749,7 @@ export interface FileRoutesByFullPath {
   '/verification': typeof VerificationRoute
   '/videographers': typeof VideographersRoute
   '/who-liked-you': typeof WhoLikedYouRoute
+  '/.well-known/oauth-protected-resource': typeof DotwellKnownOauthProtectedResourceRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
@@ -697,11 +776,22 @@ export interface FileRoutesByFullPath {
   '/projects/': typeof ProjectsIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/studios/': typeof StudiosIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/og-image': typeof ApiPublicOgImageRoute
+  '/integration/v1/claim': typeof IntegrationV1ClaimRoute
+  '/integration/v1/docs': typeof IntegrationV1DocsRoute
+  '/integration/v1/health': typeof IntegrationV1HealthRoute
+  '/integration/v1/revoke': typeof IntegrationV1RevokeRoute
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
+  '/integration/v1/': typeof IntegrationV1IndexRoute
   '/studios/$handle/': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
   '/api/public/hooks/seo-refresh': typeof ApiPublicHooksSeoRefreshRoute
+  '/integration/v1/identity/create': typeof IntegrationV1IdentityCreateRoute
+  '/integration/v1/identity/lookup': typeof IntegrationV1IdentityLookupRoute
+  '/integration/v1/profile/$userId': typeof IntegrationV1ProfileUserIdRoute
+  '/integration/v1/identity/link/complete': typeof IntegrationV1IdentityLinkCompleteRoute
+  '/integration/v1/identity/link/start': typeof IntegrationV1IdentityLinkStartRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -771,6 +861,7 @@ export interface FileRoutesByTo {
   '/verification': typeof VerificationRoute
   '/videographers': typeof VideographersRoute
   '/who-liked-you': typeof WhoLikedYouRoute
+  '/.well-known/oauth-protected-resource': typeof DotwellKnownOauthProtectedResourceRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
@@ -797,11 +888,22 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/studios': typeof StudiosIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/og-image': typeof ApiPublicOgImageRoute
+  '/integration/v1/claim': typeof IntegrationV1ClaimRoute
+  '/integration/v1/docs': typeof IntegrationV1DocsRoute
+  '/integration/v1/health': typeof IntegrationV1HealthRoute
+  '/integration/v1/revoke': typeof IntegrationV1RevokeRoute
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
+  '/integration/v1': typeof IntegrationV1IndexRoute
   '/studios/$handle': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
   '/api/public/hooks/seo-refresh': typeof ApiPublicHooksSeoRefreshRoute
+  '/integration/v1/identity/create': typeof IntegrationV1IdentityCreateRoute
+  '/integration/v1/identity/lookup': typeof IntegrationV1IdentityLookupRoute
+  '/integration/v1/profile/$userId': typeof IntegrationV1ProfileUserIdRoute
+  '/integration/v1/identity/link/complete': typeof IntegrationV1IdentityLinkCompleteRoute
+  '/integration/v1/identity/link/start': typeof IntegrationV1IdentityLinkStartRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -872,6 +974,7 @@ export interface FileRoutesById {
   '/verification': typeof VerificationRoute
   '/videographers': typeof VideographersRoute
   '/who-liked-you': typeof WhoLikedYouRoute
+  '/.well-known/oauth-protected-resource': typeof DotwellKnownOauthProtectedResourceRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
@@ -898,11 +1001,22 @@ export interface FileRoutesById {
   '/projects/': typeof ProjectsIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/studios/': typeof StudiosIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/og-image': typeof ApiPublicOgImageRoute
+  '/integration/v1/claim': typeof IntegrationV1ClaimRoute
+  '/integration/v1/docs': typeof IntegrationV1DocsRoute
+  '/integration/v1/health': typeof IntegrationV1HealthRoute
+  '/integration/v1/revoke': typeof IntegrationV1RevokeRoute
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
+  '/integration/v1/': typeof IntegrationV1IndexRoute
   '/studios/$handle/': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
   '/api/public/hooks/seo-refresh': typeof ApiPublicHooksSeoRefreshRoute
+  '/integration/v1/identity/create': typeof IntegrationV1IdentityCreateRoute
+  '/integration/v1/identity/lookup': typeof IntegrationV1IdentityLookupRoute
+  '/integration/v1/profile/$userId': typeof IntegrationV1ProfileUserIdRoute
+  '/integration/v1/identity/link/complete': typeof IntegrationV1IdentityLinkCompleteRoute
+  '/integration/v1/identity/link/start': typeof IntegrationV1IdentityLinkStartRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -974,6 +1088,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/videographers'
     | '/who-liked-you'
+    | '/.well-known/oauth-protected-resource'
     | '/account/confirm-deletion'
     | '/auth/callback'
     | '/blog/how-to-find-a-music-producer'
@@ -1000,11 +1115,22 @@ export interface FileRouteTypes {
     | '/projects/'
     | '/settings/'
     | '/studios/'
+    | '/.lovable/oauth/consent'
     | '/api/public/og-image'
+    | '/integration/v1/claim'
+    | '/integration/v1/docs'
+    | '/integration/v1/health'
+    | '/integration/v1/revoke'
     | '/studios/$handle/manage'
+    | '/integration/v1/'
     | '/studios/$handle/'
     | '/api/public/hooks/retention-sweep'
     | '/api/public/hooks/seo-refresh'
+    | '/integration/v1/identity/create'
+    | '/integration/v1/identity/lookup'
+    | '/integration/v1/profile/$userId'
+    | '/integration/v1/identity/link/complete'
+    | '/integration/v1/identity/link/start'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1074,6 +1200,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/videographers'
     | '/who-liked-you'
+    | '/.well-known/oauth-protected-resource'
     | '/account/confirm-deletion'
     | '/auth/callback'
     | '/blog/how-to-find-a-music-producer'
@@ -1100,11 +1227,22 @@ export interface FileRouteTypes {
     | '/projects'
     | '/settings'
     | '/studios'
+    | '/.lovable/oauth/consent'
     | '/api/public/og-image'
+    | '/integration/v1/claim'
+    | '/integration/v1/docs'
+    | '/integration/v1/health'
+    | '/integration/v1/revoke'
     | '/studios/$handle/manage'
+    | '/integration/v1'
     | '/studios/$handle'
     | '/api/public/hooks/retention-sweep'
     | '/api/public/hooks/seo-refresh'
+    | '/integration/v1/identity/create'
+    | '/integration/v1/identity/lookup'
+    | '/integration/v1/profile/$userId'
+    | '/integration/v1/identity/link/complete'
+    | '/integration/v1/identity/link/start'
   id:
     | '__root__'
     | '/'
@@ -1174,6 +1312,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/videographers'
     | '/who-liked-you'
+    | '/.well-known/oauth-protected-resource'
     | '/account/confirm-deletion'
     | '/auth/callback'
     | '/blog/how-to-find-a-music-producer'
@@ -1200,11 +1339,22 @@ export interface FileRouteTypes {
     | '/projects/'
     | '/settings/'
     | '/studios/'
+    | '/.lovable/oauth/consent'
     | '/api/public/og-image'
+    | '/integration/v1/claim'
+    | '/integration/v1/docs'
+    | '/integration/v1/health'
+    | '/integration/v1/revoke'
     | '/studios/$handle/manage'
+    | '/integration/v1/'
     | '/studios/$handle/'
     | '/api/public/hooks/retention-sweep'
     | '/api/public/hooks/seo-refresh'
+    | '/integration/v1/identity/create'
+    | '/integration/v1/identity/lookup'
+    | '/integration/v1/profile/$userId'
+    | '/integration/v1/identity/link/complete'
+    | '/integration/v1/identity/link/start'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1275,6 +1425,7 @@ export interface RootRouteChildren {
   VerificationRoute: typeof VerificationRoute
   VideographersRoute: typeof VideographersRoute
   WhoLikedYouRoute: typeof WhoLikedYouRoute
+  DotwellKnownOauthProtectedResourceRoute: typeof DotwellKnownOauthProtectedResourceRoute
   AccountConfirmDeletionRoute: typeof AccountConfirmDeletionRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   BlogHowToFindAMusicProducerRoute: typeof BlogHowToFindAMusicProducerRoute
@@ -1301,11 +1452,22 @@ export interface RootRouteChildren {
   ProjectsIndexRoute: typeof ProjectsIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   StudiosIndexRoute: typeof StudiosIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ApiPublicOgImageRoute: typeof ApiPublicOgImageRoute
+  IntegrationV1ClaimRoute: typeof IntegrationV1ClaimRoute
+  IntegrationV1DocsRoute: typeof IntegrationV1DocsRoute
+  IntegrationV1HealthRoute: typeof IntegrationV1HealthRoute
+  IntegrationV1RevokeRoute: typeof IntegrationV1RevokeRoute
   StudiosHandleManageRoute: typeof StudiosHandleManageRoute
+  IntegrationV1IndexRoute: typeof IntegrationV1IndexRoute
   StudiosHandleIndexRoute: typeof StudiosHandleIndexRoute
   ApiPublicHooksRetentionSweepRoute: typeof ApiPublicHooksRetentionSweepRoute
   ApiPublicHooksSeoRefreshRoute: typeof ApiPublicHooksSeoRefreshRoute
+  IntegrationV1IdentityCreateRoute: typeof IntegrationV1IdentityCreateRoute
+  IntegrationV1IdentityLookupRoute: typeof IntegrationV1IdentityLookupRoute
+  IntegrationV1ProfileUserIdRoute: typeof IntegrationV1ProfileUserIdRoute
+  IntegrationV1IdentityLinkCompleteRoute: typeof IntegrationV1IdentityLinkCompleteRoute
+  IntegrationV1IdentityLinkStartRoute: typeof IntegrationV1IdentityLinkStartRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1779,6 +1941,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WhoLikedYouRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof DotwellKnownOauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/account/confirm-deletion': {
       id: '/account/confirm-deletion'
       path: '/account/confirm-deletion'
@@ -1961,11 +2130,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudiosNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/og-image': {
       id: '/api/public/og-image'
       path: '/api/public/og-image'
       fullPath: '/api/public/og-image'
       preLoaderRoute: typeof ApiPublicOgImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integration/v1/': {
+      id: '/integration/v1/'
+      path: '/integration/v1'
+      fullPath: '/integration/v1/'
+      preLoaderRoute: typeof IntegrationV1IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integration/v1/claim': {
+      id: '/integration/v1/claim'
+      path: '/integration/v1/claim'
+      fullPath: '/integration/v1/claim'
+      preLoaderRoute: typeof IntegrationV1ClaimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integration/v1/docs': {
+      id: '/integration/v1/docs'
+      path: '/integration/v1/docs'
+      fullPath: '/integration/v1/docs'
+      preLoaderRoute: typeof IntegrationV1DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integration/v1/health': {
+      id: '/integration/v1/health'
+      path: '/integration/v1/health'
+      fullPath: '/integration/v1/health'
+      preLoaderRoute: typeof IntegrationV1HealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integration/v1/revoke': {
+      id: '/integration/v1/revoke'
+      path: '/integration/v1/revoke'
+      fullPath: '/integration/v1/revoke'
+      preLoaderRoute: typeof IntegrationV1RevokeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/studios/$handle/': {
@@ -1994,6 +2205,41 @@ declare module '@tanstack/react-router' {
       path: '/api/public/hooks/seo-refresh'
       fullPath: '/api/public/hooks/seo-refresh'
       preLoaderRoute: typeof ApiPublicHooksSeoRefreshRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integration/v1/identity/create': {
+      id: '/integration/v1/identity/create'
+      path: '/integration/v1/identity/create'
+      fullPath: '/integration/v1/identity/create'
+      preLoaderRoute: typeof IntegrationV1IdentityCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integration/v1/identity/lookup': {
+      id: '/integration/v1/identity/lookup'
+      path: '/integration/v1/identity/lookup'
+      fullPath: '/integration/v1/identity/lookup'
+      preLoaderRoute: typeof IntegrationV1IdentityLookupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integration/v1/profile/$userId': {
+      id: '/integration/v1/profile/$userId'
+      path: '/integration/v1/profile/$userId'
+      fullPath: '/integration/v1/profile/$userId'
+      preLoaderRoute: typeof IntegrationV1ProfileUserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integration/v1/identity/link/complete': {
+      id: '/integration/v1/identity/link/complete'
+      path: '/integration/v1/identity/link/complete'
+      fullPath: '/integration/v1/identity/link/complete'
+      preLoaderRoute: typeof IntegrationV1IdentityLinkCompleteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integration/v1/identity/link/start': {
+      id: '/integration/v1/identity/link/start'
+      path: '/integration/v1/identity/link/start'
+      fullPath: '/integration/v1/identity/link/start'
+      preLoaderRoute: typeof IntegrationV1IdentityLinkStartRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -2068,6 +2314,8 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationRoute: VerificationRoute,
   VideographersRoute: VideographersRoute,
   WhoLikedYouRoute: WhoLikedYouRoute,
+  DotwellKnownOauthProtectedResourceRoute:
+    DotwellKnownOauthProtectedResourceRoute,
   AccountConfirmDeletionRoute: AccountConfirmDeletionRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   BlogHowToFindAMusicProducerRoute: BlogHowToFindAMusicProducerRoute,
@@ -2094,11 +2342,23 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsIndexRoute: ProjectsIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   StudiosIndexRoute: StudiosIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ApiPublicOgImageRoute: ApiPublicOgImageRoute,
+  IntegrationV1ClaimRoute: IntegrationV1ClaimRoute,
+  IntegrationV1DocsRoute: IntegrationV1DocsRoute,
+  IntegrationV1HealthRoute: IntegrationV1HealthRoute,
+  IntegrationV1RevokeRoute: IntegrationV1RevokeRoute,
   StudiosHandleManageRoute: StudiosHandleManageRoute,
+  IntegrationV1IndexRoute: IntegrationV1IndexRoute,
   StudiosHandleIndexRoute: StudiosHandleIndexRoute,
   ApiPublicHooksRetentionSweepRoute: ApiPublicHooksRetentionSweepRoute,
   ApiPublicHooksSeoRefreshRoute: ApiPublicHooksSeoRefreshRoute,
+  IntegrationV1IdentityCreateRoute: IntegrationV1IdentityCreateRoute,
+  IntegrationV1IdentityLookupRoute: IntegrationV1IdentityLookupRoute,
+  IntegrationV1ProfileUserIdRoute: IntegrationV1ProfileUserIdRoute,
+  IntegrationV1IdentityLinkCompleteRoute:
+    IntegrationV1IdentityLinkCompleteRoute,
+  IntegrationV1IdentityLinkStartRoute: IntegrationV1IdentityLinkStartRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
