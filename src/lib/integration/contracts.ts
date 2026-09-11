@@ -92,18 +92,19 @@ export function sanitizeAuditMetadata(metadata: Record<string, unknown>) {
   );
 }
 
+/**
+ * Approved projection: name, username, avatar and general location only.
+ * Any field not listed here is private and must not cross the boundary.
+ */
+export const APPROVED_PROFILE_COLUMNS =
+  "id, username, display_name, full_name, avatar_url, location" as const;
+
 export function approvedProfileProjection(profile: Record<string, unknown>) {
   return {
     id: profile.id,
-    username: profile.username,
-    display_name: profile.display_name ?? profile.full_name,
-    bio: profile.bio,
-    avatar_url: profile.avatar_url,
-    cover_image_url: profile.cover_image_url,
-    location: profile.location,
-    country: profile.country,
-    city: profile.city,
-    is_verified: profile.is_verified,
-    professional_verified: profile.professional_verified,
+    name: profile.display_name ?? profile.full_name ?? null,
+    username: profile.username ?? null,
+    avatar_url: profile.avatar_url ?? null,
+    location: profile.location ?? null,
   };
 }

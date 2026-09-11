@@ -76,6 +76,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as VideographersRouteImport } from './routes/videographers'
 import { Route as WhoLikedYouRouteImport } from './routes/who-liked-you'
+import { Route as DotwellKnownOauthAuthorizationServerRouteImport } from './routes/[.]well-known/oauth-authorization-server'
 import { Route as DotwellKnownOauthProtectedResourceRouteImport } from './routes/[.]well-known/oauth-protected-resource'
 import { Route as AccountConfirmDeletionRouteImport } from './routes/account/confirm-deletion'
 import { Route as AuthIndexRouteImport } from './routes/auth/index'
@@ -456,6 +457,12 @@ const WhoLikedYouRoute = WhoLikedYouRouteImport.update({
   path: '/who-liked-you',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotwellKnownOauthAuthorizationServerRoute =
+  DotwellKnownOauthAuthorizationServerRouteImport.update({
+    id: '/.well-known/oauth-authorization-server',
+    path: '/.well-known/oauth-authorization-server',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const DotwellKnownOauthProtectedResourceRoute =
   DotwellKnownOauthProtectedResourceRouteImport.update({
     id: '/.well-known/oauth-protected-resource',
@@ -749,6 +756,7 @@ export interface FileRoutesByFullPath {
   '/verification': typeof VerificationRoute
   '/videographers': typeof VideographersRoute
   '/who-liked-you': typeof WhoLikedYouRoute
+  '/.well-known/oauth-authorization-server': typeof DotwellKnownOauthAuthorizationServerRoute
   '/.well-known/oauth-protected-resource': typeof DotwellKnownOauthProtectedResourceRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -861,6 +869,7 @@ export interface FileRoutesByTo {
   '/verification': typeof VerificationRoute
   '/videographers': typeof VideographersRoute
   '/who-liked-you': typeof WhoLikedYouRoute
+  '/.well-known/oauth-authorization-server': typeof DotwellKnownOauthAuthorizationServerRoute
   '/.well-known/oauth-protected-resource': typeof DotwellKnownOauthProtectedResourceRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -974,6 +983,7 @@ export interface FileRoutesById {
   '/verification': typeof VerificationRoute
   '/videographers': typeof VideographersRoute
   '/who-liked-you': typeof WhoLikedYouRoute
+  '/.well-known/oauth-authorization-server': typeof DotwellKnownOauthAuthorizationServerRoute
   '/.well-known/oauth-protected-resource': typeof DotwellKnownOauthProtectedResourceRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -1088,6 +1098,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/videographers'
     | '/who-liked-you'
+    | '/.well-known/oauth-authorization-server'
     | '/.well-known/oauth-protected-resource'
     | '/account/confirm-deletion'
     | '/auth/callback'
@@ -1200,6 +1211,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/videographers'
     | '/who-liked-you'
+    | '/.well-known/oauth-authorization-server'
     | '/.well-known/oauth-protected-resource'
     | '/account/confirm-deletion'
     | '/auth/callback'
@@ -1312,6 +1324,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/videographers'
     | '/who-liked-you'
+    | '/.well-known/oauth-authorization-server'
     | '/.well-known/oauth-protected-resource'
     | '/account/confirm-deletion'
     | '/auth/callback'
@@ -1425,6 +1438,7 @@ export interface RootRouteChildren {
   VerificationRoute: typeof VerificationRoute
   VideographersRoute: typeof VideographersRoute
   WhoLikedYouRoute: typeof WhoLikedYouRoute
+  DotwellKnownOauthAuthorizationServerRoute: typeof DotwellKnownOauthAuthorizationServerRoute
   DotwellKnownOauthProtectedResourceRoute: typeof DotwellKnownOauthProtectedResourceRoute
   AccountConfirmDeletionRoute: typeof AccountConfirmDeletionRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
@@ -1941,6 +1955,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WhoLikedYouRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.well-known/oauth-authorization-server': {
+      id: '/.well-known/oauth-authorization-server'
+      path: '/.well-known/oauth-authorization-server'
+      fullPath: '/.well-known/oauth-authorization-server'
+      preLoaderRoute: typeof DotwellKnownOauthAuthorizationServerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.well-known/oauth-protected-resource': {
       id: '/.well-known/oauth-protected-resource'
       path: '/.well-known/oauth-protected-resource'
@@ -2314,6 +2335,8 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationRoute: VerificationRoute,
   VideographersRoute: VideographersRoute,
   WhoLikedYouRoute: WhoLikedYouRoute,
+  DotwellKnownOauthAuthorizationServerRoute:
+    DotwellKnownOauthAuthorizationServerRoute,
   DotwellKnownOauthProtectedResourceRoute:
     DotwellKnownOauthProtectedResourceRoute,
   AccountConfirmDeletionRoute: AccountConfirmDeletionRoute,

@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { approvedProfileProjection } from "@/lib/integration/contracts";
+import {
+  APPROVED_PROFILE_COLUMNS,
+  approvedProfileProjection,
+} from "@/lib/integration/contracts";
 import { apiError, apiSuccess, requestId } from "@/lib/integration/http";
 
 export const Route = createFileRoute("/integration/v1/profile/$userId")({
@@ -12,6 +15,7 @@ export const Route = createFileRoute("/integration/v1/profile/$userId")({
             audit,
             getAdminClient,
             IntegrationFailure,
+            requireLinkedClientScope,
             requireOAuthUser,
           } = await import("@/lib/integration/integration.server");
           const user = await requireOAuthUser(request, ["profile:read"]);
@@ -21,6 +25,9 @@ export const Route = createFileRoute("/integration/v1/profile/$userId")({
               "insufficient_scope",
               "This token cannot access another identity",
             );
+          const link = await requireLinkedClientScope(user.userId, [
+            "profile:read",
+          ]);
           const admin = await getAdminClient();
           const { data: visible } = await admin.rpc("can_see_user", {
             _target_id: params.userId,
@@ -34,9 +41,7 @@ export const Route = createFileRoute("/integration/v1/profile/$userId")({
             );
           const { data, error } = await admin
             .from("profiles")
-            .select(
-              "id, username, display_name, full_name, bio, avatar_url, cover_image_url, location, country, city, is_verified, professional_verified",
-            )
+            .select(APPROVED_PROFILE_COLUMNS)
             .eq("id", params.userId)
             .maybeSingle();
           if (error || !data)
@@ -50,6 +55,7 @@ export const Route = createFileRoute("/integration/v1/profile/$userId")({
             requestId: id,
             eventType: "profile.accessed",
             outcome: "success",
+            client: link.client,
             userId: user.userId,
           });
           return apiSuccess(id, approvedProfileProjection(data));

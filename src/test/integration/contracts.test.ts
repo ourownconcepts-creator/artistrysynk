@@ -74,7 +74,7 @@ describe("integration v1 security contracts", () => {
     ).toEqual({ intent_id: "safe", reason: "safe" });
   });
 
-  it("returns only approved profile fields", () => {
+  it("returns only the four approved profile fields", () => {
     const output = approvedProfileProjection({
       id: "1",
       username: "artist",
@@ -82,14 +82,27 @@ describe("integration v1 security contracts", () => {
       email: "private@example.com",
       latitude: 1,
       bio: "Hi",
+      cover_image_url: "https://example.com/cover.jpg",
+      is_verified: true,
+      avatar_url: "https://example.com/a.jpg",
+      location: "Lagos",
     });
-    expect(output).toMatchObject({
+    expect(output).toEqual({
       id: "1",
+      name: "Artist",
       username: "artist",
-      display_name: "Artist",
-      bio: "Hi",
+      avatar_url: "https://example.com/a.jpg",
+      location: "Lagos",
     });
-    expect(output).not.toHaveProperty("email");
-    expect(output).not.toHaveProperty("latitude");
+    for (const field of [
+      "email",
+      "latitude",
+      "bio",
+      "cover_image_url",
+      "is_verified",
+      "country",
+      "city",
+    ])
+      expect(output).not.toHaveProperty(field);
   });
 });

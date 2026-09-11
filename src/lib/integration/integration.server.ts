@@ -3,6 +3,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "@/integrations/supabase/types";
 import {
   hasRequiredScopes,
+  INTEGRATION_SCOPES,
   isExactRedirectMatch,
   sanitizeAuditMetadata,
   type IntegrationScope,
@@ -170,17 +171,96 @@ export async function requireOAuthUser(
       "A valid OAuth bearer token is required",
     );
   const rawScopes = data.claims.scope ?? data.claims.scopes ?? "";
-  const scopes = Array.isArray(rawScopes)
+  const tokenScopes = Array.isArray(rawScopes)
     ? rawScopes.map(String)
     : String(rawScopes).split(/\s+/).filter(Boolean);
-  if (!hasRequiredScopes(scopes, required)) {
+  // The authorization server issues OIDC scopes (openid/profile/email); the
+  // integration scopes are enforced from the client grant and the identity
+  // link. When a token does carry integration scopes, honour them as a further
+  // restriction rather than ignoring them.
+  const integrationScopes = tokenScopes.filter((scope) =>
+    (INTEGRATION_SCOPES as readonly string[]).includes(scope),
+  );
+  if (
+    integrationScopes.length > 0 &&
+    !hasRequiredScopes(integrationScopes, required)
+  ) {
     throw new IntegrationFailure(
       403,
       "insufficient_scope",
       `Required scope: ${required.join(" ")}`,
     );
   }
-  return { userId: String(data.claims.sub), scopes, claims: data.claims };
+  return {
+    userId: String(data.claims.sub),
+    scopes: tokenScopes,
+    claims: data.claims,
+  };
+}
+
+/**
+ * Least-privilege gate for bearer-token endpoints: the authorized user must
+ * hold an active link with an integration client whose grant covers `required`.
+ */
+export async function requireLinkedClientScope(
+  userId: string,
+  required: IntegrationScope[],
+  clientPublicId?: string,
+) {
+  const admin = await adminClient();
+  let query = admin
+    .from("integration_identity_links")
+    .select(
+      "id, client_id, external_subject, granted_scopes, integration_clients!inner(id, application_id, client_id, environment, allowed_scopes, oauth_client_id, status)",
+    )
+    .eq("user_id", userId)
+    .eq("status", "active");
+  if (clientPublicId)
+    query = query.eq("integration_clients.client_id", clientPublicId);
+  const { data, error } = await query;
+  if (error)
+    throw new IntegrationFailure(
+      503,
+      "temporarily_unavailable",
+      "Unable to verify the integration connection",
+    );
+  const match = (data ?? []).find((row) => {
+    const client = row.integration_clients as unknown as {
+      status: string;
+      allowed_scopes: string[];
+    };
+    return (
+      client.status === "active" &&
+      hasRequiredScopes(client.allowed_scopes ?? [], required) &&
+      hasRequiredScopes(row.granted_scopes ?? [], required)
+    );
+  });
+  if (!match)
+    throw new IntegrationFailure(
+      403,
+      "insufficient_scope",
+      `Required scope: ${required.join(" ")}`,
+    );
+  const client = match.integration_clients as unknown as {
+    id: string;
+    application_id: string;
+    client_id: string;
+    environment: string;
+    allowed_scopes: string[];
+    oauth_client_id: string | null;
+  };
+  return {
+    linkId: match.id,
+    externalSubject: match.external_subject,
+    client: {
+      id: client.id,
+      applicationId: client.application_id,
+      publicId: client.client_id,
+      scopes: client.allowed_scopes ?? [],
+      environment: client.environment,
+      oauthClientId: client.oauth_client_id,
+    } satisfies ClientContext,
+  };
 }
 
 async function identityExistsForEmail(
@@ -370,7 +450,28 @@ export async function createIntent(input: {
   };
 }
 
-export async function issuerUrl() {
+export type AuthorizationServerMetadata = {
+  issuer: string;
+  authorization_endpoint: string;
+  token_endpoint: string;
+  jwks_uri?: string;
+  registration_endpoint?: string;
+  userinfo_endpoint?: string;
+  revocation_endpoint?: string;
+  scopes_supported: string[];
+  grant_types_supported: string[];
+  response_types_supported: string[];
+  token_endpoint_auth_methods_supported: string[];
+  code_challenge_methods_supported: string[];
+};
+
+let metadataCache: { value: AuthorizationServerMetadata; at: number } | null =
+  null;
+
+/** Reads the live OIDC discovery document of the authorization server. */
+export async function authorizationServerMetadata(): Promise<AuthorizationServerMetadata> {
+  if (metadataCache && Date.now() - metadataCache.at < 5 * 60 * 1000)
+    return metadataCache.value;
   const base = process.env["SUPABASE_URL"];
   if (!base)
     throw new IntegrationFailure(
@@ -387,41 +488,49 @@ export async function issuerUrl() {
       "temporarily_unavailable",
       "Authorization service is unavailable",
     );
-  const body = (await discovery.json()) as { issuer?: string };
-  if (!body.issuer)
+  const body = (await discovery.json()) as Partial<AuthorizationServerMetadata>;
+  if (!body.issuer || !body.authorization_endpoint || !body.token_endpoint)
     throw new IntegrationFailure(
       503,
       "temporarily_unavailable",
       "Authorization service is unavailable",
     );
-  return body.issuer;
+  const value: AuthorizationServerMetadata = {
+    issuer: body.issuer,
+    authorization_endpoint: body.authorization_endpoint,
+    token_endpoint: body.token_endpoint,
+    ...(body.jwks_uri ? { jwks_uri: body.jwks_uri } : {}),
+    ...(body.registration_endpoint
+      ? { registration_endpoint: body.registration_endpoint }
+      : {}),
+    ...(body.userinfo_endpoint
+      ? { userinfo_endpoint: body.userinfo_endpoint }
+      : {}),
+    ...(body.revocation_endpoint
+      ? { revocation_endpoint: body.revocation_endpoint }
+      : {}),
+    scopes_supported: body.scopes_supported ?? ["openid", "profile", "email"],
+    grant_types_supported: body.grant_types_supported ?? [
+      "authorization_code",
+      "refresh_token",
+    ],
+    response_types_supported: body.response_types_supported ?? ["code"],
+    token_endpoint_auth_methods_supported:
+      body.token_endpoint_auth_methods_supported ?? ["client_secret_basic"],
+    code_challenge_methods_supported: body.code_challenge_methods_supported ?? [
+      "S256",
+    ],
+  };
+  metadataCache = { value, at: Date.now() };
+  return value;
+}
+
+export async function issuerUrl() {
+  return (await authorizationServerMetadata()).issuer;
 }
 
 export async function authorizationEndpoint() {
-  const base = process.env["SUPABASE_URL"];
-  if (!base)
-    throw new IntegrationFailure(
-      503,
-      "temporarily_unavailable",
-      "Integration service is unavailable",
-    );
-  const discovery = await fetch(
-    `${base}${AUTH_BASE_PATH}/.well-known/openid-configuration`,
-  );
-  if (!discovery.ok)
-    throw new IntegrationFailure(
-      503,
-      "temporarily_unavailable",
-      "Authorization service is unavailable",
-    );
-  const body = (await discovery.json()) as { authorization_endpoint?: string };
-  if (!body.authorization_endpoint)
-    throw new IntegrationFailure(
-      503,
-      "temporarily_unavailable",
-      "Authorization service is unavailable",
-    );
-  return body.authorization_endpoint;
+  return (await authorizationServerMetadata()).authorization_endpoint;
 }
 
 export async function getAdminClient(): Promise<SupabaseClient<Database>> {
