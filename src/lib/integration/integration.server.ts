@@ -191,7 +191,11 @@ export async function requireOAuthUser(
       `Required scope: ${required.join(" ")}`,
     );
   }
-  return { userId: String(data.claims.sub), scopes: tokenScopes, claims: data.claims };
+  return {
+    userId: String(data.claims.sub),
+    scopes: tokenScopes,
+    claims: data.claims,
+  };
 }
 
 /**
