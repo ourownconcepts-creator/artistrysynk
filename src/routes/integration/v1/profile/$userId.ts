@@ -12,6 +12,7 @@ export const Route = createFileRoute("/integration/v1/profile/$userId")({
             audit,
             getAdminClient,
             IntegrationFailure,
+            requireLinkedClientScope,
             requireOAuthUser,
           } = await import("@/lib/integration/integration.server");
           const user = await requireOAuthUser(request, ["profile:read"]);
@@ -21,6 +22,9 @@ export const Route = createFileRoute("/integration/v1/profile/$userId")({
               "insufficient_scope",
               "This token cannot access another identity",
             );
+          const link = await requireLinkedClientScope(user.userId, [
+            "profile:read",
+          ]);
           const admin = await getAdminClient();
           const { data: visible } = await admin.rpc("can_see_user", {
             _target_id: params.userId,

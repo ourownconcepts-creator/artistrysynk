@@ -446,7 +446,28 @@ export async function createIntent(input: {
   };
 }
 
-export async function issuerUrl() {
+export type AuthorizationServerMetadata = {
+  issuer: string;
+  authorization_endpoint: string;
+  token_endpoint: string;
+  jwks_uri?: string;
+  registration_endpoint?: string;
+  userinfo_endpoint?: string;
+  revocation_endpoint?: string;
+  scopes_supported: string[];
+  grant_types_supported: string[];
+  response_types_supported: string[];
+  token_endpoint_auth_methods_supported: string[];
+  code_challenge_methods_supported: string[];
+};
+
+let metadataCache: { value: AuthorizationServerMetadata; at: number } | null =
+  null;
+
+/** Reads the live OIDC discovery document of the authorization server. */
+export async function authorizationServerMetadata(): Promise<AuthorizationServerMetadata> {
+  if (metadataCache && Date.now() - metadataCache.at < 5 * 60 * 1000)
+    return metadataCache.value;
   const base = process.env["SUPABASE_URL"];
   if (!base)
     throw new IntegrationFailure(
@@ -463,41 +484,49 @@ export async function issuerUrl() {
       "temporarily_unavailable",
       "Authorization service is unavailable",
     );
-  const body = (await discovery.json()) as { issuer?: string };
-  if (!body.issuer)
+  const body = (await discovery.json()) as Partial<AuthorizationServerMetadata>;
+  if (!body.issuer || !body.authorization_endpoint || !body.token_endpoint)
     throw new IntegrationFailure(
       503,
       "temporarily_unavailable",
       "Authorization service is unavailable",
     );
-  return body.issuer;
+  const value: AuthorizationServerMetadata = {
+    issuer: body.issuer,
+    authorization_endpoint: body.authorization_endpoint,
+    token_endpoint: body.token_endpoint,
+    ...(body.jwks_uri ? { jwks_uri: body.jwks_uri } : {}),
+    ...(body.registration_endpoint
+      ? { registration_endpoint: body.registration_endpoint }
+      : {}),
+    ...(body.userinfo_endpoint
+      ? { userinfo_endpoint: body.userinfo_endpoint }
+      : {}),
+    ...(body.revocation_endpoint
+      ? { revocation_endpoint: body.revocation_endpoint }
+      : {}),
+    scopes_supported: body.scopes_supported ?? ["openid", "profile", "email"],
+    grant_types_supported: body.grant_types_supported ?? [
+      "authorization_code",
+      "refresh_token",
+    ],
+    response_types_supported: body.response_types_supported ?? ["code"],
+    token_endpoint_auth_methods_supported:
+      body.token_endpoint_auth_methods_supported ?? ["client_secret_basic"],
+    code_challenge_methods_supported: body.code_challenge_methods_supported ?? [
+      "S256",
+    ],
+  };
+  metadataCache = { value, at: Date.now() };
+  return value;
+}
+
+export async function issuerUrl() {
+  return (await authorizationServerMetadata()).issuer;
 }
 
 export async function authorizationEndpoint() {
-  const base = process.env["SUPABASE_URL"];
-  if (!base)
-    throw new IntegrationFailure(
-      503,
-      "temporarily_unavailable",
-      "Integration service is unavailable",
-    );
-  const discovery = await fetch(
-    `${base}${AUTH_BASE_PATH}/.well-known/openid-configuration`,
-  );
-  if (!discovery.ok)
-    throw new IntegrationFailure(
-      503,
-      "temporarily_unavailable",
-      "Authorization service is unavailable",
-    );
-  const body = (await discovery.json()) as { authorization_endpoint?: string };
-  if (!body.authorization_endpoint)
-    throw new IntegrationFailure(
-      503,
-      "temporarily_unavailable",
-      "Authorization service is unavailable",
-    );
-  return body.authorization_endpoint;
+  return (await authorizationServerMetadata()).authorization_endpoint;
 }
 
 export async function getAdminClient(): Promise<SupabaseClient<Database>> {
