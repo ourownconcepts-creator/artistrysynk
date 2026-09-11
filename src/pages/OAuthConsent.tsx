@@ -41,7 +41,7 @@ export default function OAuthConsent() {
   const [busy, setBusy] = useState(false);
   const authorizationId = typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("authorization_id") ?? "";
 
-  const oauth = (supabase.auth as unknown as { oauth?: OAuthApi }).oauth;
+  const oauth = supabase.auth.oauth as OAuthApi;
   const finishRedirect = useCallback((result: OAuthResult | null) => {
     const target = redirectFrom(result);
     if (!target) throw new Error("The authorization provider did not return a redirect.");
@@ -52,7 +52,6 @@ export default function OAuthConsent() {
     let active = true;
     void (async () => {
       if (!authorizationId) { setError("This connection request is missing or invalid."); return; }
-      if (!oauth) { setError("Connections are temporarily unavailable."); return; }
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) {
         const next = `${window.location.pathname}${window.location.search}`;
@@ -74,8 +73,8 @@ export default function OAuthConsent() {
     if (!oauth || !authorizationId) return;
     setBusy(true); setError("");
     const result = approved
-      ? await oauth.approveAuthorization(authorizationId)
-      : await oauth.denyAuthorization(authorizationId);
+      ? await oauth.approveAuthorization(authorizationId, { skipBrowserRedirect: true })
+      : await oauth.denyAuthorization(authorizationId, { skipBrowserRedirect: true });
     if (result.error) { setError(approved ? "The connection could not be approved." : "The connection could not be cancelled."); setBusy(false); return; }
     finishRedirect(result.data);
   };

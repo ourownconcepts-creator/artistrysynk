@@ -12,8 +12,8 @@ export const Route = createFileRoute("/integration/v1/identity/link/start")({
       await enforceRateLimit(client.id, "identity:link:start", 20);
       const parsed = linkStartSchema.safeParse(await readJson(request));
       if (!parsed.success) return apiError(id, 400, "invalid_request", "The identity link request is invalid");
-      const intent = await createIntent({ client, type: "identity_link", externalSubject: parsed.data.external_subject, redirectUri: parsed.data.redirect_uri, scopes: parsed.data.scopes, idempotencyKey: request.headers.get("idempotency-key") ?? undefined });
       if (!client.oauthClientId) throw new IntegrationFailure(409, "conflict", "OAuth is not configured for this integration client");
+      const intent = await createIntent({ client, type: "identity_link", externalSubject: parsed.data.external_subject, redirectUri: parsed.data.redirect_uri, scopes: parsed.data.scopes, idempotencyKey: request.headers.get("idempotency-key") ?? undefined });
       const authorize = new URL(await authorizationEndpoint());
       authorize.searchParams.set("response_type", "code");
       authorize.searchParams.set("client_id", client.oauthClientId);

@@ -107,6 +107,17 @@ export async function requireOAuthUser(request: Request, required: IntegrationSc
   return { userId: String(data.claims.sub), scopes, claims: data.claims };
 }
 
+async function identityExistsForEmail(admin: Awaited<ReturnType<typeof adminClient>>, email: string) {
+  const target = email.trim().toLowerCase();
+  const perPage = 1000;
+  for (let page = 1; ; page += 1) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage });
+    if (error) throw new IntegrationFailure(503, "temporarily_unavailable", "Unable to validate identity availability");
+    if (data.users.some((user) => user.email?.toLowerCase() === target)) return true;
+    if (data.users.length < perPage) return false;
+  }
+}
+
 export async function assertRedirect(clientId: string, redirectUri: string) {
   const admin = await adminClient();
   const { data, error } = await admin
@@ -172,8 +183,7 @@ export async function createIntent(input: {
     if (existing) return { id: existing.id, expires_at: existing.expires_at, status: existing.status, reused: true };
   }
   if (input.type === "identity_create" && input.email) {
-    const { data: users } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-    const exists = users.users.some((user) => user.email?.toLowerCase() === input.email?.toLowerCase());
+    const exists = await identityExistsForEmail(admin, input.email);
     if (exists) throw new IntegrationFailure(409, "conflict", "An ArtistrySynk identity already exists; use identity linking instead");
   }
   const code = randomBytes(32).toString("base64url");

@@ -4,7 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export const completeIdentityClaim = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ code: z.string().min(32).max(200) }).parse(input))
+  .validator((input: unknown) => z.object({ code: z.string().min(32).max(200) }).parse(input))
   .handler(async ({ data, context }) => {
     const { createHash } = await import("node:crypto");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -24,9 +24,21 @@ export const completeIdentityClaim = createServerFn({ method: "POST" })
       revoked_at: null,
     }, { onConflict: "client_id,external_subject" });
     if (linkError) throw new Error("This external identity is already linked");
-    const { error: completeError } = await supabaseAdmin.from("integration_intents").update({
+    const { data: completed, error: completeError } = await supabaseAdmin.from("integration_intents").update({
       status: "completed", consumed_at: new Date().toISOString(), user_id: context.userId,
-    }).eq("id", intent.id).eq("status", "pending");
-    if (completeError) throw new Error("Unable to complete identity invitation");
+    }).eq("id", intent.id).eq("status", "pending").select("id").maybeSingle();
+    if (completeError || !completed) throw new Error("This identity invitation was already used");
+    const { data: client } = await supabaseAdmin.from("integration_clients")
+      .select("application_id").eq("id", intent.client_id).maybeSingle();
+    await supabaseAdmin.from("integration_audit_events").insert({
+      client_id: intent.client_id,
+      application_id: client?.application_id ?? null,
+      event_type: "identity.created",
+      outcome: "success",
+      subject_user_id: context.userId,
+      external_subject_hash: createHash("sha256").update(intent.external_subject).digest("hex"),
+      request_id: crypto.randomUUID(),
+      metadata: { intent_id: intent.id },
+    });
     return { redirectUri: intent.redirect_uri };
   });
