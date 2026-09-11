@@ -25,13 +25,31 @@ export const Route = createFileRoute("/integration/v1/identity/link/start")({
           client = await requireClient(request, ["identity:link"]);
           await enforceRateLimit(client.id, "identity:link:start", 20);
           const parsed = linkStartSchema.safeParse(await readJson(request));
-          if (!parsed.success)
+          if (!parsed.success) {
+            const details = parsed.error.issues.map((issue) => ({
+              field: issue.path.join(".") || "body",
+              issue: issue.message,
+            }));
+            await audit({
+              request,
+              requestId: id,
+              eventType: "connection.started",
+              outcome: "failure",
+              client,
+              metadata: {
+                error_code: "invalid_request",
+                invalid_fields: details.map((d) => d.field),
+              },
+            });
             return apiError(
               id,
               400,
               "invalid_request",
               "The identity link request is invalid",
+              undefined,
+              details,
             );
+          }
           if (!client.oauthClientId)
             throw new IntegrationFailure(
               409,
@@ -54,17 +72,19 @@ export const Route = createFileRoute("/integration/v1/identity/link/start")({
           // requested integration scopes are carried by the intent and are
           // enforced at the link/profile layer.
           authorize.searchParams.set("scope", "openid profile email");
-          authorize.searchParams.set(
-            "code_challenge",
-            parsed.data.code_challenge,
-          );
-          authorize.searchParams.set(
-            "code_challenge_method",
-            parsed.data.code_challenge_method,
-          );
-
+          if (parsed.data.code_challenge) {
+            authorize.searchParams.set(
+              "code_challenge",
+              parsed.data.code_challenge,
+            );
+            authorize.searchParams.set(
+              "code_challenge_method",
+              parsed.data.code_challenge_method ?? "S256",
+            );
+          }
 
           authorize.searchParams.set("state", parsed.data.state);
+
           await audit({
             request,
             requestId: id,
