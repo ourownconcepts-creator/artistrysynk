@@ -1,6 +1,6 @@
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
+import type { Database, Json } from "@/integrations/supabase/types";
 import {
   hasRequiredScopes,
   isExactRedirectMatch,
@@ -149,7 +149,7 @@ export async function audit(input: {
       external_subject_hash: input.externalSubject ? sha256(input.externalSubject) : null,
       request_id: input.requestId,
       ip_hash: sha256(forwarded),
-      metadata: sanitizeAuditMetadata(input.metadata ?? {}),
+      metadata: sanitizeAuditMetadata(input.metadata ?? {}) as Json,
     });
   } catch {
     // Audit failure must not leak infrastructure details to callers.
