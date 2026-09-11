@@ -114,7 +114,7 @@ The API does not expose email, password data, exact coordinates, legal identity 
 
 ## Audit and security
 
-Append-only events cover connection start, identity creation, identity linking, authorization outcome, profile access, lookup, and revocation. Events include request ID, client/application, outcome, hashed external subject and IP, safe metadata, and time. Secrets, passwords, authorization codes, claim codes, and access/refresh tokens are filtered from metadata and never logged.
+Append-only events cover `connection.started`, `authorization.started`, `authorization.approved`, `authorization.denied`, `authorization.failed` (token/consent failure), `identity.created`, `identity.linked`, `profile.accessed`, `identity.lookup`, and `connection.revoked`. Consent decisions store only a truncated one-way reference to the authorization request, never the authorization code. Events include request ID, client/application, outcome, hashed external subject and IP, safe metadata, and time. Secrets, passwords, authorization codes, claim codes, and access/refresh tokens are filtered from metadata and never logged.
 
 Integration tables are RLS-enabled and server-only. No anonymous or ordinary authenticated database grants exist. Secret hashes, one-time code hashes, exact redirect validation, ten-minute intent expiry, single-use state, client/link revocation, OAuth token expiry, endpoint rate limits, idempotency, and generic authentication failures reduce replay and enumeration risk.
 
