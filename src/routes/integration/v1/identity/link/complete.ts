@@ -43,9 +43,41 @@ export const Route = createFileRoute("/integration/v1/identity/link/complete")({
               "invalid_client",
               "The integration client is not active",
             );
-          const granted = user.scopes.filter((scope) =>
+          // The authorization server issues OIDC scopes (openid/profile/email),
+          // so integration scopes are derived from the pending link intent and
+          // always clamped to the client's grant. When the token itself carries
+          // integration scopes, they further restrict the result.
+          const { data: intent } = await admin
+            .from("integration_intents")
+            .select("id, requested_scopes")
+            .eq("client_id", client.id)
+            .eq("external_subject", parsed.data.external_subject)
+            .eq("intent_type", "identity_link")
+            .eq("status", "pending")
+            .gt("expires_at", new Date().toISOString())
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          const tokenIntegrationScopes = user.scopes.filter((scope) =>
             client.allowed_scopes.includes(scope),
           );
+          const requested = intent?.requested_scopes?.length
+            ? intent.requested_scopes
+            : client.allowed_scopes;
+          const granted = (
+            tokenIntegrationScopes.length > 0 ? tokenIntegrationScopes : requested
+          ).filter((scope) => client.allowed_scopes.includes(scope));
+          if (intent)
+            await admin
+              .from("integration_intents")
+              .update({
+                status: "completed",
+                consumed_at: new Date().toISOString(),
+                user_id: user.userId,
+              })
+              .eq("id", intent.id)
+              .eq("status", "pending");
+
           const { data, error } = await admin
             .from("integration_identity_links")
             .upsert(
