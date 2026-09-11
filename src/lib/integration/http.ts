@@ -30,15 +30,24 @@ export function apiError(
   code: ApiErrorCode,
   message: string,
   extraHeaders?: HeadersInit,
+  details?: Array<{ field: string; issue: string }>,
 ) {
   return new Response(
-    JSON.stringify({ error: { code, message, request_id: id } }),
+    JSON.stringify({
+      error: {
+        code,
+        message,
+        request_id: id,
+        ...(details && details.length > 0 ? { details } : {}),
+      },
+    }),
     {
       status,
       headers: headers(id, extraHeaders),
     },
   );
 }
+
 
 export async function readJson(request: Request): Promise<unknown> {
   const contentType = request.headers.get("content-type") ?? "";

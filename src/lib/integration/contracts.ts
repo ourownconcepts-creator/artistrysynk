@@ -41,14 +41,20 @@ export const linkStartSchema = z.object({
   redirect_uri: redirectUriSchema,
   scopes: z.array(integrationScopeSchema).min(1).max(INTEGRATION_SCOPES.length),
   state: z.string().min(16).max(500),
-  // The authorization server enforces PKCE, so the partner server must supply
-  // an S256 challenge derived from a verifier it keeps server-side.
+  // The authorization server enforces PKCE, so the partner server must supply a
+  // challenge derived from a verifier it keeps server-side and use the same
+  // verifier at token exchange. S256 is strongly preferred.
   code_challenge: z
     .string()
     .trim()
-    .regex(/^[A-Za-z0-9\-._~]{43,128}$/, "code_challenge must be S256 base64url"),
-  code_challenge_method: z.literal("S256").default("S256"),
+    .regex(
+      /^[A-Za-z0-9\-._~]{43,128}$/,
+      "code_challenge is required: base64url, 43-128 chars, derived from a server-side verifier",
+    ),
+  code_challenge_method: z.enum(["S256", "plain"]).default("S256"),
 });
+
+
 
 
 export const linkCompleteSchema = z.object({
