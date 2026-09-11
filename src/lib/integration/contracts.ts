@@ -1,0 +1,86 @@
+import { z } from "zod";
+
+export const INTEGRATION_SCOPES = [
+  "identity:create",
+  "identity:read",
+  "identity:link",
+  "profile:read",
+] as const;
+
+export type IntegrationScope = (typeof INTEGRATION_SCOPES)[number];
+
+export const integrationScopeSchema = z.enum(INTEGRATION_SCOPES);
+export const externalSubjectSchema = z.string().trim().min(1).max(200);
+export const redirectUriSchema = z.string().url().max(2048).refine((value) => {
+  const url = new URL(value);
+  return !url.hash && (url.protocol === "https:" || (
+    url.protocol === "http:" && ["localhost", "127.0.0.1"].includes(url.hostname)
+  ));
+}, "Redirect URI must use HTTPS (except localhost) and cannot include a fragment");
+
+export const createIntentSchema = z.object({
+  external_subject: externalSubjectSchema,
+  email: z.string().trim().email().max(320).optional(),
+  redirect_uri: redirectUriSchema,
+  scopes: z.array(integrationScopeSchema).min(1).max(INTEGRATION_SCOPES.length),
+});
+
+export const lookupSchema = z.object({ external_subject: externalSubjectSchema });
+
+export const linkStartSchema = z.object({
+  external_subject: externalSubjectSchema,
+  redirect_uri: redirectUriSchema,
+  scopes: z.array(integrationScopeSchema).min(1).max(INTEGRATION_SCOPES.length),
+  state: z.string().min(16).max(500),
+});
+
+export const linkCompleteSchema = z.object({
+  external_subject: externalSubjectSchema,
+  client_id: z.string().trim().min(8).max(200),
+});
+
+export const revokeSchema = z.object({ external_subject: externalSubjectSchema });
+
+export type ApiErrorCode =
+  | "invalid_request"
+  | "invalid_client"
+  | "invalid_token"
+  | "insufficient_scope"
+  | "invalid_redirect_uri"
+  | "not_found"
+  | "conflict"
+  | "rate_limited"
+  | "temporarily_unavailable";
+
+export function hasRequiredScopes(granted: readonly string[], required: readonly IntegrationScope[]) {
+  return required.every((scope) => granted.includes(scope));
+}
+
+export function isExactRedirectMatch(requested: string, registered: readonly string[]) {
+  return registered.includes(requested);
+}
+
+export function isIntentUsable(status: string, expiresAt: string, now = new Date()) {
+  return status === "pending" && new Date(expiresAt).getTime() > now.getTime();
+}
+
+export function sanitizeAuditMetadata(metadata: Record<string, unknown>) {
+  const forbidden = /secret|token|authorization|code|password/i;
+  return Object.fromEntries(Object.entries(metadata).filter(([key]) => !forbidden.test(key)));
+}
+
+export function approvedProfileProjection(profile: Record<string, unknown>) {
+  return {
+    id: profile.id,
+    username: profile.username,
+    display_name: profile.display_name ?? profile.full_name,
+    bio: profile.bio,
+    avatar_url: profile.avatar_url,
+    cover_image_url: profile.cover_image_url,
+    location: profile.location,
+    country: profile.country,
+    city: profile.city,
+    is_verified: profile.is_verified,
+    professional_verified: profile.professional_verified,
+  };
+}
