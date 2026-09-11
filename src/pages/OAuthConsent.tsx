@@ -11,6 +11,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AlertCircle, Check, ShieldCheck, UserRound } from "lucide-react";
+import { recordAuthorizationDecision } from "@/lib/integration/consent.functions";
+
+function logDecision(
+  authorizationId: string,
+  decision: "started" | "approved" | "denied" | "failed",
+  clientName?: string,
+) {
+  void recordAuthorizationDecision({
+    data: { authorizationId, decision, ...(clientName ? { clientName } : {}) },
+  }).catch(() => undefined);
+}
 
 type OAuthResult = { redirect_url?: string; redirect_to?: string };
 type AuthorizationDetails = OAuthResult & {
@@ -94,6 +105,7 @@ export default function OAuthConsent() {
         return;
       }
       setDetails(result.data);
+      logDecision(authorizationId, "started");
     })();
     return () => {
       active = false;
