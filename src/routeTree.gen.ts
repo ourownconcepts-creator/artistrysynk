@@ -98,6 +98,7 @@ import { Route as ProfileUserIdRouteImport } from './routes/profile/$userId'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as ProjectsProjectIdRouteImport } from './routes/projects/$projectId'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as SettingsConnectionsRouteImport } from './routes/settings/connections'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
 import { Route as SettingsSupportRouteImport } from './routes/settings/support'
 import { Route as SettingsUsernameRouteImport } from './routes/settings/username'
@@ -570,6 +571,11 @@ const SettingsIndexRoute = SettingsIndexRouteImport.update({
   path: '/settings/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsConnectionsRoute = SettingsConnectionsRouteImport.update({
+  id: '/settings/connections',
+  path: '/settings/connections',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
   id: '/settings/notifications',
   path: '/settings/notifications',
@@ -769,6 +775,7 @@ export interface FileRoutesByFullPath {
   '/messages/$conversationId': typeof MessagesConversationIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/settings/connections': typeof SettingsConnectionsRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/support': typeof SettingsSupportRoute
   '/settings/username': typeof SettingsUsernameRoute
@@ -882,6 +889,7 @@ export interface FileRoutesByTo {
   '/messages/$conversationId': typeof MessagesConversationIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/settings/connections': typeof SettingsConnectionsRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/support': typeof SettingsSupportRoute
   '/settings/username': typeof SettingsUsernameRoute
@@ -996,6 +1004,7 @@ export interface FileRoutesById {
   '/messages/$conversationId': typeof MessagesConversationIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/settings/connections': typeof SettingsConnectionsRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/support': typeof SettingsSupportRoute
   '/settings/username': typeof SettingsUsernameRoute
@@ -1111,6 +1120,7 @@ export interface FileRouteTypes {
     | '/messages/$conversationId'
     | '/profile/$userId'
     | '/projects/$projectId'
+    | '/settings/connections'
     | '/settings/notifications'
     | '/settings/support'
     | '/settings/username'
@@ -1224,6 +1234,7 @@ export interface FileRouteTypes {
     | '/messages/$conversationId'
     | '/profile/$userId'
     | '/projects/$projectId'
+    | '/settings/connections'
     | '/settings/notifications'
     | '/settings/support'
     | '/settings/username'
@@ -1337,6 +1348,7 @@ export interface FileRouteTypes {
     | '/messages/$conversationId'
     | '/profile/$userId'
     | '/projects/$projectId'
+    | '/settings/connections'
     | '/settings/notifications'
     | '/settings/support'
     | '/settings/username'
@@ -1451,6 +1463,7 @@ export interface RootRouteChildren {
   MessagesConversationIdRoute: typeof MessagesConversationIdRoute
   ProfileUserIdRoute: typeof ProfileUserIdRoute
   ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
+  SettingsConnectionsRoute: typeof SettingsConnectionsRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
   SettingsSupportRoute: typeof SettingsSupportRoute
   SettingsUsernameRoute: typeof SettingsUsernameRoute
@@ -2109,6 +2122,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/connections': {
+      id: '/settings/connections'
+      path: '/settings/connections'
+      fullPath: '/settings/connections'
+      preLoaderRoute: typeof SettingsConnectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings/notifications': {
       id: '/settings/notifications'
       path: '/settings/notifications'
@@ -2350,6 +2370,7 @@ const rootRouteChildren: RootRouteChildren = {
   MessagesConversationIdRoute: MessagesConversationIdRoute,
   ProfileUserIdRoute: ProfileUserIdRoute,
   ProjectsProjectIdRoute: ProjectsProjectIdRoute,
+  SettingsConnectionsRoute: SettingsConnectionsRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
   SettingsSupportRoute: SettingsSupportRoute,
   SettingsUsernameRoute: SettingsUsernameRoute,
