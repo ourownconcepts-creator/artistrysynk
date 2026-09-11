@@ -50,7 +50,11 @@ export const Route = createFileRoute("/integration/v1/identity/link/start")({
           authorize.searchParams.set("response_type", "code");
           authorize.searchParams.set("client_id", client.oauthClientId);
           authorize.searchParams.set("redirect_uri", parsed.data.redirect_uri);
-          authorize.searchParams.set("scope", parsed.data.scopes.join(" "));
+          // The authorization server only understands OIDC scopes; the
+          // requested integration scopes are carried by the intent and are
+          // enforced at the link/profile layer.
+          authorize.searchParams.set("scope", "openid profile email");
+
           authorize.searchParams.set("state", parsed.data.state);
           await audit({
             request,
