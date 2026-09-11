@@ -72,16 +72,15 @@ export const Route = createFileRoute("/integration/v1/identity/link/start")({
           // requested integration scopes are carried by the intent and are
           // enforced at the link/profile layer.
           authorize.searchParams.set("scope", "openid profile email");
-          if (parsed.data.code_challenge) {
-            authorize.searchParams.set(
-              "code_challenge",
-              parsed.data.code_challenge,
-            );
-            authorize.searchParams.set(
-              "code_challenge_method",
-              parsed.data.code_challenge_method ?? "S256",
-            );
-          }
+          authorize.searchParams.set(
+            "code_challenge",
+            parsed.data.code_challenge,
+          );
+          authorize.searchParams.set(
+            "code_challenge_method",
+            parsed.data.code_challenge_method,
+          );
+
 
           authorize.searchParams.set("state", parsed.data.state);
 
