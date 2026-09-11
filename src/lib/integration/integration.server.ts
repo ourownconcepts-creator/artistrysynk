@@ -246,14 +246,12 @@ export async function enforceRateLimit(
       .update({ request_count: count, updated_at: now.toISOString() })
       .eq("id", data.id);
   else
-    await admin
-      .from("integration_rate_limits")
-      .insert({
-        client_id: clientId,
-        endpoint,
-        window_started_at: windowStart,
-        request_count: 1,
-      });
+    await admin.from("integration_rate_limits").insert({
+      client_id: clientId,
+      endpoint,
+      window_started_at: windowStart,
+      request_count: 1,
+    });
   if (count > limit)
     throw new IntegrationFailure(
       429,
