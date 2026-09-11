@@ -15,8 +15,8 @@ type AuthorizationDetails = OAuthResult & {
 };
 type OAuthApi = {
   getAuthorizationDetails: (id: string) => Promise<{ data: AuthorizationDetails | null; error: Error | null }>;
-  approveAuthorization: (id: string) => Promise<{ data: OAuthResult | null; error: Error | null }>;
-  denyAuthorization: (id: string) => Promise<{ data: OAuthResult | null; error: Error | null }>;
+  approveAuthorization: (id: string, options?: { skipBrowserRedirect?: boolean }) => Promise<{ data: OAuthResult | null; error: Error | null }>;
+  denyAuthorization: (id: string, options?: { skipBrowserRedirect?: boolean }) => Promise<{ data: OAuthResult | null; error: Error | null }>;
 };
 
 const labels: Record<string, string> = {
