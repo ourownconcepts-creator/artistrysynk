@@ -10,7 +10,7 @@ export const Route = createFileRoute("/integration/v1/profile/$userId")({
       const user = await requireOAuthUser(request, ["profile:read"]);
       if (user.userId !== params.userId) throw new IntegrationFailure(403, "insufficient_scope", "This token cannot access another identity");
       const admin = await getAdminClient();
-      const { data: visible } = await admin.rpc("can_see_user", { _target: params.userId, _viewer: user.userId });
+      const { data: visible } = await admin.rpc("can_see_user", { _target_id: params.userId, _viewer_id: user.userId });
       if (!visible) throw new IntegrationFailure(404, "not_found", "Profile is unavailable");
       const { data, error } = await admin.from("profiles").select("id, username, display_name, full_name, bio, avatar_url, cover_image_url, location, country, city, is_verified, professional_verified").eq("id", params.userId).maybeSingle();
       if (error || !data) throw new IntegrationFailure(404, "not_found", "Profile is unavailable");
