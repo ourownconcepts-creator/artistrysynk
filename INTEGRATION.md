@@ -43,12 +43,12 @@ Use HTTP Basic authentication with `base64(client_id:client_secret)` only from t
 
 ## Scopes
 
-| Scope | Permission |
-| --- | --- |
-| `identity:create` | Start an ArtistrySynk-owned identity invitation. |
-| `identity:read` | Read the status and stable ID of an existing client-owned link. |
-| `identity:link` | Start, complete, or revoke an approved identity association. |
-| `profile:read` | Read the authorized user's approved profile projection. |
+| Scope             | Permission                                                      |
+| ----------------- | --------------------------------------------------------------- |
+| `identity:create` | Start an ArtistrySynk-owned identity invitation.                |
+| `identity:read`   | Read the status and stable ID of an existing client-owned link. |
+| `identity:link`   | Start, complete, or revoke an approved identity association.    |
+| `profile:read`    | Read the authorized user's approved profile projection.         |
 
 Scopes are least privilege. A request must be within the client's allowlist and the OAuth grant. There are no admin, competition, broad search, or raw database scopes.
 

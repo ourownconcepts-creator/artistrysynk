@@ -31,10 +31,13 @@ export function apiError(
   message: string,
   extraHeaders?: HeadersInit,
 ) {
-  return new Response(JSON.stringify({ error: { code, message, request_id: id } }), {
-    status,
-    headers: headers(id, extraHeaders),
-  });
+  return new Response(
+    JSON.stringify({ error: { code, message, request_id: id } }),
+    {
+      status,
+      headers: headers(id, extraHeaders),
+    },
+  );
 }
 
 export async function readJson(request: Request): Promise<unknown> {

@@ -11,12 +11,19 @@ export type IntegrationScope = (typeof INTEGRATION_SCOPES)[number];
 
 export const integrationScopeSchema = z.enum(INTEGRATION_SCOPES);
 export const externalSubjectSchema = z.string().trim().min(1).max(200);
-export const redirectUriSchema = z.string().url().max(2048).refine((value) => {
-  const url = new URL(value);
-  return !url.hash && (url.protocol === "https:" || (
-    url.protocol === "http:" && ["localhost", "127.0.0.1"].includes(url.hostname)
-  ));
-}, "Redirect URI must use HTTPS (except localhost) and cannot include a fragment");
+export const redirectUriSchema = z
+  .string()
+  .url()
+  .max(2048)
+  .refine((value) => {
+    const url = new URL(value);
+    return (
+      !url.hash &&
+      (url.protocol === "https:" ||
+        (url.protocol === "http:" &&
+          ["localhost", "127.0.0.1"].includes(url.hostname)))
+    );
+  }, "Redirect URI must use HTTPS (except localhost) and cannot include a fragment");
 
 export const createIntentSchema = z.object({
   external_subject: externalSubjectSchema,
@@ -25,7 +32,9 @@ export const createIntentSchema = z.object({
   scopes: z.array(integrationScopeSchema).min(1).max(INTEGRATION_SCOPES.length),
 });
 
-export const lookupSchema = z.object({ external_subject: externalSubjectSchema });
+export const lookupSchema = z.object({
+  external_subject: externalSubjectSchema,
+});
 
 export const linkStartSchema = z.object({
   external_subject: externalSubjectSchema,
@@ -39,7 +48,9 @@ export const linkCompleteSchema = z.object({
   client_id: z.string().trim().min(8).max(200),
 });
 
-export const revokeSchema = z.object({ external_subject: externalSubjectSchema });
+export const revokeSchema = z.object({
+  external_subject: externalSubjectSchema,
+});
 
 export type ApiErrorCode =
   | "invalid_request"
@@ -52,21 +63,33 @@ export type ApiErrorCode =
   | "rate_limited"
   | "temporarily_unavailable";
 
-export function hasRequiredScopes(granted: readonly string[], required: readonly IntegrationScope[]) {
+export function hasRequiredScopes(
+  granted: readonly string[],
+  required: readonly IntegrationScope[],
+) {
   return required.every((scope) => granted.includes(scope));
 }
 
-export function isExactRedirectMatch(requested: string, registered: readonly string[]) {
+export function isExactRedirectMatch(
+  requested: string,
+  registered: readonly string[],
+) {
   return registered.includes(requested);
 }
 
-export function isIntentUsable(status: string, expiresAt: string, now = new Date()) {
+export function isIntentUsable(
+  status: string,
+  expiresAt: string,
+  now = new Date(),
+) {
   return status === "pending" && new Date(expiresAt).getTime() > now.getTime();
 }
 
 export function sanitizeAuditMetadata(metadata: Record<string, unknown>) {
   const forbidden = /secret|token|authorization|code|password/i;
-  return Object.fromEntries(Object.entries(metadata).filter(([key]) => !forbidden.test(key)));
+  return Object.fromEntries(
+    Object.entries(metadata).filter(([key]) => !forbidden.test(key)),
+  );
 }
 
 export function approvedProfileProjection(profile: Record<string, unknown>) {

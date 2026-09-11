@@ -15,8 +15,14 @@ export class IntegrationFailure extends Error {
   constructor(
     public readonly status: number,
     public readonly code:
-      | "invalid_request" | "invalid_client" | "invalid_token" | "insufficient_scope"
-      | "invalid_redirect_uri" | "not_found" | "conflict" | "rate_limited"
+      | "invalid_request"
+      | "invalid_client"
+      | "invalid_token"
+      | "insufficient_scope"
+      | "invalid_redirect_uri"
+      | "not_found"
+      | "conflict"
+      | "rate_limited"
       | "temporarily_unavailable",
     message: string,
   ) {
@@ -37,12 +43,20 @@ function safeEqual(a: string, b: string) {
 function publicClient() {
   const url = process.env["SUPABASE_URL"];
   const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
-  if (!url || !key) throw new IntegrationFailure(503, "temporarily_unavailable", "Integration service is unavailable");
-  return createClient<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  if (!url || !key)
+    throw new IntegrationFailure(
+      503,
+      "temporarily_unavailable",
+      "Integration service is unavailable",
+    );
+  return createClient<Database>(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 }
 
 async function adminClient() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { supabaseAdmin } =
+    await import("@/integrations/supabase/client.server");
   return supabaseAdmin;
 }
 
@@ -62,58 +76,129 @@ export function parseBasicClient(request: Request) {
     const decoded = Buffer.from(header.slice(6), "base64").toString("utf8");
     const separator = decoded.indexOf(":");
     if (separator < 1) return null;
-    return { clientId: decoded.slice(0, separator), clientSecret: decoded.slice(separator + 1) };
+    return {
+      clientId: decoded.slice(0, separator),
+      clientSecret: decoded.slice(separator + 1),
+    };
   } catch {
     return null;
   }
 }
 
-export async function requireClient(request: Request, required: IntegrationScope[]): Promise<ClientContext> {
+export async function requireClient(
+  request: Request,
+  required: IntegrationScope[],
+): Promise<ClientContext> {
   const credentials = parseBasicClient(request);
-  if (!credentials) throw new IntegrationFailure(401, "invalid_client", "Valid client authentication is required");
+  if (!credentials)
+    throw new IntegrationFailure(
+      401,
+      "invalid_client",
+      "Valid client authentication is required",
+    );
   const admin = await adminClient();
   const { data, error } = await admin
     .from("integration_clients")
-    .select("id, application_id, client_id, client_secret_hash, environment, allowed_scopes, oauth_client_id, status, secret_expires_at")
+    .select(
+      "id, application_id, client_id, client_secret_hash, environment, allowed_scopes, oauth_client_id, status, secret_expires_at",
+    )
     .eq("client_id", credentials.clientId)
     .maybeSingle();
   const suppliedHash = sha256(credentials.clientSecret);
-  if (error || !data?.client_secret_hash || data.status !== "active" || !safeEqual(suppliedHash, data.client_secret_hash)) {
-    throw new IntegrationFailure(401, "invalid_client", "Valid client authentication is required");
+  if (
+    error ||
+    !data?.client_secret_hash ||
+    data.status !== "active" ||
+    !safeEqual(suppliedHash, data.client_secret_hash)
+  ) {
+    throw new IntegrationFailure(
+      401,
+      "invalid_client",
+      "Valid client authentication is required",
+    );
   }
-  if (data.secret_expires_at && new Date(data.secret_expires_at) <= new Date()) {
-    throw new IntegrationFailure(401, "invalid_client", "Client credential has expired");
+  if (
+    data.secret_expires_at &&
+    new Date(data.secret_expires_at) <= new Date()
+  ) {
+    throw new IntegrationFailure(
+      401,
+      "invalid_client",
+      "Client credential has expired",
+    );
   }
   const scopes = data.allowed_scopes ?? [];
   if (!hasRequiredScopes(scopes, required)) {
-    throw new IntegrationFailure(403, "insufficient_scope", `Required scope: ${required.join(" ")}`);
+    throw new IntegrationFailure(
+      403,
+      "insufficient_scope",
+      `Required scope: ${required.join(" ")}`,
+    );
   }
-  await admin.from("integration_clients").update({ last_used_at: new Date().toISOString() }).eq("id", data.id);
-  return { id: data.id, applicationId: data.application_id, publicId: data.client_id, scopes, environment: data.environment, oauthClientId: data.oauth_client_id };
+  await admin
+    .from("integration_clients")
+    .update({ last_used_at: new Date().toISOString() })
+    .eq("id", data.id);
+  return {
+    id: data.id,
+    applicationId: data.application_id,
+    publicId: data.client_id,
+    scopes,
+    environment: data.environment,
+    oauthClientId: data.oauth_client_id,
+  };
 }
 
-export async function requireOAuthUser(request: Request, required: IntegrationScope[]) {
+export async function requireOAuthUser(
+  request: Request,
+  required: IntegrationScope[],
+) {
   const header = request.headers.get("authorization") ?? "";
   const token = header.startsWith("Bearer ") ? header.slice(7) : "";
-  if (!token) throw new IntegrationFailure(401, "invalid_token", "A valid OAuth bearer token is required");
+  if (!token)
+    throw new IntegrationFailure(
+      401,
+      "invalid_token",
+      "A valid OAuth bearer token is required",
+    );
   const client = publicClient();
   const { data, error } = await client.auth.getClaims(token);
-  if (error || !data?.claims?.sub) throw new IntegrationFailure(401, "invalid_token", "A valid OAuth bearer token is required");
+  if (error || !data?.claims?.sub)
+    throw new IntegrationFailure(
+      401,
+      "invalid_token",
+      "A valid OAuth bearer token is required",
+    );
   const rawScopes = data.claims.scope ?? data.claims.scopes ?? "";
-  const scopes = Array.isArray(rawScopes) ? rawScopes.map(String) : String(rawScopes).split(/\s+/).filter(Boolean);
+  const scopes = Array.isArray(rawScopes)
+    ? rawScopes.map(String)
+    : String(rawScopes).split(/\s+/).filter(Boolean);
   if (!hasRequiredScopes(scopes, required)) {
-    throw new IntegrationFailure(403, "insufficient_scope", `Required scope: ${required.join(" ")}`);
+    throw new IntegrationFailure(
+      403,
+      "insufficient_scope",
+      `Required scope: ${required.join(" ")}`,
+    );
   }
   return { userId: String(data.claims.sub), scopes, claims: data.claims };
 }
 
-async function identityExistsForEmail(admin: Awaited<ReturnType<typeof adminClient>>, email: string) {
+async function identityExistsForEmail(
+  admin: Awaited<ReturnType<typeof adminClient>>,
+  email: string,
+) {
   const target = email.trim().toLowerCase();
   const perPage = 1000;
   for (let page = 1; ; page += 1) {
     const { data, error } = await admin.auth.admin.listUsers({ page, perPage });
-    if (error) throw new IntegrationFailure(503, "temporarily_unavailable", "Unable to validate identity availability");
-    if (data.users.some((user) => user.email?.toLowerCase() === target)) return true;
+    if (error)
+      throw new IntegrationFailure(
+        503,
+        "temporarily_unavailable",
+        "Unable to validate identity availability",
+      );
+    if (data.users.some((user) => user.email?.toLowerCase() === target))
+      return true;
     if (data.users.length < perPage) return false;
   }
 }
@@ -127,37 +212,80 @@ export async function assertRedirect(clientId: string, redirectUri: string) {
     .eq("is_active", true);
   const registered = (data ?? []).map((row) => row.redirect_uri);
   if (error || !isExactRedirectMatch(redirectUri, registered)) {
-    throw new IntegrationFailure(400, "invalid_redirect_uri", "Redirect URI is not registered for this client");
+    throw new IntegrationFailure(
+      400,
+      "invalid_redirect_uri",
+      "Redirect URI is not registered for this client",
+    );
   }
 }
 
-export async function enforceRateLimit(clientId: string, endpoint: string, limit: number) {
+export async function enforceRateLimit(
+  clientId: string,
+  endpoint: string,
+  limit: number,
+) {
   const admin = await adminClient();
   const now = new Date();
-  const windowStart = new Date(Math.floor(now.getTime() / (RATE_WINDOW_SECONDS * 1000)) * RATE_WINDOW_SECONDS * 1000).toISOString();
-  const { data } = await admin.from("integration_rate_limits")
+  const windowStart = new Date(
+    Math.floor(now.getTime() / (RATE_WINDOW_SECONDS * 1000)) *
+      RATE_WINDOW_SECONDS *
+      1000,
+  ).toISOString();
+  const { data } = await admin
+    .from("integration_rate_limits")
     .select("id, request_count")
-    .eq("client_id", clientId).eq("endpoint", endpoint).eq("window_started_at", windowStart).maybeSingle();
+    .eq("client_id", clientId)
+    .eq("endpoint", endpoint)
+    .eq("window_started_at", windowStart)
+    .maybeSingle();
   const count = (data?.request_count ?? 0) + 1;
-  if (data) await admin.from("integration_rate_limits").update({ request_count: count, updated_at: now.toISOString() }).eq("id", data.id);
-  else await admin.from("integration_rate_limits").insert({ client_id: clientId, endpoint, window_started_at: windowStart, request_count: 1 });
-  if (count > limit) throw new IntegrationFailure(429, "rate_limited", "Too many requests; retry shortly");
+  if (data)
+    await admin
+      .from("integration_rate_limits")
+      .update({ request_count: count, updated_at: now.toISOString() })
+      .eq("id", data.id);
+  else
+    await admin
+      .from("integration_rate_limits")
+      .insert({
+        client_id: clientId,
+        endpoint,
+        window_started_at: windowStart,
+        request_count: 1,
+      });
+  if (count > limit)
+    throw new IntegrationFailure(
+      429,
+      "rate_limited",
+      "Too many requests; retry shortly",
+    );
 }
 
 export async function audit(input: {
-  request: Request; requestId: string; eventType: string; outcome: "success" | "failure";
-  client?: ClientContext; userId?: string; externalSubject?: string; metadata?: Record<string, unknown>;
+  request: Request;
+  requestId: string;
+  eventType: string;
+  outcome: "success" | "failure";
+  client?: ClientContext;
+  userId?: string;
+  externalSubject?: string;
+  metadata?: Record<string, unknown>;
 }) {
   try {
     const admin = await adminClient();
-    const forwarded = input.request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+    const forwarded =
+      input.request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      "unknown";
     await admin.from("integration_audit_events").insert({
       client_id: input.client?.id ?? null,
       application_id: input.client?.applicationId ?? null,
       event_type: input.eventType,
       outcome: input.outcome,
       subject_user_id: input.userId ?? null,
-      external_subject_hash: input.externalSubject ? sha256(input.externalSubject) : null,
+      external_subject_hash: input.externalSubject
+        ? sha256(input.externalSubject)
+        : null,
       request_id: input.requestId,
       ip_hash: sha256(forwarded),
       metadata: sanitizeAuditMetadata(input.metadata ?? {}) as Json,
@@ -168,58 +296,133 @@ export async function audit(input: {
 }
 
 export async function createIntent(input: {
-  client: ClientContext; type: "identity_create" | "identity_link"; externalSubject: string;
-  email?: string; redirectUri: string; scopes: string[]; idempotencyKey?: string;
+  client: ClientContext;
+  type: "identity_create" | "identity_link";
+  externalSubject: string;
+  email?: string;
+  redirectUri: string;
+  scopes: string[];
+  idempotencyKey?: string;
 }) {
   await assertRedirect(input.client.id, input.redirectUri);
   if (!input.scopes.every((scope) => input.client.scopes.includes(scope))) {
-    throw new IntegrationFailure(403, "insufficient_scope", "Requested scopes exceed this client's grant");
+    throw new IntegrationFailure(
+      403,
+      "insufficient_scope",
+      "Requested scopes exceed this client's grant",
+    );
   }
   const admin = await adminClient();
   if (input.idempotencyKey) {
     const keyHash = sha256(input.idempotencyKey);
-    const { data: existing } = await admin.from("integration_intents")
-      .select("id, expires_at, status").eq("client_id", input.client.id).eq("idempotency_key_hash", keyHash).maybeSingle();
-    if (existing) return { id: existing.id, expires_at: existing.expires_at, status: existing.status, reused: true };
+    const { data: existing } = await admin
+      .from("integration_intents")
+      .select("id, expires_at, status")
+      .eq("client_id", input.client.id)
+      .eq("idempotency_key_hash", keyHash)
+      .maybeSingle();
+    if (existing)
+      return {
+        id: existing.id,
+        expires_at: existing.expires_at,
+        status: existing.status,
+        reused: true,
+      };
   }
   if (input.type === "identity_create" && input.email) {
     const exists = await identityExistsForEmail(admin, input.email);
-    if (exists) throw new IntegrationFailure(409, "conflict", "An ArtistrySynk identity already exists; use identity linking instead");
+    if (exists)
+      throw new IntegrationFailure(
+        409,
+        "conflict",
+        "An ArtistrySynk identity already exists; use identity linking instead",
+      );
   }
   const code = randomBytes(32).toString("base64url");
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-  const { data, error } = await admin.from("integration_intents").insert({
-    client_id: input.client.id,
-    intent_type: input.type,
-    external_subject: input.externalSubject,
-    email_hash: input.email ? sha256(input.email.trim().toLowerCase()) : null,
-    redirect_uri: input.redirectUri,
-    requested_scopes: input.scopes,
-    code_hash: sha256(code),
-    idempotency_key_hash: input.idempotencyKey ? sha256(input.idempotencyKey) : null,
+  const { data, error } = await admin
+    .from("integration_intents")
+    .insert({
+      client_id: input.client.id,
+      intent_type: input.type,
+      external_subject: input.externalSubject,
+      email_hash: input.email ? sha256(input.email.trim().toLowerCase()) : null,
+      redirect_uri: input.redirectUri,
+      requested_scopes: input.scopes,
+      code_hash: sha256(code),
+      idempotency_key_hash: input.idempotencyKey
+        ? sha256(input.idempotencyKey)
+        : null,
+      expires_at: expiresAt,
+    })
+    .select("id")
+    .single();
+  if (error || !data)
+    throw new IntegrationFailure(
+      503,
+      "temporarily_unavailable",
+      "Unable to create integration intent",
+    );
+  return {
+    id: data.id,
+    code,
     expires_at: expiresAt,
-  }).select("id").single();
-  if (error || !data) throw new IntegrationFailure(503, "temporarily_unavailable", "Unable to create integration intent");
-  return { id: data.id, code, expires_at: expiresAt, status: "pending", reused: false };
+    status: "pending",
+    reused: false,
+  };
 }
 
 export async function issuerUrl() {
   const base = process.env["SUPABASE_URL"];
-  if (!base) throw new IntegrationFailure(503, "temporarily_unavailable", "Integration service is unavailable");
-  const discovery = await fetch(`${base}${AUTH_BASE_PATH}/.well-known/openid-configuration`);
-  if (!discovery.ok) throw new IntegrationFailure(503, "temporarily_unavailable", "Authorization service is unavailable");
-  const body = await discovery.json() as { issuer?: string };
-  if (!body.issuer) throw new IntegrationFailure(503, "temporarily_unavailable", "Authorization service is unavailable");
+  if (!base)
+    throw new IntegrationFailure(
+      503,
+      "temporarily_unavailable",
+      "Integration service is unavailable",
+    );
+  const discovery = await fetch(
+    `${base}${AUTH_BASE_PATH}/.well-known/openid-configuration`,
+  );
+  if (!discovery.ok)
+    throw new IntegrationFailure(
+      503,
+      "temporarily_unavailable",
+      "Authorization service is unavailable",
+    );
+  const body = (await discovery.json()) as { issuer?: string };
+  if (!body.issuer)
+    throw new IntegrationFailure(
+      503,
+      "temporarily_unavailable",
+      "Authorization service is unavailable",
+    );
   return body.issuer;
 }
 
 export async function authorizationEndpoint() {
   const base = process.env["SUPABASE_URL"];
-  if (!base) throw new IntegrationFailure(503, "temporarily_unavailable", "Integration service is unavailable");
-  const discovery = await fetch(`${base}${AUTH_BASE_PATH}/.well-known/openid-configuration`);
-  if (!discovery.ok) throw new IntegrationFailure(503, "temporarily_unavailable", "Authorization service is unavailable");
-  const body = await discovery.json() as { authorization_endpoint?: string };
-  if (!body.authorization_endpoint) throw new IntegrationFailure(503, "temporarily_unavailable", "Authorization service is unavailable");
+  if (!base)
+    throw new IntegrationFailure(
+      503,
+      "temporarily_unavailable",
+      "Integration service is unavailable",
+    );
+  const discovery = await fetch(
+    `${base}${AUTH_BASE_PATH}/.well-known/openid-configuration`,
+  );
+  if (!discovery.ok)
+    throw new IntegrationFailure(
+      503,
+      "temporarily_unavailable",
+      "Authorization service is unavailable",
+    );
+  const body = (await discovery.json()) as { authorization_endpoint?: string };
+  if (!body.authorization_endpoint)
+    throw new IntegrationFailure(
+      503,
+      "temporarily_unavailable",
+      "Authorization service is unavailable",
+    );
   return body.authorization_endpoint;
 }
 
