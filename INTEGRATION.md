@@ -124,17 +124,10 @@ The API uses the existing server-only Lovable Cloud variables `SUPABASE_URL`, `S
 
 Development, staging, and production clients have separate IDs, secrets, callback allowlists, activation, expiry, and revocation. A credential from one environment must not be copied to another.
 
-## Activation checklist for ZGT
+## Remaining production configuration for ZGT
 
-Before production activation, provide and approve:
-
-1. Exact development and production HTTPS redirect URIs.
-2. Operational/security contacts and incident escalation path.
-3. Final scopes and approved profile fields.
-4. Decision whether `identity:create` may send invitations.
-5. Per-client rate limits and expected traffic.
-6. Credential custodian and rotation schedule.
-7. Privacy/legal approval and an end-to-end authorization test.
-8. Explicit ArtistrySynk approval to generate and activate the production credential.
-
-No ZGT production credential exists until this checklist is completed.
+1. Publish ArtistrySynk so the discovery documents and consent route are live on `artistrysynk.app` (they respond correctly in the current build).
+2. Supply exact staging/preview callback URLs if ZGT runs a non-production host.
+3. Confirm ZGT stores both secrets (OAuth client secret and integration client secret) in server-side secret storage only.
+4. Agree a rotation schedule; the integration client secret expires in 2027.
+5. Confirm the four approved profile fields satisfy ZGT's needs; anything further requires privacy review.
