@@ -46,7 +46,15 @@ Never place a client secret in browser code, mobile code, source control, query 
 
 Use the managed OAuth 2.0 / OpenID Connect authorization-code flow:
 
-1. The partner server calls `POST /integration/v1/identity/link/start` with confidential client authentication, an unguessable `state`, exact registered `redirect_uri`, external subject, requested scopes, and a PKCE `code_challenge` (`S256`, derived from a verifier kept on the partner server). PKCE is mandatory: the authorization server rejects authorization requests without a challenge.
+1. The partner server calls `POST /integration/v1/identity/link/start` with confidential client authentication, an unguessable `state` (16–500 chars), exact registered `redirect_uri`, external subject, requested scopes, and a PKCE `code_challenge` (base64url, 43–128 chars; `code_challenge_method` is `S256` by default, `plain` also accepted) derived from a verifier kept on the partner server. PKCE is mandatory: the authorization server rejects authorization requests without a challenge, so a start request without `code_challenge` is refused with `invalid_request`.
+
+   Validation failures return `400 invalid_request` with a `details` array naming the offending fields, e.g.
+
+   ```json
+   { "error": { "code": "invalid_request", "message": "The identity link request is invalid",
+     "request_id": "…", "details": [{ "field": "code_challenge", "issue": "Required" }] } }
+   ```
+
 2. ArtistrySynk returns `authorization_url`. The partner redirects the user's browser there. The URL requests OIDC scopes (`openid profile email`); the integration scopes travel with the intent and are enforced by ArtistrySynk at link and profile time.
 3. ArtistrySynk handles sign-in or registration and shows its own consent screen. Passwords never pass through the partner.
 4. The authorization server redirects to the exact registered URI with a short-lived code and the original state.
