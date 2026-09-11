@@ -124,6 +124,7 @@ export default function OAuthConsent() {
           skipBrowserRedirect: true,
         });
     if (result.error) {
+      logDecision(authorizationId, "failed", clientName);
       setError(
         approved
           ? "The connection could not be approved."
@@ -132,6 +133,7 @@ export default function OAuthConsent() {
       setBusy(false);
       return;
     }
+    logDecision(authorizationId, approved ? "approved" : "denied", clientName);
     finishRedirect(result.data);
   };
 
