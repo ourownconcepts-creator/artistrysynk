@@ -94,7 +94,9 @@ Mutating confidential calls should include a unique `Idempotency-Key`. JSON bodi
 
 ## Approved profile fields
 
-`id`, `username`, resolved display name, `bio`, `avatar_url`, `cover_image_url`, general `location`, `country`, `city`, `is_verified`, and `professional_verified`.
+`id` (stable ArtistrySynk identity reference), `name` (resolved display name), `username`, `avatar_url`, and general `location` — nothing else.
+
+Access additionally requires an active identity link whose client grant includes `profile:read`; a valid bearer token alone is not sufficient.
 
 The API does not expose email, password data, exact coordinates, legal identity records, sessions, roles, private portfolio records, private social data, or competition data. Existing ArtistrySynk visibility checks still apply.
 
