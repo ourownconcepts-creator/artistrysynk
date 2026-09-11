@@ -46,11 +46,12 @@ Never place a client secret in browser code, mobile code, source control, query 
 
 Use the managed OAuth 2.0 / OpenID Connect authorization-code flow:
 
-1. The partner server calls `POST /integration/v1/identity/link/start` with confidential client authentication, an unguessable `state`, exact registered `redirect_uri`, external subject, and requested scopes.
-2. ArtistrySynk returns `authorization_url`. The partner redirects the user's browser there.
+1. The partner server calls `POST /integration/v1/identity/link/start` with confidential client authentication, an unguessable `state`, exact registered `redirect_uri`, external subject, requested scopes, and a PKCE `code_challenge` (`S256`, derived from a verifier kept on the partner server). PKCE is mandatory: the authorization server rejects authorization requests without a challenge.
+2. ArtistrySynk returns `authorization_url`. The partner redirects the user's browser there. The URL requests OIDC scopes (`openid profile email`); the integration scopes travel with the intent and are enforced by ArtistrySynk at link and profile time.
 3. ArtistrySynk handles sign-in or registration and shows its own consent screen. Passwords never pass through the partner.
 4. The authorization server redirects to the exact registered URI with a short-lived code and the original state.
-5. The partner server validates state and exchanges the code at the managed token endpoint. Tokens stay server-side.
+5. The partner server validates state and exchanges the code at the managed token endpoint with `code_verifier` and Basic client authentication. Tokens stay server-side and codes are single-use.
+
 6. `POST /integration/v1/identity/link/complete` associates the authorized ArtistrySynk subject with the partner's external subject.
 
 OAuth discovery is published by the managed issuer. Resource metadata is available at `/.well-known/oauth-protected-resource`.
