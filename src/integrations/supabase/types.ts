@@ -2627,6 +2627,7 @@ export type Database = {
           updated_at: string | null
           username: string
           username_changed_at: string | null
+          welcome_email_sent_at: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -2657,6 +2658,7 @@ export type Database = {
           updated_at?: string | null
           username: string
           username_changed_at?: string | null
+          welcome_email_sent_at?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -2687,6 +2689,7 @@ export type Database = {
           updated_at?: string | null
           username?: string
           username_changed_at?: string | null
+          welcome_email_sent_at?: string | null
         }
         Relationships: []
       }
