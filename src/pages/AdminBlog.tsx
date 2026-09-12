@@ -174,7 +174,7 @@ const AdminBlog = () => {
 
   return (
     <div className="container mx-auto max-w-5xl px-4 py-10">
-      <PageSEO title="Blog Editor | ArtistrySynk Admin" description="Write, publish and manage ArtistrySynk blog articles." noindex />
+      <PageSEO title="Blog Editor | ArtistrySynk Admin" description="Write, publish and manage ArtistrySynk blog articles." noIndex />
 
       <header className="mb-8">
         <h1 className="flex items-center gap-2 text-3xl font-bold">
