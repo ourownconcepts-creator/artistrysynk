@@ -189,9 +189,8 @@ export const setPartnerLinkStatus = createServerFn({ method: "POST" })
       event_type: data.status === "active" ? "connection.reinstated" : "connection.revoked",
       outcome: "success",
       subject_user_id: updated.user_id,
-      actor_user_id: context.userId,
       request_id: crypto.randomUUID(),
-      metadata: { source: "admin_panel" },
+      metadata: { source: "admin_panel", actor_user_id: context.userId },
     });
 
     return { status: data.status };
@@ -278,9 +277,8 @@ export const approvePartnerIntent = createServerFn({ method: "POST" })
       event_type: "identity.link.approved",
       outcome: "success",
       subject_user_id: member.id,
-      actor_user_id: context.userId,
       request_id: crypto.randomUUID(),
-      metadata: { source: "admin_panel", intent_id: intent.id },
+      metadata: { source: "admin_panel", actor_user_id: context.userId, intent_id: intent.id },
     });
 
     return { linked: true, username: member.username };
@@ -308,9 +306,8 @@ export const cancelPartnerIntent = createServerFn({ method: "POST" })
       client_id: updated.client_id,
       event_type: "identity.link.cancelled",
       outcome: "success",
-      actor_user_id: context.userId,
       request_id: crypto.randomUUID(),
-      metadata: { source: "admin_panel", intent_id: updated.id },
+      metadata: { source: "admin_panel", actor_user_id: context.userId, intent_id: updated.id },
     });
 
     return { cancelled: true };
