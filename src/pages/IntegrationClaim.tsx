@@ -12,6 +12,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CheckCircle2, Link2 } from "lucide-react";
+import {
+  clearPendingClaim,
+  peekPendingClaim,
+  rememberPendingClaim,
+} from "@/lib/integration/pendingClaim";
 
 export default function IntegrationClaim() {
   const navigate = useNavigate();
@@ -24,26 +29,39 @@ export default function IntegrationClaim() {
     typeof window === "undefined"
       ? new URLSearchParams()
       : new URLSearchParams(window.location.search);
-  const code = params.get("code") ?? "";
-  const state = params.get("state") ?? undefined;
+  const remembered = typeof window === "undefined" ? null : peekPendingClaim();
+  // Fall back to the remembered claim: the confirmation-email round trip can
+  // drop the original query string.
+  const code = params.get("code") ?? remembered?.code ?? "";
+  const state = params.get("state") ?? remembered?.state;
 
   useEffect(() => {
+    if (!code) {
+      setStatus("error");
+      setMessage("This invitation link is incomplete. Please start again from the partner site.");
+      return;
+    }
+    // Persist before any sign-in detour so the flow can resume afterwards.
+    rememberPendingClaim(code, state);
     void supabase.auth.getSession().then(({ data }) => {
       if (!data.session) {
-        const next = `${window.location.pathname}${window.location.search}`;
+        const next = `/integration/v1/claim?code=${encodeURIComponent(code)}${
+          state ? `&state=${encodeURIComponent(state)}` : ""
+        }`;
         navigate(`/auth?next=${encodeURIComponent(next)}`, { replace: true });
         return;
       }
       setStatus("ready");
       setMessage("Your signed-in ArtistrySynk account is ready to be linked.");
     });
-  }, [navigate]);
+  }, [navigate, code, state]);
 
   const claim = async () => {
     setStatus("loading");
     setMessage("Completing your secure connection…");
     try {
       const result = await complete({ data: { code, state } });
+      clearPendingClaim();
       setStatus("done");
       setMessage("Your ArtistrySynk identity is now linked. Taking you back…");
       window.setTimeout(() => window.location.assign(result.redirectUri), 900);

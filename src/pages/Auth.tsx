@@ -21,6 +21,7 @@ import { storeReferralCode, getStoredReferralCode, claimStoredReferral } from "@
 import { SignupConsent } from "@/components/legal/SignupConsent";
 import { buildSignupConsents, flushPendingConsents, storePendingConsents } from "@/lib/consent";
 import { rememberAuthReturn, sanitizeAuthReturn } from "@/lib/authReturn";
+import { pendingClaimPath } from "@/lib/integration/pendingClaim";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -30,7 +31,9 @@ const Auth = () => {
     [searchParams],
   );
   const returnPath = useMemo(
-    () => sanitizeAuthReturn(searchParams.get("next")),
+    // An in-progress partner identity claim takes priority so the connection
+    // flow resumes instead of dropping the user on Discover.
+    () => pendingClaimPath() ?? sanitizeAuthReturn(searchParams.get("next")),
     [searchParams],
   );
   const [loading, setLoading] = useState(false);

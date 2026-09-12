@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { claimStoredReferral } from "@/lib/referral";
 import { consumeAuthReturn, sanitizeAuthReturn } from "@/lib/authReturn";
+import { pendingClaimPath } from "@/lib/integration/pendingClaim";
 
 /**
  * Public OAuth landing route. Waits for the Supabase session to hydrate
@@ -22,12 +23,16 @@ const AuthCallback = () => {
       navigate(path, { replace: true });
     };
 
+    // A partner identity claim in progress always wins: the confirmation link
+    // may arrive without the original claim parameters.
+    const destination = () => pendingClaimPath() ?? consumeAuthReturn(queryReturn);
+
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) void claimStoredReferral().finally(() => go(consumeAuthReturn(queryReturn)));
+      if (session) void claimStoredReferral().finally(() => go(destination()));
     });
 
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) void claimStoredReferral().finally(() => go(consumeAuthReturn(queryReturn)));
+      if (data.session) void claimStoredReferral().finally(() => go(destination()));
     });
 
     const timeout = window.setTimeout(() => go("/auth"), 8000);
