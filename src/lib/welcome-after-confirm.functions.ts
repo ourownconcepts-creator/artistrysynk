@@ -9,7 +9,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 export const sendWelcomeAfterConfirm = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase, userId } = context;
+    const { supabase, userId, claims } = context;
 
     const { data: profile, error } = await supabase
       .from("profiles")
@@ -20,9 +20,9 @@ export const sendWelcomeAfterConfirm = createServerFn({ method: "POST" })
     if (error || !profile) return { sent: false as const, reason: "no_profile" };
     if (profile.welcome_email_sent_at) return { sent: false as const, reason: "already_sent" };
 
-    const { data: claims } = await supabase.auth.getUser();
-    const email = claims?.user?.email;
+    const email = typeof claims["email"] === "string" ? (claims["email"] as string) : "";
     if (!email) return { sent: false as const, reason: "no_email" };
+
 
     // Claim the send first so concurrent tabs cannot double-send.
     const { data: claimed } = await supabase
