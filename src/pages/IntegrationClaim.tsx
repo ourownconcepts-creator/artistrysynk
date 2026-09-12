@@ -12,6 +12,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CheckCircle2, Link2 } from "lucide-react";
+import {
+  clearPendingClaim,
+  peekPendingClaim,
+  rememberPendingClaim,
+} from "@/lib/integration/pendingClaim";
 
 export default function IntegrationClaim() {
   const navigate = useNavigate();
