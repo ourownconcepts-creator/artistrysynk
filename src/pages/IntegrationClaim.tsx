@@ -61,6 +61,7 @@ export default function IntegrationClaim() {
     setMessage("Completing your secure connection…");
     try {
       const result = await complete({ data: { code, state } });
+      clearPendingClaim();
       setStatus("done");
       setMessage("Your ArtistrySynk identity is now linked. Taking you back…");
       window.setTimeout(() => window.location.assign(result.redirectUri), 900);
