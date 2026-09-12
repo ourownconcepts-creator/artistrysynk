@@ -42,7 +42,7 @@ export const Route = createFileRoute("/api/public/hooks/seo-refresh")({
         if (paths.length === 0) {
           paths = [
             ...sitemap.staticEntries,
-            ...sitemap.blogEntries(),
+            ...(await sitemap.blogEntries()),
             ...sitemap.landingEntries(),
             ...(await sitemap.studioEntries()),
           ].map((e) => e.path);

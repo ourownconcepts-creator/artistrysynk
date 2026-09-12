@@ -35,7 +35,7 @@ export const resubmitSitemapForIndexing = createServerFn({ method: "POST" })
     const sitemap = await import("@/lib/sitemap.server");
     const entries = [
       ...sitemap.staticEntries,
-      ...sitemap.blogEntries(),
+      ...(await sitemap.blogEntries()),
       ...sitemap.landingEntries(),
       ...(await sitemap.studioEntries()),
     ];
