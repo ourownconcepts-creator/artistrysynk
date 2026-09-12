@@ -20,10 +20,12 @@ export default function IntegrationClaim() {
     "loading",
   );
   const [message, setMessage] = useState("Checking your invitation…");
-  const code =
+  const params =
     typeof window === "undefined"
-      ? ""
-      : (new URLSearchParams(window.location.search).get("code") ?? "");
+      ? new URLSearchParams()
+      : new URLSearchParams(window.location.search);
+  const code = params.get("code") ?? "";
+  const state = params.get("state") ?? undefined;
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
