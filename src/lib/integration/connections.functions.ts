@@ -41,25 +41,42 @@ export const listMyIntegrationConnections = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabaseAdmin } =
       await import("@/integrations/supabase/client.server");
+    const { createHash } = await import("node:crypto");
 
-    const [{ data: links }, { data: intents }] = await Promise.all([
-      supabaseAdmin
-        .from("integration_identity_links")
-        .select(
-          "id, granted_scopes, linked_at, revoked_at, status, integration_clients!inner(id, client_id, environment, status, integration_applications!inner(name, slug))",
-        )
-        .eq("user_id", context.userId)
-        .order("linked_at", { ascending: false }),
-      supabaseAdmin
-        .from("integration_intents")
-        .select(
-          "id, intent_type, requested_scopes, expires_at, created_at, status, integration_clients!inner(id, client_id, environment, status, integration_applications!inner(name, slug))",
-        )
-        .eq("user_id", context.userId)
-        .eq("status", "pending")
-        .gt("expires_at", new Date().toISOString())
-        .order("created_at", { ascending: false }),
-    ]);
+    const { data: links } = await supabaseAdmin
+      .from("integration_identity_links")
+      .select(
+        "id, granted_scopes, linked_at, revoked_at, status, external_subject, integration_clients!inner(id, client_id, environment, status, integration_applications!inner(name, slug))",
+      )
+      .eq("user_id", context.userId)
+      .order("linked_at", { ascending: false });
+
+    // A pending intent has no user_id yet — it is only stamped when the user
+    // claims it. So a request is matched to this member by the identifiers the
+    // partner already sent: the hashed email, or an external account this
+    // member has previously linked.
+    const email = (context.claims as { email?: string } | null)?.email;
+    const emailHash = email
+      ? createHash("sha256").update(email.trim().toLowerCase()).digest("hex")
+      : null;
+    const subjects = Array.from(
+      new Set((links ?? []).map((row) => row.external_subject).filter(Boolean)),
+    );
+    const matchers = [`user_id.eq.${context.userId}`];
+    if (emailHash) matchers.push(`email_hash.eq.${emailHash}`);
+    if (subjects.length)
+      matchers.push(`external_subject.in.(${subjects.join(",")})`);
+
+    const { data: intents } = await supabaseAdmin
+      .from("integration_intents")
+      .select(
+        "id, intent_type, requested_scopes, expires_at, created_at, status, integration_clients!inner(id, client_id, environment, status, integration_applications!inner(name, slug))",
+      )
+      .or(matchers.join(","))
+      .eq("status", "pending")
+      .gt("expires_at", new Date().toISOString())
+      .order("created_at", { ascending: false });
+
 
     const appName = (client: unknown) =>
       (client as ClientRow | null)?.integration_applications?.name ??
