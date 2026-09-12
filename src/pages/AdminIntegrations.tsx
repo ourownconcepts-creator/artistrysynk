@@ -163,6 +163,31 @@ const AdminIntegrations = () => {
         </Button>
       </div>
 
+      {stats && (
+        <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard
+            label="Connected contestants"
+            value={stats.connected}
+            hint={`${stats.connectedLast7Days} in the last 7 days`}
+          />
+          <StatCard
+            label="Claims pending"
+            value={stats.pending}
+            hint={`${stats.expired} expired without being claimed`}
+          />
+          <StatCard
+            label="Claims completed"
+            value={stats.completed}
+            hint={`${stats.exchanged} handed back to the partner`}
+          />
+          <StatCard
+            label="Awaiting partner pickup"
+            value={stats.awaitingExchange}
+            hint={`${stats.revoked} connections revoked`}
+          />
+        </div>
+      )}
+
       <Tabs defaultValue="pending">
         <TabsList>
           <TabsTrigger value="pending">Awaiting approval ({pending.length})</TabsTrigger>
