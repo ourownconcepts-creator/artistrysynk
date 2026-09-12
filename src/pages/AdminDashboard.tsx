@@ -429,6 +429,17 @@ const AdminDashboard = () => {
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-4">
             <div>
+              <p className="font-medium">Blog editor</p>
+              <p className="text-sm text-muted-foreground">
+                Write, edit and publish blog articles for the public blog.
+              </p>
+            </div>
+            <Button variant="outline" onClick={() => navigate("/admin-blog")}>
+              Open blog editor
+            </Button>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-4">
+            <div>
               <p className="font-medium">Error diagnostics</p>
               <p className="text-sm text-muted-foreground">
                 Client disconnect/abort events with timestamps, routes and correlation IDs.
