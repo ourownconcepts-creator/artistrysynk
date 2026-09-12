@@ -5,6 +5,16 @@ import { resolveLegalTokens } from "@/config/legal";
 import type { LegalDocumentDetail } from "@/lib/legal.functions";
 import { History } from "lucide-react";
 
+// Fixed locale + UTC so the server-rendered date matches the browser exactly
+// (locale/timezone drift caused a hydration mismatch on policy pages).
+const LONG_DATE = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
+const SHORT_DATE = new Intl.DateTimeFormat("en-GB", { timeZone: "UTC" });
+
 export const LegalDocumentView = ({ doc }: { doc: LegalDocumentDetail }) => {
   const content = resolveLegalTokens(doc.content);
   const older = doc.versions.filter((v) => v.version !== doc.version);
@@ -18,11 +28,7 @@ export const LegalDocumentView = ({ doc }: { doc: LegalDocumentDetail }) => {
           <Badge variant="secondary">Version {doc.version}</Badge>
           <span>
             Effective{" "}
-            {new Date(doc.effectiveDate).toLocaleDateString(undefined, {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
+            {LONG_DATE.format(new Date(doc.effectiveDate))}
           </span>
           {!doc.isLatest && <Badge variant="outline">Historical version</Badge>}
         </div>
@@ -49,7 +55,7 @@ export const LegalDocumentView = ({ doc }: { doc: LegalDocumentDetail }) => {
                   to={`/legal/${doc.slug}?v=${v.version}`}
                   className="text-primary hover:underline"
                 >
-                  Version {v.version} ({new Date(v.effectiveDate).toLocaleDateString()})
+                  Version {v.version} ({SHORT_DATE.format(new Date(v.effectiveDate))})
                 </Link>
               </li>
             ))}
