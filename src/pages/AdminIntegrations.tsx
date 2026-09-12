@@ -79,9 +79,11 @@ const AdminIntegrations = () => {
   const approve = useServerFn(approvePartnerIntent);
   const cancel = useServerFn(cancelPartnerIntent);
   const setStatus = useServerFn(setPartnerLinkStatus);
+  const loadStats = useServerFn(getPartnerStats);
 
   const [identities, setIdentities] = useState<PartnerIdentityRow[]>([]);
   const [pending, setPending] = useState<PartnerIntentRow[]>([]);
+  const [stats, setStats] = useState<PartnerStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [denied, setDenied] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
