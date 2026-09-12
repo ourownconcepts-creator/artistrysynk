@@ -22,6 +22,7 @@ import { SignupConsent } from "@/components/legal/SignupConsent";
 import { buildSignupConsents, flushPendingConsents, storePendingConsents } from "@/lib/consent";
 import { rememberAuthReturn, sanitizeAuthReturn } from "@/lib/authReturn";
 import { pendingClaimPath } from "@/lib/integration/pendingClaim";
+import { authEmailClient } from "@/lib/authEmailFlow";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -52,6 +53,13 @@ const Auth = () => {
   useEffect(() => {
     storeReferralCode(searchParams.get("ref"));
   }, [searchParams]);
+
+  // A message carried over from the email-confirmation landing page.
+  useEffect(() => {
+    const notice = searchParams.get("notice");
+    if (notice) toast.info(notice);
+  }, [searchParams]);
+
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -136,6 +144,27 @@ const Auth = () => {
     if (error) {
       if (error.message === "Invalid login credentials") {
         toast.error("Invalid email or password. Please try again.");
+      } else if (/not confirmed/i.test(error.message)) {
+        toast.error("Please confirm your email first.", {
+          action: {
+            label: "Resend email",
+            onClick: () => {
+              void authEmailClient.auth
+                .resend({
+                  type: "signup",
+                  email,
+                  options: {
+                    emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(returnPath === "/discover" ? "/setup-profile" : returnPath)}`,
+                  },
+                })
+                .then(({ error: resendError }) =>
+                  resendError
+                    ? toast.error(resendError.message)
+                    : toast.success("Confirmation email sent."),
+                );
+            },
+          },
+        });
       } else {
         toast.error(error.message);
       }
@@ -176,7 +205,9 @@ const Auth = () => {
       buildSignupConsents({ acceptedTerms, confirmedAge, marketing: marketingOptIn }),
     );
 
-    const { data, error } = await supabase.auth.signUp({
+    // Sent through the implicit-flow client so the confirmation link works even
+    // when it is opened in a different browser or an email app's viewer.
+    const { data, error } = await authEmailClient.auth.signUp({
       email,
       password,
       options: {
