@@ -119,6 +119,7 @@ import { Route as ApiPublicHooksSeoRefreshRouteImport } from './routes/api/publi
 import { Route as IntegrationV1IdentityCreateRouteImport } from './routes/integration/v1/identity/create'
 import { Route as IntegrationV1IdentityLookupRouteImport } from './routes/integration/v1/identity/lookup'
 import { Route as IntegrationV1ProfileUserIdRouteImport } from './routes/integration/v1/profile/$userId'
+import { Route as IntegrationV1IdentityClaimExchangeRouteImport } from './routes/integration/v1/identity/claim/exchange'
 import { Route as IntegrationV1IdentityLinkCompleteRouteImport } from './routes/integration/v1/identity/link/complete'
 import { Route as IntegrationV1IdentityLinkStartRouteImport } from './routes/integration/v1/identity/link/start'
 
@@ -681,6 +682,12 @@ const IntegrationV1ProfileUserIdRoute =
     path: '/integration/v1/profile/$userId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const IntegrationV1IdentityClaimExchangeRoute =
+  IntegrationV1IdentityClaimExchangeRouteImport.update({
+    id: '/integration/v1/identity/claim/exchange',
+    path: '/integration/v1/identity/claim/exchange',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const IntegrationV1IdentityLinkCompleteRoute =
   IntegrationV1IdentityLinkCompleteRouteImport.update({
     id: '/integration/v1/identity/link/complete',
@@ -805,6 +812,7 @@ export interface FileRoutesByFullPath {
   '/integration/v1/identity/create': typeof IntegrationV1IdentityCreateRoute
   '/integration/v1/identity/lookup': typeof IntegrationV1IdentityLookupRoute
   '/integration/v1/profile/$userId': typeof IntegrationV1ProfileUserIdRoute
+  '/integration/v1/identity/claim/exchange': typeof IntegrationV1IdentityClaimExchangeRoute
   '/integration/v1/identity/link/complete': typeof IntegrationV1IdentityLinkCompleteRoute
   '/integration/v1/identity/link/start': typeof IntegrationV1IdentityLinkStartRoute
 }
@@ -919,6 +927,7 @@ export interface FileRoutesByTo {
   '/integration/v1/identity/create': typeof IntegrationV1IdentityCreateRoute
   '/integration/v1/identity/lookup': typeof IntegrationV1IdentityLookupRoute
   '/integration/v1/profile/$userId': typeof IntegrationV1ProfileUserIdRoute
+  '/integration/v1/identity/claim/exchange': typeof IntegrationV1IdentityClaimExchangeRoute
   '/integration/v1/identity/link/complete': typeof IntegrationV1IdentityLinkCompleteRoute
   '/integration/v1/identity/link/start': typeof IntegrationV1IdentityLinkStartRoute
 }
@@ -1034,6 +1043,7 @@ export interface FileRoutesById {
   '/integration/v1/identity/create': typeof IntegrationV1IdentityCreateRoute
   '/integration/v1/identity/lookup': typeof IntegrationV1IdentityLookupRoute
   '/integration/v1/profile/$userId': typeof IntegrationV1ProfileUserIdRoute
+  '/integration/v1/identity/claim/exchange': typeof IntegrationV1IdentityClaimExchangeRoute
   '/integration/v1/identity/link/complete': typeof IntegrationV1IdentityLinkCompleteRoute
   '/integration/v1/identity/link/start': typeof IntegrationV1IdentityLinkStartRoute
 }
@@ -1150,6 +1160,7 @@ export interface FileRouteTypes {
     | '/integration/v1/identity/create'
     | '/integration/v1/identity/lookup'
     | '/integration/v1/profile/$userId'
+    | '/integration/v1/identity/claim/exchange'
     | '/integration/v1/identity/link/complete'
     | '/integration/v1/identity/link/start'
   fileRoutesByTo: FileRoutesByTo
@@ -1264,6 +1275,7 @@ export interface FileRouteTypes {
     | '/integration/v1/identity/create'
     | '/integration/v1/identity/lookup'
     | '/integration/v1/profile/$userId'
+    | '/integration/v1/identity/claim/exchange'
     | '/integration/v1/identity/link/complete'
     | '/integration/v1/identity/link/start'
   id:
@@ -1378,6 +1390,7 @@ export interface FileRouteTypes {
     | '/integration/v1/identity/create'
     | '/integration/v1/identity/lookup'
     | '/integration/v1/profile/$userId'
+    | '/integration/v1/identity/claim/exchange'
     | '/integration/v1/identity/link/complete'
     | '/integration/v1/identity/link/start'
   fileRoutesById: FileRoutesById
@@ -1493,6 +1506,7 @@ export interface RootRouteChildren {
   IntegrationV1IdentityCreateRoute: typeof IntegrationV1IdentityCreateRoute
   IntegrationV1IdentityLookupRoute: typeof IntegrationV1IdentityLookupRoute
   IntegrationV1ProfileUserIdRoute: typeof IntegrationV1ProfileUserIdRoute
+  IntegrationV1IdentityClaimExchangeRoute: typeof IntegrationV1IdentityClaimExchangeRoute
   IntegrationV1IdentityLinkCompleteRoute: typeof IntegrationV1IdentityLinkCompleteRoute
   IntegrationV1IdentityLinkStartRoute: typeof IntegrationV1IdentityLinkStartRoute
 }
@@ -2269,6 +2283,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IntegrationV1ProfileUserIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/integration/v1/identity/claim/exchange': {
+      id: '/integration/v1/identity/claim/exchange'
+      path: '/integration/v1/identity/claim/exchange'
+      fullPath: '/integration/v1/identity/claim/exchange'
+      preLoaderRoute: typeof IntegrationV1IdentityClaimExchangeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/integration/v1/identity/link/complete': {
       id: '/integration/v1/identity/link/complete'
       path: '/integration/v1/identity/link/complete'
@@ -2400,6 +2421,8 @@ const rootRouteChildren: RootRouteChildren = {
   IntegrationV1IdentityCreateRoute: IntegrationV1IdentityCreateRoute,
   IntegrationV1IdentityLookupRoute: IntegrationV1IdentityLookupRoute,
   IntegrationV1ProfileUserIdRoute: IntegrationV1ProfileUserIdRoute,
+  IntegrationV1IdentityClaimExchangeRoute:
+    IntegrationV1IdentityClaimExchangeRoute,
   IntegrationV1IdentityLinkCompleteRoute:
     IntegrationV1IdentityLinkCompleteRoute,
   IntegrationV1IdentityLinkStartRoute: IntegrationV1IdentityLinkStartRoute,
