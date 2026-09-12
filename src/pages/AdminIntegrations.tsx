@@ -12,11 +12,31 @@ import { CheckCircle2, ExternalLink, Loader2, Plug, RefreshCw, ShieldOff, UserCh
 import {
   approvePartnerIntent,
   cancelPartnerIntent,
+  getPartnerStats,
   listPartnerIdentities,
   setPartnerLinkStatus,
   type PartnerIdentityRow,
   type PartnerIntentRow,
+  type PartnerStats,
 } from "@/lib/integration/admin.functions";
+
+const StatCard = ({
+  label,
+  value,
+  hint,
+}: {
+  label: string;
+  value: number;
+  hint: string;
+}) => (
+  <Card>
+    <CardContent className="space-y-1 py-4">
+      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="text-3xl font-bold">{value}</p>
+      <p className="text-xs text-muted-foreground">{hint}</p>
+    </CardContent>
+  </Card>
+);
 
 const initials = (value: string | null) => (value ? value.slice(0, 2).toUpperCase() : "AS");
 
@@ -59,9 +79,11 @@ const AdminIntegrations = () => {
   const approve = useServerFn(approvePartnerIntent);
   const cancel = useServerFn(cancelPartnerIntent);
   const setStatus = useServerFn(setPartnerLinkStatus);
+  const loadStats = useServerFn(getPartnerStats);
 
   const [identities, setIdentities] = useState<PartnerIdentityRow[]>([]);
   const [pending, setPending] = useState<PartnerIntentRow[]>([]);
+  const [stats, setStats] = useState<PartnerStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [denied, setDenied] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -71,16 +93,17 @@ const AdminIntegrations = () => {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await load();
+      const [result, counts] = await Promise.all([load(), loadStats()]);
       setIdentities(result.identities);
       setPending(result.pending);
+      setStats(counts);
       setDenied(false);
     } catch {
       setDenied(true);
     } finally {
       setLoading(false);
     }
-  }, [load]);
+  }, [load, loadStats]);
 
   useEffect(() => {
     void refresh();
@@ -139,6 +162,31 @@ const AdminIntegrations = () => {
           Refresh
         </Button>
       </div>
+
+      {stats && (
+        <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard
+            label="Connected contestants"
+            value={stats.connected}
+            hint={`${stats.connectedLast7Days} in the last 7 days`}
+          />
+          <StatCard
+            label="Claims pending"
+            value={stats.pending}
+            hint={`${stats.expired} expired without being claimed`}
+          />
+          <StatCard
+            label="Claims completed"
+            value={stats.completed}
+            hint={`${stats.exchanged} handed back to the partner`}
+          />
+          <StatCard
+            label="Awaiting partner pickup"
+            value={stats.awaitingExchange}
+            hint={`${stats.revoked} connections revoked`}
+          />
+        </div>
+      )}
 
       <Tabs defaultValue="pending">
         <TabsList>

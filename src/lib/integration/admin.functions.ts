@@ -312,3 +312,75 @@ export const cancelPartnerIntent = createServerFn({ method: "POST" })
 
     return { cancelled: true };
   });
+
+export type PartnerStats = {
+  connected: number;
+  revoked: number;
+  pending: number;
+  expired: number;
+  completed: number;
+  awaitingExchange: number;
+  exchanged: number;
+  connectedLast7Days: number;
+};
+
+/**
+ * Counts for the partner connections overview: how many identities are
+ * connected, how many claims are still pending, and how many completed.
+ */
+export const getPartnerStats = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<PartnerStats> => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const nowIso = new Date().toISOString();
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+    const head = { count: "exact" as const, head: true };
+    const [
+      connected,
+      revoked,
+      pending,
+      expired,
+      completed,
+      awaitingExchange,
+      exchanged,
+      recent,
+    ] = await Promise.all([
+      supabaseAdmin.from("integration_identity_links").select("id", head).eq("status", "active"),
+      supabaseAdmin.from("integration_identity_links").select("id", head).neq("status", "active"),
+      supabaseAdmin
+        .from("integration_intents")
+        .select("id", head)
+        .eq("status", "pending")
+        .gt("expires_at", nowIso),
+      supabaseAdmin
+        .from("integration_intents")
+        .select("id", head)
+        .eq("status", "pending")
+        .lte("expires_at", nowIso),
+      supabaseAdmin.from("integration_intents").select("id", head).eq("status", "completed"),
+      supabaseAdmin
+        .from("integration_completion_codes")
+        .select("id", head)
+        .eq("status", "pending")
+        .gt("expires_at", nowIso),
+      supabaseAdmin.from("integration_completion_codes").select("id", head).eq("status", "consumed"),
+      supabaseAdmin
+        .from("integration_identity_links")
+        .select("id", head)
+        .eq("status", "active")
+        .gte("linked_at", weekAgo),
+    ]);
+
+    return {
+      connected: connected.count ?? 0,
+      revoked: revoked.count ?? 0,
+      pending: pending.count ?? 0,
+      expired: expired.count ?? 0,
+      completed: completed.count ?? 0,
+      awaitingExchange: awaitingExchange.count ?? 0,
+      exchanged: exchanged.count ?? 0,
+      connectedLast7Days: recent.count ?? 0,
+    };
+  });
