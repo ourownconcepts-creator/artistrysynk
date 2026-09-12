@@ -12,11 +12,31 @@ import { CheckCircle2, ExternalLink, Loader2, Plug, RefreshCw, ShieldOff, UserCh
 import {
   approvePartnerIntent,
   cancelPartnerIntent,
+  getPartnerStats,
   listPartnerIdentities,
   setPartnerLinkStatus,
   type PartnerIdentityRow,
   type PartnerIntentRow,
+  type PartnerStats,
 } from "@/lib/integration/admin.functions";
+
+const StatCard = ({
+  label,
+  value,
+  hint,
+}: {
+  label: string;
+  value: number;
+  hint: string;
+}) => (
+  <Card>
+    <CardContent className="space-y-1 py-4">
+      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="text-3xl font-bold">{value}</p>
+      <p className="text-xs text-muted-foreground">{hint}</p>
+    </CardContent>
+  </Card>
+);
 
 const initials = (value: string | null) => (value ? value.slice(0, 2).toUpperCase() : "AS");
 
