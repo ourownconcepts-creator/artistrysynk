@@ -28,11 +28,7 @@ export const LegalDocumentView = ({ doc }: { doc: LegalDocumentDetail }) => {
           <Badge variant="secondary">Version {doc.version}</Badge>
           <span>
             Effective{" "}
-            {new Date(doc.effectiveDate).toLocaleDateString(undefined, {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
+            {LONG_DATE.format(new Date(doc.effectiveDate))}
           </span>
           {!doc.isLatest && <Badge variant="outline">Historical version</Badge>}
         </div>
