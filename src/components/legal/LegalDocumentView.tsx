@@ -55,7 +55,7 @@ export const LegalDocumentView = ({ doc }: { doc: LegalDocumentDetail }) => {
                   to={`/legal/${doc.slug}?v=${v.version}`}
                   className="text-primary hover:underline"
                 >
-                  Version {v.version} ({new Date(v.effectiveDate).toLocaleDateString()})
+                  Version {v.version} ({SHORT_DATE.format(new Date(v.effectiveDate))})
                 </Link>
               </li>
             ))}
