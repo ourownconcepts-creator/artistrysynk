@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as ActorsRouteImport } from './routes/actors'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminAuthRouteImport } from './routes/admin-auth'
+import { Route as AdminBlogRouteImport } from './routes/admin-blog'
 import { Route as AdminCategoriesRouteImport } from './routes/admin-categories'
 import { Route as AdminComplianceRouteImport } from './routes/admin-compliance'
 import { Route as AdminCopyrightRouteImport } from './routes/admin-copyright'
@@ -148,6 +149,11 @@ const AdminRoute = AdminRouteImport.update({
 const AdminAuthRoute = AdminAuthRouteImport.update({
   id: '/admin-auth',
   path: '/admin-auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminBlogRoute = AdminBlogRouteImport.update({
+  id: '/admin-blog',
+  path: '/admin-blog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
@@ -719,6 +725,7 @@ export interface FileRoutesByFullPath {
   '/actors': typeof ActorsRoute
   '/admin': typeof AdminRoute
   '/admin-auth': typeof AdminAuthRoute
+  '/admin-blog': typeof AdminBlogRoute
   '/admin-categories': typeof AdminCategoriesRoute
   '/admin-compliance': typeof AdminComplianceRoute
   '/admin-copyright': typeof AdminCopyrightRoute
@@ -836,6 +843,7 @@ export interface FileRoutesByTo {
   '/actors': typeof ActorsRoute
   '/admin': typeof AdminRoute
   '/admin-auth': typeof AdminAuthRoute
+  '/admin-blog': typeof AdminBlogRoute
   '/admin-categories': typeof AdminCategoriesRoute
   '/admin-compliance': typeof AdminComplianceRoute
   '/admin-copyright': typeof AdminCopyrightRoute
@@ -954,6 +962,7 @@ export interface FileRoutesById {
   '/actors': typeof ActorsRoute
   '/admin': typeof AdminRoute
   '/admin-auth': typeof AdminAuthRoute
+  '/admin-blog': typeof AdminBlogRoute
   '/admin-categories': typeof AdminCategoriesRoute
   '/admin-compliance': typeof AdminComplianceRoute
   '/admin-copyright': typeof AdminCopyrightRoute
@@ -1073,6 +1082,7 @@ export interface FileRouteTypes {
     | '/actors'
     | '/admin'
     | '/admin-auth'
+    | '/admin-blog'
     | '/admin-categories'
     | '/admin-compliance'
     | '/admin-copyright'
@@ -1190,6 +1200,7 @@ export interface FileRouteTypes {
     | '/actors'
     | '/admin'
     | '/admin-auth'
+    | '/admin-blog'
     | '/admin-categories'
     | '/admin-compliance'
     | '/admin-copyright'
@@ -1307,6 +1318,7 @@ export interface FileRouteTypes {
     | '/actors'
     | '/admin'
     | '/admin-auth'
+    | '/admin-blog'
     | '/admin-categories'
     | '/admin-compliance'
     | '/admin-copyright'
@@ -1425,6 +1437,7 @@ export interface RootRouteChildren {
   ActorsRoute: typeof ActorsRoute
   AdminRoute: typeof AdminRoute
   AdminAuthRoute: typeof AdminAuthRoute
+  AdminBlogRoute: typeof AdminBlogRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminComplianceRoute: typeof AdminComplianceRoute
   AdminCopyrightRoute: typeof AdminCopyrightRoute
@@ -1572,6 +1585,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-auth'
       fullPath: '/admin-auth'
       preLoaderRoute: typeof AdminAuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-blog': {
+      id: '/admin-blog'
+      path: '/admin-blog'
+      fullPath: '/admin-blog'
+      preLoaderRoute: typeof AdminBlogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-categories': {
@@ -2353,6 +2373,7 @@ const rootRouteChildren: RootRouteChildren = {
   ActorsRoute: ActorsRoute,
   AdminRoute: AdminRoute,
   AdminAuthRoute: AdminAuthRoute,
+  AdminBlogRoute: AdminBlogRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminComplianceRoute: AdminComplianceRoute,
   AdminCopyrightRoute: AdminCopyrightRoute,
