@@ -57,6 +57,11 @@ export const linkStartSchema = z.object({
 
 
 
+/** Exchange of the one-time completion code issued after a claim. */
+export const claimExchangeSchema = z.object({
+  code: z.string().trim().min(32).max(200),
+});
+
 export const linkCompleteSchema = z.object({
   external_subject: externalSubjectSchema,
   client_id: z.string().trim().min(8).max(200),

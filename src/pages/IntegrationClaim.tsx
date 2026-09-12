@@ -20,10 +20,12 @@ export default function IntegrationClaim() {
     "loading",
   );
   const [message, setMessage] = useState("Checking your invitation…");
-  const code =
+  const params =
     typeof window === "undefined"
-      ? ""
-      : (new URLSearchParams(window.location.search).get("code") ?? "");
+      ? new URLSearchParams()
+      : new URLSearchParams(window.location.search);
+  const code = params.get("code") ?? "";
+  const state = params.get("state") ?? undefined;
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
@@ -41,9 +43,9 @@ export default function IntegrationClaim() {
     setStatus("loading");
     setMessage("Completing your secure connection…");
     try {
-      const result = await complete({ data: { code } });
+      const result = await complete({ data: { code, state } });
       setStatus("done");
-      setMessage("Your ArtistrySynk identity is now linked.");
+      setMessage("Your ArtistrySynk identity is now linked. Taking you back…");
       window.setTimeout(() => window.location.assign(result.redirectUri), 900);
     } catch (error) {
       setStatus("error");

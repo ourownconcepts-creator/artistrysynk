@@ -1729,6 +1729,72 @@ export type Database = {
           },
         ]
       }
+      integration_completion_codes: {
+        Row: {
+          client_id: string
+          code_hash: string
+          consumed_at: string | null
+          created_at: string
+          expires_at: string
+          external_subject: string
+          granted_scopes: string[]
+          id: string
+          intent_id: string | null
+          redirect_uri: string
+          state: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_id: string
+          code_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at: string
+          external_subject: string
+          granted_scopes?: string[]
+          id?: string
+          intent_id?: string | null
+          redirect_uri: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_id?: string
+          code_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          external_subject?: string
+          granted_scopes?: string[]
+          id?: string
+          intent_id?: string | null
+          redirect_uri?: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_completion_codes_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "integration_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "integration_completion_codes_intent_id_fkey"
+            columns: ["intent_id"]
+            isOneToOne: false
+            referencedRelation: "integration_intents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       integration_identity_links: {
         Row: {
           client_id: string

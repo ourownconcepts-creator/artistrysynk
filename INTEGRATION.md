@@ -68,6 +68,29 @@ OAuth discovery is published by the managed issuer. Resource metadata is availab
 
 `POST /integration/v1/identity/create` does not accept a password and does not silently create a usable account. It creates a ten-minute, single-use ArtistrySynk claim URL. The user signs in or registers directly with ArtistrySynk, reviews the action, and claims the association. If the supplied email already belongs to an ArtistrySynk account, the endpoint returns `409 conflict` and the partner must use linking.
 
+#### Claim completion callback
+
+The partner may append its own `state` to `claim_url` (`&state=<opaque value>`). After the user claims:
+
+1. ArtistrySynk links the identity and issues a five-minute, single-use **completion code**.
+2. The browser is redirected to the `redirect_uri` that was validated when the intent was created — never to a URI supplied at claim time — as `<redirect_uri>?code=<completion_code>&state=<state>`. No identity ID and no token appear in the URL.
+3. The partner server validates `state`, then exchanges the code:
+
+   ```http
+   POST /integration/v1/identity/claim/exchange
+   Authorization: Basic base64(client_id:client_secret)
+   Content-Type: application/json
+
+   { "code": "<completion_code>" }
+   ```
+
+   ```json
+   { "data": { "identity_id": "…", "external_subject": "…", "link_id": "…",
+     "linked_at": "…", "scopes": ["identity:create", "profile:read"] }, "request_id": "…" }
+   ```
+
+   Requires `identity:create`. The code is bound to the issuing client, single-use, and rejected after expiry or replay (`400 invalid_request`). Rate limit: 30 requests/minute/client.
+
 ### Confidential API calls
 
 Use HTTP Basic authentication with `base64(client_id:client_secret)` only from the partner server. Credentials are scoped, environment-specific, expirable, and revocable.
