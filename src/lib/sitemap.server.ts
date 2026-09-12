@@ -42,17 +42,43 @@ export const staticEntries: SitemapEntry[] = [
   { path: "/data-deletion", changefreq: "yearly", priority: "0.3" },
 ];
 
-/** Blog posts are file routes — glob them so a new post file is listed automatically. */
+/** Blog posts: static file routes plus articles stored in public.blog_posts. */
 const blogModules = import.meta.glob("/src/routes/blog/*.tsx");
 
-export function blogEntries(): SitemapEntry[] {
+export async function blogEntries(): Promise<SitemapEntry[]> {
+  const seen = new Set<string>();
   const entries: SitemapEntry[] = [{ path: "/blog", changefreq: "weekly", priority: "0.7" }];
+  const add = (path: string) => {
+    if (seen.has(path)) return;
+    seen.add(path);
+    entries.push({ path, changefreq: "monthly", priority: "0.7" });
+  };
   for (const file of Object.keys(blogModules)) {
     const slug = file.split("/").pop()!.replace(/\.tsx$/, "");
     if (slug === "index" || slug.startsWith("$") || slug.startsWith("_")) continue;
-    entries.push({ path: `/blog/${slug}`, changefreq: "monthly", priority: "0.7" });
+    add(`/blog/${slug}`);
+  }
+  for (const slug of await fetchBlogSlugs()) {
+    add(`/blog/${slug}`);
   }
   return entries;
+}
+
+async function fetchBlogSlugs(): Promise<string[]> {
+  const url = process.env["SUPABASE_URL"] ?? import.meta.env["VITE_SUPABASE_URL"];
+  const key =
+    process.env["SUPABASE_PUBLISHABLE_KEY"] ?? import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
+  if (!url || !key) return [];
+  try {
+    const res = await fetch(`${url}/rest/v1/blog_posts?select=slug&published=eq.true`, {
+      headers: { apikey: key },
+    });
+    if (!res.ok) return [];
+    const rows = (await res.json()) as Array<{ slug: string }>;
+    return rows.map((r) => r.slug).filter(Boolean);
+  } catch {
+    return [];
+  }
 }
 
 export function landingEntries(): SitemapEntry[] {

@@ -6,7 +6,7 @@ export const Route = createFileRoute("/sitemap-blog.xml")({
     handlers: {
       GET: async () => {
         const { blogEntries, urlsetXml, xmlResponse } = await import("@/lib/sitemap.server");
-        return xmlResponse(urlsetXml(blogEntries()));
+        return xmlResponse(urlsetXml(await blogEntries()));
       },
     },
   },
