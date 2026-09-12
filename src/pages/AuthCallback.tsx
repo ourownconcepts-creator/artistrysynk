@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { claimStoredReferral } from "@/lib/referral";
 import { consumeAuthReturn, sanitizeAuthReturn } from "@/lib/authReturn";
+import { pendingClaimPath } from "@/lib/integration/pendingClaim";
 
 /**
  * Public OAuth landing route. Waits for the Supabase session to hydrate
