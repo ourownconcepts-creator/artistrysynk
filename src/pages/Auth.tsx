@@ -22,6 +22,7 @@ import { SignupConsent } from "@/components/legal/SignupConsent";
 import { buildSignupConsents, flushPendingConsents, storePendingConsents } from "@/lib/consent";
 import { rememberAuthReturn, sanitizeAuthReturn } from "@/lib/authReturn";
 import { pendingClaimPath } from "@/lib/integration/pendingClaim";
+import { authEmailClient } from "@/lib/authEmailFlow";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -176,7 +177,9 @@ const Auth = () => {
       buildSignupConsents({ acceptedTerms, confirmedAge, marketing: marketingOptIn }),
     );
 
-    const { data, error } = await supabase.auth.signUp({
+    // Sent through the implicit-flow client so the confirmation link works even
+    // when it is opened in a different browser or an email app's viewer.
+    const { data, error } = await authEmailClient.auth.signUp({
       email,
       password,
       options: {
