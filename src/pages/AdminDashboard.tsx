@@ -418,6 +418,17 @@ const AdminDashboard = () => {
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-4">
             <div>
+              <p className="font-medium">Partner connections</p>
+              <p className="text-sm text-muted-foreground">
+                Connected contestants, their profiles and pending link approvals.
+              </p>
+            </div>
+            <Button variant="outline" onClick={() => navigate("/admin-integrations")}>
+              Open connections
+            </Button>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-4">
+            <div>
               <p className="font-medium">Error diagnostics</p>
               <p className="text-sm text-muted-foreground">
                 Client disconnect/abort events with timestamps, routes and correlation IDs.
