@@ -5,6 +5,9 @@ import { renderErrorPage } from "./lib/error-page";
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
 
 const errorMiddleware = createMiddleware().server(async ({ next, request }) => {
+  const pathname = new URL(request.url).pathname;
+  if (pathname.startsWith("/lovable/")) return next();
+
   try {
     return await next();
   } catch (error) {
@@ -52,6 +55,9 @@ const createCsrf = (
 ).createCsrfMiddleware;
 
 const fallbackCsrfMiddleware = createMiddleware().server(async ({ next, request }) => {
+  const pathname = new URL(request.url).pathname;
+  if (pathname.startsWith("/lovable/")) return next();
+
   const method = request.method.toUpperCase();
   if (method === "GET" || method === "HEAD" || method === "OPTIONS") return next();
   const site = request.headers.get("Sec-Fetch-Site");

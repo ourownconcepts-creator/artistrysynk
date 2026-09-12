@@ -18,7 +18,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "artistrysynk"
+const SITE_NAME = "ArtistrySynk"
 const ROOT_DOMAIN = "artistrysynk.app"
 
 // Sample data for preview mode ONLY (not used in actual email sending).

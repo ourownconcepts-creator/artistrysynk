@@ -31,7 +31,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "artistrysynk"
+const SITE_NAME = "ArtistrySynk"
 const SENDER_DOMAIN = "notify.artistrysynk.app"
 const ROOT_DOMAIN = "artistrysynk.app"
 const FROM_DOMAIN = "notify.artistrysynk.app"
@@ -177,7 +177,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
             run_id,
             message_id: messageId,
             to: payload.data.email,
-            from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+            from: `${SITE_NAME} <notifications@${FROM_DOMAIN}>`,
             sender_domain: SENDER_DOMAIN,
             subject: EMAIL_SUBJECTS[emailType] || 'Notification',
             html,
