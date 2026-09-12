@@ -5,6 +5,16 @@ import { resolveLegalTokens } from "@/config/legal";
 import type { LegalDocumentDetail } from "@/lib/legal.functions";
 import { History } from "lucide-react";
 
+// Fixed locale + UTC so the server-rendered date matches the browser exactly
+// (locale/timezone drift caused a hydration mismatch on policy pages).
+const LONG_DATE = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
+const SHORT_DATE = new Intl.DateTimeFormat("en-GB", { timeZone: "UTC" });
+
 export const LegalDocumentView = ({ doc }: { doc: LegalDocumentDetail }) => {
   const content = resolveLegalTokens(doc.content);
   const older = doc.versions.filter((v) => v.version !== doc.version);
