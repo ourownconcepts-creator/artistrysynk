@@ -30,7 +30,9 @@ const Auth = () => {
     [searchParams],
   );
   const returnPath = useMemo(
-    () => sanitizeAuthReturn(searchParams.get("next")),
+    // An in-progress partner identity claim takes priority so the connection
+    // flow resumes instead of dropping the user on Discover.
+    () => pendingClaimPath() ?? sanitizeAuthReturn(searchParams.get("next")),
     [searchParams],
   );
   const [loading, setLoading] = useState(false);
