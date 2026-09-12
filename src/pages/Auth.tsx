@@ -21,6 +21,7 @@ import { storeReferralCode, getStoredReferralCode, claimStoredReferral } from "@
 import { SignupConsent } from "@/components/legal/SignupConsent";
 import { buildSignupConsents, flushPendingConsents, storePendingConsents } from "@/lib/consent";
 import { rememberAuthReturn, sanitizeAuthReturn } from "@/lib/authReturn";
+import { pendingClaimPath } from "@/lib/integration/pendingClaim";
 
 const Auth = () => {
   const navigate = useNavigate();
