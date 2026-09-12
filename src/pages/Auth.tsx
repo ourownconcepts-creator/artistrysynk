@@ -144,6 +144,27 @@ const Auth = () => {
     if (error) {
       if (error.message === "Invalid login credentials") {
         toast.error("Invalid email or password. Please try again.");
+      } else if (/not confirmed/i.test(error.message)) {
+        toast.error("Please confirm your email first.", {
+          action: {
+            label: "Resend email",
+            onClick: () => {
+              void authEmailClient.auth
+                .resend({
+                  type: "signup",
+                  email,
+                  options: {
+                    emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(returnPath === "/discover" ? "/setup-profile" : returnPath)}`,
+                  },
+                })
+                .then(({ error: resendError }) =>
+                  resendError
+                    ? toast.error(resendError.message)
+                    : toast.success("Confirmation email sent."),
+                );
+            },
+          },
+        });
       } else {
         toast.error(error.message);
       }
