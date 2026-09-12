@@ -54,6 +54,13 @@ const Auth = () => {
     storeReferralCode(searchParams.get("ref"));
   }, [searchParams]);
 
+  // A message carried over from the email-confirmation landing page.
+  useEffect(() => {
+    const notice = searchParams.get("notice");
+    if (notice) toast.info(notice);
+  }, [searchParams]);
+
+
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
