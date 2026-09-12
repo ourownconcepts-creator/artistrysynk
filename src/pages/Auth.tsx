@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "@/lib/router-compat";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
-import { sendWelcomeEmail } from "@/lib/send-welcome-email.functions";
+import { sendWelcomeAfterConfirm } from "@/lib/welcome-after-confirm.functions";
 import { getOAuthRedirectUri, isNativeApp } from "@/lib/native";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -239,17 +239,20 @@ const Auth = () => {
       return;
     }
 
-    // Send welcome email (fire-and-forget, never block signup)
-    sendWelcomeEmail({ data: { email, fullName, username } }).catch(() => {});
-
     if (!data.session) {
+      // The welcome email is sent after the address is confirmed, from the
+      // confirmation callback — not here.
       toast.success("Account created! Check your email to confirm your address, then sign in.");
       setLoading(false);
       return;
     }
 
+    // Confirmation is not required for this account: it is already usable now.
+    sendWelcomeAfterConfirm({ data: undefined }).catch(() => {});
+
     toast.success("Account created! Complete your profile to get started.");
     navigate("/setup-profile");
+
     
     setLoading(false);
   };

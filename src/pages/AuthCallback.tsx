@@ -91,7 +91,7 @@ const AuthCallback = () => {
       subscription.subscription.unsubscribe();
       window.clearTimeout(timeout);
     };
-  }, [navigate]);
+  }, [navigate, sendWelcome]);
 
 
   return (
