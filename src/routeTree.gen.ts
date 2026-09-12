@@ -20,6 +20,7 @@ import { Route as AdminCopyrightRouteImport } from './routes/admin-copyright'
 import { Route as AdminDiagnosticsRouteImport } from './routes/admin-diagnostics'
 import { Route as AdminFunctionLogsRouteImport } from './routes/admin-function-logs'
 import { Route as AdminIdentityRouteImport } from './routes/admin-identity'
+import { Route as AdminIntegrationsRouteImport } from './routes/admin-integrations'
 import { Route as AdminReportsRouteImport } from './routes/admin-reports'
 import { Route as AdminRetentionRouteImport } from './routes/admin-retention'
 import { Route as AdminSeoPreviewRouteImport } from './routes/admin-seo-preview'
@@ -176,6 +177,11 @@ const AdminFunctionLogsRoute = AdminFunctionLogsRouteImport.update({
 const AdminIdentityRoute = AdminIdentityRouteImport.update({
   id: '/admin-identity',
   path: '/admin-identity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIntegrationsRoute = AdminIntegrationsRouteImport.update({
+  id: '/admin-integrations',
+  path: '/admin-integrations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminReportsRoute = AdminReportsRouteImport.update({
@@ -713,6 +719,7 @@ export interface FileRoutesByFullPath {
   '/admin-diagnostics': typeof AdminDiagnosticsRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-identity': typeof AdminIdentityRoute
+  '/admin-integrations': typeof AdminIntegrationsRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-retention': typeof AdminRetentionRoute
   '/admin-seo-preview': typeof AdminSeoPreviewRoute
@@ -828,6 +835,7 @@ export interface FileRoutesByTo {
   '/admin-diagnostics': typeof AdminDiagnosticsRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-identity': typeof AdminIdentityRoute
+  '/admin-integrations': typeof AdminIntegrationsRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-retention': typeof AdminRetentionRoute
   '/admin-seo-preview': typeof AdminSeoPreviewRoute
@@ -944,6 +952,7 @@ export interface FileRoutesById {
   '/admin-diagnostics': typeof AdminDiagnosticsRoute
   '/admin-function-logs': typeof AdminFunctionLogsRoute
   '/admin-identity': typeof AdminIdentityRoute
+  '/admin-integrations': typeof AdminIntegrationsRoute
   '/admin-reports': typeof AdminReportsRoute
   '/admin-retention': typeof AdminRetentionRoute
   '/admin-seo-preview': typeof AdminSeoPreviewRoute
@@ -1061,6 +1070,7 @@ export interface FileRouteTypes {
     | '/admin-diagnostics'
     | '/admin-function-logs'
     | '/admin-identity'
+    | '/admin-integrations'
     | '/admin-reports'
     | '/admin-retention'
     | '/admin-seo-preview'
@@ -1176,6 +1186,7 @@ export interface FileRouteTypes {
     | '/admin-diagnostics'
     | '/admin-function-logs'
     | '/admin-identity'
+    | '/admin-integrations'
     | '/admin-reports'
     | '/admin-retention'
     | '/admin-seo-preview'
@@ -1291,6 +1302,7 @@ export interface FileRouteTypes {
     | '/admin-diagnostics'
     | '/admin-function-logs'
     | '/admin-identity'
+    | '/admin-integrations'
     | '/admin-reports'
     | '/admin-retention'
     | '/admin-seo-preview'
@@ -1407,6 +1419,7 @@ export interface RootRouteChildren {
   AdminDiagnosticsRoute: typeof AdminDiagnosticsRoute
   AdminFunctionLogsRoute: typeof AdminFunctionLogsRoute
   AdminIdentityRoute: typeof AdminIdentityRoute
+  AdminIntegrationsRoute: typeof AdminIntegrationsRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminRetentionRoute: typeof AdminRetentionRoute
   AdminSeoPreviewRoute: typeof AdminSeoPreviewRoute
@@ -1588,6 +1601,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-identity'
       fullPath: '/admin-identity'
       preLoaderRoute: typeof AdminIdentityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-integrations': {
+      id: '/admin-integrations'
+      path: '/admin-integrations'
+      fullPath: '/admin-integrations'
+      preLoaderRoute: typeof AdminIntegrationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-reports': {
@@ -2319,6 +2339,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminDiagnosticsRoute: AdminDiagnosticsRoute,
   AdminFunctionLogsRoute: AdminFunctionLogsRoute,
   AdminIdentityRoute: AdminIdentityRoute,
+  AdminIntegrationsRoute: AdminIntegrationsRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminRetentionRoute: AdminRetentionRoute,
   AdminSeoPreviewRoute: AdminSeoPreviewRoute,
