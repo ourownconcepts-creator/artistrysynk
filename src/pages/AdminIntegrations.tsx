@@ -93,16 +93,17 @@ const AdminIntegrations = () => {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await load();
+      const [result, counts] = await Promise.all([load(), loadStats()]);
       setIdentities(result.identities);
       setPending(result.pending);
+      setStats(counts);
       setDenied(false);
     } catch {
       setDenied(true);
     } finally {
       setLoading(false);
     }
-  }, [load]);
+  }, [load, loadStats]);
 
   useEffect(() => {
     void refresh();
