@@ -83,6 +83,7 @@ import { Route as AccountConfirmDeletionRouteImport } from './routes/account/con
 import { Route as AuthIndexRouteImport } from './routes/auth/index'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
+import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as BlogHowToFindAMusicProducerRouteImport } from './routes/blog/how-to-find-a-music-producer'
 import { Route as CopyrightReportRouteImport } from './routes/copyright/report'
 import { Route as ExploreIndexRouteImport } from './routes/explore/index'
@@ -497,6 +498,11 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
   path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogHowToFindAMusicProducerRoute =
   BlogHowToFindAMusicProducerRouteImport.update({
     id: '/blog/how-to-find-a-music-producer',
@@ -780,6 +786,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof DotwellKnownOauthProtectedResourceRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
   '/explore/nearby': typeof ExploreNearbyRoute
@@ -896,6 +903,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof DotwellKnownOauthProtectedResourceRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
   '/explore/nearby': typeof ExploreNearbyRoute
@@ -1013,6 +1021,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof DotwellKnownOauthProtectedResourceRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
   '/explore/nearby': typeof ExploreNearbyRoute
@@ -1131,6 +1140,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/account/confirm-deletion'
     | '/auth/callback'
+    | '/blog/$slug'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
     | '/explore/nearby'
@@ -1247,6 +1257,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/account/confirm-deletion'
     | '/auth/callback'
+    | '/blog/$slug'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
     | '/explore/nearby'
@@ -1363,6 +1374,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/account/confirm-deletion'
     | '/auth/callback'
+    | '/blog/$slug'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
     | '/explore/nearby'
@@ -1480,6 +1492,7 @@ export interface RootRouteChildren {
   DotwellKnownOauthProtectedResourceRoute: typeof DotwellKnownOauthProtectedResourceRoute
   AccountConfirmDeletionRoute: typeof AccountConfirmDeletionRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  BlogSlugRoute: typeof BlogSlugRoute
   BlogHowToFindAMusicProducerRoute: typeof BlogHowToFindAMusicProducerRoute
   CopyrightReportRoute: typeof CopyrightReportRoute
   ExploreNearbyRoute: typeof ExploreNearbyRoute
@@ -2044,6 +2057,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/how-to-find-a-music-producer': {
       id: '/blog/how-to-find-a-music-producer'
       path: '/blog/how-to-find-a-music-producer'
@@ -2403,6 +2423,7 @@ const rootRouteChildren: RootRouteChildren = {
     DotwellKnownOauthProtectedResourceRoute,
   AccountConfirmDeletionRoute: AccountConfirmDeletionRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  BlogSlugRoute: BlogSlugRoute,
   BlogHowToFindAMusicProducerRoute: BlogHowToFindAMusicProducerRoute,
   CopyrightReportRoute: CopyrightReportRoute,
   ExploreNearbyRoute: ExploreNearbyRoute,
