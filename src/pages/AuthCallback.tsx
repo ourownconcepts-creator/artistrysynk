@@ -1,10 +1,12 @@
 import { useEffect } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { claimStoredReferral } from "@/lib/referral";
 import { consumeAuthReturn, sanitizeAuthReturn } from "@/lib/authReturn";
 import { pendingClaimPath } from "@/lib/integration/pendingClaim";
+import { sendWelcomeAfterConfirm } from "@/lib/welcome-after-confirm.functions";
 
 /**
  * Public OAuth landing route. Waits for the Supabase session to hydrate
@@ -12,6 +14,7 @@ import { pendingClaimPath } from "@/lib/integration/pendingClaim";
  */
 const AuthCallback = () => {
   const navigate = useNavigate();
+  const sendWelcome = useServerFn(sendWelcomeAfterConfirm);
 
   useEffect(() => {
     let settled = false;
@@ -28,7 +31,13 @@ const AuthCallback = () => {
     // A partner identity claim in progress always wins: the confirmation link
     // may arrive without the original claim parameters.
     const destination = () => pendingClaimPath() ?? consumeAuthReturn(queryReturn);
-    const succeed = () => void claimStoredReferral().finally(() => go(destination()));
+    const succeed = () => {
+      // Confirmation succeeded: welcome email once, then finish the flow.
+      // Never block navigation on the email.
+      void sendWelcome({ data: undefined }).catch(() => {});
+      void claimStoredReferral().finally(() => go(destination()));
+    };
+
 
     // The link itself failed (expired or already used).
     const linkError = search.get("error_description") ?? hash.get("error_description");
@@ -82,7 +91,7 @@ const AuthCallback = () => {
       subscription.subscription.unsubscribe();
       window.clearTimeout(timeout);
     };
-  }, [navigate]);
+  }, [navigate, sendWelcome]);
 
 
   return (
