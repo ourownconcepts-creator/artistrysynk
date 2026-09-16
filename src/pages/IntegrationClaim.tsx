@@ -66,6 +66,8 @@ export default function IntegrationClaim() {
       setMessage("Your ArtistrySynk identity is now linked. Taking you back…");
       window.setTimeout(() => window.location.assign(result.redirectUri), 900);
     } catch (error) {
+      // Failed claim: forget it so later sign-ins aren't forced back here.
+      clearPendingClaim();
       setStatus("error");
       setMessage(
         error instanceof Error
