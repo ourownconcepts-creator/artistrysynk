@@ -122,7 +122,9 @@ const AdminBlog = () => {
       category: draft.category.trim() || "Guides",
       read_time: draft.read_time.trim() || estimateReadTime(content),
       published: draft.published,
-      published_at: draft.published ? draft.published_at ?? new Date().toISOString() : draft.published_at,
+      // Never send null: the column is NOT NULL. Drafts keep a timestamp too;
+      // only `published` controls whether the article is live.
+      published_at: draft.published_at ?? new Date().toISOString(),
     };
 
     setSaving(true);

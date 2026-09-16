@@ -41,16 +41,20 @@ export default function IntegrationClaim() {
       setMessage("This invitation link is incomplete. Please start again from the partner site.");
       return;
     }
-    // Persist before any sign-in detour so the flow can resume afterwards.
-    rememberPendingClaim(code, state);
     void supabase.auth.getSession().then(({ data }) => {
       if (!data.session) {
+        // Only persist when a sign-in detour is actually needed, so the flow
+        // can resume after the confirmation-email round trip.
+        rememberPendingClaim(code, state);
         const next = `/integration/v1/claim?code=${encodeURIComponent(code)}${
           state ? `&state=${encodeURIComponent(state)}` : ""
         }`;
         navigate(`/auth?next=${encodeURIComponent(next)}`, { replace: true });
         return;
       }
+      // Already signed in and back on the claim page: the reminder has served
+      // its purpose and must not redirect future sign-ins here.
+      clearPendingClaim();
       setStatus("ready");
       setMessage("Your signed-in ArtistrySynk account is ready to be linked.");
     });
@@ -66,6 +70,8 @@ export default function IntegrationClaim() {
       setMessage("Your ArtistrySynk identity is now linked. Taking you back…");
       window.setTimeout(() => window.location.assign(result.redirectUri), 900);
     } catch (error) {
+      // Failed claim: forget it so later sign-ins aren't forced back here.
+      clearPendingClaim();
       setStatus("error");
       setMessage(
         error instanceof Error
