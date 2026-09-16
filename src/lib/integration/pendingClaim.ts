@@ -5,7 +5,7 @@
  * the URL — this keeps it (browser-local, short-lived) so the claim resumes.
  */
 const KEY = "artistrysynk.pendingIntegrationClaim";
-const TTL_MS = 60 * 60 * 1000; // 1 hour — intents are short-lived anyway
+const TTL_MS = 15 * 60 * 1000; // 15 minutes — long enough for the email round trip
 
 type PendingClaim = { code: string; state?: string; at: number };
 
