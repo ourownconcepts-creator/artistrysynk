@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "@/lib/router-compat";
 import { PageSEO } from "@/components/seo";
 import logoImg from "@/assets/logo.png";
-import artistryTutorialVideo from "@/assets/artistry-tutorial.mp4";
+import artistryTutorialVideoAsset from "@/assets/artistry-tutorial.asset.json";
+
+const artistryTutorialVideo = artistryTutorialVideoAsset.url;
+const artistryTutorialPoster = "/videos/artistry-tutorial-poster.jpg";
 
 const HowItWorksPage = () => {
   const navigate = useNavigate();
@@ -159,6 +162,8 @@ const HowItWorksPage = () => {
                     ref={videoRef}
                     className="absolute inset-0 w-full h-full object-cover"
                     src={artistryTutorialVideo}
+                    poster={artistryTutorialPoster}
+                    preload="metadata"
                     muted={isMuted}
                     loop
                     playsInline
