@@ -32,9 +32,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 
 // Configuration
 const SITE_NAME = "ArtistrySynk"
-const SENDER_DOMAIN = "notify.artistrysynk.app"
 const ROOT_DOMAIN = "artistrysynk.app"
-const FROM_DOMAIN = "notify.artistrysynk.app"
 
 function redactEmail(email: string | null | undefined): string {
   if (!email) return '***'
@@ -68,7 +66,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
           })
           payload = verified.payload
           run_id = payload.run_id
-        } catch (error) {
+        } catch (error: unknown) {
           if (error instanceof WebhookError) {
             switch (error.code) {
               case 'invalid_signature':
@@ -148,73 +146,47 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
         const html = await render(element)
         const text = await render(element, { plainText: true })
 
-        // Enqueue email for async processing by the dispatcher (process-email-queue).
+        // Send directly through QueenSMTP (the only email provider for this app).
+        const { sendEmail } = await import('@/lib/email/queensmtp.server')
         const supabaseUrl = import.meta.env['VITE_SUPABASE_URL']
         const supabaseServiceKey = process.env['SUPABASE_SERVICE_ROLE_KEY']
-
-        if (!supabaseUrl || !supabaseServiceKey) {
-          console.error('Missing Supabase environment variables')
-          return Response.json(
-            { error: 'Server configuration error' },
-            { status: 500 }
-          )
-        }
-
-        const supabase = createClient(supabaseUrl, supabaseServiceKey)
+        const supabase = supabaseUrl && supabaseServiceKey ? createClient(supabaseUrl, supabaseServiceKey) : null
         const messageId = crypto.randomUUID()
-
-        // Log pending BEFORE enqueue so we have a record even if enqueue crashes
-        await supabase.from('email_send_log').insert({
-          message_id: messageId,
-          template_name: emailType,
-          recipient_email: payload.data.email,
-          status: 'pending',
-        })
-
-        const { error: enqueueError } = await supabase.rpc('enqueue_email', {
-          queue_name: 'auth_emails',
-          payload: {
-            run_id,
-            message_id: messageId,
+        try {
+          const res = await sendEmail({
+            from: `${SITE_NAME} <notifications@${ROOT_DOMAIN}>`,
             to: payload.data.email,
-            from: `${SITE_NAME} <notifications@${FROM_DOMAIN}>`,
-            sender_domain: SENDER_DOMAIN,
             subject: EMAIL_SUBJECTS[emailType] || 'Notification',
             html,
             text,
-            purpose: 'transactional',
-            label: emailType,
-            queued_at: new Date().toISOString(),
-          },
-        })
-
-        if (enqueueError) {
-          console.error('Failed to enqueue auth email', {
-            code: enqueueError.code,
-            message: enqueueError.message,
-            run_id,
-            emailType,
+            tags: ['auth', emailType],
           })
-          await supabase.from('email_send_log').insert({
+          await supabase?.from('email_send_log').insert({
+            message_id: res.id ?? messageId,
+            template_name: emailType,
+            recipient_email: payload.data.email,
+            status: 'sent',
+          })
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : 'send failed'
+          console.error('QueenSMTP auth send failed', { run_id, emailType, msg })
+          await supabase?.from('email_send_log').insert({
             message_id: messageId,
             template_name: emailType,
             recipient_email: payload.data.email,
             status: 'failed',
-            error_message: 'Failed to enqueue email',
+            error_message: msg.slice(0, 500),
           })
-          return Response.json(
-            { error: 'Failed to enqueue email' },
-            { status: 500 }
-          )
+          return Response.json({ error: 'Failed to send email' }, { status: 500 })
         }
 
-        console.log('Auth email enqueued', {
+        console.log('Auth email sent via QueenSMTP', {
           emailType,
           email_redacted: redactEmail(payload.data.email),
           run_id,
         })
 
-        return Response.json({ success: true, queued: true })
+        return Response.json({ success: true })
       },
     },
   },
