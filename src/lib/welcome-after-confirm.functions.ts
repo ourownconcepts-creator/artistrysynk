@@ -14,7 +14,7 @@ export const sendWelcomeAfterConfirm = createServerFn({ method: "POST" })
     const { data: profile, error } = await supabase
       .from("profiles")
       .select("full_name, username, welcome_email_sent_at")
-      .eq("user_id", userId)
+      .eq("id", userId)
       .maybeSingle();
 
     if (error || !profile) return { sent: false as const, reason: "no_profile" };
@@ -28,9 +28,9 @@ export const sendWelcomeAfterConfirm = createServerFn({ method: "POST" })
     const { data: claimed } = await supabase
       .from("profiles")
       .update({ welcome_email_sent_at: new Date().toISOString() })
-      .eq("user_id", userId)
+      .eq("id", userId)
       .is("welcome_email_sent_at", null)
-      .select("user_id")
+      .select("id")
       .maybeSingle();
 
     if (!claimed) return { sent: false as const, reason: "already_sent" };
@@ -48,7 +48,7 @@ export const sendWelcomeAfterConfirm = createServerFn({ method: "POST" })
       await supabase
         .from("profiles")
         .update({ welcome_email_sent_at: null })
-        .eq("user_id", userId);
+        .eq("id", userId);
       console.error("Welcome email failed after confirmation", err);
       return { sent: false as const, reason: "send_failed" };
     }
