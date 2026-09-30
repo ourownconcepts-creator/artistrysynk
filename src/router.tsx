@@ -5,7 +5,8 @@ import { routeTree } from "./routeTree.gen";
 // After a new release, old page files are removed. Reload once to pick up the new version.
 const CHUNK_RELOAD_KEY = "as-chunk-reload-at";
 function isChunkError(msg: string) {
-  return /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(msg);
+  // The last pattern is what startup throws when an open page is from an older release than the server.
+  return /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module|reading 'component'/i.test(msg);
 }
 function reloadOnce() {
   try {
