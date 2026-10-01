@@ -70,6 +70,53 @@ const DisciplineLanding = () => {
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">{discipline.heading}</h1>
         <p className="mt-4 max-w-3xl text-lg text-muted-foreground">{discipline.intro}</p>
 
+        <section className="mt-10 grid gap-8 md:grid-cols-3" aria-labelledby="hire-heading">
+          <h2 id="hire-heading" className="sr-only">
+            How to work with {discipline.heading.toLowerCase()} on ArtistrySynk
+          </h2>
+          <div>
+            <h3 className="text-xl font-semibold">1. Review real work</h3>
+            <p className="mt-2 text-muted-foreground">
+              Every profile shows a portfolio, roles, genres and verified credits from finished
+              projects, so you can judge {discipline.heading.toLowerCase()} on what they have
+              actually shipped rather than on a CV.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold">2. Match before you message</h3>
+            <p className="mt-2 text-muted-foreground">
+              Swipe through creatives in <Link to="/discover" className="text-primary hover:underline">Discover</Link>.
+              Chat opens only after a mutual match, which keeps inboxes free of cold pitches and
+              makes every conversation intentional.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold">3. Build it together</h3>
+            <p className="mt-2 text-muted-foreground">
+              Send a collaboration request, open a private project room for files and feedback,
+              and earn credits that strengthen both profiles once the work is done.
+            </p>
+          </div>
+        </section>
+
+        <section className="mt-10 max-w-3xl" aria-labelledby="tips-heading">
+          <h2 id="tips-heading" className="text-2xl font-semibold">
+            What to look for in {discipline.heading.toLowerCase()}
+          </h2>
+          <ul className="mt-3 list-disc space-y-2 pl-5 text-muted-foreground">
+            <li>Recent portfolio pieces close to the style or genre of your project.</li>
+            <li>Credits from completed collaborations and reviews from past partners.</li>
+            <li>Clear availability, location or remote preference, and response habits.</li>
+            <li>A synergy score that reflects how well your roles and genres fit.</li>
+          </ul>
+          <p className="mt-4 text-muted-foreground">
+            New here? Read <Link to="/how-it-works" className="text-primary hover:underline">how ArtistrySynk works</Link>,
+            compare <Link to="/pricing" className="text-primary hover:underline">plans</Link>, see{" "}
+            <Link to="/success-stories" className="text-primary hover:underline">success stories</Link>, or browse
+            collaboration tips on the <Link to="/blog" className="text-primary hover:underline">blog</Link>.
+          </p>
+        </section>
+
         <section className="mt-10" aria-labelledby="creators-heading">
           <h2 id="creators-heading" className="mb-4 text-2xl font-semibold">
             Featured profiles
