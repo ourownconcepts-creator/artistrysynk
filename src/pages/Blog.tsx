@@ -102,7 +102,7 @@ const Blog = () => {
       {/* Categories */}
       <section className="px-4 mb-12">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex flex-wrap gap-3 justify-center">
+          <div className="flex flex-wrap gap-3 justify-center items-center">
             {categories.map((category) => (
               <Button
                 key={category}
@@ -113,6 +113,9 @@ const Blog = () => {
                 {category}
               </Button>
             ))}
+            <Button asChild variant="ghost" className="rounded-full text-muted-foreground">
+              <Link to="/blog/archive">Full archive →</Link>
+            </Button>
           </div>
         </div>
       </section>
