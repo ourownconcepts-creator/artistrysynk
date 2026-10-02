@@ -37,7 +37,7 @@ export const Route = createFileRoute("/blog/archive")({
           url: absoluteUrl("/blog/archive"),
           description:
             "Every published ArtistrySynk article on creative collaboration, music production and artist networking.",
-          ...(itemCount > 0
+          ...(itemCount > 0 && loaderData
             ? {
                 mainEntity: {
                   "@type": "ItemList",
