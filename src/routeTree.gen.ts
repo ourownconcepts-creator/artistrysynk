@@ -85,6 +85,7 @@ import { Route as AuthIndexRouteImport } from './routes/auth/index'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
+import { Route as BlogArchiveRouteImport } from './routes/blog/archive'
 import { Route as BlogHowToFindAMusicProducerRouteImport } from './routes/blog/how-to-find-a-music-producer'
 import { Route as CopyrightReportRouteImport } from './routes/copyright/report'
 import { Route as ExploreIndexRouteImport } from './routes/explore/index'
@@ -511,6 +512,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogArchiveRoute = BlogArchiveRouteImport.update({
+  id: '/blog/archive',
+  path: '/blog/archive',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogHowToFindAMusicProducerRoute =
   BlogHowToFindAMusicProducerRouteImport.update({
     id: '/blog/how-to-find-a-music-producer',
@@ -806,6 +812,7 @@ export interface FileRoutesByFullPath {
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/blog/archive': typeof BlogArchiveRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
   '/explore/nearby': typeof ExploreNearbyRoute
@@ -926,6 +933,7 @@ export interface FileRoutesByTo {
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/blog/archive': typeof BlogArchiveRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
   '/explore/nearby': typeof ExploreNearbyRoute
@@ -1047,6 +1055,7 @@ export interface FileRoutesById {
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/blog/archive': typeof BlogArchiveRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
   '/explore/nearby': typeof ExploreNearbyRoute
@@ -1169,6 +1178,7 @@ export interface FileRouteTypes {
     | '/account/confirm-deletion'
     | '/auth/callback'
     | '/blog/$slug'
+    | '/blog/archive'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
     | '/explore/nearby'
@@ -1289,6 +1299,7 @@ export interface FileRouteTypes {
     | '/account/confirm-deletion'
     | '/auth/callback'
     | '/blog/$slug'
+    | '/blog/archive'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
     | '/explore/nearby'
@@ -1409,6 +1420,7 @@ export interface FileRouteTypes {
     | '/account/confirm-deletion'
     | '/auth/callback'
     | '/blog/$slug'
+    | '/blog/archive'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
     | '/explore/nearby'
@@ -1530,6 +1542,7 @@ export interface RootRouteChildren {
   AccountConfirmDeletionRoute: typeof AccountConfirmDeletionRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  BlogArchiveRoute: typeof BlogArchiveRoute
   BlogHowToFindAMusicProducerRoute: typeof BlogHowToFindAMusicProducerRoute
   CopyrightReportRoute: typeof CopyrightReportRoute
   ExploreNearbyRoute: typeof ExploreNearbyRoute
@@ -2110,6 +2123,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/archive': {
+      id: '/blog/archive'
+      path: '/blog/archive'
+      fullPath: '/blog/archive'
+      preLoaderRoute: typeof BlogArchiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/how-to-find-a-music-producer': {
       id: '/blog/how-to-find-a-music-producer'
       path: '/blog/how-to-find-a-music-producer'
@@ -2485,6 +2505,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountConfirmDeletionRoute: AccountConfirmDeletionRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   BlogSlugRoute: BlogSlugRoute,
+  BlogArchiveRoute: BlogArchiveRoute,
   BlogHowToFindAMusicProducerRoute: BlogHowToFindAMusicProducerRoute,
   CopyrightReportRoute: CopyrightReportRoute,
   ExploreNearbyRoute: ExploreNearbyRoute,
