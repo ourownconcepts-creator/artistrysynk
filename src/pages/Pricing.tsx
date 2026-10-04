@@ -1,3 +1,5 @@
+import { SeoCopyBlock } from "@/components/seo/SeoCopyBlock";
+import { pricingCopy } from "@/content/seoCopy";
 import { useState, useEffect } from "react";
 import { Check, Loader2, CheckCircle, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -292,6 +294,7 @@ const Pricing = () => {
         </div>
       </section>
 
+      <SeoCopyBlock copy={pricingCopy} />
       <Footer />
     </div>
   );
