@@ -374,6 +374,13 @@ const PublicProfile = () => {
                   </p>
                 </div>
               )}
+
+              <AvailabilityCalendar
+                profileId={profile.id}
+                profileName={profile.full_name}
+                currentUserId={currentUserId}
+                isOwner={isOwner}
+              />
             </div>
 
             <div className="flex h-1 w-full">
