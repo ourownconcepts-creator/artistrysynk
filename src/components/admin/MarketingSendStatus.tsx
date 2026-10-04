@@ -61,7 +61,7 @@ export const MarketingSendStatus = () => {
     const { error } = await db
       .from("admin_settings")
       .upsert({ setting_key: "marketing_email_limits", setting_value: { daily_limit: n, window_hours: 24 } }, { onConflict: "setting_key" });
-    if (error) return toast.error("Only super admins can change the limit");
+    if (error) return void toast.error("Only super admins can change the limit");
     toast.success(`Marketing limit set to ${n} per 24 hours`);
     setLimitInput("");
     qc.invalidateQueries({ queryKey: ["marketing-send-status"] });
