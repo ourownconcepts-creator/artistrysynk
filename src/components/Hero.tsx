@@ -7,6 +7,7 @@ import { allRoles } from "@/lib/creativeRoles";
 import { useSubscription } from "@/hooks/useSubscription";
 import { Link } from "@/lib/router-compat";
 import logoImg from "@/assets/logo.png";
+import heroVideoAsset from "@/assets/artistry-hero.mp4.asset.json";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
 
 import { MorphingBlobs } from './hero/MorphingBlobs';
@@ -163,6 +164,20 @@ export const Hero = () => {
       
       {/* Morphing background blobs */}
       <MorphingBlobs />
+
+      {/* Cinematic hero video — creatives connected by light */}
+      <video
+        className="absolute inset-0 h-full w-full object-cover opacity-25 pointer-events-none"
+        src={heroVideoAsset.url}
+        poster="/videos/artistry-hero-poster.jpg"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-hidden="true"
+        title="ArtistrySynk — creatives connecting across the globe"
+      />
       
       {/* Sync pulse animation in center */}
       <motion.div style={{ opacity }} className="absolute inset-0">
