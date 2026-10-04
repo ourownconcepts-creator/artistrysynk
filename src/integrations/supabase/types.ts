@@ -2506,6 +2506,65 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_recipients: {
+        Row: {
+          accepted_at: string | null
+          attempts: number
+          campaign_id: string
+          created_at: string
+          email: string
+          error_code: string | null
+          error_message: string | null
+          id: string
+          last_attempt_at: string | null
+          next_attempt_at: string | null
+          provider_message_id: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          attempts?: number
+          campaign_id: string
+          created_at?: string
+          email: string
+          error_code?: string | null
+          error_message?: string | null
+          id?: string
+          last_attempt_at?: string | null
+          next_attempt_at?: string | null
+          provider_message_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          attempts?: number
+          campaign_id?: string
+          created_at?: string
+          email?: string
+          error_code?: string | null
+          error_message?: string | null
+          id?: string
+          last_attempt_at?: string | null
+          next_attempt_at?: string | null
+          provider_message_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_recipients_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "scheduled_newsletters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       newsletter_subscribers: {
         Row: {
           email: string
@@ -3658,53 +3717,110 @@ export type Database = {
       scheduled_newsletters: {
         Row: {
           audience: string
+          campaign_name: string | null
+          completed_at: string | null
           content: string
           created_at: string
           created_by: string
+          current_batch: number
           error_message: string | null
           id: string
+          idempotency_key: string | null
+          last_error: string | null
+          last_provider_response: Json | null
+          locked_until: string | null
+          next_attempt_at: string | null
+          paused_reason: string | null
           preview_text: string | null
+          provider_limit: number | null
           recipients_count: number | null
+          recipients_prepared: boolean
           scheduled_at: string
           sent_at: string | null
           sent_recipients: Json
           status: string
           subject: string
           template_id: string
+          total_bounced: number
+          total_eligible: number
+          total_failed: number
+          total_invalid: number
+          total_queued: number
+          total_sent: number
+          total_skipped: number
+          total_unsubscribed: number
           updated_at: string
         }
         Insert: {
           audience?: string
+          campaign_name?: string | null
+          completed_at?: string | null
           content: string
           created_at?: string
           created_by: string
+          current_batch?: number
           error_message?: string | null
           id?: string
+          idempotency_key?: string | null
+          last_error?: string | null
+          last_provider_response?: Json | null
+          locked_until?: string | null
+          next_attempt_at?: string | null
+          paused_reason?: string | null
           preview_text?: string | null
+          provider_limit?: number | null
           recipients_count?: number | null
+          recipients_prepared?: boolean
           scheduled_at: string
           sent_at?: string | null
           sent_recipients?: Json
           status?: string
           subject: string
           template_id?: string
+          total_bounced?: number
+          total_eligible?: number
+          total_failed?: number
+          total_invalid?: number
+          total_queued?: number
+          total_sent?: number
+          total_skipped?: number
+          total_unsubscribed?: number
           updated_at?: string
         }
         Update: {
           audience?: string
+          campaign_name?: string | null
+          completed_at?: string | null
           content?: string
           created_at?: string
           created_by?: string
+          current_batch?: number
           error_message?: string | null
           id?: string
+          idempotency_key?: string | null
+          last_error?: string | null
+          last_provider_response?: Json | null
+          locked_until?: string | null
+          next_attempt_at?: string | null
+          paused_reason?: string | null
           preview_text?: string | null
+          provider_limit?: number | null
           recipients_count?: number | null
+          recipients_prepared?: boolean
           scheduled_at?: string
           sent_at?: string | null
           sent_recipients?: Json
           status?: string
           subject?: string
           template_id?: string
+          total_bounced?: number
+          total_eligible?: number
+          total_failed?: number
+          total_invalid?: number
+          total_queued?: number
+          total_sent?: number
+          total_skipped?: number
+          total_unsubscribed?: number
           updated_at?: string
         }
         Relationships: []
