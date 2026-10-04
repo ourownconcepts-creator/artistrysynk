@@ -32,7 +32,7 @@ export const MarketingSendStatus = () => {
       const since = new Date(Date.now() - windowH * 3600_000).toISOString();
       const count = async (f: (q: any) => any) =>
         (await f(db.from("newsletter_recipients").select("id", { count: "exact", head: true }))).count ?? 0;
-      const [sent24, queued, failed, bounced, skipped, unknown, unknown] = await Promise.all([
+      const [sent24, queued, failed, bounced, skipped, unknown] = await Promise.all([
         count((q) => q.gte("accepted_at", since).neq("error_code", "legacy_sent")),
         count((q) => q.in("status", ["pending", "rate_limited", "processing", "temporarily_failed"])),
         count((q) => q.eq("status", "failed")),
