@@ -64,14 +64,14 @@ function ProposalsPage() {
 
   const setStatus = async (table: "collaboration_proposals" | "booking_requests", id: string, status: string) => {
     const { error } = await db(table).update({ status }).eq("id", id);
-    if (error) return toast.error("Couldn't update");
+    if (error) return void toast.error("Couldn't update");
     toast.success(`Marked ${status}`);
     if (me) void load(me);
   };
 
   const openFile = async (path: string) => {
     const { data, error } = await supabase.storage.from(PROPOSAL_BUCKET).createSignedUrl(path, 300);
-    if (error || !data) return toast.error("Couldn't open file");
+    if (error || !data) return void toast.error("Couldn't open file");
     window.open(data.signedUrl, "_blank", "noopener,noreferrer");
   };
 

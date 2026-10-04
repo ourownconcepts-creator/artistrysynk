@@ -44,24 +44,24 @@ export function AvailabilityCalendar({ profileId, profileName, currentUserId, is
   const visible = day ? slots.filter((s) => sameDay(new Date(s.starts_at), day)) : slots.slice(0, 6);
 
   const addSlot = async () => {
-    if (!day) return toast.error("Pick a day first");
+    if (!day) return void toast.error("Pick a day first");
     const [sh, sm] = start.split(":").map(Number);
     const [eh, em] = end.split(":").map(Number);
     const s = new Date(day); s.setHours(sh ?? 0, sm ?? 0, 0, 0);
     const e = new Date(day); e.setHours(eh ?? 0, em ?? 0, 0, 0);
-    if (e <= s) return toast.error("End time must be after start time");
-    if (s < new Date()) return toast.error("Choose a time in the future");
+    if (e <= s) return void toast.error("End time must be after start time");
+    if (s < new Date()) return void toast.error("Choose a time in the future");
     setBusy(true);
     const { error } = await db("availability_slots").insert({ user_id: profileId, starts_at: s.toISOString(), ends_at: e.toISOString() });
     setBusy(false);
-    if (error) return toast.error("Couldn't add that slot");
+    if (error) return void toast.error("Couldn't add that slot");
     toast.success("Availability added");
     void load();
   };
 
   const removeSlot = async (id: string) => {
     const { error } = await db("availability_slots").delete().eq("id", id);
-    if (error) return toast.error("Couldn't remove slot");
+    if (error) return void toast.error("Couldn't remove slot");
     void load();
   };
 
@@ -77,7 +77,7 @@ export function AvailabilityCalendar({ profileId, profileName, currentUserId, is
       note: note.trim().slice(0, 1000) || null,
     });
     setBusy(false);
-    if (error) return toast.error("Couldn't send booking request");
+    if (error) return void toast.error("Couldn't send booking request");
     toast.success(`Booking request sent to ${profileName}`);
     setBooking(null);
     setNote("");

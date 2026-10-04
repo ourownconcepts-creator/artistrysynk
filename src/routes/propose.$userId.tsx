@@ -54,10 +54,10 @@ function ProposePage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!me || !target) return;
-    if (me === target.id) return toast.error("You can't send a proposal to yourself");
+    if (me === target.id) return void toast.error("You can't send a proposal to yourself");
     const parsed = schema.safeParse({ subject, message });
-    if (!parsed.success) return toast.error(parsed.error.issues[0]?.message ?? "Check the form");
-    if (file && file.size > PROPOSAL_MAX_BYTES) return toast.error("Files must be 20 MB or smaller");
+    if (!parsed.success) return void toast.error(parsed.error.issues[0]?.message ?? "Check the form");
+    if (file && file.size > PROPOSAL_MAX_BYTES) return void toast.error("Files must be 20 MB or smaller");
     setSending(true);
     let file_path: string | null = null;
     if (file) {
@@ -66,7 +66,7 @@ function ProposePage() {
       const { error } = await supabase.storage.from(PROPOSAL_BUCKET).upload(file_path, file);
       if (error) {
         setSending(false);
-        return toast.error("File upload failed");
+        return void toast.error("File upload failed");
       }
     }
     const { error } = await db("collaboration_proposals").insert({
@@ -78,7 +78,7 @@ function ProposePage() {
       file_name: file?.name.slice(0, 200) ?? null,
     });
     setSending(false);
-    if (error) return toast.error("Couldn't send your proposal");
+    if (error) return void toast.error("Couldn't send your proposal");
     toast.success(`Proposal sent to ${target.full_name}`);
     navigate("/proposals");
   };
