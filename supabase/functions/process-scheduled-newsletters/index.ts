@@ -52,6 +52,7 @@ const corsHeaders = {
 interface ScheduledNewsletterRow {
   id: string;
   subject: string;
+  content: string;
   audience: string;
   status: string;
   sent_recipients?: string[] | null;
@@ -93,7 +94,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Find due newsletters: pending, or processing runs that never finished.
     const { data: dueNewsletters, error: fetchError } = await supabase
       .from("scheduled_newsletters")
-      .select("id, subject, audience, status, sent_recipients")
+      .select("id, subject, content, audience, status, sent_recipients")
       .or(
         `and(status.eq.pending,scheduled_at.lte.${new Date().toISOString()}),and(status.eq.processing,updated_at.lt.${new Date(Date.now() - CLAIM_TIMEOUT_MINUTES * 60 * 1000).toISOString()})`
       ) as { data: ScheduledNewsletterRow[] | null; error: any };
