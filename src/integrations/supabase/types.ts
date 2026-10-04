@@ -2518,10 +2518,13 @@ export type Database = {
           id: string
           last_attempt_at: string | null
           next_attempt_at: string | null
+          processing_started_at: string | null
           provider_message_id: string | null
+          send_key: string | null
           status: string
           updated_at: string
           user_id: string | null
+          worker_id: string | null
         }
         Insert: {
           accepted_at?: string | null
@@ -2534,10 +2537,13 @@ export type Database = {
           id?: string
           last_attempt_at?: string | null
           next_attempt_at?: string | null
+          processing_started_at?: string | null
           provider_message_id?: string | null
+          send_key?: string | null
           status?: string
           updated_at?: string
           user_id?: string | null
+          worker_id?: string | null
         }
         Update: {
           accepted_at?: string | null
@@ -2550,10 +2556,13 @@ export type Database = {
           id?: string
           last_attempt_at?: string | null
           next_attempt_at?: string | null
+          processing_started_at?: string | null
           provider_message_id?: string | null
+          send_key?: string | null
           status?: string
           updated_at?: string
           user_id?: string | null
+          worker_id?: string | null
         }
         Relationships: [
           {
@@ -3748,6 +3757,7 @@ export type Database = {
           total_queued: number
           total_sent: number
           total_skipped: number
+          total_unknown: number
           total_unsubscribed: number
           updated_at: string
         }
@@ -3784,6 +3794,7 @@ export type Database = {
           total_queued?: number
           total_sent?: number
           total_skipped?: number
+          total_unknown?: number
           total_unsubscribed?: number
           updated_at?: string
         }
@@ -3820,6 +3831,7 @@ export type Database = {
           total_queued?: number
           total_sent?: number
           total_skipped?: number
+          total_unknown?: number
           total_unsubscribed?: number
           updated_at?: string
         }
@@ -5966,6 +5978,74 @@ export type Database = {
         Args: { _capability: string; _user_id: string }
         Returns: boolean
       }
+      mkt_acquire_lease: {
+        Args: { _owner: string; _ttl_seconds?: number }
+        Returns: boolean
+      }
+      mkt_capacity: { Args: never; Returns: Json }
+      mkt_claim_next: {
+        Args: { _campaign: string; _owner: string }
+        Returns: {
+          accepted_at: string | null
+          attempts: number
+          campaign_id: string
+          created_at: string
+          email: string
+          error_code: string | null
+          error_message: string | null
+          id: string
+          last_attempt_at: string | null
+          next_attempt_at: string | null
+          processing_started_at: string | null
+          provider_message_id: string | null
+          send_key: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+          worker_id: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "newsletter_recipients"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      mkt_finalize_campaign: { Args: { _campaign: string }; Returns: string }
+      mkt_next_campaign: {
+        Args: { _owner: string }
+        Returns: {
+          audience: string
+          content: string
+          id: string
+          previous_status: string
+          recipients_prepared: boolean
+          sent_recipients: Json
+          subject: string
+          updated_at: string
+        }[]
+      }
+      mkt_pause_for_capacity: { Args: { _resume_at: string }; Returns: number }
+      mkt_reap_stale: { Args: { _older_than_s?: number }; Returns: number }
+      mkt_record_result: {
+        Args: {
+          _code?: string
+          _id: string
+          _message?: string
+          _outcome: string
+          _owner: string
+          _provider_id?: string
+          _response?: Json
+          _retry_after_s?: number
+        }
+        Returns: string
+      }
+      mkt_release_lease: { Args: { _owner: string }; Returns: undefined }
+      mkt_resolve_unknown: {
+        Args: { _action: string; _campaign: string }
+        Returns: number
+      }
+      mkt_warmup_steps: { Args: never; Returns: number[] }
       move_to_dlq: {
         Args: {
           dlq_name: string

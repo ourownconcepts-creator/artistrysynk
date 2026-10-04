@@ -1,1 +1,1 @@
-- Marketing email goes only through the process-scheduled-newsletters worker with a per-recipient queue (newsletter_recipients) and a configurable limit in admin_settings; never send campaigns inline or retry 429s — protects the warming sender domain.
+- Marketing email goes only through the newsletter worker; its state machine lives in SQL mkt_* functions (lease, SKIP LOCKED claims, rolling-window capacity, unknown-outcome state) with loop logic in core.ts — keeps sends atomic, resumable and duplicate-safe.

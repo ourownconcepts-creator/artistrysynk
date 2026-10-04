@@ -5,7 +5,8 @@ import { Gauge, PauseCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { useServerFn } from "@tanstack/react-start";
+import { setMarketingLimit, WARMUP_STEPS } from "@/lib/marketing-admin.functions";
 import { Button } from "@/components/ui/button";
 
 const db = supabase as any;
@@ -14,6 +15,7 @@ const db = supabase as any;
 export const MarketingSendStatus = () => {
   const qc = useQueryClient();
   const [limitInput, setLimitInput] = useState("");
+  const saveLimitFn = useServerFn(setMarketingLimit);
 
   const { data } = useQuery({
     queryKey: ["marketing-send-status"],
@@ -30,12 +32,13 @@ export const MarketingSendStatus = () => {
       const since = new Date(Date.now() - windowH * 3600_000).toISOString();
       const count = async (f: (q: any) => any) =>
         (await f(db.from("newsletter_recipients").select("id", { count: "exact", head: true }))).count ?? 0;
-      const [sent24, queued, failed, bounced, skipped] = await Promise.all([
+      const [sent24, queued, failed, bounced, skipped, unknown] = await Promise.all([
         count((q) => q.gte("accepted_at", since).neq("error_code", "legacy_sent")),
-        count((q) => q.in("status", ["pending", "rate_limited", "processing"])),
+        count((q) => q.in("status", ["pending", "rate_limited", "processing", "temporarily_failed"])),
         count((q) => q.eq("status", "failed")),
         count((q) => q.eq("status", "bounced")),
         count((q) => q.in("status", ["skipped", "invalid", "unsubscribed"])),
+        count((q) => q.eq("status", "unknown")),
       ]);
       const { data: next } = await db
         .from("scheduled_newsletters")
@@ -47,7 +50,7 @@ export const MarketingSendStatus = () => {
         .maybeSingle();
       return {
         limit: Number(limits.daily_limit) || 0,
-        sent24, queued, failed, bounced, skipped,
+        sent24, queued, failed, bounced, skipped, unknown,
         pausedUntil: state.paused_until && new Date(state.paused_until) > new Date() ? state.paused_until : null,
         reason: state.reason as string | undefined,
         nextAt: next?.next_attempt_at ?? null,
@@ -57,14 +60,16 @@ export const MarketingSendStatus = () => {
 
   const saveLimit = async () => {
     const n = Number(limitInput);
-    if (!Number.isInteger(n) || n < 1) return void toast.error("Enter a whole number above 0");
-    const { error } = await db
-      .from("admin_settings")
-      .upsert({ setting_key: "marketing_email_limits", setting_value: { daily_limit: n, window_hours: 24 } }, { onConflict: "setting_key" });
-    if (error) return void toast.error("Only super admins can change the limit");
-    toast.success(`Marketing limit set to ${n} per 24 hours`);
-    setLimitInput("");
-    qc.invalidateQueries({ queryKey: ["marketing-send-status"] });
+    if (!n) return;
+    if (!window.confirm(`Only continue if QueenSMTP has actually raised your marketing allowance to ${n} per 24 hours. Continue?`)) return;
+    try {
+      await saveLimitFn({ data: { dailyLimit: n } });
+      toast.success(`Marketing limit set to ${n} per 24 hours`);
+      setLimitInput("");
+      qc.invalidateQueries({ queryKey: ["marketing-send-status"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not change the limit");
+    }
   };
 
   if (!data) return null;
@@ -102,12 +107,38 @@ export const MarketingSendStatus = () => {
           <Stat label="Skipped / invalid / unsub." value={data.skipped} />
           <Stat label="Next send" value={data.nextAt ? format(new Date(data.nextAt), "MMM d, p") : "—"} />
         </div>
-        <div className="flex gap-2 items-center">
-          <Input className="max-w-[160px]" type="number" min={1} placeholder={`Limit (${data.limit})`} value={limitInput} onChange={(e) => setLimitInput(e.target.value)} />
-          <Button variant="outline" onClick={saveLimit}>Update limit</Button>
-          <span className="text-xs text-muted-foreground">Raise this when QueenSMTP raises your warm-up step (30 → 60 → 150 → 300…).</span>
+        <div className="space-y-2 rounded-lg border p-3">
+          <p className="font-medium text-foreground">QueenSMTP marketing warm-up limit</p>
+          <p className="text-xs text-muted-foreground">
+            Rolling 24-hour allowance (not a midnight reset). Only raise it after QueenSMTP has actually raised your domain's
+            marketing allowance. It can go up one warm-up step at a time.
+          </p>
+          <div className="flex gap-2 items-center">
+            <select
+              className="h-9 rounded-md border bg-background px-2 text-sm text-foreground"
+              value={limitInput}
+              onChange={(e) => setLimitInput(e.target.value)}
+            >
+              <option value="">Current: {data.limit}</option>
+              {WARMUP_STEPS.filter((s) => s <= nextStep(data.limit) && s !== data.limit).map((s) => (
+                <option key={s} value={s}>{s} per 24h</option>
+              ))}
+            </select>
+            <Button variant="outline" onClick={saveLimit} disabled={!limitInput}>Update limit</Button>
+          </div>
         </div>
+        {data.unknown > 0 && (
+          <p className="text-sm text-destructive">
+            {data.unknown} send(s) have an unknown result (connection lost after the request). They are never resent automatically —
+            check the QueenSMTP message log, then settle them on the campaign below.
+          </p>
+        )}
       </CardContent>
     </Card>
   );
+};
+
+const nextStep = (cur: number) => {
+  const i = (WARMUP_STEPS as readonly number[]).indexOf(cur);
+  return i >= 0 && i < WARMUP_STEPS.length - 1 ? WARMUP_STEPS[i + 1] : cur;
 };
