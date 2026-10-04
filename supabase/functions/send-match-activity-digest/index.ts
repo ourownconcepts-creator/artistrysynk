@@ -24,7 +24,7 @@ class QueenSMTP {
           const b = (await res.json().catch(() => null)) as { id?: string; success?: boolean; error?: string } | null;
           if (res.ok && b?.success !== false) return { id: b?.id };
           last = b?.error ?? `QueenSMTP failed (${res.status})`;
-          if (res.status !== 429 && res.status < 500) break;
+          if (res.status < 500) break; // never retry 429 / daily_limit_reached
         } catch (e) {
           last = e instanceof Error ? e.message : "network error";
         }
