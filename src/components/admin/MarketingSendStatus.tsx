@@ -57,7 +57,7 @@ export const MarketingSendStatus = () => {
 
   const saveLimit = async () => {
     const n = Number(limitInput);
-    if (!Number.isInteger(n) || n < 1) return toast.error("Enter a whole number above 0");
+    if (!Number.isInteger(n) || n < 1) return void toast.error("Enter a whole number above 0");
     const { error } = await db
       .from("admin_settings")
       .upsert({ setting_key: "marketing_email_limits", setting_value: { daily_limit: n, window_hours: 24 } }, { onConflict: "setting_key" });
