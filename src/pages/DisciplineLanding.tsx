@@ -1,3 +1,4 @@
+import { BlogSearch } from "@/components/blog/BlogSearch";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
@@ -192,6 +193,7 @@ const DisciplineLanding = () => {
           </ul>
         </section>
       </main>
+      <BlogSearch heading="Articles for creatives" />
       <Footer />
     </div>
   );

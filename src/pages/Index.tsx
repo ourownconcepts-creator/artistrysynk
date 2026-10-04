@@ -1,3 +1,4 @@
+import { BlogSearch } from "@/components/blog/BlogSearch";
 import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
 import { Roles } from "@/components/Roles";
@@ -23,6 +24,7 @@ const Index = () => {
       <Roles />
       <Testimonials />
       <HowItWorks />
+      <BlogSearch />
       <NewsletterSignup />
       <CTA />
       <Footer />

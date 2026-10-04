@@ -8,6 +8,7 @@ import { Footer } from "@/components/Footer";
 import { Link } from "@/lib/router-compat";
 import { buildPageHead } from "@/lib/seoHead";
 import { db, fmtDay, fmtTime, type Slot } from "@/lib/collab";
+import { CITY_LANDINGS } from "@/lib/seoLandings";
 
 export const Route = createFileRoute("/collab-hub")({
   head: () =>
@@ -23,7 +24,10 @@ export const Route = createFileRoute("/collab-hub")({
 
 interface Service { id: string; seller_id: string; title: string; description: string | null; category: string; price: number; currency: string; delivery_days: number | null }
 
+interface Proj { id: string; title: string; description: string | null; created_by: string }
+
 function CollabHub() {
+  const [projects, setProjects] = useState<Proj[]>([]);
   const [me, setMe] = useState<string | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [names, setNames] = useState<Record<string, string>>({});
@@ -43,6 +47,13 @@ function CollabHub() {
         .eq("is_hidden", false)
         .order("created_at", { ascending: false })
         .limit(60);
+      const { data: pj } = await supabase
+        .from("projects")
+        .select("id, title, description, created_by")
+        .eq("is_public", true)
+        .order("created_at", { ascending: false })
+        .limit(30);
+      setProjects((pj ?? []) as Proj[]);
       const list = (data ?? []) as Service[];
       setServices(list);
       const sellers = [...new Set(list.map((s) => s.seller_id))];
@@ -70,6 +81,10 @@ function CollabHub() {
     return services.filter((s) => !n || `${s.title} ${s.category} ${names[s.seller_id] ?? ""}`.toLowerCase().includes(n));
   }, [q, services, names]);
 
+  const needle = q.trim().toLowerCase();
+  const projHits = projects.filter((p) => !needle || `${p.title} ${p.description ?? ""}`.toLowerCase().includes(needle));
+  const cityHits = CITY_LANDINGS.filter((c) => !needle || `${c.city} ${c.country}`.toLowerCase().includes(needle));
+
   const money = (s: Service) => {
     try { return new Intl.NumberFormat("en-GB", { style: "currency", currency: s.currency || "NGN" }).format(s.price); }
     catch { return `${s.currency} ${s.price}`; }
@@ -80,15 +95,16 @@ function CollabHub() {
       <main className="container mx-auto max-w-6xl px-4 py-12">
         <h1 className="text-4xl font-bold tracking-tight">Collaboration Hub</h1>
         <p className="mt-3 max-w-3xl text-lg text-muted-foreground">
-          Services, rates and open dates from creatives on ArtistrySynk, all in one place. Pick someone whose price and
-          schedule fit, then book a slot or send a proposal.
+          Services, rates, open dates, open projects and local creatives by city — the marketplace, city pages and
+          project board in one place. One search covers everything below.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
-          <Input className="max-w-sm" placeholder="Search services, categories or creatives" value={q} onChange={(e) => setQ(e.target.value)} />
+          <Input className="max-w-sm" placeholder="Search services, creatives, projects or cities" value={q} onChange={(e) => setQ(e.target.value)} />
           <Button asChild><Link to={me ? "/marketplace" : "/auth"}>{me ? "List your service" : "Sign in to list a service"}</Link></Button>
           {me && <Button asChild variant="outline"><Link to="/creator-dashboard">Set your availability</Link></Button>}
         </div>
 
+        <h2 className="mt-10 text-2xl font-semibold">Services &amp; rates</h2>
         {loading ? (
           <p className="mt-10 text-muted-foreground">Loading services…</p>
         ) : filtered.length === 0 ? (
@@ -130,6 +146,48 @@ function CollabHub() {
             })}
           </ul>
         )}
+
+        <section className="mt-14">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 className="text-2xl font-semibold">Open projects</h2>
+            <Link to="/open-projects" className="text-sm text-primary hover:underline">All open projects →</Link>
+          </div>
+          {loading ? null : projHits.length === 0 ? (
+            <p className="mt-4 text-muted-foreground">No open projects match.</p>
+          ) : (
+            <ul className="mt-4 grid list-none gap-4 p-0 md:grid-cols-2 lg:grid-cols-3">
+              {projHits.slice(0, 9).map((p) => (
+                <li key={p.id} className="flex flex-col rounded-xl border p-5">
+                  <h3 className="font-semibold">{p.title}</h3>
+                  {p.description && <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{p.description}</p>}
+                  <div className="mt-auto pt-4">
+                    <Button asChild size="sm" variant="outline"><Link to={me ? "/open-projects" : "/auth"}>{me ? "Apply" : "Sign in to apply"}</Link></Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="mt-14">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 className="text-2xl font-semibold">Find creatives by city</h2>
+            <Link to="/locations" className="text-sm text-primary hover:underline">City directory →</Link>
+          </div>
+          {cityHits.length === 0 ? (
+            <p className="mt-4 text-muted-foreground">No city pages match.</p>
+          ) : (
+            <ul className="mt-4 flex list-none flex-wrap gap-2 p-0">
+              {cityHits.map((c) => (
+                <li key={c.slug}>
+                  <Link to={`/locations/${c.slug}`} className="inline-block rounded-full border px-3 py-1 text-sm hover:border-primary">
+                    {c.city}, {c.country}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </main>
       <Footer />
     </div>
