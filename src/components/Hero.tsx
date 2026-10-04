@@ -35,7 +35,7 @@ const RotatingSubtitle = () => {
   return (
     <motion.p
       key={index}
-      className="text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto"
+      className="text-lg md:text-xl lg:text-2xl font-bold text-foreground max-w-3xl mx-auto drop-shadow-sm"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
