@@ -32,6 +32,7 @@ export const staticEntries: SitemapEntry[] = [
   { path: "/how-it-works", changefreq: "weekly", priority: "0.8" },
   { path: "/pricing", changefreq: "weekly", priority: "0.8" },
   { path: "/discover", changefreq: "daily", priority: "0.8" },
+  { path: "/membership", changefreq: "monthly", priority: "0.8" },
   { path: "/collab-hub", changefreq: "daily", priority: "0.7" },
   { path: "/about", changefreq: "monthly", priority: "0.7" },
   { path: "/success-stories", changefreq: "weekly", priority: "0.7" },

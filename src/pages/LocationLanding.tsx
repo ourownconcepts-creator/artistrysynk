@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import { PageSEO, CollectionPageSchema } from "@/components/seo";
 import { PublicCreatorGrid, type PublicCreator } from "@/components/seo/PublicCreatorGrid";
 import { CITY_LANDINGS, DISCIPLINE_LANDINGS, cityDescription, cityTitle, getCityBySlug } from "@/lib/seoLandings";
+import { CreatorOffers } from "@/components/seo/CreatorOffers";
 import NotFound from "@/pages/NotFound";
 
 const BASE = "https://artistrysynk.app";
@@ -97,6 +98,11 @@ const LocationLanding = () => {
             loading={loading}
             emptyMessage={`No public profiles in ${city.city} yet — be the first to join.`}
           />
+        </section>
+
+        <section className="mt-10" aria-labelledby="city-offers">
+          <h2 id="city-offers" className="mb-4 text-2xl font-semibold">Services, rates and availability in {city.city}</h2>
+          <CreatorOffers creators={creators} />
         </section>
 
         <section className="mt-14" aria-labelledby="city-disciplines">

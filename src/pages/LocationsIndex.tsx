@@ -1,7 +1,10 @@
 import { Link } from "@/lib/router-compat";
 import { Footer } from "@/components/Footer";
 import { PageSEO, CollectionPageSchema } from "@/components/seo";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { PublicCreatorGrid, type PublicCreator } from "@/components/seo/PublicCreatorGrid";
+import { CreatorOffers } from "@/components/seo/CreatorOffers";
 import { Input } from "@/components/ui/input";
 import { CITY_LANDINGS, DISCIPLINE_LANDINGS } from "@/lib/seoLandings";
 
@@ -10,6 +13,21 @@ const BASE = "https://artistrysynk.app";
 const LocationsIndex = () => {
   const [q, setQ] = useState("");
   const needle = q.trim().toLowerCase();
+  const [found, setFound] = useState<PublicCreator[]>([]);
+  const [searching, setSearching] = useState(false);
+  useEffect(() => {
+    const term = q.trim();
+    if (term.length < 2) { setFound([]); return; }
+    let active = true;
+    setSearching(true);
+    const t = setTimeout(async () => {
+      const { data } = await supabase.rpc("list_public_profiles", { _role: undefined, _city: term, _limit: 24, _offset: 0 });
+      if (!active) return;
+      setFound((data as PublicCreator[]) ?? []);
+      setSearching(false);
+    }, 350);
+    return () => { active = false; clearTimeout(t); };
+  }, [q]);
   const cities = CITY_LANDINGS.filter((c) => !needle || `${c.city} ${c.country}`.toLowerCase().includes(needle));
   return (
   <div className="min-h-screen">
@@ -42,6 +60,14 @@ const LocationsIndex = () => {
           Want people closest to you? Turn on location in <Link to="/discover" className="text-primary hover:underline">Discover</Link> to sort creatives by distance.
         </p>
       </div>
+
+      {q.trim().length >= 2 && (
+        <section className="mt-8 space-y-6" aria-live="polite">
+          <h2 className="text-2xl font-semibold">Creatives in “{q.trim()}”</h2>
+          <PublicCreatorGrid creators={found} loading={searching} emptyMessage={`No public profiles in ${q.trim()} yet.`} />
+          <CreatorOffers creators={found} />
+        </section>
+      )}
 
       {cities.length === 0 && <p className="mt-8 text-muted-foreground">No city matches "{q}" yet — try a nearby city or use Discover.</p>}
       <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 list-none p-0">
