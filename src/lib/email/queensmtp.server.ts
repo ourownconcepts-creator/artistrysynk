@@ -70,7 +70,7 @@ export async function sendEmail(input: SendEmailInput): Promise<{ id?: string }>
   // Transient failures (429 / 5xx / network) get a short bounded retry.
   let lastError = "";
   for (let attempt = 0; attempt < 3; attempt++) {
-    if (attempt > 0) await new Promise((r) => setTimeout(r, 400 * 2 ** (attempt - 1)));
+    if (attempt > 0) await new Promise((r) => setTimeout(r, 400 * 2 ** (attempt - 1) * (0.75 + Math.random() * 0.5)));
 
     let res: Response;
     try {
@@ -98,8 +98,12 @@ export async function sendEmail(input: SendEmailInput): Promise<{ id?: string }>
 
     lastError = body?.error ?? body?.message ?? `QueenSMTP request failed (${res.status})`;
 
-    // 4xx other than rate limiting will not succeed on retry.
-    if (res.status !== 429 && res.status < 500) break;
+    // Never retry 4xx — including 429 / daily_limit_reached, which must not be hammered.
+    if (res.status === 429) {
+      console.warn("QueenSMTP rate limit (transactional)", { retryAfter: res.headers.get("Retry-After") });
+      break;
+    }
+    if (res.status < 500) break;
   }
 
   console.error("QueenSMTP send failed:", lastError);
