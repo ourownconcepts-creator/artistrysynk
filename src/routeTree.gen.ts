@@ -28,10 +28,14 @@ import { Route as AdminSeoPreviewRouteImport } from './routes/admin-seo-preview'
 import { Route as AdminSettingsRouteImport } from './routes/admin-settings'
 import { Route as AdminSupportRouteImport } from './routes/admin-support'
 import { Route as ApiAccessRouteImport } from './routes/api-access'
+import { Route as ApplicationsRouteImport } from './routes/applications'
+import { Route as BookingsRouteImport } from './routes/bookings'
 import { Route as CareersRouteImport } from './routes/careers'
+import { Route as CollabHubRouteImport } from './routes/collab-hub'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as CreativeDirectorsRouteImport } from './routes/creative-directors'
+import { Route as CreatorDashboardRouteImport } from './routes/creator-dashboard'
 import { Route as CreditsRouteImport } from './routes/credits'
 import { Route as DancersRouteImport } from './routes/dancers'
 import { Route as DataDeletionRouteImport } from './routes/data-deletion'
@@ -226,9 +230,24 @@ const ApiAccessRoute = ApiAccessRouteImport.update({
   path: '/api-access',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApplicationsRoute = ApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingsRoute = BookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CareersRoute = CareersRouteImport.update({
   id: '/careers',
   path: '/careers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabHubRoute = CollabHubRouteImport.update({
+  id: '/collab-hub',
+  path: '/collab-hub',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -244,6 +263,11 @@ const CookiesRoute = CookiesRouteImport.update({
 const CreativeDirectorsRoute = CreativeDirectorsRouteImport.update({
   id: '/creative-directors',
   path: '/creative-directors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorDashboardRoute = CreatorDashboardRouteImport.update({
+  id: '/creator-dashboard',
+  path: '/creator-dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreditsRoute = CreditsRouteImport.update({
@@ -769,10 +793,14 @@ export interface FileRoutesByFullPath {
   '/admin-settings': typeof AdminSettingsRoute
   '/admin-support': typeof AdminSupportRoute
   '/api-access': typeof ApiAccessRoute
+  '/applications': typeof ApplicationsRoute
+  '/bookings': typeof BookingsRoute
   '/careers': typeof CareersRoute
+  '/collab-hub': typeof CollabHubRoute
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
   '/creative-directors': typeof CreativeDirectorsRoute
+  '/creator-dashboard': typeof CreatorDashboardRoute
   '/credits': typeof CreditsRoute
   '/dancers': typeof DancersRoute
   '/data-deletion': typeof DataDeletionRoute
@@ -892,10 +920,14 @@ export interface FileRoutesByTo {
   '/admin-settings': typeof AdminSettingsRoute
   '/admin-support': typeof AdminSupportRoute
   '/api-access': typeof ApiAccessRoute
+  '/applications': typeof ApplicationsRoute
+  '/bookings': typeof BookingsRoute
   '/careers': typeof CareersRoute
+  '/collab-hub': typeof CollabHubRoute
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
   '/creative-directors': typeof CreativeDirectorsRoute
+  '/creator-dashboard': typeof CreatorDashboardRoute
   '/credits': typeof CreditsRoute
   '/dancers': typeof DancersRoute
   '/data-deletion': typeof DataDeletionRoute
@@ -1016,10 +1048,14 @@ export interface FileRoutesById {
   '/admin-settings': typeof AdminSettingsRoute
   '/admin-support': typeof AdminSupportRoute
   '/api-access': typeof ApiAccessRoute
+  '/applications': typeof ApplicationsRoute
+  '/bookings': typeof BookingsRoute
   '/careers': typeof CareersRoute
+  '/collab-hub': typeof CollabHubRoute
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
   '/creative-directors': typeof CreativeDirectorsRoute
+  '/creator-dashboard': typeof CreatorDashboardRoute
   '/credits': typeof CreditsRoute
   '/dancers': typeof DancersRoute
   '/data-deletion': typeof DataDeletionRoute
@@ -1141,10 +1177,14 @@ export interface FileRouteTypes {
     | '/admin-settings'
     | '/admin-support'
     | '/api-access'
+    | '/applications'
+    | '/bookings'
     | '/careers'
+    | '/collab-hub'
     | '/contact'
     | '/cookies'
     | '/creative-directors'
+    | '/creator-dashboard'
     | '/credits'
     | '/dancers'
     | '/data-deletion'
@@ -1264,10 +1304,14 @@ export interface FileRouteTypes {
     | '/admin-settings'
     | '/admin-support'
     | '/api-access'
+    | '/applications'
+    | '/bookings'
     | '/careers'
+    | '/collab-hub'
     | '/contact'
     | '/cookies'
     | '/creative-directors'
+    | '/creator-dashboard'
     | '/credits'
     | '/dancers'
     | '/data-deletion'
@@ -1387,10 +1431,14 @@ export interface FileRouteTypes {
     | '/admin-settings'
     | '/admin-support'
     | '/api-access'
+    | '/applications'
+    | '/bookings'
     | '/careers'
+    | '/collab-hub'
     | '/contact'
     | '/cookies'
     | '/creative-directors'
+    | '/creator-dashboard'
     | '/credits'
     | '/dancers'
     | '/data-deletion'
@@ -1511,10 +1559,14 @@ export interface RootRouteChildren {
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSupportRoute: typeof AdminSupportRoute
   ApiAccessRoute: typeof ApiAccessRoute
+  ApplicationsRoute: typeof ApplicationsRoute
+  BookingsRoute: typeof BookingsRoute
   CareersRoute: typeof CareersRoute
+  CollabHubRoute: typeof CollabHubRoute
   ContactRoute: typeof ContactRoute
   CookiesRoute: typeof CookiesRoute
   CreativeDirectorsRoute: typeof CreativeDirectorsRoute
+  CreatorDashboardRoute: typeof CreatorDashboardRoute
   CreditsRoute: typeof CreditsRoute
   DancersRoute: typeof DancersRoute
   DataDeletionRoute: typeof DataDeletionRoute
@@ -1750,11 +1802,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAccessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/applications': {
+      id: '/applications'
+      path: '/applications'
+      fullPath: '/applications'
+      preLoaderRoute: typeof ApplicationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bookings': {
+      id: '/bookings'
+      path: '/bookings'
+      fullPath: '/bookings'
+      preLoaderRoute: typeof BookingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/careers': {
       id: '/careers'
       path: '/careers'
       fullPath: '/careers'
       preLoaderRoute: typeof CareersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab-hub': {
+      id: '/collab-hub'
+      path: '/collab-hub'
+      fullPath: '/collab-hub'
+      preLoaderRoute: typeof CollabHubRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -1776,6 +1849,13 @@ declare module '@tanstack/react-router' {
       path: '/creative-directors'
       fullPath: '/creative-directors'
       preLoaderRoute: typeof CreativeDirectorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creator-dashboard': {
+      id: '/creator-dashboard'
+      path: '/creator-dashboard'
+      fullPath: '/creator-dashboard'
+      preLoaderRoute: typeof CreatorDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/credits': {
@@ -2487,10 +2567,14 @@ const rootRouteChildren: RootRouteChildren = {
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSupportRoute: AdminSupportRoute,
   ApiAccessRoute: ApiAccessRoute,
+  ApplicationsRoute: ApplicationsRoute,
+  BookingsRoute: BookingsRoute,
   CareersRoute: CareersRoute,
+  CollabHubRoute: CollabHubRoute,
   ContactRoute: ContactRoute,
   CookiesRoute: CookiesRoute,
   CreativeDirectorsRoute: CreativeDirectorsRoute,
+  CreatorDashboardRoute: CreatorDashboardRoute,
   CreditsRoute: CreditsRoute,
   DancersRoute: DancersRoute,
   DataDeletionRoute: DataDeletionRoute,

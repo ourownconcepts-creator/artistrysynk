@@ -1,11 +1,17 @@
 import { Link } from "@/lib/router-compat";
 import { Footer } from "@/components/Footer";
 import { PageSEO, CollectionPageSchema } from "@/components/seo";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
 import { CITY_LANDINGS, DISCIPLINE_LANDINGS } from "@/lib/seoLandings";
 
 const BASE = "https://artistrysynk.app";
 
-const LocationsIndex = () => (
+const LocationsIndex = () => {
+  const [q, setQ] = useState("");
+  const needle = q.trim().toLowerCase();
+  const cities = CITY_LANDINGS.filter((c) => !needle || `${c.city} ${c.country}`.toLowerCase().includes(needle));
+  return (
   <div className="min-h-screen">
     <PageSEO
       title="Creative Talent by City — Locations"
@@ -29,8 +35,17 @@ const LocationsIndex = () => (
         Pick a city to see the creators building there — then browse their portfolios and start a collaboration.
       </p>
 
-      <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 list-none p-0">
-        {CITY_LANDINGS.map((c) => (
+      <div className="mt-8 max-w-md">
+        <label htmlFor="city-search" className="text-sm font-medium">Search by city or country</label>
+        <Input id="city-search" className="mt-2" placeholder="e.g. Lagos, London, United States" value={q} onChange={(e) => setQ(e.target.value)} />
+        <p className="mt-2 text-sm text-muted-foreground">
+          Want people closest to you? Turn on location in <Link to="/discover" className="text-primary hover:underline">Discover</Link> to sort creatives by distance.
+        </p>
+      </div>
+
+      {cities.length === 0 && <p className="mt-8 text-muted-foreground">No city matches "{q}" yet — try a nearby city or use Discover.</p>}
+      <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 list-none p-0">
+        {cities.map((c) => (
           <li key={c.slug}>
             <Link
               to={`/locations/${c.slug}`}
@@ -60,6 +75,7 @@ const LocationsIndex = () => (
     </main>
     <Footer />
   </div>
-);
+  );
+};
 
 export default LocationsIndex;

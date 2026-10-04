@@ -32,7 +32,7 @@ export const Route = createFileRoute("/proposals")({
 interface Proposal { id: string; sender_id: string; recipient_id: string; subject: string; message: string; file_path: string | null; file_name: string | null; status: string; created_at: string }
 interface Booking { id: string; requester_id: string; creative_id: string; starts_at: string; ends_at: string; note: string | null; status: string }
 
-function ProposalsPage() {
+export function ProposalsPage({ initialTab = "received" }: { initialTab?: string } = {}) {
   const [me, setMe] = useState<string | null>(null);
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -136,7 +136,7 @@ function ProposalsPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-6">
       <h1 className="mb-4 text-2xl font-bold">Proposals & bookings</h1>
-      <Tabs defaultValue="received">
+      <Tabs defaultValue={initialTab}>
         <TabsList>
           <TabsTrigger value="received">Received</TabsTrigger>
           <TabsTrigger value="sent">Sent</TabsTrigger>

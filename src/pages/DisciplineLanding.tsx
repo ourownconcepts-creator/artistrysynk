@@ -140,8 +140,9 @@ const DisciplineLanding = () => {
             <p className="mt-3 text-muted-foreground">
               Some sessions work best in person: a studio day, a photo shoot or a live rehearsal.
               Turn on location in Discover to see {discipline.heading.toLowerCase()} and other
-              creatives sorted by distance, or open a city page below to find local talent, studios
-              and collaborators near you.
+              creatives sorted by distance, or open the{" "}
+              <Link to="/locations" className="text-primary hover:underline">city directory</Link> to find local
+              talent, studios and collaborators near you.
             </p>
             <p className="mt-3 text-muted-foreground">
               Every profile shows an availability calendar, so you can request a booking on a free
