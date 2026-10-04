@@ -8,6 +8,8 @@ import { Calendar, Clock, Trash2, Send, Users, Loader2, AlertCircle, CheckCircle
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { MarketingSendStatus } from "./MarketingSendStatus";
+import { useServerFn } from "@tanstack/react-start";
+import { resolveUnknownRecipients, restartManualCampaign } from "@/lib/marketing-admin.functions";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface ScheduledNewsletter {
@@ -34,6 +36,7 @@ interface ScheduledNewsletter {
   total_skipped?: number;
   total_invalid?: number;
   total_unsubscribed?: number;
+  total_unknown?: number;
 }
 
 export const ScheduledNewsletters = () => {
@@ -284,12 +287,30 @@ export const ScheduledNewsletters = () => {
 };
 
 const CampaignProgress = ({ n }: { n: ScheduledNewsletter }) => {
+  const qc = useQueryClient();
+  const resolve = useServerFn(resolveUnknownRecipients);
+  const restart = useServerFn(restartManualCampaign);
   const rateLimited = n.status === "paused" && n.paused_reason === "rate_limit";
+  const refresh = () => qc.invalidateQueries({ queryKey: ["scheduled-newsletters"] });
+  const settle = async (action: "mark_sent" | "requeue") => {
+    const msg = action === "mark_sent"
+      ? "Mark unknown recipients as sent? Do this only if they appear as accepted in the QueenSMTP message log."
+      : "Requeue unknown recipients? Do this only if the QueenSMTP message log shows they were NOT accepted, or they may get it twice.";
+    if (!window.confirm(msg)) return;
+    try { const r = await resolve({ data: { campaignId: n.id, action } }); toast.success(`${r.count} recipient(s) updated`); refresh(); }
+    catch { toast.error("Could not update recipients"); }
+  };
+  const doRestart = async () => {
+    const typed = window.prompt("This campaign was partly delivered before tracking existed; restarting will send it again to people who already got it. Type RESEND to restart.");
+    if (typed !== "RESEND") return;
+    try { await restart({ data: { campaignId: n.id, confirm: "RESEND" } }); toast.success("Campaign restarted"); refresh(); }
+    catch { toast.error("Could not restart"); }
+  };
   return (
     <div className="space-y-1 text-sm">
       {(n.total_eligible ?? 0) > 0 && (
         <p className="text-muted-foreground">
-          Sent {n.total_sent ?? 0} of {n.total_eligible} · queued {n.total_queued ?? 0} · failed {n.total_failed ?? 0} · bounced {n.total_bounced ?? 0} · skipped {(n.total_skipped ?? 0) + (n.total_invalid ?? 0) + (n.total_unsubscribed ?? 0)}
+          Sent {n.total_sent ?? 0} of {n.total_eligible} · queued {n.total_queued ?? 0} · failed {n.total_failed ?? 0} · bounced {n.total_bounced ?? 0} · unknown {n.total_unknown ?? 0} · skipped {(n.total_skipped ?? 0) + (n.total_invalid ?? 0) + (n.total_unsubscribed ?? 0)}
         </p>
       )}
       {rateLimited && (
@@ -298,8 +319,17 @@ const CampaignProgress = ({ n }: { n: ScheduledNewsletter }) => {
           {n.next_attempt_at ? ` after ${format(new Date(n.next_attempt_at), "PPP 'at' p")}` : ""}.
         </p>
       )}
-      {n.status === "paused" && n.paused_reason === "manual_review" && n.last_error && (
-        <p className="text-destructive">{n.last_error}</p>
+      {(n.total_unknown ?? 0) > 0 && (
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={() => settle("mark_sent")}>Unknown → confirmed sent</Button>
+          <Button size="sm" variant="ghost" onClick={() => settle("requeue")}>Unknown → requeue</Button>
+        </div>
+      )}
+      {n.status === "paused" && n.paused_reason === "manual_review" && (
+        <div className="space-y-1">
+          {n.last_error && <p className="text-destructive">{n.last_error}</p>}
+          <Button size="sm" variant="ghost" className="text-destructive" onClick={doRestart}>Restart anyway…</Button>
+        </div>
       )}
     </div>
   );
