@@ -55,6 +55,7 @@ import { Route as LicensesRouteImport } from './routes/licenses'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as MasterAdminRouteImport } from './routes/master-admin'
 import { Route as MatchesRouteImport } from './routes/matches'
+import { Route as MembershipRouteImport } from './routes/membership'
 import { Route as MusicProducersRouteImport } from './routes/music-producers'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as OpenProjectsRouteImport } from './routes/open-projects'
@@ -364,6 +365,11 @@ const MasterAdminRoute = MasterAdminRouteImport.update({
 const MatchesRoute = MatchesRouteImport.update({
   id: '/matches',
   path: '/matches',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembershipRoute = MembershipRouteImport.update({
+  id: '/membership',
+  path: '/membership',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MusicProducersRoute = MusicProducersRouteImport.update({
@@ -820,6 +826,7 @@ export interface FileRoutesByFullPath {
   '/marketplace': typeof MarketplaceRoute
   '/master-admin': typeof MasterAdminRoute
   '/matches': typeof MatchesRoute
+  '/membership': typeof MembershipRoute
   '/music-producers': typeof MusicProducersRoute
   '/notifications': typeof NotificationsRoute
   '/open-projects': typeof OpenProjectsRoute
@@ -947,6 +954,7 @@ export interface FileRoutesByTo {
   '/marketplace': typeof MarketplaceRoute
   '/master-admin': typeof MasterAdminRoute
   '/matches': typeof MatchesRoute
+  '/membership': typeof MembershipRoute
   '/music-producers': typeof MusicProducersRoute
   '/notifications': typeof NotificationsRoute
   '/open-projects': typeof OpenProjectsRoute
@@ -1075,6 +1083,7 @@ export interface FileRoutesById {
   '/marketplace': typeof MarketplaceRoute
   '/master-admin': typeof MasterAdminRoute
   '/matches': typeof MatchesRoute
+  '/membership': typeof MembershipRoute
   '/music-producers': typeof MusicProducersRoute
   '/notifications': typeof NotificationsRoute
   '/open-projects': typeof OpenProjectsRoute
@@ -1204,6 +1213,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/master-admin'
     | '/matches'
+    | '/membership'
     | '/music-producers'
     | '/notifications'
     | '/open-projects'
@@ -1331,6 +1341,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/master-admin'
     | '/matches'
+    | '/membership'
     | '/music-producers'
     | '/notifications'
     | '/open-projects'
@@ -1458,6 +1469,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/master-admin'
     | '/matches'
+    | '/membership'
     | '/music-producers'
     | '/notifications'
     | '/open-projects'
@@ -1586,6 +1598,7 @@ export interface RootRouteChildren {
   MarketplaceRoute: typeof MarketplaceRoute
   MasterAdminRoute: typeof MasterAdminRoute
   MatchesRoute: typeof MatchesRoute
+  MembershipRoute: typeof MembershipRoute
   MusicProducersRoute: typeof MusicProducersRoute
   NotificationsRoute: typeof NotificationsRoute
   OpenProjectsRoute: typeof OpenProjectsRoute
@@ -1989,6 +2002,13 @@ declare module '@tanstack/react-router' {
       path: '/matches'
       fullPath: '/matches'
       preLoaderRoute: typeof MatchesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/membership': {
+      id: '/membership'
+      path: '/membership'
+      fullPath: '/membership'
+      preLoaderRoute: typeof MembershipRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/music-producers': {
@@ -2595,6 +2615,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRoute: MarketplaceRoute,
   MasterAdminRoute: MasterAdminRoute,
   MatchesRoute: MatchesRoute,
+  MembershipRoute: MembershipRoute,
   MusicProducersRoute: MusicProducersRoute,
   NotificationsRoute: NotificationsRoute,
   OpenProjectsRoute: OpenProjectsRoute,
