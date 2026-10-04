@@ -3667,6 +3667,7 @@ export type Database = {
           recipients_count: number | null
           scheduled_at: string
           sent_at: string | null
+          sent_recipients: Json
           status: string
           subject: string
           template_id: string
@@ -3683,6 +3684,7 @@ export type Database = {
           recipients_count?: number | null
           scheduled_at: string
           sent_at?: string | null
+          sent_recipients?: Json
           status?: string
           subject: string
           template_id?: string
@@ -3699,6 +3701,7 @@ export type Database = {
           recipients_count?: number | null
           scheduled_at?: string
           sent_at?: string | null
+          sent_recipients?: Json
           status?: string
           subject?: string
           template_id?: string
