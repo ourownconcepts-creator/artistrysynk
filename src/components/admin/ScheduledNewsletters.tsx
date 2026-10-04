@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Calendar, Clock, Trash2, Send, Users, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { MarketingSendStatus } from "./MarketingSendStatus";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface ScheduledNewsletter {
@@ -22,6 +23,17 @@ interface ScheduledNewsletter {
   error_message: string | null;
   recipients_count: number | null;
   created_at: string;
+  paused_reason?: string | null;
+  next_attempt_at?: string | null;
+  last_error?: string | null;
+  total_eligible?: number;
+  total_sent?: number;
+  total_queued?: number;
+  total_failed?: number;
+  total_bounced?: number;
+  total_skipped?: number;
+  total_invalid?: number;
+  total_unsubscribed?: number;
 }
 
 export const ScheduledNewsletters = () => {
@@ -80,6 +92,10 @@ export const ScheduledNewsletters = () => {
     switch (status) {
       case "pending":
         return <Badge variant="secondary" className="gap-1"><Clock className="w-3 h-3" /> Scheduled</Badge>;
+      case "processing":
+        return <Badge variant="secondary" className="gap-1"><Loader2 className="w-3 h-3 animate-spin" /> Sending</Badge>;
+      case "paused":
+        return <Badge variant="outline" className="gap-1"><Clock className="w-3 h-3" /> Paused</Badge>;
       case "sent":
         return <Badge variant="default" className="gap-1"><CheckCircle2 className="w-3 h-3" /> Sent</Badge>;
       case "cancelled":
@@ -114,11 +130,13 @@ export const ScheduledNewsletters = () => {
     );
   }
 
-  const pendingNewsletters = newsletters?.filter(n => n.status === "pending") || [];
-  const pastNewsletters = newsletters?.filter(n => n.status !== "pending") || [];
+  const ACTIVE = ["pending", "processing", "paused"];
+  const pendingNewsletters = newsletters?.filter(n => ACTIVE.includes(n.status)) || [];
+  const pastNewsletters = newsletters?.filter(n => !ACTIVE.includes(n.status) && n.status !== "draft") || [];
 
   return (
     <div className="space-y-6">
+      <MarketingSendStatus />
       {/* Pending/Scheduled */}
       <Card>
         <CardHeader>
@@ -155,6 +173,7 @@ export const ScheduledNewsletters = () => {
                         {getAudienceLabel(newsletter.audience)}
                       </span>
                     </div>
+                    <CampaignProgress n={newsletter} />
                   </div>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -225,6 +244,7 @@ export const ScheduledNewsletters = () => {
                         {getAudienceLabel(newsletter.audience)}
                       </span>
                     </div>
+                    <CampaignProgress n={newsletter} />
                     {newsletter.error_message && (
                       <p className="text-sm text-destructive">{newsletter.error_message}</p>
                     )}
@@ -259,6 +279,28 @@ export const ScheduledNewsletters = () => {
           )}
         </CardContent>
       </Card>
+    </div>
+  );
+};
+
+const CampaignProgress = ({ n }: { n: ScheduledNewsletter }) => {
+  const rateLimited = n.status === "paused" && n.paused_reason === "rate_limit";
+  return (
+    <div className="space-y-1 text-sm">
+      {(n.total_eligible ?? 0) > 0 && (
+        <p className="text-muted-foreground">
+          Sent {n.total_sent ?? 0} of {n.total_eligible} · queued {n.total_queued ?? 0} · failed {n.total_failed ?? 0} · bounced {n.total_bounced ?? 0} · skipped {(n.total_skipped ?? 0) + (n.total_invalid ?? 0) + (n.total_unsubscribed ?? 0)}
+        </p>
+      )}
+      {rateLimited && (
+        <p className="text-primary">
+          Warm-up limit reached. Campaign paused. Sending will resume automatically
+          {n.next_attempt_at ? ` after ${format(new Date(n.next_attempt_at), "PPP 'at' p")}` : ""}.
+        </p>
+      )}
+      {n.status === "paused" && n.paused_reason === "manual_review" && n.last_error && (
+        <p className="text-destructive">{n.last_error}</p>
+      )}
     </div>
   );
 };

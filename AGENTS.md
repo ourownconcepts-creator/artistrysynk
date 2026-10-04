@@ -1,0 +1,1 @@
+- Marketing email goes only through the process-scheduled-newsletters worker with a per-recipient queue (newsletter_recipients) and a configurable limit in admin_settings; never send campaigns inline or retry 429s — protects the warming sender domain.

@@ -26,6 +26,7 @@ export const NewsletterCampaign = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("gradient-header");
   const [audience, setAudience] = useState<"subscribers" | "users" | "both">("both");
   const [isSending, setIsSending] = useState(false);
+  const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID());
   const [isScheduling, setIsScheduling] = useState(false);
   const [scheduleDate, setScheduleDate] = useState("");
   const [scheduleTime, setScheduleTime] = useState("");
@@ -38,6 +39,7 @@ export const NewsletterCampaign = () => {
   } | null>(null);
 
   const sendCampaign = async () => {
+    if (isSending) return; // guard against double clicks
     if (!subject.trim() || !content.trim()) {
       toast.error("Please enter both subject and content");
       return;
@@ -45,9 +47,8 @@ export const NewsletterCampaign = () => {
 
     setIsSending(true);
     try {
-      // Get the template and generate HTML
       const template = getTemplateById(selectedTemplate);
-      const htmlContent = template 
+      const htmlContent = template
         ? template.generateHtml(content.trim(), subject.trim())
         : content.trim();
 
@@ -57,26 +58,22 @@ export const NewsletterCampaign = () => {
           content: htmlContent,
           previewText: previewText.trim() || undefined,
           audience,
+          templateId: selectedTemplate,
+          idempotencyKey,
         },
       });
 
-      setLastResult({
-        sent: data.sent,
-        failed: data.failed,
-        total: data.totalRecipients,
-      });
+      setLastResult({ sent: 0, failed: 0, total: 0 });
+      toast.success(data.duplicate ? "This campaign is already queued" : "Campaign queued — sending starts within 5 minutes");
+      queryClient.invalidateQueries({ queryKey: ["scheduled-newsletters"] });
 
-      toast.success(`Newsletter sent to ${data.sent} recipients!`, {
-        description: data.failed > 0 ? `${data.failed} failed to send` : undefined,
-      });
-
-      // Clear form on success
       setSubject("");
       setContent("");
       setPreviewText("");
+      setIdempotencyKey(crypto.randomUUID());
     } catch (error: any) {
       console.error("Newsletter campaign error:", error);
-      toast.error("Failed to send newsletter campaign");
+      toast.error("Could not queue the campaign");
     } finally {
       setIsSending(false);
     }
@@ -234,9 +231,9 @@ export const NewsletterCampaign = () => {
               <div className="bg-muted/50 rounded-lg p-4 flex items-center gap-4">
                 <Users className="w-8 h-8 text-primary" />
                 <div>
-                  <p className="font-medium">Last Campaign Results</p>
+                  <p className="font-medium">Campaign queued</p>
                   <p className="text-sm text-muted-foreground">
-                    Sent: {lastResult.sent} | Failed: {lastResult.failed} | Total: {lastResult.total}
+                    Sending starts within 5 minutes, in batches that respect the daily warm-up limit. Track progress under Scheduled.
                   </p>
                 </div>
               </div>
