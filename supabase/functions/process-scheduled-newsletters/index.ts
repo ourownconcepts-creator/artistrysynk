@@ -298,7 +298,7 @@ serve(async (req) => {
       // permanent
       consecutiveTransient = 0;
       const isBounce = /bounce|suppress|blocked/i.test(result.message);
-      const isInvalid = /invalid|recipient|address/i.test(result.message) && result.status === 422 || result.status === 400 && /email/i.test(result.message);
+      const isInvalid = (result.status === 400 || result.status === 422) && /invalid|recipient|address|email/i.test(result.message);
       await sb.from("newsletter_recipients").update({ status: isBounce ? "bounced" : isInvalid ? "invalid" : "failed", error_code: result.code, error_message: result.message.slice(0, 500) }).eq("id", r.id);
       log("email_failed", { campaign: c.id, recipient: r.id, code: result.code, http: result.status });
     }
