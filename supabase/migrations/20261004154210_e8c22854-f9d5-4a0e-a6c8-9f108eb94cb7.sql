@@ -1,0 +1,2 @@
+REVOKE EXECUTE ON FUNCTION public.mkt_capacity(), public.mkt_resolve_unknown(uuid, text) FROM authenticated, anon, PUBLIC;
+GRANT EXECUTE ON FUNCTION public.mkt_capacity(), public.mkt_resolve_unknown(uuid, text) TO service_role;
