@@ -218,6 +218,33 @@ export type Database = {
         }
         Relationships: []
       }
+      availability_slots: {
+        Row: {
+          created_at: string
+          ends_at: string
+          id: string
+          note: string | null
+          starts_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          ends_at: string
+          id?: string
+          note?: string | null
+          starts_at: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string
+          id?: string
+          note?: string | null
+          starts_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       beauty_profiles: {
         Row: {
           booking_url: string | null
@@ -345,6 +372,53 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      booking_requests: {
+        Row: {
+          created_at: string
+          creative_id: string
+          ends_at: string
+          id: string
+          note: string | null
+          requester_id: string
+          slot_id: string | null
+          starts_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          creative_id: string
+          ends_at: string
+          id?: string
+          note?: string | null
+          requester_id: string
+          slot_id?: string | null
+          starts_at: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          creative_id?: string
+          ends_at?: string
+          id?: string
+          note?: string | null
+          requester_id?: string
+          slot_id?: string | null
+          starts_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_requests_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "availability_slots"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       capability_requirements: {
         Row: {
@@ -609,6 +683,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      collaboration_proposals: {
+        Row: {
+          created_at: string
+          file_name: string | null
+          file_path: string | null
+          id: string
+          message: string
+          recipient_id: string
+          sender_id: string
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          id?: string
+          message: string
+          recipient_id: string
+          sender_id: string
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          id?: string
+          message?: string
+          recipient_id?: string
+          sender_id?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       collaboration_requests: {
         Row: {
