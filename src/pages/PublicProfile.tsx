@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, ArrowLeft, BadgeCheck, Heart, Flag, ExternalLink } from "lucide-react";
+import { MapPin, Calendar, ArrowLeft, BadgeCheck, Heart, Flag, ExternalLink, Send } from "lucide-react";
+import { AvailabilityCalendar } from "@/components/profile/AvailabilityCalendar";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { toast } from "sonner";
 import { FlagContentDialog } from "@/components/FlagContentDialog";
@@ -328,6 +329,12 @@ const PublicProfile = () => {
                     <Heart className="h-4 w-4 shrink-0" aria-hidden="true" />
                     <span className="truncate">Request collaboration</span>
                   </Button>
+                  <Button asChild variant="secondary" className="h-12 w-full min-w-0 flex-1 gap-2 rounded-xl text-[11px] font-bold uppercase tracking-widest sm:w-auto">
+                    <Link to={`/propose/${profile.id}`}>
+                      <Send className="h-4 w-4 shrink-0" aria-hidden="true" />
+                      <span className="truncate">Send proposal</span>
+                    </Link>
+                  </Button>
                   <FlagContentDialog
                     contentType="profile"
                     contentId={profile.id}
@@ -367,6 +374,13 @@ const PublicProfile = () => {
                   </p>
                 </div>
               )}
+
+              <AvailabilityCalendar
+                profileId={profile.id}
+                profileName={profile.full_name}
+                currentUserId={currentUserId}
+                isOwner={isOwner}
+              />
             </div>
 
             <div className="flex h-1 w-full">

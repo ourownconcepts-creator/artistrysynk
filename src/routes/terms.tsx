@@ -1,3 +1,5 @@
+import { SeoCopyBlock } from "@/components/seo/SeoCopyBlock";
+import { legalCopy } from "@/content/seoCopy";
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { LegalDocumentView } from "@/components/legal/LegalDocumentView";
@@ -37,6 +39,7 @@ export const Route = createFileRoute("/terms")({
   component: () => (
     <PageTransition>
       <LegalDocumentView doc={Route.useLoaderData()} />
+      <SeoCopyBlock copy={legalCopy["terms"]!} />
     </PageTransition>
   ),
 });

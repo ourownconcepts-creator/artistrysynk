@@ -58,6 +58,7 @@ import { Route as PhotographersRouteImport } from './routes/photographers'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PrivacyRequestsRouteImport } from './routes/privacy-requests'
+import { Route as ProposalsRouteImport } from './routes/proposals'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SetupProfileRouteImport } from './routes/setup-profile'
 import { Route as SitemapBlogDotxmlRouteImport } from './routes/sitemap-blog[.]xml'
@@ -101,6 +102,7 @@ import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as ProfileUserIdRouteImport } from './routes/profile/$userId'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as ProjectsProjectIdRouteImport } from './routes/projects/$projectId'
+import { Route as ProposeUserIdRouteImport } from './routes/propose.$userId'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsConnectionsRouteImport } from './routes/settings/connections'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
@@ -375,6 +377,11 @@ const PrivacyRequestsRoute = PrivacyRequestsRouteImport.update({
   path: '/privacy-requests',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProposalsRoute = ProposalsRouteImport.update({
+  id: '/proposals',
+  path: '/proposals',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -593,6 +600,11 @@ const ProjectsProjectIdRoute = ProjectsProjectIdRouteImport.update({
   path: '/projects/$projectId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProposeUserIdRoute = ProposeUserIdRouteImport.update({
+  id: '/propose/$userId',
+  path: '/propose/$userId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsIndexRoute = SettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
@@ -787,6 +799,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/privacy-requests': typeof PrivacyRequestsRoute
+  '/proposals': typeof ProposalsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
   '/sitemap-blog.xml': typeof SitemapBlogDotxmlRoute
@@ -822,6 +835,7 @@ export interface FileRoutesByFullPath {
   '/messages/$conversationId': typeof MessagesConversationIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/propose/$userId': typeof ProposeUserIdRoute
   '/settings/connections': typeof SettingsConnectionsRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/support': typeof SettingsSupportRoute
@@ -908,6 +922,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/privacy-requests': typeof PrivacyRequestsRoute
+  '/proposals': typeof ProposalsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
   '/sitemap-blog.xml': typeof SitemapBlogDotxmlRoute
@@ -943,6 +958,7 @@ export interface FileRoutesByTo {
   '/messages/$conversationId': typeof MessagesConversationIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/propose/$userId': typeof ProposeUserIdRoute
   '/settings/connections': typeof SettingsConnectionsRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/support': typeof SettingsSupportRoute
@@ -1030,6 +1046,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/privacy-requests': typeof PrivacyRequestsRoute
+  '/proposals': typeof ProposalsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-profile': typeof SetupProfileRoute
   '/sitemap-blog.xml': typeof SitemapBlogDotxmlRoute
@@ -1065,6 +1082,7 @@ export interface FileRoutesById {
   '/messages/$conversationId': typeof MessagesConversationIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/propose/$userId': typeof ProposeUserIdRoute
   '/settings/connections': typeof SettingsConnectionsRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/support': typeof SettingsSupportRoute
@@ -1153,6 +1171,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/privacy-requests'
+    | '/proposals'
     | '/reset-password'
     | '/setup-profile'
     | '/sitemap-blog.xml'
@@ -1188,6 +1207,7 @@ export interface FileRouteTypes {
     | '/messages/$conversationId'
     | '/profile/$userId'
     | '/projects/$projectId'
+    | '/propose/$userId'
     | '/settings/connections'
     | '/settings/notifications'
     | '/settings/support'
@@ -1274,6 +1294,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/privacy-requests'
+    | '/proposals'
     | '/reset-password'
     | '/setup-profile'
     | '/sitemap-blog.xml'
@@ -1309,6 +1330,7 @@ export interface FileRouteTypes {
     | '/messages/$conversationId'
     | '/profile/$userId'
     | '/projects/$projectId'
+    | '/propose/$userId'
     | '/settings/connections'
     | '/settings/notifications'
     | '/settings/support'
@@ -1395,6 +1417,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/privacy-requests'
+    | '/proposals'
     | '/reset-password'
     | '/setup-profile'
     | '/sitemap-blog.xml'
@@ -1430,6 +1453,7 @@ export interface FileRouteTypes {
     | '/messages/$conversationId'
     | '/profile/$userId'
     | '/projects/$projectId'
+    | '/propose/$userId'
     | '/settings/connections'
     | '/settings/notifications'
     | '/settings/support'
@@ -1517,6 +1541,7 @@ export interface RootRouteChildren {
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   PrivacyRequestsRoute: typeof PrivacyRequestsRoute
+  ProposalsRoute: typeof ProposalsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SetupProfileRoute: typeof SetupProfileRoute
   SitemapBlogDotxmlRoute: typeof SitemapBlogDotxmlRoute
@@ -1552,6 +1577,7 @@ export interface RootRouteChildren {
   MessagesConversationIdRoute: typeof MessagesConversationIdRoute
   ProfileUserIdRoute: typeof ProfileUserIdRoute
   ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
+  ProposeUserIdRoute: typeof ProposeUserIdRoute
   SettingsConnectionsRoute: typeof SettingsConnectionsRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
   SettingsSupportRoute: typeof SettingsSupportRoute
@@ -1934,6 +1960,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRequestsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/proposals': {
+      id: '/proposals'
+      path: '/proposals'
+      fullPath: '/proposals'
+      preLoaderRoute: typeof ProposalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -2235,6 +2268,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsProjectIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/propose/$userId': {
+      id: '/propose/$userId'
+      path: '/propose/$userId'
+      fullPath: '/propose/$userId'
+      preLoaderRoute: typeof ProposeUserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings/': {
       id: '/settings/'
       path: '/settings'
@@ -2478,6 +2518,7 @@ const rootRouteChildren: RootRouteChildren = {
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   PrivacyRequestsRoute: PrivacyRequestsRoute,
+  ProposalsRoute: ProposalsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SetupProfileRoute: SetupProfileRoute,
   SitemapBlogDotxmlRoute: SitemapBlogDotxmlRoute,
@@ -2515,6 +2556,7 @@ const rootRouteChildren: RootRouteChildren = {
   MessagesConversationIdRoute: MessagesConversationIdRoute,
   ProfileUserIdRoute: ProfileUserIdRoute,
   ProjectsProjectIdRoute: ProjectsProjectIdRoute,
+  ProposeUserIdRoute: ProposeUserIdRoute,
   SettingsConnectionsRoute: SettingsConnectionsRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
   SettingsSupportRoute: SettingsSupportRoute,

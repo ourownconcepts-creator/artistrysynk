@@ -1,3 +1,5 @@
+import { SeoCopyBlock } from "@/components/seo/SeoCopyBlock";
+import { successCopy } from "@/content/seoCopy";
 import { Quote, Music, Mic, Camera, Palette } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
@@ -156,6 +158,7 @@ const SuccessStories = () => {
         </div>
       </section>
 
+      <SeoCopyBlock copy={successCopy} />
       <Footer />
     </div>
   );
