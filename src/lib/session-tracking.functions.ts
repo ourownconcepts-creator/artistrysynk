@@ -48,7 +48,7 @@ export const trackSession = createServerFn({ method: "POST" })
     if (existing) {
       await supabase
         .from("user_sessions")
-        .update({ last_active: now, is_active: true, ...(ip ? { ip_address: ip } : {}) })
+        .update({ last_active: now, is_active: true, ...(ip ? { ip_address: ip } : {}), ...geo })
         .eq("id", existing.id);
     } else {
       await supabase.from("user_sessions").insert({
@@ -56,6 +56,7 @@ export const trackSession = createServerFn({ method: "POST" })
         session_id: data.sessionId,
         user_agent: data.userAgent,
         ip_address: ip,
+        ...geo,
         is_active: true,
       });
     }
