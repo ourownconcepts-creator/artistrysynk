@@ -1,0 +1,1 @@
+ALTER TABLE public.user_sessions ADD COLUMN IF NOT EXISTS country text, ADD COLUMN IF NOT EXISTS region text, ADD COLUMN IF NOT EXISTS city text;
