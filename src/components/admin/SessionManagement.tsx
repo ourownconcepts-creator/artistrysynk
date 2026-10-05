@@ -13,6 +13,9 @@ interface UserSession {
   user_id: string;
   session_id: string;
   ip_address: string;
+  city?: string | null;
+  region?: string | null;
+  country?: string | null;
   user_agent: string;
   last_active: string;
   is_active: boolean;
@@ -125,7 +128,7 @@ export const SessionManagement = () => {
                       <div className="text-sm text-muted-foreground">@{session.profiles?.username}</div>
                     </div>
                   </TableCell>
-                  <TableCell>{session.ip_address || "N/A"}</TableCell>
+                  <TableCell>{session.ip_address || "N/A"}<div className="text-xs text-muted-foreground">{[session.city, session.region, session.country].filter(Boolean).join(", ") || "Unknown location"}</div></TableCell>
                   <TableCell className="text-sm">
                     {format(new Date(session.last_active), 'MMM dd, yyyy HH:mm')}
                   </TableCell>

@@ -12,13 +12,29 @@ export const trackSession = createServerFn({ method: "POST" })
     z.object({ sessionId: z.string().min(1).max(64), userAgent: z.string().max(500).nullable() }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { getRequestHeader, getRequestIP } = await import("@tanstack/react-start/server");
+    const { getRequestHeader, getRequestIP, getRequest } = await import("@tanstack/react-start/server");
     const raw =
       getRequestHeader("cf-connecting-ip") ||
       getRequestHeader("x-real-ip") ||
       getRequestIP({ xForwardedFor: true }) ||
       null;
     const ip = raw ? raw.split(",")[0]!.trim().slice(0, 64) : null;
+    // Approximate location from the edge network (no third-party lookup).
+    let cf: Record<string, unknown> = {};
+    try {
+      cf = ((getRequest() as unknown as { cf?: Record<string, unknown> }).cf) ?? {};
+    } catch {
+      cf = {};
+    }
+    const clean = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim().slice(0, 100) : null);
+    const country = clean(cf["country"]) ?? clean(getRequestHeader("cf-ipcountry"));
+    const region = clean(cf["region"]) ?? clean(getRequestHeader("cf-region"));
+    const city = clean(cf["city"]) ?? clean(getRequestHeader("cf-ipcity"));
+    const geo = {
+      ...(country && country !== "XX" ? { country } : {}),
+      ...(region ? { region } : {}),
+      ...(city ? { city } : {}),
+    };
     const now = new Date().toISOString();
     const { supabase, userId } = context;
 
@@ -32,7 +48,7 @@ export const trackSession = createServerFn({ method: "POST" })
     if (existing) {
       await supabase
         .from("user_sessions")
-        .update({ last_active: now, is_active: true, ...(ip ? { ip_address: ip } : {}) })
+        .update({ last_active: now, is_active: true, ...(ip ? { ip_address: ip } : {}), ...geo })
         .eq("id", existing.id);
     } else {
       await supabase.from("user_sessions").insert({
@@ -40,6 +56,7 @@ export const trackSession = createServerFn({ method: "POST" })
         session_id: data.sessionId,
         user_agent: data.userAgent,
         ip_address: ip,
+        ...geo,
         is_active: true,
       });
     }
