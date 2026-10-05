@@ -119,17 +119,24 @@ const SuperAdminDashboard = () => {
       return;
     }
 
-    // Combine data
+    // Combine data — one row per user, showing their highest role
+    const rank = ['super_admin', 'master_admin', 'admin'];
+    const score = (r: string) => { const i = rank.indexOf(r); return i === -1 ? rank.length : i; };
+    const bestRole = new Map<string, string>();
+    for (const ur of (userRoles ?? []) as any[]) {
+      const cur = bestRole.get(ur.user_id);
+      if (!cur || score(ur.role) < score(cur)) bestRole.set(ur.user_id, ur.role);
+    }
     const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
-    const formattedUsers = userRoles?.map((ur: any) => {
-      const profile = profileMap.get(ur.user_id);
+    const formattedUsers = Array.from(bestRole.entries()).map(([userId, role]) => {
+      const profile = profileMap.get(userId);
       return {
-        id: ur.user_id,
+        id: userId,
         full_name: profile?.full_name || 'Unknown',
         username: profile?.username || 'unknown',
-        role: ur.role,
+        role: role as any,
       };
-    }) || [];
+    });
 
     setUsers(formattedUsers);
     setLoading(false);

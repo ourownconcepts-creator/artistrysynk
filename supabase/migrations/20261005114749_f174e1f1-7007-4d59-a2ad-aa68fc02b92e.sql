@@ -1,0 +1,1 @@
+GRANT EXECUTE ON FUNCTION public.get_profile_emails(uuid[]) TO authenticated;
