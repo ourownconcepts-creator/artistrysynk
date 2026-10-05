@@ -38,10 +38,12 @@ export const DashboardWidgets = () => {
   }, []);
 
   const fetchStats = async () => {
+    // "Online" = seen in the last 5 minutes (presence pings every 60s).
+    const onlineSince = new Date(Date.now() - 5 * 60 * 1000).toISOString();
     const [profilesRes, sessionsRes, activityRes] = await Promise.all([
       supabase.from('profiles').select('created_at', { count: 'exact' }),
-      supabase.from('user_sessions').select('*', { count: 'exact' }).eq('is_active', true),
-      supabase.from('activity_logs').select('*', { count: 'exact' })
+      supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('last_seen_at', onlineSince),
+      supabase.from('activity_logs').select('*', { count: 'exact', head: true })
     ]);
 
     const now = new Date();

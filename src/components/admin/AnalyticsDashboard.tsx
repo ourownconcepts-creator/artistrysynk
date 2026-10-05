@@ -40,17 +40,15 @@ export const AnalyticsDashboard = () => {
       .select('created_at')
       .order('created_at', { ascending: false });
 
-    // Fetch active sessions from today
+    // Distinct users seen since midnight (presence updates last_seen_at).
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const { data: activeSessions } = await supabase
-      .from('user_sessions')
-      .select('user_id')
-      .eq('is_active', true)
-      .gte('last_active', today.toISOString());
+    const { count: activeCount } = await supabase
+      .from('profiles')
+      .select('id', { count: 'exact', head: true })
+      .gte('last_seen_at', today.toISOString());
 
-    // Count unique active users today
-    const uniqueActiveUsers = new Set(activeSessions?.map(s => s.user_id) || []).size;
+    const uniqueActiveUsers = activeCount ?? 0;
 
     if (profiles) {
       // Calculate stats
