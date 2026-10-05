@@ -125,8 +125,8 @@ export const UsernameChangesPanel = () => {
         </p>
       ) : (
         <ul className="divide-y rounded-lg border">
-          {rows.map((r) => (
-            <li key={r.user_id} className="p-4">
+          {rows.map((r, i) => (
+            <li key={`${r.user_id}-${i}`} className="p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="flex items-center gap-1 font-medium">
