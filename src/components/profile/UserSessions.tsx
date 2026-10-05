@@ -12,6 +12,9 @@ interface Session {
   id: string;
   session_id: string;
   ip_address: string | null;
+  city?: string | null;
+  region?: string | null;
+  country?: string | null;
   user_agent: string | null;
   is_active: boolean | null;
   last_active: string | null;
@@ -167,7 +170,7 @@ export const UserSessions = ({ userId }: UserSessionsProps) => {
                         )}
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        {session.ip_address || 'Unknown IP'}
+                        {session.ip_address || 'Unknown IP'}{[session.city, session.region, session.country].filter(Boolean).length ? ` · ${[session.city, session.region, session.country].filter(Boolean).join(', ')}` : ''}
                       </div>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="w-3 h-3" />
