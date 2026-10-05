@@ -33,7 +33,6 @@ import { VerificationRequestButton } from "@/components/profile/VerificationRequ
 import { UserSessions } from "@/components/profile/UserSessions";
 import { ProfileAnalytics } from "@/components/profile/ProfileAnalytics";
 import { ProfileCompletionProgress } from "@/components/profile/ProfileCompletionProgress";
-import { useSessionTracking } from "@/hooks/useSessionTracking";
 import { MyAppeals } from "@/components/content/MyAppeals";
 import { ReferralCard } from "@/components/referral/ReferralCard";
 import { StudioQuickLinks } from "@/components/studio/StudioQuickLinks";
@@ -61,7 +60,6 @@ const TABS = [
 const Profile = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  useSessionTracking();
   const [profile, setProfile] = useState<any>(null);
   const [roles, setRoles] = useState<any[]>([]);
   const [genres, setGenres] = useState<any[]>([]);

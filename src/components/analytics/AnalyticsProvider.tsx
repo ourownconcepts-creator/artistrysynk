@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from "@/lib/router-compat";
 import { usePresence } from '@/hooks/usePresence';
+import { useSessionTracking } from '@/hooks/useSessionTracking';
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useRealtimeNotifications, useMatchOnlinePresence } from '@/hooks/useRealtimeNotifications';
@@ -102,6 +103,7 @@ export const AnalyticsProvider = ({ children }: { children: React.ReactNode }) =
 
   usePageTracking();
   usePresence(userId);
+  useSessionTracking(userId);
   useRealtimeNotifications(userId);
   useMatchOnlinePresence(userId);
 
