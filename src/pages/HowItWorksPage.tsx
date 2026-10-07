@@ -18,6 +18,7 @@ const HowItWorksPage = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
 
   // Intersection Observer for scroll-triggered autoplay
   useEffect(() => {
@@ -171,7 +172,15 @@ const HowItWorksPage = () => {
                     playsInline
                     onPlay={() => setIsPlaying(true)}
                     onPause={() => setIsPlaying(false)}
+                    onError={() => setVideoFailed(true)}
                   />
+                  {videoFailed && (
+                    <img
+                      src={artistryTutorialPoster}
+                      alt="How ArtistrySynk works"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  )}
                   
                   {/* Video Controls Overlay */}
                   <div className="absolute bottom-4 right-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
