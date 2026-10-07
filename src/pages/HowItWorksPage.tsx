@@ -25,8 +25,10 @@ const HowItWorksPage = () => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !hasAutoPlayed && videoRef.current) {
-            videoRef.current.play();
-            setIsPlaying(true);
+            videoRef.current.play().catch(() => {
+              // Autoplay blocked or source unavailable — leave the poster visible
+              setIsPlaying(false);
+            });
             setHasAutoPlayed(true);
           }
         });
@@ -72,10 +74,10 @@ const HowItWorksPage = () => {
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
+        setIsPlaying(false);
       } else {
-        videoRef.current.play();
+        videoRef.current.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
