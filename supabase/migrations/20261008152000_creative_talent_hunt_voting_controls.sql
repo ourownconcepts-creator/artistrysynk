@@ -47,10 +47,12 @@ begin
     raise exception 'voting has ended';
   end if;
 
+  select id into v_vote from public.competition_votes
+  where round_id=v_round.id and application_id=v_app.id and voter_user_id=auth.uid();
+  if v_vote is not null then raise exception 'you have already voted for this contestant'; end if;
+
   insert into public.competition_votes(competition_id,round_id,application_id,voter_user_id)
   values(v_app.competition_id,v_round.id,v_app.id,auth.uid())
-  on conflict (round_id,application_id,voter_user_id)
-  do update set is_voided=false, void_reason='', voided_at=null, voided_by=null
   returning id into v_vote;
 
   insert into public.competition_audit_logs(competition_id,actor_user_id,action,entity_type,entity_id,metadata)
