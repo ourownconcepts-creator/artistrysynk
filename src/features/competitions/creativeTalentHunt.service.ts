@@ -267,3 +267,15 @@ export async function castCreativeTalentHuntVote(applicationId: string) {
   if (error) throw error;
   return data;
 }
+
+export async function listTalentHuntAdminApplications(status?: string) {
+  const { data, error } = await supabase.rpc("creative_talent_hunt_admin_applications", { p_status: status ?? null });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function getTalentHuntAdminEntryDetail(applicationId: string) {
+  const { data, error } = await supabase.rpc("creative_talent_hunt_admin_entry_detail", { p_application_id: applicationId });
+  if (error) throw error;
+  return data;
+}
