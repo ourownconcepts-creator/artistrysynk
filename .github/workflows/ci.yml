@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feat/competition-platform-foundation
+      - feat/creative-talent-hunt-source-port
   pull_request:
     branches:
       - main
@@ -34,6 +35,8 @@ jobs:
           src/features/competitions/competitionRoutes.tsx
           src/features/competitions/creativeTalentHunt.service.ts
           src/features/competitions/creativeTalentHunt.ts
+          src/features/competitions/creativeTalentHunt.operations.ts
+          src/routes/creative-talent-hunt.judge.tsx
           src/features/competitions/index.ts
           src/routes/creative-talent-hunt.enter.tsx
           src/routes/creative-talent-hunt.tsx
