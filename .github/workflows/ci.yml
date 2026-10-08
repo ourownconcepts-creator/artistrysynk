@@ -28,20 +28,8 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Lint competition platform changes
-        run: >
-          npx eslint --fix
-          src/domain/competition.ts
-          src/features/competitions/competitionRoutes.tsx
-          src/features/competitions/creativeTalentHunt.service.ts
-          src/features/competitions/creativeTalentHunt.ts
-          src/features/competitions/creativeTalentHunt.operations.ts
-          src/routes/creative-talent-hunt.judge.tsx
-          src/features/competitions/index.ts
-          src/routes/creative-talent-hunt.enter.tsx
-          src/routes/creative-talent-hunt.tsx
-          src/routes/creative-talent-hunt.contestants.tsx
-          src/routes/talent-hunt.tsx
+      - name: Lint repository
+        run: npm run lint
 
       - name: Test competition platform
         run: npm test -- src/test/competition/creative-talent-hunt.test.ts
