@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { getTalentHuntAdminSnapshot, setTalentHuntRoundStatus, setTalentHuntStatus, getTalentHuntVotingSummary, getTalentHuntVoteTotals, getTalentHuntSuspiciousVotes, voidTalentHuntVotes, setTalentHuntVotingWindow, closeTalentHuntVoting } from "@/features/competitions/creativeTalentHunt.admin";
+import { listCreativeTalentHuntJudges, setCreativeTalentHuntJudgeActive } from "@/features/competitions/creativeTalentHunt.operations";
+import { getCreativeTalentHuntRoundProgress } from "@/features/competitions/creativeTalentHunt.results";
 import { useSession } from "@/hooks/useSession";
 import { toast } from "sonner";
 
@@ -32,6 +34,13 @@ function OperationsPage() {
   });
 
   const activeRound = snapshot.data?.rounds.find((round) => round.status !== "CLOSED") ?? snapshot.data?.rounds.at(-1);
+  const judges = useQuery({ queryKey: ["talent-hunt-judges"], queryFn: listCreativeTalentHuntJudges, enabled: Boolean(user) });
+  const roundProgress = useQuery({ queryKey: ["talent-hunt-round-progress", activeRound?.id], queryFn: () => getCreativeTalentHuntRoundProgress(activeRound!.id), enabled: Boolean(activeRound?.id) });
+  const judgeActiveMutation = useMutation({
+    mutationFn: ({ id, active }: { id: string; active: boolean }) => setCreativeTalentHuntJudgeActive(id, active),
+    onSuccess: () => { toast.success("Judge status updated."); void client.invalidateQueries({ queryKey: ["talent-hunt-judges"] }); },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not update judge."),
+  });
   const votes = useQuery({ queryKey: ["talent-hunt-votes", activeRound?.id], queryFn: () => getTalentHuntVoteTotals(activeRound!.id), enabled: Boolean(activeRound?.id) });
   const suspicious = useQuery({ queryKey: ["talent-hunt-suspicious", activeRound?.id], queryFn: () => getTalentHuntSuspiciousVotes(activeRound!.id), enabled: Boolean(activeRound?.id) });
 
@@ -149,6 +158,44 @@ function OperationsPage() {
         {suspicious.data?.length ? <div className="mt-6 rounded-2xl bg-muted/50 p-4 text-sm"><strong>{suspicious.data.length}</strong> suspicious voter records detected.</div> : null}
       </section>
 
+
+      <section className="rounded-3xl border p-6">
+        <div className="flex items-center justify-between gap-4">
+          <div><h2 className="text-xl font-bold">Judges</h2><p className="mt-1 text-sm text-muted-foreground">Manage appointed judges and their active status. Assignment is intentionally controlled separately from appointment.</p></div>
+          <span className="rounded-full border px-3 py-1 text-xs">{judges.data?.length ?? 0} appointed</span>
+        </div>
+        {judges.isLoading ? <p className="mt-4 text-sm text-muted-foreground">Loading judges…</p> : (
+          <div className="mt-5 space-y-3">
+            {(judges.data ?? []).map((judge) => (
+              <div key={judge.id} className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border p-4">
+                <div>
+                  <p className="font-semibold">{judge.display_name}</p>
+                  <p className="text-sm text-muted-foreground">{judge.bio || "No bio"} · {judge.assigned_count} assigned · {judge.scored_count} scored</p>
+                </div>
+                <Button size="sm" variant={judge.is_active ? "outline" : "default"} disabled={judgeActiveMutation.isPending} onClick={() => judgeActiveMutation.mutate({ id: judge.id, active: !judge.is_active })}>
+                  {judge.is_active ? "Deactivate" : "Activate"}
+                </Button>
+              </div>
+            ))}
+            {!judges.data?.length ? <p className="text-sm text-muted-foreground">No judges have been appointed yet.</p> : null}
+          </div>
+        )}
+      </section>
+
+      {activeRound ? <section className="rounded-3xl border p-6">
+        <h2 className="text-xl font-bold">Active round readiness</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Server-calculated progression gate for the current round.</p>
+        {roundProgress.isLoading ? <p className="mt-4 text-sm text-muted-foreground">Checking readiness…</p> : roundProgress.error ? <p className="mt-4 text-sm text-destructive">Could not load readiness.</p> : (
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ["Contestants", roundProgress.data?.contestants_in_round ?? 0],
+              ["Assignments", roundProgress.data?.assigned_judges ?? 0],
+              ["Judging pending", roundProgress.data?.judging_pending ?? 0],
+              ["Unresolved", roundProgress.data?.unresolved ?? 0],
+            ].map(([label, value]) => <div key={String(label)} className="rounded-2xl bg-muted/40 p-4"><p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p><p className="mt-1 text-2xl font-bold">{value}</p></div>)}
+          </div>
+        )}
+      </section> : null}
       <section className="space-y-4">
         <h2 className="text-xl font-bold">Rounds</h2>
         {data.rounds.map(round => (
