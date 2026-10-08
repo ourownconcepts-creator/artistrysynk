@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { getTalentHuntAdminSnapshot, setTalentHuntRoundStatus, setTalentHuntStatus, getTalentHuntVotingSummary } from "@/features/competitions/creativeTalentHunt.admin";
+import { getTalentHuntAdminSnapshot, setTalentHuntRoundStatus, setTalentHuntStatus, getTalentHuntVotingSummary, getTalentHuntVoteTotals, getTalentHuntSuspiciousVotes, voidTalentHuntVotes, setTalentHuntVotingWindow, closeTalentHuntVoting } from "@/features/competitions/creativeTalentHunt.admin";
 import { useSession } from "@/hooks/useSession";
 import { toast } from "sonner";
 
@@ -20,6 +20,32 @@ function OperationsPage() {
     mutationFn: (status: string) => setTalentHuntStatus(status),
     onSuccess: () => { toast.success("Competition status updated."); void client.invalidateQueries({ queryKey: ["talent-hunt-admin-snapshot"] }); },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not update status."),
+  });
+
+  const activeRound = snapshot.data?.rounds.find((round) => round.status !== "CLOSED") ?? snapshot.data?.rounds.at(-1);
+  const votes = useQuery({ queryKey: ["talent-hunt-votes", activeRound?.id], queryFn: () => getTalentHuntVoteTotals(activeRound!.id), enabled: Boolean(activeRound?.id) });
+  const suspicious = useQuery({ queryKey: ["talent-hunt-suspicious", activeRound?.id], queryFn: () => getTalentHuntSuspiciousVotes(activeRound!.id), enabled: Boolean(activeRound?.id) });
+
+  const votingMutation = useMutation({
+    mutationFn: () => closeTalentHuntVoting(),
+    onSuccess: () => { toast.success("Voting closed."); void client.invalidateQueries({ queryKey: ["talent-hunt-admin-snapshot"] }); },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not close voting."),
+  });
+
+  const windowMutation = useMutation({
+    mutationFn: (value: { opensAt: string | null; closesAt: string | null }) => setTalentHuntVotingWindow(value.opensAt, value.closesAt),
+    onSuccess: () => { toast.success("Voting window saved."); void client.invalidateQueries({ queryKey: ["talent-hunt-admin-snapshot"] }); },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not save voting window."),
+  });
+
+  const voidMutation = useMutation({
+    mutationFn: (applicationId: string) => {
+      const reason = window.prompt("Reason for voiding this contestant's votes:");
+      if (!reason?.trim()) throw new Error("A reason is required.");
+      return voidTalentHuntVotes(reason.trim(), { applicationId });
+    },
+    onSuccess: () => { toast.success("Votes voided."); void client.invalidateQueries({ queryKey: ["talent-hunt-votes", activeRound?.id] }); },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not void votes."),
   });
 
   const roundMutation = useMutation({
