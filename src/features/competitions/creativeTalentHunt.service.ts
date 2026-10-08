@@ -231,21 +231,16 @@ export async function listPublicCreativeTalentHuntEntries() {
 }
 
 export async function listCreativeTalentHuntReviewQueue() {
-  const competitionId = await getCompetitionId();
-  const { data, error } = await competitionClient
-    .from("competition_applications")
-    .select("*")
-    .eq("competition_id", competitionId)
-    .in("status", ["PENDING_REVIEW", "REJECTED"])
-    .order("submitted_at", { ascending: true });
-
+  const { data, error } = await supabase.rpc("creative_talent_hunt_admin_applications", {
+    p_status: null,
+  });
   if (error) throw error;
-  return data ?? [];
+  return (data ?? []) as TalentHuntApplication[];
 }
 
 export async function reviewCreativeTalentHuntApplication(
   applicationId: string,
-  decision: "APPROVE" | "REJECT",
+  decision: "APPROVE" | "REJECT" | "CORRECTION_REQUESTED" | "UNDER_REVIEW",
   reason: string,
 ) {
   const { data, error } = await competitionClient.rpc(
