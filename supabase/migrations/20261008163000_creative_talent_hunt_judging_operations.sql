@@ -87,8 +87,9 @@ returns jsonb
 language plpgsql security definer set search_path=public as $$
 declare v_round uuid; v_criteria int; v_scored int; v_comp uuid;
 begin
-  select a.round_id,a.competition_id into v_round,v_comp
+  select a.round_id,r.competition_id into v_round,v_comp
   from public.competition_judge_assignments a
+  join public.competition_rounds r on r.id=a.round_id
   join public.competition_judges j on j.id=a.judge_id
   where a.id=p_assignment_id and j.user_id=auth.uid() and j.is_active=true and a.status='ASSIGNED';
   if v_round is null then raise exception 'judge assignment not found or not authorised'; end if;
