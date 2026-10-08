@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 export const COMPETITION_NAV_ITEMS = [
   { label: "Overview", to: "/creative-talent-hunt" as const },
   { label: "Explore Talent", to: "/creative-talent-hunt/contestants" as const },
+  { label: "Leaderboard", to: "/creative-talent-hunt/leaderboard" as const },
 ];
 
 export function CompetitionNav() {
