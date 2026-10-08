@@ -56,7 +56,7 @@ function EntryPage() {
       const { data } = await supabase.auth.getSession();
       if (!data.session) {
         const next = "/creative-talent-hunt/enter";
-        await navigate({ to: "/auth/", search: { next } as never });
+        await navigate({ to: "/auth", search: { next } as never });
         return;
       }
 
@@ -119,7 +119,7 @@ function EntryPage() {
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
       await navigate({
-        to: "/auth/",
+        to: "/auth",
         search: { next: `/creative-talent-hunt/enter?category=${categoryToSlug(category)}` } as never,
       });
       return;
@@ -155,7 +155,7 @@ function EntryPage() {
 
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
-      await navigate({ to: "/auth/", search: { next: "/creative-talent-hunt/enter" } as never });
+      await navigate({ to: "/auth", search: { next: "/creative-talent-hunt/enter" } as never });
       return;
     }
 
