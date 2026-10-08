@@ -32,7 +32,21 @@ function ContestantProfilePage() {
 
   if (profile.isLoading) return <main className="mx-auto max-w-3xl px-6 py-20 text-muted-foreground">Loading creator…</main>;
 
-  const voteMutation = useMutation({ mutationFn: () => castCreativeTalentHuntVote(profile.data?.id ?? ""), onSuccess: () => toast.success("Your vote has been recorded."), onError: (e) => toast.error(e instanceof Error ? e.message : "Could not record your vote.") });
+  const round = useQuery({
+    queryKey: ["creative-talent-hunt-voting-round"],
+    queryFn: async () => {
+      const { data: competition, error: competitionError } = await supabase
+        .from("competition_competitions").select("id,status").eq("slug","creative-talent-hunt").single();
+      if (competitionError) throw competitionError;
+      const { data, error } = await supabase.from("competition_rounds")
+        .select("id,status,public_voting_enabled").eq("competition_id", competition.id)
+        .eq("public_voting_enabled", true).order("sequence",{ascending:false}).limit(1);
+      if (error) throw error;
+      return data?.[0] ?? null;
+    },
+  });
+
+  const voteMutation = useMutation({ mutationFn: () => castCreativeTalentHuntVote(profile.data?.id ?? ""), onSuccess: () => { toast.success("Your vote has been recorded."); void round.refetch(); }, onError: (e) => toast.error(e instanceof Error ? e.message : "Could not record your vote.") });
 
   if (!profile.data) {
     return (
@@ -59,7 +73,7 @@ function ContestantProfilePage() {
           </section>
         )}
         <div className="mt-8 flex flex-wrap gap-3">
-          <Button disabled={!user || voteMutation.isPending} onClick={() => voteMutation.mutate()}>{voteMutation.isPending ? "Voting…" : user ? "Vote for this creator" : "Sign in to vote"}</Button>
+          <Button disabled={!user || voteMutation.isPending || round.isLoading || !round.data || round.data.status !== "VOTING_OPEN" || !round.data.public_voting_enabled} onClick={() => voteMutation.mutate()}>{voteMutation.isPending ? "Voting…" : !user ? "Sign in to vote" : !round.data ? "Voting unavailable" : round.data.status === "VOTING_OPEN" ? "Vote for this creator" : "Voting closed"}</Button>
           {profile.data.audition_url && <Button asChild><a href={profile.data.audition_url} target="_blank" rel="noreferrer">View their work</a></Button>}
           <Button asChild variant="outline"><Link to="/creative-talent-hunt/enter">Enter the Hunt</Link></Button>
         </div>
