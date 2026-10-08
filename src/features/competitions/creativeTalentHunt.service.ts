@@ -260,3 +260,10 @@ export async function reviewCreativeTalentHuntApplication(
   if (error) throw error;
   return data;
 }
+
+
+export async function castCreativeTalentHuntVote(applicationId: string) {
+  const { data, error } = await supabase.rpc("cast_creative_talent_hunt_vote", { p_application_id: applicationId });
+  if (error) throw error;
+  return data;
+}
