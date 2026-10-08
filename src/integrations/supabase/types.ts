@@ -6153,6 +6153,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      creative_talent_hunt_admin_snapshot: { Args: never; Returns: Json }
+      set_creative_talent_hunt_status: { Args: { p_status: string }; Returns: Json }
+      set_creative_talent_hunt_round_status: { Args: { p_round_id: string; p_status: string }; Returns: Json }
+      creative_talent_hunt_admin_voting_summary: { Args: { p_round_id: string }; Returns: Json }
+      creative_talent_hunt_vote_totals: { Args: { p_round_id: string }; Returns: Json }
+      creative_talent_hunt_suspicious_votes: { Args: { p_round_id: string }; Returns: Json }
+      creative_talent_hunt_void_votes: { Args: { p_application_id?: string | null; p_reason: string; p_vote_ids?: string[] | null; p_voter_id?: string | null }; Returns: Json }
+      set_creative_talent_hunt_voting_window: { Args: { p_closes_at?: string | null; p_opens_at?: string | null }; Returns: Json }
+      close_creative_talent_hunt_voting: { Args: never; Returns: Json }
+      save_creative_talent_hunt_scores: { Args: { p_assignment_id: string; p_scores: Json }; Returns: Json }
+      get_creative_talent_hunt_results: { Args: { p_round_id: string }; Returns: Json }
+      get_public_creative_talent_hunt_results: { Args: { p_round_id: string }; Returns: Json }
+      submit_creative_talent_hunt_application: { Args: { p_application_id: string; p_publish_publicly?: boolean }; Returns: Json }
+      review_creative_talent_hunt_application: { Args: { p_application_id: string; p_decision: string; p_reason?: string }; Returns: Json }
+      cast_creative_talent_hunt_vote: { Args: { p_application_id: string }; Returns: Json }
+      creative_talent_hunt_admin_applications: { Args: { p_status?: string | null }; Returns: Json }
+      creative_talent_hunt_admin_entry_detail: { Args: { p_application_id: string }; Returns: Json }
+      decide_creative_talent_hunt_round: { Args: { p_application_id: string; p_outcome: string; p_reason?: string }; Returns: Json }
+      creative_talent_hunt_admin_judges: { Args: never; Returns: Json }
+      appoint_creative_talent_hunt_judge: { Args: { p_bio?: string; p_display_name: string; p_user_id: string }; Returns: Json }
+      set_creative_talent_hunt_judge_active: { Args: { p_active: boolean; p_judge_id: string }; Returns: Json }
+      assign_creative_talent_hunt_judge: { Args: { p_application_id: string; p_judge_id: string; p_round_id: string }; Returns: Json }
+      finalize_creative_talent_hunt_scores: { Args: { p_assignment_id: string }; Returns: Json }
+      creative_talent_hunt_judge_queue: { Args: { p_judge_id?: string | null }; Returns: Json }
       admin_cth_assign_judge: {
         Args: { p_application_id: string; p_judge_id: string }
         Returns: string
