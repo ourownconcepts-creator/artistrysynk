@@ -93,26 +93,15 @@ export async function saveCreativeTalentHuntScores(
 ) {
   if (!scores.length) throw new Error("At least one score is required.");
 
-  const { data: assignment, error: assignmentError } = await supabase
-    .from("competition_judge_assignments")
-    .select("id")
-    .eq("id", assignmentId)
-    .maybeSingle();
-  if (assignmentError) throw assignmentError;
-  if (!assignment) throw new Error("Judge assignment not found.");
+  const { data, error } = await supabase.rpc("save_creative_talent_hunt_scores", {
+    p_assignment_id: assignmentId,
+    p_scores: scores.map((entry) => ({
+      criterion_id: entry.criterionId,
+      score: entry.score,
+      comment: entry.comment ?? "",
+    })),
+  });
 
-  const payload = scores.map((entry) => ({
-    assignment_id: assignmentId,
-    criterion_id: entry.criterionId,
-    score: entry.score,
-    comment: entry.comment ?? "",
-    updated_at: new Date().toISOString(),
-  }));
-
-  const { data, error } = await supabase
-    .from("competition_scores")
-    .upsert(payload, { onConflict: "assignment_id,criterion_id" })
-    .select();
   if (error) throw error;
-  return data ?? [];
+  return data;
 }
