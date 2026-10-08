@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code, Settings, Rss, Award, MapPin, TrendingUp, LayoutGrid } from "lucide-react";
+import { Compass, MessageCircle, User, LogOut, Briefcase, Store, Users, FolderOpen, Code, Settings, Rss, Award, MapPin, TrendingUp, LayoutGrid, Trophy } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { ThemeToggle } from "@/components/navbar/ThemeToggle";
@@ -115,6 +115,17 @@ export const Navbar = () => {
               >
                 <Briefcase className="w-4 h-4" />
                 Jobs
+              </Button>
+            </Link>
+
+            <Link to="/creative-talent-hunt">
+              <Button
+                variant={isActive("/creative-talent-hunt") ? "default" : "ghost"}
+                size="sm"
+                className="gap-2"
+              >
+                <Trophy className="w-4 h-4" />
+                Talent Hunt
               </Button>
             </Link>
 
