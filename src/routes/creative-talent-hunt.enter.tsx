@@ -6,6 +6,7 @@ import {
   ensureCreativeTalentHuntApplication,
   getCreativeTalentHuntApplication,
   updateCreativeTalentHuntApplication,
+  submitCreativeTalentHuntApplication,
   type TalentHuntApplication,
 } from "@/features/competitions/creativeTalentHunt.service";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,6 +35,9 @@ function EntryPage() {
   const [application, setApplication] = useState<TalentHuntApplication | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [publishPublicly, setPublishPublicly] = useState(false);
+  const [submittedReference, setSubmittedReference] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [form, setForm] = useState({
     display_name: "",
@@ -171,6 +175,41 @@ function EntryPage() {
     }
   };
 
+  const submitEntry = async () => {
+    if (!application) return;
+
+    if (application.submission_state !== "DRAFT") {
+      toast.info("This entry has already been submitted.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const result = await submitCreativeTalentHuntApplication(
+        application.id,
+        publishPublicly,
+      );
+      setSubmittedReference(result.reference_code);
+      setApplication({
+        ...application,
+        submission_state: result.submission_state,
+        progress_state: "SUBMITTED",
+        status: result.status,
+        reference_code: result.reference_code,
+        submitted_at: new Date().toISOString(),
+        is_public: result.is_public,
+        media_is_public: result.is_public,
+      });
+      toast.success("Your Talent Hunt entry has been submitted for review.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not submit your entry.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading) {
     return (
       <PageTransition>
@@ -182,6 +221,8 @@ function EntryPage() {
       </PageTransition>
     );
   }
+
+  const isSubmitted = application?.submission_state !== "DRAFT";
 
   return (
     <PageTransition>
@@ -240,6 +281,7 @@ function EntryPage() {
                     onChange={(e) => setForm({ ...form, display_name: e.target.value })}
                     placeholder="How people should know you"
                     required
+                    disabled={isSubmitted}
                   />
                 </div>
                 <div className="space-y-2">
@@ -250,6 +292,7 @@ function EntryPage() {
                     onChange={(e) => setForm({ ...form, handle: e.target.value })}
                     placeholder="yourhandle"
                     required
+                    disabled={isSubmitted}
                   />
                 </div>
               </div>
@@ -261,6 +304,7 @@ function EntryPage() {
                   value={form.location}
                   onChange={(e) => setForm({ ...form, location: e.target.value })}
                   placeholder="City, Country"
+                  disabled={isSubmitted}
                 />
               </div>
 
@@ -272,6 +316,7 @@ function EntryPage() {
                   onChange={(e) => setForm({ ...form, bio: e.target.value })}
                   placeholder="What do you create? What makes your work different?"
                   rows={5}
+                  disabled={isSubmitted}
                 />
               </div>
 
@@ -283,6 +328,7 @@ function EntryPage() {
                   onChange={(e) => setForm({ ...form, experience: e.target.value })}
                   placeholder="Previous work, performances, releases, projects, clients or milestones."
                   rows={4}
+                  disabled={isSubmitted}
                 />
               </div>
 
@@ -294,6 +340,7 @@ function EntryPage() {
                   value={form.audition_url}
                   onChange={(e) => setForm({ ...form, audition_url: e.target.value })}
                   placeholder="https://..."
+                  disabled={isSubmitted}
                 />
               </div>
 
@@ -305,21 +352,58 @@ function EntryPage() {
                   onChange={(e) => setForm({ ...form, audition_notes: e.target.value })}
                   placeholder="Give the judges context about your submission."
                   rows={4}
+                  disabled={isSubmitted}
                 />
               </div>
 
-              <div className="flex flex-wrap gap-3 pt-2">
-                <Button type="submit" disabled={saving}>
-                  {saving ? "Saving…" : "Save my entry"}
-                </Button>
-                <Button type="button" variant="outline" onClick={() => void navigate({ to: "/talent" })}>
-                  Preview talent discovery
-                </Button>
-              </div>
+              {isSubmitted ? (
+                <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5">
+                  <p className="font-semibold">Entry submitted for review.</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Reference: <span className="font-mono font-semibold">{submittedReference || application?.reference_code}</span>
+                  </p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    We’ll move your entry through the competition review process. Your ArtistrySynk identity remains yours after the Hunt.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <label className="flex cursor-pointer items-start gap-3 rounded-2xl border p-4">
+                    <input
+                      type="checkbox"
+                      checked={publishPublicly}
+                      onChange={(e) => setPublishPublicly(e.target.checked)}
+                      className="mt-1 h-4 w-4"
+                    />
+                    <span>
+                      <span className="block text-sm font-semibold">Make my entry discoverable</span>
+                      <span className="mt-1 block text-sm leading-6 text-muted-foreground">
+                        If approved, your public creator card can appear in the Talent Hunt directory.
+                      </span>
+                    </span>
+                  </label>
+
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <Button type="submit" disabled={saving}>
+                      {saving ? "Saving…" : "Save my entry"}
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => void submitEntry()}
+                      disabled={submitting || saving}
+                    >
+                      {submitting ? "Submitting…" : "Submit my entry"}
+                    </Button>
+                    <Button type="button" variant="outline" onClick={() => void navigate({ to: "/talent" })}>
+                      Preview talent discovery
+                    </Button>
+                  </div>
+                </>
+              )}
 
               <p className="text-sm leading-6 text-muted-foreground">
-                Saving your entry does not publish it. Public discovery happens only after you
-                opt in and the competition workflow approves the entry.
+                Submission locks the competition entry while it is reviewed. Public discovery is
+                only shown after approval, and only when you opt in.
               </p>
             </form>
           )}
