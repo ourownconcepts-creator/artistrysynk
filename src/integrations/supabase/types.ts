@@ -770,6 +770,665 @@ export type Database = {
           },
         ]
       }
+      competition_announcements: {
+        Row: {
+          audience: string
+          body: string
+          competition_id: string
+          created_at: string
+          id: string
+          is_pinned: boolean
+          is_published: boolean
+          published_at: string | null
+          round_id: string | null
+          scheduled_for: string | null
+          title: string
+        }
+        Insert: {
+          audience?: string
+          body: string
+          competition_id: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean
+          is_published?: boolean
+          published_at?: string | null
+          round_id?: string | null
+          scheduled_for?: string | null
+          title: string
+        }
+        Update: {
+          audience?: string
+          body?: string
+          competition_id?: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean
+          is_published?: boolean
+          published_at?: string | null
+          round_id?: string | null
+          scheduled_for?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_announcements_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competition_competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_announcements_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "competition_rounds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competition_applications: {
+        Row: {
+          audition_notes: string
+          audition_url: string
+          bio: string
+          category_id: string
+          competition_id: string
+          created_at: string
+          current_round_id: string | null
+          date_of_birth: string | null
+          display_name: string
+          email: string
+          experience: string
+          full_name: string
+          handle: string
+          id: string
+          is_public: boolean
+          location: string
+          media_is_public: boolean
+          phone: string
+          progress_state: string
+          reference_code: string | null
+          review_decision: string | null
+          review_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submission_answers: Json
+          submission_state: string
+          submitted_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          audition_notes?: string
+          audition_url?: string
+          bio?: string
+          category_id: string
+          competition_id: string
+          created_at?: string
+          current_round_id?: string | null
+          date_of_birth?: string | null
+          display_name: string
+          email?: string
+          experience?: string
+          full_name?: string
+          handle: string
+          id?: string
+          is_public?: boolean
+          location?: string
+          media_is_public?: boolean
+          phone?: string
+          progress_state?: string
+          reference_code?: string | null
+          review_decision?: string | null
+          review_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submission_answers?: Json
+          submission_state?: string
+          submitted_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          audition_notes?: string
+          audition_url?: string
+          bio?: string
+          category_id?: string
+          competition_id?: string
+          created_at?: string
+          current_round_id?: string | null
+          date_of_birth?: string | null
+          display_name?: string
+          email?: string
+          experience?: string
+          full_name?: string
+          handle?: string
+          id?: string
+          is_public?: boolean
+          location?: string
+          media_is_public?: boolean
+          phone?: string
+          progress_state?: string
+          reference_code?: string | null
+          review_decision?: string | null
+          review_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submission_answers?: Json
+          submission_state?: string
+          submitted_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_applications_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "competition_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_applications_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competition_competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_applications_current_round_id_fkey"
+            columns: ["current_round_id"]
+            isOneToOne: false
+            referencedRelation: "competition_rounds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competition_audit_logs: {
+        Row: {
+          action: string
+          actor_user_id: string | null
+          competition_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          metadata: Json
+        }
+        Insert: {
+          action: string
+          actor_user_id?: string | null
+          competition_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          metadata?: Json
+        }
+        Update: {
+          action?: string
+          actor_user_id?: string | null
+          competition_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          metadata?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_audit_logs_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competition_competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competition_categories: {
+        Row: {
+          competition_id: string
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          competition_id: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          competition_id?: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_categories_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competition_competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competition_competitions: {
+        Row: {
+          config: Json
+          created_at: string
+          description: string
+          domain: string
+          id: string
+          name: string
+          registration_ends_at: string | null
+          registration_starts_at: string | null
+          slug: string
+          status: string
+          type: string
+          updated_at: string
+          voting_ends_at: string | null
+          voting_starts_at: string | null
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          description?: string
+          domain?: string
+          id?: string
+          name: string
+          registration_ends_at?: string | null
+          registration_starts_at?: string | null
+          slug: string
+          status?: string
+          type?: string
+          updated_at?: string
+          voting_ends_at?: string | null
+          voting_starts_at?: string | null
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          description?: string
+          domain?: string
+          id?: string
+          name?: string
+          registration_ends_at?: string | null
+          registration_starts_at?: string | null
+          slug?: string
+          status?: string
+          type?: string
+          updated_at?: string
+          voting_ends_at?: string | null
+          voting_starts_at?: string | null
+        }
+        Relationships: []
+      }
+      competition_judge_assignments: {
+        Row: {
+          application_id: string
+          assigned_at: string
+          id: string
+          judge_id: string
+          round_id: string
+          status: string
+        }
+        Insert: {
+          application_id: string
+          assigned_at?: string
+          id?: string
+          judge_id: string
+          round_id: string
+          status?: string
+        }
+        Update: {
+          application_id?: string
+          assigned_at?: string
+          id?: string
+          judge_id?: string
+          round_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_judge_assignments_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "competition_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_judge_assignments_judge_id_fkey"
+            columns: ["judge_id"]
+            isOneToOne: false
+            referencedRelation: "competition_judges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_judge_assignments_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "competition_rounds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competition_judges: {
+        Row: {
+          bio: string
+          competition_id: string
+          created_at: string
+          display_name: string
+          id: string
+          is_active: boolean
+          user_id: string
+        }
+        Insert: {
+          bio?: string
+          competition_id: string
+          created_at?: string
+          display_name: string
+          id?: string
+          is_active?: boolean
+          user_id: string
+        }
+        Update: {
+          bio?: string
+          competition_id?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_active?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_judges_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competition_competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competition_rounds: {
+        Row: {
+          competition_id: string
+          config: Json
+          created_at: string
+          ends_at: string | null
+          id: string
+          name: string
+          public_voting_enabled: boolean
+          round_type: string
+          scoring_enabled: boolean
+          sequence: number
+          slug: string
+          starts_at: string | null
+          status: string
+        }
+        Insert: {
+          competition_id: string
+          config?: Json
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          name: string
+          public_voting_enabled?: boolean
+          round_type?: string
+          scoring_enabled?: boolean
+          sequence?: number
+          slug: string
+          starts_at?: string | null
+          status?: string
+        }
+        Update: {
+          competition_id?: string
+          config?: Json
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          name?: string
+          public_voting_enabled?: boolean
+          round_type?: string
+          scoring_enabled?: boolean
+          sequence?: number
+          slug?: string
+          starts_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_rounds_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competition_competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competition_scores: {
+        Row: {
+          assignment_id: string
+          comment: string
+          criterion_id: string
+          id: string
+          score: number
+          submitted_at: string
+          updated_at: string
+        }
+        Insert: {
+          assignment_id: string
+          comment?: string
+          criterion_id: string
+          id?: string
+          score: number
+          submitted_at?: string
+          updated_at?: string
+        }
+        Update: {
+          assignment_id?: string
+          comment?: string
+          criterion_id?: string
+          id?: string
+          score?: number
+          submitted_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_scores_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "competition_judge_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_scores_criterion_id_fkey"
+            columns: ["criterion_id"]
+            isOneToOne: false
+            referencedRelation: "competition_scoring_criteria"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competition_scoring_criteria: {
+        Row: {
+          competition_id: string
+          description: string
+          id: string
+          max_score: number
+          name: string
+          round_id: string
+          sort_order: number
+          weight: number
+        }
+        Insert: {
+          competition_id: string
+          description?: string
+          id?: string
+          max_score?: number
+          name: string
+          round_id: string
+          sort_order?: number
+          weight?: number
+        }
+        Update: {
+          competition_id?: string
+          description?: string
+          id?: string
+          max_score?: number
+          name?: string
+          round_id?: string
+          sort_order?: number
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_scoring_criteria_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competition_competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_scoring_criteria_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "competition_rounds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competition_submissions: {
+        Row: {
+          application_id: string
+          approved_at: string | null
+          approved_by: string | null
+          description: string
+          id: string
+          media_type: string
+          media_url: string
+          metadata: Json
+          round_id: string
+          status: string
+          submitted_at: string
+          thumbnail_url: string | null
+          title: string
+        }
+        Insert: {
+          application_id: string
+          approved_at?: string | null
+          approved_by?: string | null
+          description?: string
+          id?: string
+          media_type?: string
+          media_url?: string
+          metadata?: Json
+          round_id: string
+          status?: string
+          submitted_at?: string
+          thumbnail_url?: string | null
+          title: string
+        }
+        Update: {
+          application_id?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          description?: string
+          id?: string
+          media_type?: string
+          media_url?: string
+          metadata?: Json
+          round_id?: string
+          status?: string
+          submitted_at?: string
+          thumbnail_url?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_submissions_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "competition_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_submissions_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "competition_rounds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competition_votes: {
+        Row: {
+          application_id: string
+          competition_id: string
+          created_at: string
+          id: string
+          round_id: string
+          voter_user_id: string
+        }
+        Insert: {
+          application_id: string
+          competition_id: string
+          created_at?: string
+          id?: string
+          round_id: string
+          voter_user_id: string
+        }
+        Update: {
+          application_id?: string
+          competition_id?: string
+          created_at?: string
+          id?: string
+          round_id?: string
+          voter_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_votes_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "competition_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_votes_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competition_competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_votes_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "competition_rounds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       compliance_records: {
         Row: {
           activity: string | null

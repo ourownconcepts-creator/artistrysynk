@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791456177753,
+      "tag": "0000_competition_platform_foundation",
+      "breakpoints": true
+    }
+  ]
+}
