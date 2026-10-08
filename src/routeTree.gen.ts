@@ -35,6 +35,7 @@ import { Route as CollabHubRouteImport } from './routes/collab-hub'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as CreativeDirectorsRouteImport } from './routes/creative-directors'
+import { Route as CreativeTalentHuntRouteImport } from './routes/creative-talent-hunt'
 import { Route as CreatorDashboardRouteImport } from './routes/creator-dashboard'
 import { Route as CreditsRouteImport } from './routes/credits'
 import { Route as DancersRouteImport } from './routes/dancers'
@@ -79,6 +80,7 @@ import { Route as SuperAdminRouteImport } from './routes/super-admin'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as SynkAiRouteImport } from './routes/synk-ai'
 import { Route as TalentRouteImport } from './routes/talent'
+import { Route as TalentHuntRouteImport } from './routes/talent-hunt'
 import { Route as TeamsRouteImport } from './routes/teams'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
@@ -88,6 +90,7 @@ import { Route as WhoLikedYouRouteImport } from './routes/who-liked-you'
 import { Route as DotwellKnownOauthAuthorizationServerRouteImport } from './routes/[.]well-known/oauth-authorization-server'
 import { Route as DotwellKnownOauthProtectedResourceRouteImport } from './routes/[.]well-known/oauth-protected-resource'
 import { Route as AccountConfirmDeletionRouteImport } from './routes/account/confirm-deletion'
+import { Route as AdminCreativeTalentHuntRouteImport } from './routes/admin/creative-talent-hunt'
 import { Route as AuthIndexRouteImport } from './routes/auth/index'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
@@ -95,6 +98,8 @@ import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as BlogArchiveRouteImport } from './routes/blog/archive'
 import { Route as BlogHowToFindAMusicProducerRouteImport } from './routes/blog/how-to-find-a-music-producer'
 import { Route as CopyrightReportRouteImport } from './routes/copyright/report'
+import { Route as CreativeTalentHuntContestantsRouteImport } from './routes/creative-talent-hunt.contestants'
+import { Route as CreativeTalentHuntEnterRouteImport } from './routes/creative-talent-hunt.enter'
 import { Route as ExploreIndexRouteImport } from './routes/explore/index'
 import { Route as ExploreNearbyRouteImport } from './routes/explore/nearby'
 import { Route as HubProjectIdRouteImport } from './routes/hub/$projectId'
@@ -265,6 +270,11 @@ const CookiesRoute = CookiesRouteImport.update({
 const CreativeDirectorsRoute = CreativeDirectorsRouteImport.update({
   id: '/creative-directors',
   path: '/creative-directors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreativeTalentHuntRoute = CreativeTalentHuntRouteImport.update({
+  id: '/creative-talent-hunt',
+  path: '/creative-talent-hunt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreatorDashboardRoute = CreatorDashboardRouteImport.update({
@@ -488,6 +498,11 @@ const TalentRoute = TalentRouteImport.update({
   path: '/talent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TalentHuntRoute = TalentHuntRouteImport.update({
+  id: '/talent-hunt',
+  path: '/talent-hunt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TeamsRoute = TeamsRouteImport.update({
   id: '/teams',
   path: '/teams',
@@ -535,6 +550,11 @@ const AccountConfirmDeletionRoute = AccountConfirmDeletionRouteImport.update({
   path: '/account/confirm-deletion',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCreativeTalentHuntRoute = AdminCreativeTalentHuntRouteImport.update({
+  id: '/creative-talent-hunt',
+  path: '/creative-talent-hunt',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/auth/',
   path: '/auth/',
@@ -570,6 +590,17 @@ const CopyrightReportRoute = CopyrightReportRouteImport.update({
   id: '/copyright/report',
   path: '/copyright/report',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CreativeTalentHuntContestantsRoute =
+  CreativeTalentHuntContestantsRouteImport.update({
+    id: '/contestants',
+    path: '/contestants',
+    getParentRoute: () => CreativeTalentHuntRoute,
+  } as any)
+const CreativeTalentHuntEnterRoute = CreativeTalentHuntEnterRouteImport.update({
+  id: '/enter',
+  path: '/enter',
+  getParentRoute: () => CreativeTalentHuntRoute,
 } as any)
 const ExploreIndexRoute = ExploreIndexRouteImport.update({
   id: '/explore/',
@@ -789,7 +820,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/actors': typeof ActorsRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/admin-auth': typeof AdminAuthRoute
   '/admin-blog': typeof AdminBlogRoute
   '/admin-categories': typeof AdminCategoriesRoute
@@ -812,6 +843,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
   '/creative-directors': typeof CreativeDirectorsRoute
+  '/creative-talent-hunt': typeof CreativeTalentHuntRouteWithChildren
   '/creator-dashboard': typeof CreatorDashboardRoute
   '/credits': typeof CreditsRoute
   '/dancers': typeof DancersRoute
@@ -856,6 +888,7 @@ export interface FileRoutesByFullPath {
   '/support': typeof SupportRoute
   '/synk-ai': typeof SynkAiRoute
   '/talent': typeof TalentRoute
+  '/talent-hunt': typeof TalentHuntRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
   '/unsubscribe': typeof UnsubscribeRoute
@@ -865,11 +898,14 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-authorization-server': typeof DotwellKnownOauthAuthorizationServerRoute
   '/.well-known/oauth-protected-resource': typeof DotwellKnownOauthProtectedResourceRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
+  '/admin/creative-talent-hunt': typeof AdminCreativeTalentHuntRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/archive': typeof BlogArchiveRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
+  '/creative-talent-hunt/contestants': typeof CreativeTalentHuntContestantsRoute
+  '/creative-talent-hunt/enter': typeof CreativeTalentHuntEnterRoute
   '/explore/nearby': typeof ExploreNearbyRoute
   '/hub/$projectId': typeof HubProjectIdRoute
   '/legal/$slug': typeof LegalSlugRoute
@@ -918,7 +954,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/actors': typeof ActorsRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/admin-auth': typeof AdminAuthRoute
   '/admin-blog': typeof AdminBlogRoute
   '/admin-categories': typeof AdminCategoriesRoute
@@ -941,6 +977,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
   '/creative-directors': typeof CreativeDirectorsRoute
+  '/creative-talent-hunt': typeof CreativeTalentHuntRouteWithChildren
   '/creator-dashboard': typeof CreatorDashboardRoute
   '/credits': typeof CreditsRoute
   '/dancers': typeof DancersRoute
@@ -985,6 +1022,7 @@ export interface FileRoutesByTo {
   '/support': typeof SupportRoute
   '/synk-ai': typeof SynkAiRoute
   '/talent': typeof TalentRoute
+  '/talent-hunt': typeof TalentHuntRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
   '/unsubscribe': typeof UnsubscribeRoute
@@ -994,11 +1032,14 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-authorization-server': typeof DotwellKnownOauthAuthorizationServerRoute
   '/.well-known/oauth-protected-resource': typeof DotwellKnownOauthProtectedResourceRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
+  '/admin/creative-talent-hunt': typeof AdminCreativeTalentHuntRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/archive': typeof BlogArchiveRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
+  '/creative-talent-hunt/contestants': typeof CreativeTalentHuntContestantsRoute
+  '/creative-talent-hunt/enter': typeof CreativeTalentHuntEnterRoute
   '/explore/nearby': typeof ExploreNearbyRoute
   '/hub/$projectId': typeof HubProjectIdRoute
   '/legal/$slug': typeof LegalSlugRoute
@@ -1048,7 +1089,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/actors': typeof ActorsRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/admin-auth': typeof AdminAuthRoute
   '/admin-blog': typeof AdminBlogRoute
   '/admin-categories': typeof AdminCategoriesRoute
@@ -1071,6 +1112,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
   '/creative-directors': typeof CreativeDirectorsRoute
+  '/creative-talent-hunt': typeof CreativeTalentHuntRouteWithChildren
   '/creator-dashboard': typeof CreatorDashboardRoute
   '/credits': typeof CreditsRoute
   '/dancers': typeof DancersRoute
@@ -1115,6 +1157,7 @@ export interface FileRoutesById {
   '/support': typeof SupportRoute
   '/synk-ai': typeof SynkAiRoute
   '/talent': typeof TalentRoute
+  '/talent-hunt': typeof TalentHuntRoute
   '/teams': typeof TeamsRoute
   '/terms': typeof TermsRoute
   '/unsubscribe': typeof UnsubscribeRoute
@@ -1124,11 +1167,14 @@ export interface FileRoutesById {
   '/.well-known/oauth-authorization-server': typeof DotwellKnownOauthAuthorizationServerRoute
   '/.well-known/oauth-protected-resource': typeof DotwellKnownOauthProtectedResourceRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
+  '/admin/creative-talent-hunt': typeof AdminCreativeTalentHuntRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/archive': typeof BlogArchiveRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
+  '/creative-talent-hunt/contestants': typeof CreativeTalentHuntContestantsRoute
+  '/creative-talent-hunt/enter': typeof CreativeTalentHuntEnterRoute
   '/explore/nearby': typeof ExploreNearbyRoute
   '/hub/$projectId': typeof HubProjectIdRoute
   '/legal/$slug': typeof LegalSlugRoute
@@ -1202,6 +1248,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookies'
     | '/creative-directors'
+    | '/creative-talent-hunt'
     | '/creator-dashboard'
     | '/credits'
     | '/dancers'
@@ -1246,6 +1293,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/synk-ai'
     | '/talent'
+    | '/talent-hunt'
     | '/teams'
     | '/terms'
     | '/unsubscribe'
@@ -1255,11 +1303,14 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-authorization-server'
     | '/.well-known/oauth-protected-resource'
     | '/account/confirm-deletion'
+    | '/admin/creative-talent-hunt'
     | '/auth/callback'
     | '/blog/$slug'
     | '/blog/archive'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
+    | '/creative-talent-hunt/contestants'
+    | '/creative-talent-hunt/enter'
     | '/explore/nearby'
     | '/hub/$projectId'
     | '/legal/$slug'
@@ -1331,6 +1382,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookies'
     | '/creative-directors'
+    | '/creative-talent-hunt'
     | '/creator-dashboard'
     | '/credits'
     | '/dancers'
@@ -1375,6 +1427,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/synk-ai'
     | '/talent'
+    | '/talent-hunt'
     | '/teams'
     | '/terms'
     | '/unsubscribe'
@@ -1384,11 +1437,14 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-authorization-server'
     | '/.well-known/oauth-protected-resource'
     | '/account/confirm-deletion'
+    | '/admin/creative-talent-hunt'
     | '/auth/callback'
     | '/blog/$slug'
     | '/blog/archive'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
+    | '/creative-talent-hunt/contestants'
+    | '/creative-talent-hunt/enter'
     | '/explore/nearby'
     | '/hub/$projectId'
     | '/legal/$slug'
@@ -1460,6 +1516,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookies'
     | '/creative-directors'
+    | '/creative-talent-hunt'
     | '/creator-dashboard'
     | '/credits'
     | '/dancers'
@@ -1504,6 +1561,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/synk-ai'
     | '/talent'
+    | '/talent-hunt'
     | '/teams'
     | '/terms'
     | '/unsubscribe'
@@ -1513,11 +1571,14 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-authorization-server'
     | '/.well-known/oauth-protected-resource'
     | '/account/confirm-deletion'
+    | '/admin/creative-talent-hunt'
     | '/auth/callback'
     | '/blog/$slug'
     | '/blog/archive'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
+    | '/creative-talent-hunt/contestants'
+    | '/creative-talent-hunt/enter'
     | '/explore/nearby'
     | '/hub/$projectId'
     | '/legal/$slug'
@@ -1567,7 +1628,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ActorsRoute: typeof ActorsRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AdminAuthRoute: typeof AdminAuthRoute
   AdminBlogRoute: typeof AdminBlogRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
@@ -1590,6 +1651,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   CookiesRoute: typeof CookiesRoute
   CreativeDirectorsRoute: typeof CreativeDirectorsRoute
+  CreativeTalentHuntRoute: typeof CreativeTalentHuntRouteWithChildren
   CreatorDashboardRoute: typeof CreatorDashboardRoute
   CreditsRoute: typeof CreditsRoute
   DancersRoute: typeof DancersRoute
@@ -1634,6 +1696,7 @@ export interface RootRouteChildren {
   SupportRoute: typeof SupportRoute
   SynkAiRoute: typeof SynkAiRoute
   TalentRoute: typeof TalentRoute
+  TalentHuntRoute: typeof TalentHuntRoute
   TeamsRoute: typeof TeamsRoute
   TermsRoute: typeof TermsRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
@@ -1875,6 +1938,13 @@ declare module '@tanstack/react-router' {
       path: '/creative-directors'
       fullPath: '/creative-directors'
       preLoaderRoute: typeof CreativeDirectorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creative-talent-hunt': {
+      id: '/creative-talent-hunt'
+      path: '/creative-talent-hunt'
+      fullPath: '/creative-talent-hunt'
+      preLoaderRoute: typeof CreativeTalentHuntRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/creator-dashboard': {
@@ -2185,6 +2255,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TalentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/talent-hunt': {
+      id: '/talent-hunt'
+      path: '/talent-hunt'
+      fullPath: '/talent-hunt'
+      preLoaderRoute: typeof TalentHuntRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/teams': {
       id: '/teams'
       path: '/teams'
@@ -2248,6 +2325,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountConfirmDeletionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/creative-talent-hunt': {
+      id: '/admin/creative-talent-hunt'
+      path: '/creative-talent-hunt'
+      fullPath: '/admin/creative-talent-hunt'
+      preLoaderRoute: typeof AdminCreativeTalentHuntRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/auth/': {
       id: '/auth/'
       path: '/auth'
@@ -2296,6 +2380,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/copyright/report'
       preLoaderRoute: typeof CopyrightReportRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/creative-talent-hunt/contestants': {
+      id: '/creative-talent-hunt/contestants'
+      path: '/contestants'
+      fullPath: '/creative-talent-hunt/contestants'
+      preLoaderRoute: typeof CreativeTalentHuntContestantsRouteImport
+      parentRoute: typeof CreativeTalentHuntRoute
+    }
+    '/creative-talent-hunt/enter': {
+      id: '/creative-talent-hunt/enter'
+      path: '/enter'
+      fullPath: '/creative-talent-hunt/enter'
+      preLoaderRoute: typeof CreativeTalentHuntEnterRouteImport
+      parentRoute: typeof CreativeTalentHuntRoute
     }
     '/explore/': {
       id: '/explore/'
@@ -2587,11 +2685,34 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminCreativeTalentHuntRoute: typeof AdminCreativeTalentHuntRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminCreativeTalentHuntRoute: AdminCreativeTalentHuntRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface CreativeTalentHuntRouteChildren {
+  CreativeTalentHuntContestantsRoute: typeof CreativeTalentHuntContestantsRoute
+  CreativeTalentHuntEnterRoute: typeof CreativeTalentHuntEnterRoute
+}
+
+const CreativeTalentHuntRouteChildren: CreativeTalentHuntRouteChildren = {
+  CreativeTalentHuntContestantsRoute: CreativeTalentHuntContestantsRoute,
+  CreativeTalentHuntEnterRoute: CreativeTalentHuntEnterRoute,
+}
+
+const CreativeTalentHuntRouteWithChildren =
+  CreativeTalentHuntRoute._addFileChildren(CreativeTalentHuntRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ActorsRoute: ActorsRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   AdminAuthRoute: AdminAuthRoute,
   AdminBlogRoute: AdminBlogRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
@@ -2614,6 +2735,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   CookiesRoute: CookiesRoute,
   CreativeDirectorsRoute: CreativeDirectorsRoute,
+  CreativeTalentHuntRoute: CreativeTalentHuntRouteWithChildren,
   CreatorDashboardRoute: CreatorDashboardRoute,
   CreditsRoute: CreditsRoute,
   DancersRoute: DancersRoute,
@@ -2659,6 +2781,7 @@ const rootRouteChildren: RootRouteChildren = {
   SupportRoute: SupportRoute,
   SynkAiRoute: SynkAiRoute,
   TalentRoute: TalentRoute,
+  TalentHuntRoute: TalentHuntRoute,
   TeamsRoute: TeamsRoute,
   TermsRoute: TermsRoute,
   UnsubscribeRoute: UnsubscribeRoute,

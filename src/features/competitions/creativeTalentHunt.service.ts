@@ -10,16 +10,19 @@ type CompetitionDatabase = {
         Row: { id: string; slug: string; name: string; domain: string; type: string; status: string; description: string };
         Insert: { slug: string; name: string; domain?: string; type?: string; status?: string; description?: string; config?: Json };
         Update: Partial<CompetitionDatabase["public"]["Tables"]["competition_competitions"]["Insert"]>;
+        Relationships: [];
       };
       competition_categories: {
         Row: { id: string; competition_id: string; name: string; slug: string; sort_order: number; is_active: boolean };
         Insert: { competition_id: string; name: string; slug: string; sort_order?: number; is_active?: boolean };
         Update: Partial<CompetitionDatabase["public"]["Tables"]["competition_categories"]["Insert"]>;
+        Relationships: [];
       };
       competition_rounds: {
         Row: { id: string; competition_id: string; name: string; slug: string; sequence: number };
         Insert: { competition_id: string; name: string; slug: string; sequence?: number; round_type?: string };
         Update: Partial<CompetitionDatabase["public"]["Tables"]["competition_rounds"]["Insert"]>;
+        Relationships: [];
       };
       competition_applications: {
         Row: {
@@ -35,6 +38,7 @@ type CompetitionDatabase = {
           audition_notes?: string; submission_answers?: Json; progress_state?: string; submission_state?: string; status?: string; is_public?: boolean; media_is_public?: boolean;
         };
         Update: Partial<CompetitionDatabase["public"]["Tables"]["competition_applications"]["Insert"]>;
+        Relationships: [];
       };
     };
     Views: Record<string, never>;

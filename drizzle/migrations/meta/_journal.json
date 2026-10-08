@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791456177753,
+      "tag": "0000_competition_platform_foundation",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791456210330,
+      "tag": "0001_creative_talent_hunt_submission_lifecycle",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791456233712,
+      "tag": "0002_creative_talent_hunt_moderation",
+      "breakpoints": true
+    }
+  ]
+}
