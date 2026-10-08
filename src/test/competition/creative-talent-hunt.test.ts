@@ -15,7 +15,7 @@ describe("ArtistrySynk Creative Talent Hunt", () => {
 
   it("contains the nine approved creative categories", () => {
     expect(CREATIVE_TALENT_HUNT_CATEGORIES).toHaveLength(9);
-    expect(CREATIVE_TALENT_HUNT_CATEGORIES.map((category) => category.name)).toEqual([
+    expect(CREATIVE_TALENT_HUNT_CATEGORIES).toEqual([
       "Music",
       "Performance",
       "Visual Arts",
