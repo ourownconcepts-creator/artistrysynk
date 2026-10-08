@@ -59,7 +59,7 @@ function ContestantProfilePage() {
           </section>
         )}
         <div className="mt-8 flex flex-wrap gap-3">
-          {profile.data.audition_url && <Button disabled={!user || voteMutation.isPending} onClick={() => voteMutation.mutate()}>{voteMutation.isPending ? "Voting…" : user ? "Vote for this creator" : "Sign in to vote"}</Button>
+          <Button disabled={!user || voteMutation.isPending} onClick={() => voteMutation.mutate()}>{voteMutation.isPending ? "Voting…" : user ? "Vote for this creator" : "Sign in to vote"}</Button>
           {profile.data.audition_url && <Button asChild><a href={profile.data.audition_url} target="_blank" rel="noreferrer">View their work</a></Button>}
           <Button asChild variant="outline"><Link to="/creative-talent-hunt/enter">Enter the Hunt</Link></Button>
         </div>
