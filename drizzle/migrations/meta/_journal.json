@@ -15,6 +15,13 @@
       "when": 1791456210330,
       "tag": "0001_creative_talent_hunt_submission_lifecycle",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791456233712,
+      "tag": "0002_creative_talent_hunt_moderation",
+      "breakpoints": true
     }
   ]
 }

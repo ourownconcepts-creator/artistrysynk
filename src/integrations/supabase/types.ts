@@ -6810,6 +6810,14 @@ export type Database = {
         Returns: boolean
       }
       resubmit_verification: { Args: { _id: string }; Returns: Json }
+      review_creative_talent_hunt_application: {
+        Args: {
+          p_application_id: string
+          p_decision: string
+          p_reason?: string
+        }
+        Returns: Json
+      }
       run_retention_purges: {
         Args: { _triggered_by?: string }
         Returns: {
