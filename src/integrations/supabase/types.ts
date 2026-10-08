@@ -6359,6 +6359,20 @@ export type Database = {
           id: string
         }[]
       }
+      get_public_creative_talent_hunt_entries: {
+        Args: never
+        Returns: {
+          audition_url: string
+          bio: string
+          category_id: string
+          category_name: string
+          display_name: string
+          handle: string
+          id: string
+          location: string
+          status: string
+        }[]
+      }
       get_public_profile: {
         Args: { _identifier: string }
         Returns: {
@@ -6867,6 +6881,10 @@ export type Database = {
       studio_role_of: {
         Args: { _studio_id: string; _user_id: string }
         Returns: Database["public"]["Enums"]["studio_role"]
+      }
+      submit_creative_talent_hunt_application: {
+        Args: { p_application_id: string; p_publish_publicly?: boolean }
+        Returns: Json
       }
       submit_verification_request: {
         Args: { _capability: string; _notes?: string }
