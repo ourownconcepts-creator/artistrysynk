@@ -111,7 +111,7 @@ as $$
   votes as (
     select v.application_id,count(*)::bigint as total
     from public.competition_votes v
-    where v.round_id=p_round_id
+    where v.round_id=p_round_id and v.is_voided=false
     group by v.application_id
   )
   select apps.id,apps.handle,apps.display_name,apps.category_name,apps.progress_state,
