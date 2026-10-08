@@ -180,7 +180,7 @@ function Scorecard({ assignmentId, roundId }: { assignmentId: string; roundId: s
           Finalise scorecard
         </Button>
       </div>
-      {!allScored && <p className="mt-2 text-xs text-muted-foreground">Enter a valid score for every criterion before finalising.</p>
+      {!allScored && <p className="mt-2 text-xs text-muted-foreground">Enter a valid score for every criterion before finalising.</p>}
     </div>
   );
 }
