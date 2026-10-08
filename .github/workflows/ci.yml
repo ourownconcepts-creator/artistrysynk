@@ -32,7 +32,6 @@ jobs:
           npx eslint
           src/components/Navbar.tsx
           src/domain/competition.ts
-          src/features/competitions/README.md
           src/features/competitions/competitionRoutes.ts
           src/features/competitions/creativeTalentHunt.service.ts
           src/features/competitions/creativeTalentHunt.ts
