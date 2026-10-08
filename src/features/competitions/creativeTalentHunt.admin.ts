@@ -38,3 +38,42 @@ export async function getTalentHuntVotingSummary(roundId: string) {
   if (error) throw error;
   return data ?? [];
 }
+
+
+export async function getTalentHuntVoteTotals(roundId: string) {
+  const { data, error } = await supabase.rpc("creative_talent_hunt_vote_totals", { p_round_id: roundId });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function getTalentHuntSuspiciousVotes(roundId: string) {
+  const { data, error } = await supabase.rpc("creative_talent_hunt_suspicious_votes", { p_round_id: roundId });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function voidTalentHuntVotes(reason: string, target: { applicationId?: string; voterId?: string; voteIds?: string[] }) {
+  const { data, error } = await supabase.rpc("creative_talent_hunt_void_votes", {
+    p_reason: reason,
+    p_application_id: target.applicationId ?? null,
+    p_voter_id: target.voterId ?? null,
+    p_vote_ids: target.voteIds ?? null,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function setTalentHuntVotingWindow(opensAt: string | null, closesAt: string | null) {
+  const { data, error } = await supabase.rpc("set_creative_talent_hunt_voting_window", {
+    p_opens_at: opensAt,
+    p_closes_at: closesAt,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function closeTalentHuntVoting() {
+  const { data, error } = await supabase.rpc("close_creative_talent_hunt_voting");
+  if (error) throw error;
+  return data;
+}
