@@ -24,8 +24,9 @@ begin
   if s.id is null then raise exception 'submission not found'; end if;
 
   update public.competition_submissions
-    set state=state, reviewed_by=auth.uid(), reviewed_at=now(),
-        review_reason=trim(coalesce(p_reason,''))
+    set status=state,
+        approved_by=case when state='APPROVED' then auth.uid() else approved_by end,
+        approved_at=case when state='APPROVED' then now() else approved_at end
     where id=s.id;
 
   if state='APPROVED' then
