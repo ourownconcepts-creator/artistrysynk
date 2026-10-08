@@ -11,10 +11,9 @@ export type CreativeTalentHuntResult = {
   combined_score: number;
 };
 
-export async function listCreativeTalentHuntResults(roundId: string) {
-  const { data, error } = await supabase.rpc("get_creative_talent_hunt_results", {
-    p_round_id: roundId,
-  });
+export async function listCreativeTalentHuntResults(roundId: string, options?: { public?: boolean }) {
+  const rpc = options?.public ? "get_public_creative_talent_hunt_results" : "get_creative_talent_hunt_results";
+  const { data, error } = await supabase.rpc(rpc, { p_round_id: roundId });
   if (error) throw error;
   return (data ?? []) as CreativeTalentHuntResult[];
 }
