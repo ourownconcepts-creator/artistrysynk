@@ -27,7 +27,7 @@ type CompetitionDatabase = {
           handle: string; display_name: string; full_name: string; email: string; phone: string; location: string;
           date_of_birth: string | null; bio: string; experience: string; audition_url: string; audition_notes: string;
           submission_answers: Json; progress_state: string; submission_state: string; status: string; reference_code: string | null;
-          submitted_at: string | null; is_public: boolean; media_is_public: boolean;
+          submitted_at: string | null; is_public: boolean; media_is_public: boolean; review_decision: string | null; review_reason: string | null;
         };
         Insert: {
           competition_id: string; category_id: string; current_round_id?: string | null; user_id: string; handle: string; display_name: string;
@@ -52,6 +52,15 @@ type CompetitionDatabase = {
           category_id: string;
           category_name: string;
         }>;
+      };
+      review_creative_talent_hunt_application: {
+        Args: { p_application_id: string; p_decision: string; p_reason?: string };
+        Returns: {
+          application_id: string;
+          decision: string;
+          status: string;
+          reason: string;
+        };
       };
       submit_creative_talent_hunt_application: {
         Args: { p_application_id: string; p_publish_publicly?: boolean };
@@ -215,4 +224,35 @@ export async function listPublicCreativeTalentHuntEntries() {
 
   if (error) throw error;
   return data ?? [];
+}
+
+export async function listCreativeTalentHuntReviewQueue() {
+  const competitionId = await getCompetitionId();
+  const { data, error } = await competitionClient
+    .from("competition_applications")
+    .select("*")
+    .eq("competition_id", competitionId)
+    .in("status", ["PENDING_REVIEW", "REJECTED"])
+    .order("submitted_at", { ascending: true });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function reviewCreativeTalentHuntApplication(
+  applicationId: string,
+  decision: "APPROVE" | "REJECT",
+  reason: string,
+) {
+  const { data, error } = await competitionClient.rpc(
+    "review_creative_talent_hunt_application",
+    {
+      p_application_id: applicationId,
+      p_decision: decision,
+      p_reason: reason,
+    },
+  );
+
+  if (error) throw error;
+  return data;
 }
