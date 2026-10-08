@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { listCreativeTalentHuntResults } from "@/features/competitions/creativeTalentHunt.results";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/creative-talent-hunt/leaderboard")({
@@ -36,11 +37,7 @@ function LeaderboardPage() {
   const results = useQuery({
     queryKey: ["creative-talent-hunt-results", round.data?.id],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_creative_talent_hunt_results", {
-        p_round_id: round.data!.id,
-      });
-      if (error) throw error;
-      return data ?? [];
+      return listCreativeTalentHuntResults(round.data!.id);
     },
     enabled: Boolean(round.data?.id),
   });
