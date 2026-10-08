@@ -115,6 +115,14 @@ function CreativeTalentHuntReviewPage() {
                 This workspace is available only to ArtistrySynk competition administrators.
               </p>
             </div>
+          ) : detailId && detail ? (
+            <div className="mb-6 rounded-3xl border bg-muted/20 p-6">
+              <div className="flex items-center justify-between gap-4">
+                <h2 className="text-xl font-bold">Full entry inspection</h2>
+                <Button variant="ghost" onClick={() => { setDetailId(null); setDetail(null); }}>Close</Button>
+              </div>
+              <pre className="mt-4 max-h-[32rem] overflow-auto rounded-2xl bg-background p-4 text-xs">{JSON.stringify(detail, null, 2)}</pre>
+            </div>
           ) : entries.length === 0 ? (
             <div className="rounded-3xl border p-8">
               <h2 className="text-xl font-bold">Review queue is clear.</h2>
@@ -184,6 +192,9 @@ function CreativeTalentHuntReviewPage() {
                     </div>
 
                     <div className="flex shrink-0 flex-wrap gap-3">
+                      <Button variant="outline" onClick={() => void openDetail(entry.id)} disabled={workingId === entry.id}>
+                        View full entry
+                      </Button>
                       <Button
                         onClick={() => void decide(entry, "APPROVE")}
                         disabled={workingId === entry.id}
