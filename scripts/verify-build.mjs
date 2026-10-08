@@ -24,11 +24,12 @@ function walk(dir, out = []) {
   return out;
 }
 
-const serverFiles = walk(join(root, "dist", "server"));
-const clientFiles = walk(join(root, "dist", "client", "assets"));
+const outputRoot = existsSync(join(root, ".output")) ? ".output" : "dist";
+const serverFiles = walk(join(root, outputRoot, "server"));
+const clientFiles = walk(join(root, outputRoot, "public", "assets"));
 
-if (serverFiles.length === 0) errors.push("dist/server contains no JS output.");
-if (clientFiles.length === 0) errors.push("dist/client/assets contains no JS output.");
+if (serverFiles.length === 0) errors.push(`${outputRoot}/server contains no JS output.`);
+if (clientFiles.length === 0) errors.push(`${outputRoot}/public/assets contains no JS output.`);
 
 // 1. Framework runtime must expose createSsrRpc as a real declaration somewhere
 //    in the server output, not just as a reference.
