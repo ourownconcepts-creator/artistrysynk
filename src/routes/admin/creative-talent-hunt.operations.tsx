@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { getTalentHuntAdminSnapshot, setTalentHuntRoundStatus, setTalentHuntStatus, getTalentHuntVotingSummary, getTalentHuntVoteTotals, getTalentHuntSuspiciousVotes, voidTalentHuntVotes, setTalentHuntVotingWindow, closeTalentHuntVoting } from "@/features/competitions/creativeTalentHunt.admin";
@@ -13,6 +14,8 @@ export const Route = createFileRoute("/admin/creative-talent-hunt/operations")({
 
 function OperationsPage() {
   const { user, ready } = useSession();
+  const [opensAt, setOpensAt] = useState("");
+  const [closesAt, setClosesAt] = useState("");
   const client = useQueryClient();
   const snapshot = useQuery({ queryKey: ["talent-hunt-admin-snapshot"], queryFn: getTalentHuntAdminSnapshot, enabled: Boolean(user) });
 
@@ -87,6 +90,48 @@ function OperationsPage() {
             )}
           </div>
         </div>
+      </section>
+
+      <section className="rounded-3xl border p-6">
+        <h2 className="text-xl font-bold">Public voting window</h2>
+        <p className="mt-2 text-sm text-muted-foreground">Set the server-enforced opening and closing times, then use the competition status to open voting.</p>
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <label className="space-y-2 text-sm font-medium">
+            Opens
+            <input type="datetime-local" value={opensAt} onChange={(e) => setOpensAt(e.target.value)} className="h-10 w-full rounded-md border border-input bg-background px-3" />
+          </label>
+          <label className="space-y-2 text-sm font-medium">
+            Closes
+            <input type="datetime-local" value={closesAt} onChange={(e) => setClosesAt(e.target.value)} className="h-10 w-full rounded-md border border-input bg-background px-3" />
+          </label>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Button onClick={() => windowMutation.mutate({ opensAt: opensAt ? new Date(opensAt).toISOString() : null, closesAt: closesAt ? new Date(closesAt).toISOString() : null })} disabled={windowMutation.isPending}>
+            Save voting window
+          </Button>
+          <Button variant="outline" onClick={() => votingMutation.mutate()} disabled={votingMutation.isPending}>Close voting now</Button>
+        </div>
+      </section>
+
+      <section className="rounded-3xl border p-6">
+        <h2 className="text-xl font-bold">Vote oversight</h2>
+        <p className="mt-2 text-sm text-muted-foreground">Valid and suspicious activity for the active round.</p>
+        {votes.isLoading ? <p className="mt-4 text-sm text-muted-foreground">Loading vote totals…</p> : (
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead><tr className="border-b text-muted-foreground"><th className="py-2">Contestant</th><th className="py-2">Votes</th><th className="py-2">Distinct voters</th><th className="py-2">Action</th></tr></thead>
+              <tbody>
+                {(votes.data as any[] ?? []).map((row) => <tr key={row.application_id} className="border-b">
+                  <td className="py-2">{row.display_name} <span className="text-muted-foreground">@{row.handle}</span></td>
+                  <td className="py-2">{row.valid_votes}</td>
+                  <td className="py-2">{row.distinct_voters}</td>
+                  <td className="py-2"><Button size="sm" variant="outline" onClick={() => voidMutation.mutate(row.application_id)} disabled={voidMutation.isPending}>Void contestant votes</Button></td>
+                </tr>)}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {suspicious.data?.length ? <div className="mt-6 rounded-2xl bg-muted/50 p-4 text-sm"><strong>{suspicious.data.length}</strong> suspicious voter records detected.</div> : null}
       </section>
 
       <section className="space-y-4">
