@@ -58,8 +58,8 @@ grant execute on function public.set_creative_talent_hunt_judge_active(uuid,bool
 create or replace function public.assign_creative_talent_hunt_judge(
   p_judge_id uuid,p_application_id uuid,p_round_id uuid
 )
-returns jsonb
-language plpgsql security definer set search_path=public as $$
+returns uuid
+language plpgsql security definer set search_path=public as $
 declare v_competition uuid; v_app_competition uuid; v_judge_competition uuid; v_id uuid;
 begin
   if not public.creative_talent_hunt_admin(auth.uid()) then raise exception 'not authorised'; end if;
@@ -77,9 +77,9 @@ begin
   insert into public.competition_audit_logs(competition_id,actor_user_id,action,entity_type,entity_id,metadata)
   values(v_app_competition,auth.uid(),'JUDGE_ASSIGNED','JUDGE_ASSIGNMENT',v_id,
     jsonb_build_object('judge_id',p_judge_id,'application_id',p_application_id,'round_id',p_round_id));
-  return jsonb_build_object('ok',true,'assignment_id',v_id);
+  return v_id;
 end;
-$$;
+$;
 grant execute on function public.assign_creative_talent_hunt_judge(uuid,uuid,uuid) to authenticated;
 
 create or replace function public.finalize_creative_talent_hunt_scores(p_assignment_id uuid)
