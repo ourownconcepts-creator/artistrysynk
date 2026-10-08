@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { listCreativeTalentHuntResults } from "@/features/competitions/creativeTalentHunt.results";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/creative-talent-hunt/leaderboard")({
   staticData: { sitemap: true },
@@ -37,7 +38,7 @@ function LeaderboardPage() {
   const results = useQuery({
     queryKey: ["creative-talent-hunt-results", round.data?.id],
     queryFn: async () => {
-      return listCreativeTalentHuntResults(round.data!.id);
+      return listCreativeTalentHuntResults(round.data!.id, { public: true });
     },
     enabled: Boolean(round.data?.id),
   });
@@ -58,11 +59,11 @@ function LeaderboardPage() {
         </div>
       ) : (
         <div className="overflow-hidden rounded-2xl border">
-          {(results.data ?? []).map((entry: any, index: number) => (
+          {results.isLoading ? Array.from({ length: 5 }).map((_, index) => <div key={`skeleton-${index}`} className="flex items-center gap-4 border-b p-5"><Skeleton className="h-6 w-8" /><Skeleton className="h-6 flex-1" /><Skeleton className="h-6 w-20" /></div>) : (results.data ?? []).map((entry, index) => (
             <div key={entry.application_id} className="grid grid-cols-[3rem_1fr_auto] items-center gap-4 border-b p-5 last:border-b-0">
               <span className="text-lg font-semibold text-muted-foreground">{index + 1}</span>
               <div>
-                <Link to="/creative-talent-hunt/contestants" className="font-semibold hover:underline">
+                <Link to="/creative-talent-hunt/contestants/$handle" params={{ handle: entry.handle }} className="font-semibold hover:underline">
                   {entry.display_name}
                 </Link>
                 <p className="text-sm text-muted-foreground">{entry.category_name} · @{entry.handle}</p>
@@ -73,6 +74,7 @@ function LeaderboardPage() {
               </div>
             </div>
           ))}
+          )}
           {!results.isLoading && !(results.data ?? []).length && (
             <div className="p-8 text-muted-foreground">No public results yet.</div>
           )}
