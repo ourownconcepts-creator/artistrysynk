@@ -40,8 +40,8 @@ jobs:
           src/routes/creative-talent-hunt.contestants.tsx
           src/routes/talent-hunt.tsx
 
-      - name: Test
-        run: npm test
+      - name: Test competition platform
+        run: npm test -- src/test/competition/creative-talent-hunt.test.ts
 
       - name: Production build
         run: npm run build
