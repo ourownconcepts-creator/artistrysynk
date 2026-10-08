@@ -15,11 +15,7 @@ function JudgesPage() {
   const judges = useQuery({
     queryKey: ["creative-talent-hunt-public-judges"],
     queryFn: async () => {
-      const { data: competition, error: competitionError } = await supabase
-        .from("competition_competitions").select("id").eq("slug","creative-talent-hunt").single();
-      if (competitionError) throw competitionError;
-      const { data, error } = await supabase.from("competition_judges")
-        .select("display_name,bio").eq("competition_id", competition.id).eq("is_active",true).order("created_at");
+      const { data, error } = await supabase.rpc("get_public_creative_talent_hunt_judges");
       if (error) throw error;
       return data ?? [];
     },
