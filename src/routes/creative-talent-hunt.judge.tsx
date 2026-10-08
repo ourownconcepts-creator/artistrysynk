@@ -12,6 +12,7 @@ import {
   listCreativeTalentHuntCriteria,
   listCreativeTalentHuntJudgeQueue,
   saveCreativeTalentHuntScores,
+  finalizeCreativeTalentHuntScores,
 } from "@/features/competitions/creativeTalentHunt.operations";
 
 export const Route = createFileRoute("/creative-talent-hunt/judge")({
@@ -124,6 +125,20 @@ function Scorecard({ assignmentId, roundId }: { assignmentId: string; roundId: s
     onError: (error) => toast.error(error instanceof Error ? error.message : "Scores could not be saved."),
   });
 
+  const allScored = (criteria.data ?? []).length > 0 && (criteria.data ?? []).every((criterion) => {
+    const value = Number(values[criterion.id] ?? "");
+    return Number.isFinite(value) && value >= 0 && value <= criterion.max_score;
+  });
+
+  const finalize = useMutation({
+    mutationFn: () => finalizeCreativeTalentHuntScores(assignmentId),
+    onSuccess: () => {
+      toast.success("Scorecard finalised.");
+      void queryClient.invalidateQueries({ queryKey: ["creative-talent-hunt-judge-queue"] });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Scorecard could not be finalised."),
+  });
+
   if (criteria.isLoading) return <p className="mt-6 text-sm text-muted-foreground">Loading scorecard…</p>;
 
   return (
@@ -155,10 +170,17 @@ function Scorecard({ assignmentId, roundId }: { assignmentId: string; roundId: s
           onChange={(event) => setComment(event.target.value)}
         />
       </div>
-      <Button className="mt-4" onClick={() => save.mutate()} disabled={save.isPending || !(criteria.data ?? []).length}>
-        {save.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
-        Save scores
-      </Button>
+      <div className="mt-4 flex flex-wrap gap-3">
+        <Button onClick={() => save.mutate()} disabled={save.isPending || finalize.isPending || !(criteria.data ?? []).length}>
+          {save.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
+          Save draft
+        </Button>
+        <Button variant="outline" onClick={() => finalize.mutate()} disabled={save.isPending || finalize.isPending || !allScored}>
+          {finalize.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
+          Finalise scorecard
+        </Button>
+      </div>
+      {!allScored && <p className="mt-2 text-xs text-muted-foreground">Enter a valid score for every criterion before finalising.</p>
     </div>
   );
 }
