@@ -1085,26 +1085,35 @@ export type Database = {
         Row: {
           application_id: string
           assigned_at: string
+          comment: string
+          finalized_at: string | null
           id: string
           judge_id: string
           round_id: string
           status: string
+          updated_at: string
         }
         Insert: {
           application_id: string
           assigned_at?: string
+          comment?: string
+          finalized_at?: string | null
           id?: string
           judge_id: string
           round_id: string
           status?: string
+          updated_at?: string
         }
         Update: {
           application_id?: string
           assigned_at?: string
+          comment?: string
+          finalized_at?: string | null
           id?: string
           judge_id?: string
           round_id?: string
           status?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -6144,6 +6153,41 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_cth_assign_judge: {
+        Args: { p_application_id: string; p_judge_id: string }
+        Returns: string
+      }
+      admin_cth_judging_overview: { Args: never; Returns: Json }
+      admin_cth_results: {
+        Args: never
+        Returns: {
+          application_id: string
+          assigned_count: number
+          breakdown: Json
+          category_name: string
+          display_name: string
+          finalized_count: number
+          handle: string
+          judge_score: number
+          rank: number
+        }[]
+      }
+      admin_cth_set_judge_active: {
+        Args: { p_active: boolean; p_judge_id: string }
+        Returns: undefined
+      }
+      admin_cth_set_leaderboard_published: {
+        Args: { p_published: boolean }
+        Returns: undefined
+      }
+      admin_cth_unassign_judge: {
+        Args: { p_assignment_id: string }
+        Returns: undefined
+      }
+      admin_cth_upsert_judge: {
+        Args: { p_bio?: string; p_display_name?: string; p_username: string }
+        Returns: string
+      }
       admin_decide_verification: {
         Args: { _id: string; _level?: string; _notes?: string; _status: string }
         Returns: boolean
@@ -6254,6 +6298,31 @@ export type Database = {
       create_trusted_introduction: {
         Args: { _message?: string; _recipient: string; _subject: string }
         Returns: string
+      }
+      cth_assignment_score: {
+        Args: { p_assignment_id: string }
+        Returns: number
+      }
+      cth_is_competition_admin: { Args: never; Returns: boolean }
+      cth_lock_own_assignment: {
+        Args: { p_assignment_id: string }
+        Returns: {
+          application_id: string
+          assigned_at: string
+          comment: string
+          finalized_at: string | null
+          id: string
+          judge_id: string
+          round_id: string
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "competition_judge_assignments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       delete_email: {
         Args: { message_id: number; queue_name: string }
@@ -6373,6 +6442,18 @@ export type Database = {
           status: string
         }[]
       }
+      get_public_creative_talent_hunt_leaderboard: {
+        Args: never
+        Returns: {
+          application_id: string
+          category_name: string
+          combined_score: number
+          display_name: string
+          handle: string
+          judge_score: number
+          rank: number
+        }[]
+      }
       get_public_profile: {
         Args: { _identifier: string }
         Returns: {
@@ -6460,6 +6541,12 @@ export type Database = {
       is_trusted_by: {
         Args: { _other: string; _owner: string }
         Returns: boolean
+      }
+      judge_cth_finalize: { Args: { p_assignment_id: string }; Returns: Json }
+      judge_cth_my_assignments: { Args: never; Returns: Json }
+      judge_cth_save_scores: {
+        Args: { p_assignment_id: string; p_comment?: string; p_scores: Json }
+        Returns: Json
       }
       list_discovery_deck: {
         Args: {

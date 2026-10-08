@@ -100,6 +100,8 @@ import { Route as BlogHowToFindAMusicProducerRouteImport } from './routes/blog/h
 import { Route as CopyrightReportRouteImport } from './routes/copyright/report'
 import { Route as CreativeTalentHuntContestantsRouteImport } from './routes/creative-talent-hunt.contestants'
 import { Route as CreativeTalentHuntEnterRouteImport } from './routes/creative-talent-hunt.enter'
+import { Route as CreativeTalentHuntJudgeRouteImport } from './routes/creative-talent-hunt_.judge'
+import { Route as CreativeTalentHuntLeaderboardRouteImport } from './routes/creative-talent-hunt_.leaderboard'
 import { Route as ExploreIndexRouteImport } from './routes/explore/index'
 import { Route as ExploreNearbyRouteImport } from './routes/explore/nearby'
 import { Route as HubProjectIdRouteImport } from './routes/hub/$projectId'
@@ -123,6 +125,7 @@ import { Route as StudioItemIdRouteImport } from './routes/studio/$itemId'
 import { Route as StudiosIndexRouteImport } from './routes/studios/index'
 import { Route as StudiosNewRouteImport } from './routes/studios/new'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as AdminCreativeTalentHuntJudgingRouteImport } from './routes/admin_.creative-talent-hunt_.judging'
 import { Route as ApiPublicOgImageRouteImport } from './routes/api/public/og-image'
 import { Route as IntegrationV1IndexRouteImport } from './routes/integration/v1/index'
 import { Route as IntegrationV1ClaimRouteImport } from './routes/integration/v1/claim'
@@ -602,6 +605,17 @@ const CreativeTalentHuntEnterRoute = CreativeTalentHuntEnterRouteImport.update({
   path: '/enter',
   getParentRoute: () => CreativeTalentHuntRoute,
 } as any)
+const CreativeTalentHuntJudgeRoute = CreativeTalentHuntJudgeRouteImport.update({
+  id: '/creative-talent-hunt_/judge',
+  path: '/creative-talent-hunt/judge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreativeTalentHuntLeaderboardRoute =
+  CreativeTalentHuntLeaderboardRouteImport.update({
+    id: '/creative-talent-hunt_/leaderboard',
+    path: '/creative-talent-hunt/leaderboard',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ExploreIndexRoute = ExploreIndexRouteImport.update({
   id: '/explore/',
   path: '/explore/',
@@ -717,6 +731,12 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCreativeTalentHuntJudgingRoute =
+  AdminCreativeTalentHuntJudgingRouteImport.update({
+    id: '/admin_/creative-talent-hunt_/judging',
+    path: '/admin/creative-talent-hunt/judging',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicOgImageRoute = ApiPublicOgImageRouteImport.update({
   id: '/api/public/og-image',
   path: '/api/public/og-image',
@@ -906,6 +926,8 @@ export interface FileRoutesByFullPath {
   '/copyright/report': typeof CopyrightReportRoute
   '/creative-talent-hunt/contestants': typeof CreativeTalentHuntContestantsRoute
   '/creative-talent-hunt/enter': typeof CreativeTalentHuntEnterRoute
+  '/creative-talent-hunt/judge': typeof CreativeTalentHuntJudgeRoute
+  '/creative-talent-hunt/leaderboard': typeof CreativeTalentHuntLeaderboardRoute
   '/explore/nearby': typeof ExploreNearbyRoute
   '/hub/$projectId': typeof HubProjectIdRoute
   '/legal/$slug': typeof LegalSlugRoute
@@ -931,6 +953,7 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof SettingsIndexRoute
   '/studios/': typeof StudiosIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/admin/creative-talent-hunt/judging': typeof AdminCreativeTalentHuntJudgingRoute
   '/api/public/og-image': typeof ApiPublicOgImageRoute
   '/integration/v1/claim': typeof IntegrationV1ClaimRoute
   '/integration/v1/docs': typeof IntegrationV1DocsRoute
@@ -1040,6 +1063,8 @@ export interface FileRoutesByTo {
   '/copyright/report': typeof CopyrightReportRoute
   '/creative-talent-hunt/contestants': typeof CreativeTalentHuntContestantsRoute
   '/creative-talent-hunt/enter': typeof CreativeTalentHuntEnterRoute
+  '/creative-talent-hunt/judge': typeof CreativeTalentHuntJudgeRoute
+  '/creative-talent-hunt/leaderboard': typeof CreativeTalentHuntLeaderboardRoute
   '/explore/nearby': typeof ExploreNearbyRoute
   '/hub/$projectId': typeof HubProjectIdRoute
   '/legal/$slug': typeof LegalSlugRoute
@@ -1065,6 +1090,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsIndexRoute
   '/studios': typeof StudiosIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/admin/creative-talent-hunt/judging': typeof AdminCreativeTalentHuntJudgingRoute
   '/api/public/og-image': typeof ApiPublicOgImageRoute
   '/integration/v1/claim': typeof IntegrationV1ClaimRoute
   '/integration/v1/docs': typeof IntegrationV1DocsRoute
@@ -1175,6 +1201,8 @@ export interface FileRoutesById {
   '/copyright/report': typeof CopyrightReportRoute
   '/creative-talent-hunt/contestants': typeof CreativeTalentHuntContestantsRoute
   '/creative-talent-hunt/enter': typeof CreativeTalentHuntEnterRoute
+  '/creative-talent-hunt_/judge': typeof CreativeTalentHuntJudgeRoute
+  '/creative-talent-hunt_/leaderboard': typeof CreativeTalentHuntLeaderboardRoute
   '/explore/nearby': typeof ExploreNearbyRoute
   '/hub/$projectId': typeof HubProjectIdRoute
   '/legal/$slug': typeof LegalSlugRoute
@@ -1200,6 +1228,7 @@ export interface FileRoutesById {
   '/settings/': typeof SettingsIndexRoute
   '/studios/': typeof StudiosIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/admin_/creative-talent-hunt_/judging': typeof AdminCreativeTalentHuntJudgingRoute
   '/api/public/og-image': typeof ApiPublicOgImageRoute
   '/integration/v1/claim': typeof IntegrationV1ClaimRoute
   '/integration/v1/docs': typeof IntegrationV1DocsRoute
@@ -1311,6 +1340,8 @@ export interface FileRouteTypes {
     | '/copyright/report'
     | '/creative-talent-hunt/contestants'
     | '/creative-talent-hunt/enter'
+    | '/creative-talent-hunt/judge'
+    | '/creative-talent-hunt/leaderboard'
     | '/explore/nearby'
     | '/hub/$projectId'
     | '/legal/$slug'
@@ -1336,6 +1367,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/studios/'
     | '/.lovable/oauth/consent'
+    | '/admin/creative-talent-hunt/judging'
     | '/api/public/og-image'
     | '/integration/v1/claim'
     | '/integration/v1/docs'
@@ -1445,6 +1477,8 @@ export interface FileRouteTypes {
     | '/copyright/report'
     | '/creative-talent-hunt/contestants'
     | '/creative-talent-hunt/enter'
+    | '/creative-talent-hunt/judge'
+    | '/creative-talent-hunt/leaderboard'
     | '/explore/nearby'
     | '/hub/$projectId'
     | '/legal/$slug'
@@ -1470,6 +1504,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/studios'
     | '/.lovable/oauth/consent'
+    | '/admin/creative-talent-hunt/judging'
     | '/api/public/og-image'
     | '/integration/v1/claim'
     | '/integration/v1/docs'
@@ -1579,6 +1614,8 @@ export interface FileRouteTypes {
     | '/copyright/report'
     | '/creative-talent-hunt/contestants'
     | '/creative-talent-hunt/enter'
+    | '/creative-talent-hunt_/judge'
+    | '/creative-talent-hunt_/leaderboard'
     | '/explore/nearby'
     | '/hub/$projectId'
     | '/legal/$slug'
@@ -1604,6 +1641,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/studios/'
     | '/.lovable/oauth/consent'
+    | '/admin_/creative-talent-hunt_/judging'
     | '/api/public/og-image'
     | '/integration/v1/claim'
     | '/integration/v1/docs'
@@ -1711,6 +1749,8 @@ export interface RootRouteChildren {
   BlogArchiveRoute: typeof BlogArchiveRoute
   BlogHowToFindAMusicProducerRoute: typeof BlogHowToFindAMusicProducerRoute
   CopyrightReportRoute: typeof CopyrightReportRoute
+  CreativeTalentHuntJudgeRoute: typeof CreativeTalentHuntJudgeRoute
+  CreativeTalentHuntLeaderboardRoute: typeof CreativeTalentHuntLeaderboardRoute
   ExploreNearbyRoute: typeof ExploreNearbyRoute
   HubProjectIdRoute: typeof HubProjectIdRoute
   LegalSlugRoute: typeof LegalSlugRoute
@@ -1736,6 +1776,7 @@ export interface RootRouteChildren {
   SettingsIndexRoute: typeof SettingsIndexRoute
   StudiosIndexRoute: typeof StudiosIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  AdminCreativeTalentHuntJudgingRoute: typeof AdminCreativeTalentHuntJudgingRoute
   ApiPublicOgImageRoute: typeof ApiPublicOgImageRoute
   IntegrationV1ClaimRoute: typeof IntegrationV1ClaimRoute
   IntegrationV1DocsRoute: typeof IntegrationV1DocsRoute
@@ -2395,6 +2436,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreativeTalentHuntEnterRouteImport
       parentRoute: typeof CreativeTalentHuntRoute
     }
+    '/creative-talent-hunt_/judge': {
+      id: '/creative-talent-hunt_/judge'
+      path: '/creative-talent-hunt/judge'
+      fullPath: '/creative-talent-hunt/judge'
+      preLoaderRoute: typeof CreativeTalentHuntJudgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creative-talent-hunt_/leaderboard': {
+      id: '/creative-talent-hunt_/leaderboard'
+      path: '/creative-talent-hunt/leaderboard'
+      fullPath: '/creative-talent-hunt/leaderboard'
+      preLoaderRoute: typeof CreativeTalentHuntLeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore/': {
       id: '/explore/'
       path: '/explore'
@@ -2554,6 +2609,13 @@ declare module '@tanstack/react-router' {
       path: '/.lovable/oauth/consent'
       fullPath: '/.lovable/oauth/consent'
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/creative-talent-hunt_/judging': {
+      id: '/admin_/creative-talent-hunt_/judging'
+      path: '/admin/creative-talent-hunt/judging'
+      fullPath: '/admin/creative-talent-hunt/judging'
+      preLoaderRoute: typeof AdminCreativeTalentHuntJudgingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/og-image': {
@@ -2798,6 +2860,8 @@ const rootRouteChildren: RootRouteChildren = {
   BlogArchiveRoute: BlogArchiveRoute,
   BlogHowToFindAMusicProducerRoute: BlogHowToFindAMusicProducerRoute,
   CopyrightReportRoute: CopyrightReportRoute,
+  CreativeTalentHuntJudgeRoute: CreativeTalentHuntJudgeRoute,
+  CreativeTalentHuntLeaderboardRoute: CreativeTalentHuntLeaderboardRoute,
   ExploreNearbyRoute: ExploreNearbyRoute,
   HubProjectIdRoute: HubProjectIdRoute,
   LegalSlugRoute: LegalSlugRoute,
@@ -2823,6 +2887,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsIndexRoute: SettingsIndexRoute,
   StudiosIndexRoute: StudiosIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  AdminCreativeTalentHuntJudgingRoute: AdminCreativeTalentHuntJudgingRoute,
   ApiPublicOgImageRoute: ApiPublicOgImageRoute,
   IntegrationV1ClaimRoute: IntegrationV1ClaimRoute,
   IntegrationV1DocsRoute: IntegrationV1DocsRoute,
