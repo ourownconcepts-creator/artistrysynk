@@ -56,13 +56,13 @@ function CreativeTalentHuntReviewPage() {
     catch (error) { toast.error(error instanceof Error ? error.message : "Could not load entry detail."); }
   };
 
-  const decide = async (entry: TalentHuntApplication, decision: "APPROVE" | "REJECT") => {
+  const decide = async (entry: TalentHuntApplication, decision: "APPROVE" | "REJECT" | "CORRECTION_REQUESTED" | "UNDER_REVIEW") => {
     const reason =
-      decision === "REJECT"
+      decision === "REJECT" || decision === "CORRECTION_REQUESTED"
         ? window.prompt("Reason for rejecting this entry:", entry.review_reason || "") || ""
         : "";
 
-    if (decision === "REJECT" && !reason.trim()) {
+    if ((decision === "REJECT" || decision === "CORRECTION_REQUESTED") && !reason.trim()) {
       toast.error("Add a reason before rejecting an entry.");
       return;
     }
@@ -71,7 +71,7 @@ function CreativeTalentHuntReviewPage() {
     try {
       await reviewCreativeTalentHuntApplication(entry.id, decision, reason.trim());
       setEntries((current) => current.filter((item) => item.id !== entry.id));
-      toast.success(decision === "APPROVE" ? "Entry approved." : "Entry rejected.");
+      toast.success(decision === "APPROVE" ? "Entry approved." : decision === "REJECT" ? "Entry rejected." : decision === "CORRECTION_REQUESTED" ? "Correction requested." : "Entry moved to review.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not update this entry.");
     } finally {
@@ -194,6 +194,20 @@ function CreativeTalentHuntReviewPage() {
                     <div className="flex shrink-0 flex-wrap gap-3">
                       <Button variant="outline" onClick={() => void openDetail(entry.id)} disabled={workingId === entry.id}>
                         View full entry
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => void decide(entry, "UNDER_REVIEW")}
+                        disabled={workingId === entry.id}
+                      >
+                        Review
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => void decide(entry, "CORRECTION_REQUESTED")}
+                        disabled={workingId === entry.id}
+                      >
+                        Request correction
                       </Button>
                       <Button
                         onClick={() => void decide(entry, "APPROVE")}
