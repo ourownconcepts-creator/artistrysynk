@@ -65,7 +65,7 @@ function CreativeTalentHuntPage() {
                 Enter the Talent Hunt
               </Link>
               <Link
-                to="/talent"
+                to="/creative-talent-hunt/contestants"
                 className="rounded-full border px-6 py-3 text-sm font-semibold"
               >
                 Explore Talent
