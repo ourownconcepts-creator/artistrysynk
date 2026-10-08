@@ -6161,6 +6161,27 @@ export type Database = {
       creative_talent_hunt_suspicious_votes: { Args: { p_round_id: string }; Returns: Json }
       creative_talent_hunt_void_votes: { Args: { p_application_id?: string | null; p_reason: string; p_vote_ids?: string[] | null; p_voter_id?: string | null }; Returns: Json }
       set_creative_talent_hunt_voting_window: { Args: { p_closes_at?: string | null; p_opens_at?: string | null }; Returns: Json }
+      creative_talent_hunt_admin_judges: {
+        Args: Record<string, never>
+        Returns: {
+          id: string
+          user_id: string
+          display_name: string
+          bio: string
+          is_active: boolean
+          created_at: string
+          assigned_count: number
+          scored_count: number
+        }[]
+      }
+      appoint_creative_talent_hunt_judge: {
+        Args: { p_user_id: string; p_display_name: string; p_bio?: string }
+        Returns: Json
+      }
+      set_creative_talent_hunt_judge_active: {
+        Args: { p_judge_id: string; p_active: boolean }
+        Returns: Json
+      }
       close_creative_talent_hunt_voting: { Args: never; Returns: Json }
       save_creative_talent_hunt_scores: { Args: { p_assignment_id: string; p_scores: Json }; Returns: Json }
       get_creative_talent_hunt_results: { Args: { p_round_id: string }; Returns: Json }
