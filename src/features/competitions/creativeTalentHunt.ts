@@ -6,7 +6,7 @@ export const ARTISTRYSYNK_CREATIVE_TALENT_HUNT: Competition = {
   slug: "creative-talent-hunt",
   domain: "CREATIVE",
   type: "TALENT_HUNT",
-  status: "DRAFT",
+  status: "REGISTRATION_OPEN",
   description:
     "A discovery-first competition for emerging creatives across music, performance, visual arts, digital creativity and more.",
 };
