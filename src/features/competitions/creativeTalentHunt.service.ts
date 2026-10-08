@@ -163,3 +163,17 @@ export async function updateCreativeTalentHuntApplication(
   if (error) throw error;
   return data;
 }
+
+
+export async function listPublicCreativeTalentHuntEntries() {
+  const competitionId = await getCompetitionId();
+  const { data, error } = await competitionClient
+    .from("competition_applications")
+    .select("id, handle, display_name, location, bio, audition_url, status, category_id, is_public")
+    .eq("competition_id", competitionId)
+    .eq("is_public", true)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
