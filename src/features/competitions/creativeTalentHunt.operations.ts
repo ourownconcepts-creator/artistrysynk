@@ -107,3 +107,58 @@ export async function saveCreativeTalentHuntScores(
   if (error) throw error;
   return data;
 }
+
+
+export type CreativeTalentHuntJudge = {
+  id: string;
+  user_id: string;
+  display_name: string;
+  bio: string;
+  is_active: boolean;
+  created_at: string;
+  assigned_count: number;
+  scored_count: number;
+};
+
+export async function listCreativeTalentHuntJudges() {
+  const { data, error } = await supabase.rpc("creative_talent_hunt_admin_judges");
+  if (error) throw error;
+  return (data ?? []) as CreativeTalentHuntJudge[];
+}
+
+export async function appointCreativeTalentHuntJudge(
+  userId: string,
+  displayName: string,
+  bio = "",
+) {
+  const { data, error } = await supabase.rpc("appoint_creative_talent_hunt_judge", {
+    p_user_id: userId,
+    p_display_name: displayName,
+    p_bio: bio,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function setCreativeTalentHuntJudgeActive(judgeId: string, active: boolean) {
+  const { data, error } = await supabase.rpc("set_creative_talent_hunt_judge_active", {
+    p_judge_id: judgeId,
+    p_active: active,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function assignCreativeTalentHuntJudge(
+  judgeId: string,
+  applicationId: string,
+  roundId: string,
+) {
+  const { data, error } = await supabase.rpc("assign_creative_talent_hunt_judge", {
+    p_judge_id: judgeId,
+    p_application_id: applicationId,
+    p_round_id: roundId,
+  });
+  if (error) throw error;
+  return data;
+}
