@@ -31,3 +31,41 @@ export async function decideCreativeTalentHuntRound(
   if (error) throw error;
   return data;
 }
+
+
+export async function getCreativeTalentHuntRoundProgress(roundId: string) {
+  const { data, error } = await supabase.rpc("creative_talent_hunt_round_progress", {
+    p_round_id: roundId,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function setCreativeTalentHuntRoundStatus(
+  roundId: string,
+  status: string,
+  options?: { override?: boolean; reason?: string },
+) {
+  const { data, error } = await supabase.rpc("set_creative_talent_hunt_round_status", {
+    p_round_id: roundId,
+    p_status: status,
+    p_override: options?.override ?? false,
+    p_reason: options?.reason ?? "",
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function correctCreativeTalentHuntScore(
+  scoreId: string,
+  value: number,
+  reason: string,
+) {
+  const { data, error } = await supabase.rpc("creative_talent_hunt_correct_score", {
+    p_score_id: scoreId,
+    p_value: value,
+    p_reason: reason,
+  });
+  if (error) throw error;
+  return data;
+}
