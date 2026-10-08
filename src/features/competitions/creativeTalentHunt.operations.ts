@@ -35,14 +35,21 @@ export type JudgeQueueEntry = {
   scored_criteria?: number;
 };
 
-export async function listCreativeTalentHuntJudgeAssignments(judgeUserId: string) {
-  const { data, error } = await supabase
-    .from("competition_judge_assignments")
-    .select("id,judge_id,application_id,round_id,status,assigned_at")
-    .eq("judge_id", judgeUserId)
-    .order("assigned_at", { ascending: false });
+export async function listCreativeTalentHuntJudgeAssignments(_judgeUserId: string) {
+  // Judge IDs are database records, not auth user IDs. Use the secured queue RPC
+  // rather than exposing assignment rows directly to a caller.
+  const { data, error } = await supabase.rpc("creative_talent_hunt_judge_queue", {
+    p_judge_id: null,
+  });
   if (error) throw error;
-  return (data ?? []) as JudgeAssignment[];
+  return ((data ?? []) as any[]).map((row) => ({
+    id: row.assignment_id,
+    judge_id: "",
+    application_id: row.application_id,
+    round_id: row.round_id,
+    status: row.status ?? "",
+    assigned_at: row.assigned_at ?? "",
+  })) as JudgeAssignment[];
 }
 
 export async function listCreativeTalentHuntJudgeQueue(judgeUserId: string) {
