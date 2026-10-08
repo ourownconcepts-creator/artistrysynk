@@ -31,6 +31,8 @@ export type JudgeQueueEntry = {
   audition_url: string;
   round_name: string;
   assignment_status: string;
+  criteria_count?: number;
+  scored_criteria?: number;
 };
 
 export async function listCreativeTalentHuntJudgeAssignments(judgeUserId: string) {
@@ -44,37 +46,30 @@ export async function listCreativeTalentHuntJudgeAssignments(judgeUserId: string
 }
 
 export async function listCreativeTalentHuntJudgeQueue(judgeUserId: string) {
-  const { data: judge, error: judgeError } = await supabase
-    .from("competition_judges")
-    .select("id")
-    .eq("user_id", judgeUserId)
-    .eq("is_active", true)
-    .maybeSingle();
-  if (judgeError) throw judgeError;
-  if (!judge) return [] as JudgeQueueEntry[];
-
-  const { data, error } = await supabase
-    .from("competition_judge_assignments")
-    .select(
-      "id,application_id,round_id,status,competition_applications(display_name,handle,bio,audition_url,competition_categories(name)),competition_rounds(name)",
-    )
-    .eq("judge_id", judge.id)
-    .eq("status", "ASSIGNED")
-    .order("assigned_at", { ascending: true });
+  const { data, error } = await supabase.rpc("creative_talent_hunt_judge_queue", { p_judge_id: null });
   if (error) throw error;
-
   return ((data ?? []) as any[]).map((row) => ({
-    assignment_id: row.id,
+    assignment_id: row.assignment_id,
     application_id: row.application_id,
     round_id: row.round_id,
-    display_name: row.competition_applications?.display_name ?? "",
-    handle: row.competition_applications?.handle ?? "",
-    category_name: row.competition_applications?.competition_categories?.name ?? "",
-    bio: row.competition_applications?.bio ?? "",
-    audition_url: row.competition_applications?.audition_url ?? "",
-    round_name: row.competition_rounds?.name ?? "",
-    assignment_status: row.status,
-  })) satisfies JudgeQueueEntry[];
+    display_name: row.display_name ?? "",
+    handle: row.handle ?? "",
+    category_name: row.category_name ?? "",
+    bio: row.bio ?? "",
+    audition_url: row.audition_url ?? "",
+    round_name: row.round_name ?? "",
+    assignment_status: row.status ?? "",
+    criteria_count: Number(row.criteria_count ?? 0),
+    scored_criteria: Number(row.scored_criteria ?? 0),
+  })) as JudgeQueueEntry[];
+}
+
+export async function finalizeCreativeTalentHuntScores(assignmentId: string) {
+  const { data, error } = await supabase.rpc("finalize_creative_talent_hunt_scores", {
+    p_assignment_id: assignmentId,
+  });
+  if (error) throw error;
+  return data;
 }
 
 export async function listCreativeTalentHuntCriteria(roundId: string) {
