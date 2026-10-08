@@ -59,8 +59,14 @@ function CreativeTalentHuntPage() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                to="/talent"
+                to="/creative-talent-hunt/enter"
                 className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
+              >
+                Enter the Talent Hunt
+              </Link>
+              <Link
+                to="/talent"
+                className="rounded-full border px-6 py-3 text-sm font-semibold"
               >
                 Explore Talent
               </Link>
