@@ -21,7 +21,12 @@ function LeaderboardPage() {
       const { data, error } = await supabase
         .from("competition_rounds")
         .select("id,name,status,public_voting_enabled,scoring_enabled,sequence")
-        .eq("competition_id", "00000000-0000-0000-0000-000000000000")
+        .eq("competition_id", (await supabase
+          .from("competition_competitions")
+          .select("id")
+          .eq("slug", "creative-talent-hunt")
+          .single()).data?.id ?? "")
+        .order("sequence", { ascending: true })
         .limit(1);
       if (error) throw error;
       return data?.[0] ?? null;
