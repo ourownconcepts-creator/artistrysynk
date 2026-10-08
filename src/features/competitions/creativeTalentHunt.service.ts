@@ -38,7 +38,33 @@ type CompetitionDatabase = {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      get_public_creative_talent_hunt_entries: {
+        Args: Record<string, never>;
+        Returns: Array<{
+          id: string;
+          handle: string;
+          display_name: string;
+          location: string;
+          bio: string;
+          audition_url: string;
+          status: string;
+          category_id: string;
+          category_name: string;
+        }>;
+      };
+      submit_creative_talent_hunt_application: {
+        Args: { p_application_id: string; p_publish_publicly?: boolean };
+        Returns: {
+          application_id: string;
+          submission_id: string;
+          reference_code: string;
+          submission_state: string;
+          status: string;
+          is_public: boolean;
+        };
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
@@ -165,15 +191,28 @@ export async function updateCreativeTalentHuntApplication(
 }
 
 
-export async function listPublicCreativeTalentHuntEntries() {
-  const competitionId = await getCompetitionId();
-  const { data, error } = await competitionClient
-    .from("competition_applications")
-    .select("id, handle, display_name, location, bio, audition_url, status, category_id, is_public")
-    .eq("competition_id", competitionId)
-    .eq("is_public", true)
-    .order("created_at", { ascending: false });
+export async function submitCreativeTalentHuntApplication(
+  applicationId: string,
+  publishPublicly: boolean,
+) {
+  const { data, error } = await competitionClient.rpc(
+    "submit_creative_talent_hunt_application",
+    {
+      p_application_id: applicationId,
+      p_publish_publicly: publishPublicly,
+    },
+  );
 
   if (error) throw error;
   return data;
+}
+
+export async function listPublicCreativeTalentHuntEntries() {
+  const { data, error } = await competitionClient.rpc(
+    "get_public_creative_talent_hunt_entries",
+    {},
+  );
+
+  if (error) throw error;
+  return data ?? [];
 }
