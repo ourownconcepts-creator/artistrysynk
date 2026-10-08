@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { getTalentHuntAdminSnapshot, setTalentHuntRoundStatus, setTalentHuntStatus, getTalentHuntVotingSummary, getTalentHuntVoteTotals, getTalentHuntSuspiciousVotes, voidTalentHuntVotes, setTalentHuntVotingWindow, closeTalentHuntVoting } from "@/features/competitions/creativeTalentHunt.admin";
@@ -18,6 +18,12 @@ function OperationsPage() {
   const [closesAt, setClosesAt] = useState("");
   const client = useQueryClient();
   const snapshot = useQuery({ queryKey: ["talent-hunt-admin-snapshot"], queryFn: getTalentHuntAdminSnapshot, enabled: Boolean(user) });
+  useEffect(() => {
+    const competition = snapshot.data?.competition;
+    if (!competition) return;
+    setOpensAt(competition.voting_opens_at ? new Date(competition.voting_opens_at).toISOString().slice(0, 16) : "");
+    setClosesAt(competition.voting_closes_at ? new Date(competition.voting_closes_at).toISOString().slice(0, 16) : "");
+  }, [snapshot.data?.competition?.voting_opens_at, snapshot.data?.competition?.voting_closes_at]);
 
   const statusMutation = useMutation({
     mutationFn: (status: string) => setTalentHuntStatus(status),
@@ -106,7 +112,16 @@ function OperationsPage() {
           </label>
         </div>
         <div className="mt-4 flex flex-wrap gap-3">
-          <Button onClick={() => windowMutation.mutate({ opensAt: opensAt ? new Date(opensAt).toISOString() : null, closesAt: closesAt ? new Date(closesAt).toISOString() : null })} disabled={windowMutation.isPending}>
+          <Button onClick={() => {
+            if (opensAt && closesAt && new Date(opensAt) >= new Date(closesAt)) {
+              toast.error("Voting must close after it opens.");
+              return;
+            }
+            windowMutation.mutate({
+              opensAt: opensAt ? new Date(opensAt).toISOString() : null,
+              closesAt: closesAt ? new Date(closesAt).toISOString() : null,
+            });
+          }} disabled={windowMutation.isPending}>
             Save voting window
           </Button>
           <Button variant="outline" onClick={() => votingMutation.mutate()} disabled={votingMutation.isPending}>Close voting now</Button>
