@@ -27,6 +27,7 @@ type Entry = {
   status: string;
   category_id: string;
   is_public: boolean;
+  category_name: string;
 };
 
 function ContestantsPage() {
@@ -104,7 +105,7 @@ function ContestantsPage() {
                       <h2 className="mt-1 text-xl font-bold">{entry.display_name}</h2>
                     </div>
                     <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
-                      Creator
+                      {entry.category_name || "Creative"}
                     </span>
                   </div>
                   {entry.location && (
