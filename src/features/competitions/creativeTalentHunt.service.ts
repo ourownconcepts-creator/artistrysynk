@@ -274,3 +274,20 @@ export async function getTalentHuntAdminEntryDetail(applicationId: string) {
   if (error) throw error;
   return data;
 }
+
+
+export async function reviewCreativeTalentHuntSubmission(
+  applicationId: string,
+  state: "PENDING_REVIEW" | "APPROVED" | "REJECTED" | "REVISION_REQUESTED",
+  reason = "",
+  publish = false,
+) {
+  const { data, error } = await supabase.rpc("review_creative_talent_hunt_submission", {
+    p_application_id: applicationId,
+    p_state: state,
+    p_reason: reason,
+    p_publish: publish,
+  });
+  if (error) throw error;
+  return data;
+}
