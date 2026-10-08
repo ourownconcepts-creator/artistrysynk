@@ -1,6 +1,3 @@
--- ArtistrySynk Competition Platform foundation
--- Creative Talent Hunt is the first domain adapter. Future sports/gaming competitions
--- can reuse these tables without adding domain-specific columns.
 create extension if not exists pgcrypto;
 create table if not exists public.competition_competitions (id uuid primary key default gen_random_uuid(), slug text not null unique, name text not null, domain text not null default 'CREATIVE', type text not null default 'TALENT_HUNT', status text not null default 'DRAFT', description text not null default '', registration_starts_at timestamptz, registration_ends_at timestamptz, voting_starts_at timestamptz, voting_ends_at timestamptz, config jsonb not null default '{}'::jsonb, created_at timestamptz not null default now(), updated_at timestamptz not null default now(), constraint competition_competitions_domain_check check (domain in ('CREATIVE','SPORTS','GAMING','OTHER')), constraint competition_competitions_status_check check (status in ('DRAFT','REGISTRATION_OPEN','REGISTRATION_CLOSED','IN_PROGRESS','VOTING_OPEN','COMPLETED','ARCHIVED')));
 create table if not exists public.competition_categories (id uuid primary key default gen_random_uuid(), competition_id uuid not null references public.competition_competitions(id) on delete cascade, name text not null, slug text not null, description text not null default '', sort_order integer not null default 0, is_active boolean not null default true, created_at timestamptz not null default now(), unique (competition_id, slug));
@@ -23,6 +20,12 @@ create index if not exists idx_competition_applications_status on public.competi
 create index if not exists idx_competition_submissions_application on public.competition_submissions(application_id);
 create index if not exists idx_competition_submissions_round on public.competition_submissions(round_id);
 create index if not exists idx_competition_votes_round_application on public.competition_votes(round_id, application_id);
+-- Compatibility: Data API grants (not granted by default)
+grant select on public.competition_competitions, public.competition_categories, public.competition_rounds, public.competition_announcements to anon, authenticated;
+grant select, insert, update on public.competition_applications to authenticated;
+grant select, insert, update on public.competition_submissions to authenticated;
+grant select, insert on public.competition_votes to authenticated;
+grant all on public.competition_competitions, public.competition_categories, public.competition_rounds, public.competition_applications, public.competition_submissions, public.competition_judges, public.competition_judge_assignments, public.competition_scoring_criteria, public.competition_scores, public.competition_votes, public.competition_announcements, public.competition_audit_logs to service_role;
 alter table public.competition_competitions enable row level security;
 alter table public.competition_categories enable row level security;
 alter table public.competition_rounds enable row level security;
@@ -35,17 +38,29 @@ alter table public.competition_scores enable row level security;
 alter table public.competition_votes enable row level security;
 alter table public.competition_announcements enable row level security;
 alter table public.competition_audit_logs enable row level security;
+drop policy if exists "Public can view published competitions" on public.competition_competitions;
 create policy "Public can view published competitions" on public.competition_competitions for select using (status <> 'DRAFT');
+drop policy if exists "Public can view active competition categories" on public.competition_categories;
 create policy "Public can view active competition categories" on public.competition_categories for select using (is_active = true);
+drop policy if exists "Public can view competition rounds" on public.competition_rounds;
 create policy "Public can view competition rounds" on public.competition_rounds for select using (true);
+drop policy if exists "Public can view published announcements" on public.competition_announcements;
 create policy "Public can view published announcements" on public.competition_announcements for select using (is_published = true and audience = 'PUBLIC');
+drop policy if exists "Users can view their competition applications" on public.competition_applications;
 create policy "Users can view their competition applications" on public.competition_applications for select using (auth.uid() = user_id or is_public = true);
+drop policy if exists "Users can create their competition applications" on public.competition_applications;
 create policy "Users can create their competition applications" on public.competition_applications for insert with check (auth.uid() = user_id);
+drop policy if exists "Users can update their competition applications" on public.competition_applications;
 create policy "Users can update their competition applications" on public.competition_applications for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+drop policy if exists "Users can view their submissions" on public.competition_submissions;
 create policy "Users can view their submissions" on public.competition_submissions for select using (exists (select 1 from public.competition_applications a where a.id = application_id and (a.user_id = auth.uid() or a.is_public = true)));
+drop policy if exists "Users can create their submissions" on public.competition_submissions;
 create policy "Users can create their submissions" on public.competition_submissions for insert with check (exists (select 1 from public.competition_applications a where a.id = application_id and a.user_id = auth.uid()));
+drop policy if exists "Users can update their submissions" on public.competition_submissions;
 create policy "Users can update their submissions" on public.competition_submissions for update using (exists (select 1 from public.competition_applications a where a.id = application_id and a.user_id = auth.uid()));
+drop policy if exists "Authenticated users can vote" on public.competition_votes;
 create policy "Authenticated users can vote" on public.competition_votes for insert with check (auth.uid() = voter_user_id);
+drop policy if exists "Users can view their votes" on public.competition_votes;
 create policy "Users can view their votes" on public.competition_votes for select using (auth.uid() = voter_user_id);
 insert into public.competition_competitions (slug,name,domain,type,status,description,config) values ('creative-talent-hunt','ArtistrySynk Creative Talent Hunt','CREATIVE','TALENT_HUNT','REGISTRATION_OPEN','A discovery-first competition for emerging creatives across music, performance, visual arts, digital creativity and more.','{"identity":"artistrysynk","age_min":18,"voting_mode":"AUTHENTICATED_PUBLIC"}'::jsonb) on conflict (slug) do update set name=excluded.name,domain=excluded.domain,type=excluded.type,description=excluded.description,config=excluded.config,updated_at=now();
 insert into public.competition_categories (competition_id,name,slug,sort_order) select c.id,v.name,v.slug,v.sort_order from public.competition_competitions c cross join (values ('Music','music',1),('Performance','performance',2),('Visual Arts','visual-arts',3),('Film & Photography','film-photography',4),('Fashion & Style','fashion-style',5),('Digital & Tech','digital-tech',6),('Writing & Storytelling','writing-storytelling',7),('Content Creation','content-creation',8),('Other Creative Talent','other',9)) v(name,slug,sort_order) where c.slug='creative-talent-hunt' on conflict (competition_id,slug) do update set name=excluded.name,sort_order=excluded.sort_order;
