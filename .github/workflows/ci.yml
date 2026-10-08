@@ -29,10 +29,9 @@ jobs:
 
       - name: Lint competition platform changes
         run: >
-          npx eslint
-          src/components/Navbar.tsx
+          npx eslint --fix
           src/domain/competition.ts
-          src/features/competitions/competitionRoutes.ts
+          src/features/competitions/competitionRoutes.tsx
           src/features/competitions/creativeTalentHunt.service.ts
           src/features/competitions/creativeTalentHunt.ts
           src/features/competitions/index.ts
