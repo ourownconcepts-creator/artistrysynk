@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { castCreativeTalentHuntVote } from "@/features/competitions/creativeTalentHunt.service";
+import { useSession } from "@/hooks/useSession";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/creative-talent-hunt/contestants/$handle")({
@@ -15,6 +18,7 @@ export const Route = createFileRoute("/creative-talent-hunt/contestants/$handle"
 
 function ContestantProfilePage() {
   const { handle } = Route.useParams();
+  const { user } = useSession();
   const profile = useQuery({
     queryKey: ["creative-talent-hunt-profile", handle],
     queryFn: async () => {
@@ -27,6 +31,8 @@ function ContestantProfilePage() {
   });
 
   if (profile.isLoading) return <main className="mx-auto max-w-3xl px-6 py-20 text-muted-foreground">Loading creator…</main>;
+
+  const voteMutation = useMutation({ mutationFn: () => castCreativeTalentHuntVote(profile.data?.id ?? ""), onSuccess: () => toast.success("Your vote has been recorded."), onError: (e) => toast.error(e instanceof Error ? e.message : "Could not record your vote.") });
 
   if (!profile.data) {
     return (
@@ -53,7 +59,7 @@ function ContestantProfilePage() {
           </section>
         )}
         <div className="mt-8 flex flex-wrap gap-3">
-          {profile.data.audition_url && <Button asChild><a href={profile.data.audition_url} target="_blank" rel="noreferrer">View their work</a></Button>}
+          {profile.data.audition_url && <Button disabled={!user || voteMutation.isPending} onClick={() => voteMutation.mutate()}>{voteMutation.isPending ? "Voting…" : user ? "Vote for this creator" : "Sign in to vote"}</Button>\n          {profile.data.audition_url && <Button asChild><a href={profile.data.audition_url} target="_blank" rel="noreferrer">View their work</a></Button>}
           <Button asChild variant="outline"><Link to="/creative-talent-hunt/enter">Enter the Hunt</Link></Button>
         </div>
       </div>
