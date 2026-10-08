@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTransition } from "@/components/layout/PageTransition";
 import {
-  listCreativeTalentHuntReviewQueue,\n  getTalentHuntAdminEntryDetail,
+  listCreativeTalentHuntReviewQueue,
+  getTalentHuntAdminEntryDetail,
   reviewCreativeTalentHuntApplication,
   type TalentHuntApplication,
 } from "@/features/competitions/creativeTalentHunt.service";
@@ -24,7 +25,9 @@ function CreativeTalentHuntReviewPage() {
   const [loading, setLoading] = useState(true);
   const [allowed, setAllowed] = useState(false);
   const [entries, setEntries] = useState<TalentHuntApplication[]>([]);
-  const [workingId, setWorkingId] = useState("");\n  const [detailId, setDetailId] = useState<string | null>(null);\n  const [detail, setDetail] = useState<any>(null);
+  const [workingId, setWorkingId] = useState("");
+  const [detailId, setDetailId] = useState<string | null>(null);
+  const [detail, setDetail] = useState<any>(null);
 
   const loadQueue = async () => {
     const data = await listCreativeTalentHuntReviewQueue();
