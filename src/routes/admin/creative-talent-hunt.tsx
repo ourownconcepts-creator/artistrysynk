@@ -37,19 +37,8 @@ function CreativeTalentHuntReviewPage() {
         const { data } = await supabase.auth.getSession();
         if (!data.session) return;
 
-        const userId = data.session.user.id;
-        const roles = await Promise.all([
-          supabase.rpc("has_role", { _role: "admin", _user_id: userId }),
-          supabase.rpc("has_role", { _role: "master_admin", _user_id: userId }),
-          supabase.rpc("has_role", { _role: "super_admin", _user_id: userId }),
-        ]);
-
-        const isAllowed = roles.some(({ data: hasRole, error }) => !error && hasRole === true);
-        setAllowed(isAllowed);
-
-        if (isAllowed) {
-          await loadQueue();
-        }
+        await loadQueue();
+        setAllowed(true);
       } catch (error) {
         toast.error(error instanceof Error ? error.message : "Could not load the review queue.");
       } finally {
