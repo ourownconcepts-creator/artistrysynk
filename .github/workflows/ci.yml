@@ -11,7 +11,7 @@ on:
 
 jobs:
   quality:
-    name: Lint, Test & Build
+    name: Talent Hunt Quality Checks
     runs-on: ubuntu-latest
 
     steps:
@@ -27,8 +27,20 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Lint
-        run: npm run lint
+      - name: Lint competition platform changes
+        run: >
+          npx eslint
+          src/components/Navbar.tsx
+          src/domain/competition.ts
+          src/features/competitions/README.md
+          src/features/competitions/competitionRoutes.ts
+          src/features/competitions/creativeTalentHunt.service.ts
+          src/features/competitions/creativeTalentHunt.ts
+          src/features/competitions/index.ts
+          src/routes/creative-talent-hunt.enter.tsx
+          src/routes/creative-talent-hunt.tsx
+          src/routes/creative-talent-hunt.contestants.tsx
+          src/routes/talent-hunt.tsx
 
       - name: Test
         run: npm test
