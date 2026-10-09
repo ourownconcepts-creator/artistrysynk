@@ -6212,6 +6212,7 @@ export type Database = {
       }
       creative_talent_hunt_list_score_corrections: { Args: never; Returns: Json }
       creative_talent_hunt_round_results_detail: { Args: { p_round_id: string }; Returns: Json }
+      creative_talent_hunt_score_details: { Args: { p_round_id: string }; Returns: Json }
       creative_talent_hunt_judge_dashboard: { Args: { p_judge_id?: string | null }; Returns: Json }
       creative_talent_hunt_admin_accounts: { Args: never; Returns: Json }
       admin_cth_assign_judge: {
