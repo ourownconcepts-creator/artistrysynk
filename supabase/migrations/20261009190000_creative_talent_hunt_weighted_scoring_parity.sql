@@ -43,12 +43,12 @@ begin
   if coalesce(v_config->>'judge_weight', '') ~ '^[0-9]+([.][0-9]+)?$' then
     v_judge_weight := (v_config->>'judge_weight')::numeric;
   end if;
-  if coalesce(v_config->>'public_weight', '') ~ '^[0-9]+([.][0-9]+)?$' then
-    v_public_weight := (v_config->>'public_weight')::numeric;
+  if coalesce(v_config->>'public_vote_weight', '') ~ '^[0-9]+([.][0-9]+)?$' then
+    v_public_weight := (v_config->>'public_vote_weight')::numeric;
   end if;
 
-  v_weights_valid := v_judge_weight between 0 and 100
-    and v_public_weight between 0 and 100
+  v_weights_valid := v_judge_weight >= 0
+    and v_public_weight >= 0
     and (v_judge_weight + v_public_weight) > 0;
 
   return query
@@ -93,9 +93,9 @@ begin
     coalesce(v.total, 0),
     case when v_weights_valid then
       round(
-        coalesce(j.score, 0) * (v_judge_weight / 100.0)
-        + (coalesce(v.total, 0)::numeric / vs.max_votes * 100)
-          * (v_public_weight / 100.0),
+        (coalesce(j.score, 0) * v_judge_weight
+          + (coalesce(v.total, 0)::numeric / vs.max_votes * 100) * v_public_weight)
+          / nullif(v_judge_weight + v_public_weight, 0),
         2
       )
     else null end
@@ -145,12 +145,12 @@ begin
   if coalesce(v_config->>'judge_weight', '') ~ '^[0-9]+([.][0-9]+)?$' then
     v_judge_weight := (v_config->>'judge_weight')::numeric;
   end if;
-  if coalesce(v_config->>'public_weight', '') ~ '^[0-9]+([.][0-9]+)?$' then
-    v_public_weight := (v_config->>'public_weight')::numeric;
+  if coalesce(v_config->>'public_vote_weight', '') ~ '^[0-9]+([.][0-9]+)?$' then
+    v_public_weight := (v_config->>'public_vote_weight')::numeric;
   end if;
 
-  v_weights_valid := v_judge_weight between 0 and 100
-    and v_public_weight between 0 and 100
+  v_weights_valid := v_judge_weight >= 0
+    and v_public_weight >= 0
     and (v_judge_weight + v_public_weight) > 0;
 
   return query
@@ -196,9 +196,9 @@ begin
     coalesce(v.total, 0),
     case when v_weights_valid then
       round(
-        coalesce(j.score, 0) * (v_judge_weight / 100.0)
-        + (coalesce(v.total, 0)::numeric / vs.max_votes * 100)
-          * (v_public_weight / 100.0),
+        (coalesce(j.score, 0) * v_judge_weight
+          + (coalesce(v.total, 0)::numeric / vs.max_votes * 100) * v_public_weight)
+          / nullif(v_judge_weight + v_public_weight, 0),
         2
       )
     else null end
