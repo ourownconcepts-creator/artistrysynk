@@ -1,5 +1,6 @@
 -- Creative Talent Hunt: restore source-compatible weighted scoring.
--- Weights are read from competition_competitions.config; no default ratio is invented.
+-- Weights are read from competition_competitions.config; only missing keys are backfilled
+-- from the destination's already-established judge-only defaults (1:0).
 -- When weights are absent/invalid, combined_score is NULL so the UI cannot present
 -- an unconfigured score as an authoritative ranking.
 
