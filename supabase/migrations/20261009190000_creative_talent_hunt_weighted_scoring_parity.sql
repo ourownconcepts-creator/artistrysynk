@@ -40,6 +40,11 @@ begin
     return;
   end if;
 
+  v_leaderboard_published := coalesce((v_config->>'leaderboard_published')::boolean, false);
+  if not v_leaderboard_published then
+    return;
+  end if;
+
   if coalesce(v_config->>'judge_weight', '') ~ '^[0-9]+([.][0-9]+)?$' then
     v_judge_weight := (v_config->>'judge_weight')::numeric;
   end if;
@@ -129,6 +134,7 @@ declare
   v_config jsonb;
   v_judge_weight numeric;
   v_public_weight numeric;
+  v_leaderboard_published boolean := false;
   v_weights_valid boolean := false;
 begin
   select c.id, c.config
