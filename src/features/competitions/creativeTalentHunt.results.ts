@@ -69,3 +69,25 @@ export async function correctCreativeTalentHuntScore(
   if (error) throw error;
   return data;
 }
+
+export type CreativeTalentHuntScoreCorrection = {
+  id: string;
+  score_id: string;
+  actor_user_id: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};
+
+export async function listCreativeTalentHuntScoreCorrections() {
+  const { data, error } = await supabase.rpc("creative_talent_hunt_list_score_corrections");
+  if (error) throw error;
+  return (data ?? []) as unknown as CreativeTalentHuntScoreCorrection[];
+}
+
+export async function getCreativeTalentHuntJudgeDashboard(judgeId?: string) {
+  const { data, error } = await supabase.rpc("creative_talent_hunt_judge_dashboard", {
+    p_judge_id: judgeId ?? null,
+  });
+  if (error) throw error;
+  return data as { assignments: number; scored: number; pending: number };
+}
