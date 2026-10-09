@@ -6155,7 +6155,6 @@ export type Database = {
     Functions: {
       creative_talent_hunt_admin_snapshot: { Args: never; Returns: Json }
       set_creative_talent_hunt_status: { Args: { p_status: string }; Returns: Json }
-      set_creative_talent_hunt_round_status: { Args: { p_round_id: string; p_status: string }; Returns: Json }
       creative_talent_hunt_admin_voting_summary: { Args: { p_round_id: string }; Returns: Json }
       creative_talent_hunt_vote_totals: { Args: { p_round_id: string }; Returns: Json }
       creative_talent_hunt_suspicious_votes: { Args: { p_round_id: string }; Returns: Json }
@@ -6204,12 +6203,17 @@ export type Database = {
       creative_talent_hunt_admin_applications: { Args: { p_status?: string | null }; Returns: Json }
       creative_talent_hunt_admin_entry_detail: { Args: { p_application_id: string }; Returns: Json }
       decide_creative_talent_hunt_round: { Args: { p_application_id: string; p_outcome: string; p_reason?: string }; Returns: Json }
-      creative_talent_hunt_admin_judges: { Args: never; Returns: Json }
-      appoint_creative_talent_hunt_judge: { Args: { p_bio?: string; p_display_name: string; p_user_id: string }; Returns: Json }
-      set_creative_talent_hunt_judge_active: { Args: { p_active: boolean; p_judge_id: string }; Returns: Json }
       assign_creative_talent_hunt_judge: { Args: { p_application_id: string; p_judge_id: string; p_round_id: string }; Returns: Json }
       finalize_creative_talent_hunt_scores: { Args: { p_assignment_id: string }; Returns: Json }
       creative_talent_hunt_judge_queue: { Args: { p_judge_id?: string | null }; Returns: Json }
+      creative_talent_hunt_set_application_state: {
+        Args: { p_application_id: string; p_state: string; p_reason?: string }
+        Returns: Json
+      }
+      creative_talent_hunt_list_score_corrections: { Args: never; Returns: Json }
+      creative_talent_hunt_round_results_detail: { Args: { p_round_id: string }; Returns: Json }
+      creative_talent_hunt_judge_dashboard: { Args: { p_judge_id?: string | null }; Returns: Json }
+      creative_talent_hunt_admin_accounts: { Args: never; Returns: Json }
       admin_cth_assign_judge: {
         Args: { p_application_id: string; p_judge_id: string }
         Returns: string
