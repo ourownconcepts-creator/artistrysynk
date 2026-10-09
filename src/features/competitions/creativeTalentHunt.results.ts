@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type CreativeTalentHuntResult = {
   application_id: string; handle: string; display_name: string; category_name: string;
-  progress_state: string; judge_score: number; public_votes: number; combined_score: number;
+  progress_state: string; judge_score: number; public_votes: number; combined_score: number | null;
 };
 
 export async function listCreativeTalentHuntResults(roundId: string, options?: { public?: boolean }) {
