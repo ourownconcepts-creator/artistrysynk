@@ -27,7 +27,7 @@ function CreativeTalentHuntReviewPage() {
   const [allowed, setAllowed] = useState(false);
   const [entries, setEntries] = useState<TalentHuntApplication[]>([]);
   const [workingId, setWorkingId] = useState("");
-  const [publishSubmission, setPublishSubmission] = useState(false);
+  const [publishSubmissionForId, setPublishSubmissionForId] = useState("");
   const [detailId, setDetailId] = useState<string | null>(null);
   const [detail, setDetail] = useState<any>(null);
 
@@ -76,7 +76,7 @@ function CreativeTalentHuntReviewPage() {
           entry.id,
           "APPROVED",
           "",
-          publishSubmission,
+          publishSubmissionForId === entry.id,
         );
       } else if (decision === "REJECT") {
         await reviewCreativeTalentHuntSubmission(entry.id, "REJECTED", reason.trim());
@@ -90,6 +90,7 @@ function CreativeTalentHuntReviewPage() {
         await reviewCreativeTalentHuntApplication(entry.id, decision, reason.trim());
       }
       setEntries((current) => current.filter((item) => item.id !== entry.id));
+      setPublishSubmissionForId("");
       toast.success(decision === "APPROVE" ? "Entry approved." : decision === "REJECT" ? "Entry rejected." : decision === "CORRECTION_REQUESTED" ? "Correction requested." : "Entry moved to review.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not update this entry.");
@@ -214,8 +215,8 @@ function CreativeTalentHuntReviewPage() {
                       <label className="flex max-w-52 items-center gap-2 text-xs text-muted-foreground">
                         <input
                           type="checkbox"
-                          checked={publishSubmission}
-                          onChange={(event) => setPublishSubmission(event.target.checked)}
+                          checked={publishSubmissionForId === entry.id}
+                          onChange={(event) => setPublishSubmissionForId(event.target.checked ? entry.id : "")}
                           disabled={workingId === entry.id}
                         />
                         Publish approved work publicly
