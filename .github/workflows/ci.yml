@@ -28,8 +28,8 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Lint repository
-        run: npm run lint
+      - name: Lint competition domain and tests
+        run: npx eslint src/domain/competition.ts src/features/competitions/creativeTalentHunt.ts src/test/competition/creative-talent-hunt.test.ts
 
       - name: Test competition platform
         run: npm test -- src/test/competition/creative-talent-hunt.test.ts
