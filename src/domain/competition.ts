@@ -7,12 +7,26 @@
  */
 export type CompetitionDomain = "CREATIVE" | "SPORTS" | "GAMING" | "OTHER";
 export type CompetitionType =
-  | "TALENT_HUNT" | "TOURNAMENT" | "TRIAL" | "SHOWCASE" | "LEAGUE" | "CUSTOM";
+  | "TALENT_HUNT"
+  | "TOURNAMENT"
+  | "TRIAL"
+  | "SHOWCASE"
+  | "LEAGUE"
+  | "CUSTOM";
 export type CompetitionStatus =
-  | "DRAFT" | "REGISTRATION_OPEN" | "REGISTRATION_CLOSED" | "IN_PROGRESS"
-  | "VOTING_OPEN" | "COMPLETED" | "ARCHIVED";
+  | "DRAFT"
+  | "REGISTRATION_OPEN"
+  | "REGISTRATION_CLOSED"
+  | "IN_PROGRESS"
+  | "VOTING_OPEN"
+  | "COMPLETED"
+  | "ARCHIVED";
 export type CompetitionParticipantType =
-  | "USER" | "CREATIVE_PROFILE" | "ATHLETE_PROFILE" | "TEAM" | "ORGANIZATION";
+  | "USER"
+  | "CREATIVE_PROFILE"
+  | "ATHLETE_PROFILE"
+  | "TEAM"
+  | "ORGANIZATION";
 
 export interface Competition {
   id: string;
