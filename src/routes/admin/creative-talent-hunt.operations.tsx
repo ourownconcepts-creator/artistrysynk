@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { getTalentHuntAdminSnapshot, setTalentHuntRoundStatus, setTalentHuntStatus, getTalentHuntVotingSummary, getTalentHuntVoteTotals, getTalentHuntSuspiciousVotes, voidTalentHuntVotes, setTalentHuntVotingWindow, closeTalentHuntVoting } from "@/features/competitions/creativeTalentHunt.admin";
-import { listCreativeTalentHuntJudges, setCreativeTalentHuntJudgeActive } from "@/features/competitions/creativeTalentHunt.operations";
-import { getCreativeTalentHuntRoundProgress } from "@/features/competitions/creativeTalentHunt.results";
+import { listCreativeTalentHuntJudges, setCreativeTalentHuntJudgeActive, appointCreativeTalentHuntJudge, assignCreativeTalentHuntJudge, listCreativeTalentHuntAdminAccounts } from "@/features/competitions/creativeTalentHunt.operations";
+import { getCreativeTalentHuntRoundProgress, listCreativeTalentHuntScoreCorrections, decideCreativeTalentHuntRound } from "@/features/competitions/creativeTalentHunt.results";
+import { listTalentHuntAdminApplications } from "@/features/competitions/creativeTalentHunt.service";
 import { useSession } from "@/hooks/useSession";
 import { toast } from "sonner";
 
@@ -18,6 +19,15 @@ function OperationsPage() {
   const { user, ready } = useSession();
   const [opensAt, setOpensAt] = useState("");
   const [closesAt, setClosesAt] = useState("");
+  const [judgeUserId, setJudgeUserId] = useState("");
+  const [judgeName, setJudgeName] = useState("");
+  const [judgeBio, setJudgeBio] = useState("");
+  const [assignJudgeId, setAssignJudgeId] = useState("");
+  const [assignApplicationId, setAssignApplicationId] = useState("");
+  const [assignRoundId, setAssignRoundId] = useState("");
+  const [decisionApplicationId, setDecisionApplicationId] = useState("");
+  const [decisionOutcome, setDecisionOutcome] = useState<"ADVANCED" | "ELIMINATED" | "HELD">("ADVANCED");
+  const [decisionReason, setDecisionReason] = useState("");
   const client = useQueryClient();
   const snapshot = useQuery({ queryKey: ["talent-hunt-admin-snapshot"], queryFn: getTalentHuntAdminSnapshot, enabled: Boolean(user) });
   useEffect(() => {
@@ -35,6 +45,48 @@ function OperationsPage() {
 
   const activeRound = snapshot.data?.rounds.find((round) => round.status !== "CLOSED") ?? snapshot.data?.rounds.at(-1);
   const judges = useQuery({ queryKey: ["talent-hunt-judges"], queryFn: listCreativeTalentHuntJudges, enabled: Boolean(user) });
+  const adminAccounts = useQuery({ queryKey: ["talent-hunt-admin-accounts"], queryFn: listCreativeTalentHuntAdminAccounts, enabled: Boolean(user) });
+  const applications = useQuery({ queryKey: ["talent-hunt-admin-applications"], queryFn: () => listTalentHuntAdminApplications(), enabled: Boolean(user) });
+  const scoreCorrections = useQuery({ queryKey: ["talent-hunt-score-corrections"], queryFn: listCreativeTalentHuntScoreCorrections, enabled: Boolean(user) });
+  useEffect(() => {
+    if (!assignRoundId && snapshot.data?.rounds.length) setAssignRoundId(snapshot.data.rounds[0].id);
+  }, [assignRoundId, snapshot.data?.rounds]);
+  useEffect(() => {
+    if (!assignJudgeId && judges.data?.length) setAssignJudgeId(judges.data[0].id);
+  }, [assignJudgeId, judges.data]);
+  useEffect(() => {
+    if (!assignApplicationId && applications.data?.length) setAssignApplicationId(String((applications.data[0] as {id:string}).id));
+    if (!decisionApplicationId && applications.data?.length) setDecisionApplicationId(String((applications.data[0] as {id:string}).id));
+  }, [assignApplicationId, decisionApplicationId, applications.data]);
+  const appointMutation = useMutation({
+    mutationFn: () => {
+      if (!judgeUserId || !judgeName.trim()) throw new Error("Select an account and enter a judge display name.");
+      return appointCreativeTalentHuntJudge(judgeUserId, judgeName.trim(), judgeBio.trim());
+    },
+    onSuccess: () => {
+      toast.success("Judge appointed.");
+      setJudgeUserId(""); setJudgeName(""); setJudgeBio("");
+      void client.invalidateQueries({ queryKey: ["talent-hunt-judges"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not appoint judge."),
+  });
+  const assignMutation = useMutation({
+    mutationFn: () => {
+      if (!assignJudgeId || !assignApplicationId || !assignRoundId) throw new Error("Choose a judge, contestant and round.");
+      return assignCreativeTalentHuntJudge(assignJudgeId, assignApplicationId, assignRoundId);
+    },
+    onSuccess: () => { toast.success("Judge assignment created."); void client.invalidateQueries({ queryKey: ["talent-hunt-judges"] }); void client.invalidateQueries({ queryKey: ["creative-talent-hunt-judge-queue"] }); },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not assign judge."),
+  });
+  const decisionMutation = useMutation({
+    mutationFn: () => {
+      if (!decisionApplicationId) throw new Error("Choose a contestant.");
+      if ((decisionOutcome === "ELIMINATED" || decisionOutcome === "HELD") && !decisionReason.trim()) throw new Error("Add a reason for this decision.");
+      return decideCreativeTalentHuntRound(decisionApplicationId, decisionOutcome, decisionReason.trim());
+    },
+    onSuccess: () => { toast.success("Round decision recorded."); setDecisionReason(""); void client.invalidateQueries({ queryKey: ["talent-hunt-admin-applications"] }); void client.invalidateQueries({ queryKey: ["talent-hunt-admin-snapshot"] }); void client.invalidateQueries({ queryKey: ["talent-hunt-round-progress"] }); },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not record decision."),
+  });
   const roundProgress = useQuery({ queryKey: ["talent-hunt-round-progress", activeRound?.id], queryFn: () => getCreativeTalentHuntRoundProgress(activeRound!.id), enabled: Boolean(activeRound?.id) });
   const judgeActiveMutation = useMutation({
     mutationFn: ({ id, active }: { id: string; active: boolean }) => setCreativeTalentHuntJudgeActive(id, active),
@@ -179,6 +231,81 @@ function OperationsPage() {
             ))}
             {!judges.data?.length ? <p className="text-sm text-muted-foreground">No judges have been appointed yet.</p> : null}
           </div>
+        )}
+      </section>
+
+      <section className="rounded-3xl border p-6">
+        <h2 className="text-xl font-bold">Appoint a judge</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Choose an existing ArtistrySynk account. Appointment and assignment are separately audited server operations.</p>
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <label className="space-y-1 text-sm">Account
+            <select className="h-10 w-full rounded-md border bg-background px-3" value={judgeUserId} onChange={(e) => { setJudgeUserId(e.target.value); const account = adminAccounts.data?.find((a) => a.user_id === e.target.value); if (account) setJudgeName(account.display_name || account.email); }}>
+              <option value="">Choose account…</option>
+              {(adminAccounts.data ?? []).map((account) => <option key={account.user_id} value={account.user_id}>{account.display_name} · {account.email}</option>)}
+            </select>
+          </label>
+          <label className="space-y-1 text-sm">Judge display name
+            <input className="h-10 w-full rounded-md border bg-background px-3" value={judgeName} onChange={(e) => setJudgeName(e.target.value)} placeholder="Name shown to contestants" />
+          </label>
+          <label className="space-y-1 text-sm md:col-span-2">Short bio
+            <input className="h-10 w-full rounded-md border bg-background px-3" value={judgeBio} onChange={(e) => setJudgeBio(e.target.value)} placeholder="Optional expertise or background" />
+          </label>
+        </div>
+        <Button className="mt-4" onClick={() => appointMutation.mutate()} disabled={appointMutation.isPending || adminAccounts.isLoading}>{appointMutation.isPending ? "Appointing…" : "Appoint judge"}</Button>
+        {adminAccounts.error ? <p className="mt-2 text-sm text-destructive">Could not load account list.</p> : null}
+      </section>
+
+      <section className="rounded-3xl border p-6">
+        <h2 className="text-xl font-bold">Assign a judge to a contestant</h2>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <label className="space-y-1 text-sm">Judge
+            <select className="h-10 w-full rounded-md border bg-background px-3" value={assignJudgeId} onChange={(e) => setAssignJudgeId(e.target.value)}>
+              <option value="">Choose judge…</option>
+              {(judges.data ?? []).filter((j) => j.is_active).map((j) => <option key={j.id} value={j.id}>{j.display_name}</option>)}
+            </select>
+          </label>
+          <label className="space-y-1 text-sm">Contestant
+            <select className="h-10 w-full rounded-md border bg-background px-3" value={assignApplicationId} onChange={(e) => setAssignApplicationId(e.target.value)}>
+              <option value="">Choose contestant…</option>
+              {(applications.data ?? []).map((a) => <option key={(a as {id:string}).id} value={(a as {id:string}).id}>{(a as {display_name:string;handle:string}).display_name} · @{(a as {handle:string}).handle}</option>)}
+            </select>
+          </label>
+          <label className="space-y-1 text-sm">Round
+            <select className="h-10 w-full rounded-md border bg-background px-3" value={assignRoundId} onChange={(e) => setAssignRoundId(e.target.value)}>
+              <option value="">Choose round…</option>
+              {data.rounds.map((round) => <option key={round.id} value={round.id}>{round.name}</option>)}
+            </select>
+          </label>
+        </div>
+        <Button className="mt-4" onClick={() => assignMutation.mutate()} disabled={assignMutation.isPending || !judges.data?.some((j) => j.id === assignJudgeId && j.is_active)}>{assignMutation.isPending ? "Assigning…" : "Create assignment"}</Button>
+      </section>
+
+      <section className="rounded-3xl border p-6">
+        <h2 className="text-xl font-bold">Record a round decision</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Only decide entries in a round that is accepting decisions. The database validates round state.</p>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <label className="space-y-1 text-sm">Contestant
+            <select className="h-10 w-full rounded-md border bg-background px-3" value={decisionApplicationId} onChange={(e) => setDecisionApplicationId(e.target.value)}>
+              <option value="">Choose contestant…</option>
+              {(applications.data ?? []).map((a) => <option key={(a as {id:string}).id} value={(a as {id:string}).id}>{(a as {display_name:string;handle:string}).display_name} · @{(a as {handle:string}).handle}</option>)}
+            </select>
+          </label>
+          <label className="space-y-1 text-sm">Outcome
+            <select className="h-10 w-full rounded-md border bg-background px-3" value={decisionOutcome} onChange={(e) => setDecisionOutcome(e.target.value as "ADVANCED" | "ELIMINATED" | "HELD")}>
+              <option value="ADVANCED">Advance</option><option value="ELIMINATED">Eliminate</option><option value="HELD">Hold for review</option>
+            </select>
+          </label>
+          <label className="space-y-1 text-sm">Reason {decisionOutcome !== "ADVANCED" ? "(required)" : "(optional)"}
+            <input className="h-10 w-full rounded-md border bg-background px-3" value={decisionReason} onChange={(e) => setDecisionReason(e.target.value)} placeholder="Document the decision" />
+          </label>
+        </div>
+        <Button className="mt-4" onClick={() => decisionMutation.mutate()} disabled={decisionMutation.isPending}>{decisionMutation.isPending ? "Saving…" : "Record decision"}</Button>
+      </section>
+
+      <section className="rounded-3xl border p-6">
+        <div className="flex items-center justify-between gap-3"><h2 className="text-xl font-bold">Score-correction audit history</h2><span className="text-sm text-muted-foreground">{scoreCorrections.data?.length ?? 0} records</span></div>
+        {scoreCorrections.isLoading ? <p className="mt-3 text-sm text-muted-foreground">Loading correction history…</p> : scoreCorrections.error ? <p className="mt-3 text-sm text-destructive">Correction history is unavailable.</p> : !scoreCorrections.data?.length ? <p className="mt-3 text-sm text-muted-foreground">No score corrections recorded.</p> : (
+          <div className="mt-4 space-y-3">{scoreCorrections.data.map((item) => <article key={item.id} className="rounded-xl border p-4"><div className="flex flex-wrap justify-between gap-2"><span className="font-mono text-xs">{item.score_id}</span><time className="text-xs text-muted-foreground">{new Date(item.created_at).toLocaleString()}</time></div><p className="mt-2 text-sm">Actor: {item.actor_user_id}</p><pre className="mt-2 overflow-auto text-xs">{JSON.stringify(item.metadata, null, 2)}</pre></article>)}</div>
         )}
       </section>
 
