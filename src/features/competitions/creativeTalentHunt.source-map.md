@@ -54,11 +54,19 @@ calculates a combined result using the competition's configured `judge_weight` a
 `public_weight`. Valid public votes are normalized against the highest valid vote
 count in that round before applying the public-vote weight.
 
-The destination's initial result RPC currently adds the judge score to the raw vote
-count. That is not source parity and must not be treated as the final scoring rule.
-The destination stores competition settings in `competition_competitions.config`,
-while the source uses competition-level weight columns. The source repository does
-not contain the live configured weight values, so do not invent a replacement ratio.
-Before launch, recover the intended configured values or obtain an explicit decision,
-then migrate both the admin and public result RPCs together and test edge cases
-(including zero votes, voided votes, and missing judge scores).
+The destination now has a weighted-scoring migration at
+`supabase/migrations/20261009190000_creative_talent_hunt_weighted_scoring_parity.sql`.
+It reads `judge_weight` and `public_weight` from `competition_competitions.config`,
+normalizes valid public votes against the highest valid vote count in the round, and
+applies the configured percentages to the judge and public components. Both admin
+and public result RPCs use the same formula. If weights are absent or invalid,
+`combined_score` is NULL and the public leaderboard shows that scoring setup is
+pending instead of fabricating a score or rank.
+
+The source repository does not provide the live configured weight values, so no
+ratio has been invented. Before launch, recover the intended values or approve an
+explicit scoring policy, set the competition config, and verify edge cases including
+zero votes, voided votes, missing judge scores, and missing/invalid weights. Scoring
+criteria configuration also needs to be confirmed; do not seed invented criteria or
+weights. The migration is committed to the repository branch, not applied to a live
+database.
