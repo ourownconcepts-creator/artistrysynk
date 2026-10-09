@@ -282,7 +282,7 @@ begin
 
   return query
   select
-    rank() over (order by result.combined_score desc nulls last, result.display_name asc),
+    rank() over (order by result.combined_score desc nulls last),
     result.application_id,
     result.display_name,
     result.handle,
