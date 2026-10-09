@@ -77,6 +77,19 @@ type CompetitionDatabase = {
           is_public: boolean;
         };
       };
+      update_creative_talent_hunt_application: {
+        Args: {
+          p_application_id: string;
+          p_display_name: string;
+          p_handle: string;
+          p_location: string;
+          p_bio: string;
+          p_experience: string;
+          p_audition_url: string;
+          p_audition_notes: string;
+        };
+        Returns: Json;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
@@ -182,27 +195,23 @@ export async function updateCreativeTalentHuntApplication(
   if (!handle) throw new Error("Choose a valid creator handle.");
   if (!values.display_name.trim()) throw new Error("Display name is required.");
 
-  const { data, error } = await competitionClient
-    .from("competition_applications")
-    .update({
-      display_name: values.display_name.trim(),
-      handle,
-      location: values.location.trim(),
-      bio: values.bio.trim(),
-      experience: values.experience.trim(),
-      audition_url: values.audition_url.trim(),
-      audition_notes: values.audition_notes.trim(),
-      progress_state: values.audition_url.trim() ? "AUDITION" : "PROFILE",
-    })
-    .eq("id", applicationId)
-    .eq("user_id", userId)
-    .select("*")
-    .single();
+  const { data, error } = await competitionClient.rpc(
+    "update_creative_talent_hunt_application",
+    {
+      p_application_id: applicationId,
+      p_display_name: values.display_name.trim(),
+      p_handle: handle,
+      p_location: values.location.trim(),
+      p_bio: values.bio.trim(),
+      p_experience: values.experience.trim(),
+      p_audition_url: values.audition_url.trim(),
+      p_audition_notes: values.audition_notes.trim(),
+    },
+  );
 
   if (error) throw error;
-  return data;
+  return data as TalentHuntApplication;
 }
-
 
 export async function submitCreativeTalentHuntApplication(
   applicationId: string,
@@ -231,21 +240,16 @@ export async function listPublicCreativeTalentHuntEntries() {
 }
 
 export async function listCreativeTalentHuntReviewQueue() {
-  const competitionId = await getCompetitionId();
-  const { data, error } = await competitionClient
-    .from("competition_applications")
-    .select("*")
-    .eq("competition_id", competitionId)
-    .in("status", ["PENDING_REVIEW", "REJECTED"])
-    .order("submitted_at", { ascending: true });
-
+  const { data, error } = await supabase.rpc("creative_talent_hunt_admin_applications", {
+    p_status: null,
+  });
   if (error) throw error;
-  return data ?? [];
+  return (data ?? []) as TalentHuntApplication[];
 }
 
 export async function reviewCreativeTalentHuntApplication(
   applicationId: string,
-  decision: "APPROVE" | "REJECT",
+  decision: "APPROVE" | "REJECT" | "CORRECTION_REQUESTED" | "UNDER_REVIEW",
   reason: string,
 ) {
   const { data, error } = await competitionClient.rpc(
@@ -257,6 +261,62 @@ export async function reviewCreativeTalentHuntApplication(
     },
   );
 
+  if (error) throw error;
+  return data;
+}
+
+
+export async function castCreativeTalentHuntVote(applicationId: string) {
+  const { data, error } = await supabase.rpc("cast_creative_talent_hunt_vote", { p_application_id: applicationId });
+  if (error) throw error;
+  return data;
+}
+
+export type TalentHuntAdminApplicationSummary = {
+  id: string;
+  reference_code: string | null;
+  display_name: string;
+  handle: string;
+  category_name: string;
+  location: string;
+  bio: string;
+  experience: string;
+  audition_url: string;
+  audition_notes: string;
+  status: string;
+  progress_state: string;
+  submission_state: string;
+  review_decision: string | null;
+  review_reason: string | null;
+  submitted_at: string | null;
+  created_at: string;
+};
+
+export async function listTalentHuntAdminApplications(status?: string): Promise<TalentHuntAdminApplicationSummary[]> {
+  const { data, error } = await supabase.rpc("creative_talent_hunt_admin_applications", { p_status: status ?? null });
+  if (error) throw error;
+  return (data ?? []) as unknown as TalentHuntAdminApplicationSummary[];
+}
+
+export async function getTalentHuntAdminEntryDetail(applicationId: string) {
+  const { data, error } = await supabase.rpc("creative_talent_hunt_admin_entry_detail", { p_application_id: applicationId });
+  if (error) throw error;
+  return data;
+}
+
+
+export async function reviewCreativeTalentHuntSubmission(
+  applicationId: string,
+  state: "PENDING_REVIEW" | "APPROVED" | "REJECTED" | "REVISION_REQUESTED",
+  reason = "",
+  publish = false,
+) {
+  const { data, error } = await supabase.rpc("review_creative_talent_hunt_submission", {
+    p_application_id: applicationId,
+    p_state: state,
+    p_reason: reason,
+    p_publish: publish,
+  });
   if (error) throw error;
   return data;
 }

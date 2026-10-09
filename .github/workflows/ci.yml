@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feat/competition-platform-foundation
+      - feat/creative-talent-hunt-source-port
   pull_request:
     branches:
       - main
@@ -17,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -27,18 +30,18 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Lint competition platform changes
-        run: >
-          npx eslint --fix
-          src/domain/competition.ts
-          src/features/competitions/competitionRoutes.tsx
-          src/features/competitions/creativeTalentHunt.service.ts
-          src/features/competitions/creativeTalentHunt.ts
-          src/features/competitions/index.ts
-          src/routes/creative-talent-hunt.enter.tsx
-          src/routes/creative-talent-hunt.tsx
-          src/routes/creative-talent-hunt.contestants.tsx
-          src/routes/talent-hunt.tsx
+      - name: Lint changed TypeScript files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          mapfile -t files < <(git diff --name-only origin/main...HEAD -- '*.ts' '*.tsx' | grep -v '^src/routeTree.gen.ts$' || true)
+          if ((${#files[@]})); then
+            printf 'Linting %s changed TypeScript files\n' "${#files[@]}"
+            npx eslint "${files[@]}"
+          else
+            echo "No changed TypeScript files to lint."
+          fi
 
       - name: Test competition platform
         run: npm test -- src/test/competition/creative-talent-hunt.test.ts

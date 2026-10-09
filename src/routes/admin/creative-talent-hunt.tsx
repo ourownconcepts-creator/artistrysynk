@@ -3,7 +3,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTransition } from "@/components/layout/PageTransition";
 import {
   listCreativeTalentHuntReviewQueue,
+  getTalentHuntAdminEntryDetail,
   reviewCreativeTalentHuntApplication,
+  reviewCreativeTalentHuntSubmission,
   type TalentHuntApplication,
 } from "@/features/competitions/creativeTalentHunt.service";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,6 +27,9 @@ function CreativeTalentHuntReviewPage() {
   const [allowed, setAllowed] = useState(false);
   const [entries, setEntries] = useState<TalentHuntApplication[]>([]);
   const [workingId, setWorkingId] = useState("");
+  const [publishSubmissionForId, setPublishSubmissionForId] = useState("");
+  const [detailId, setDetailId] = useState<string | null>(null);
+  const [detail, setDetail] = useState<any>(null);
 
   const loadQueue = async () => {
     const data = await listCreativeTalentHuntReviewQueue();
@@ -37,19 +42,8 @@ function CreativeTalentHuntReviewPage() {
         const { data } = await supabase.auth.getSession();
         if (!data.session) return;
 
-        const userId = data.session.user.id;
-        const roles = await Promise.all([
-          supabase.rpc("has_role", { _role: "admin", _user_id: userId }),
-          supabase.rpc("has_role", { _role: "master_admin", _user_id: userId }),
-          supabase.rpc("has_role", { _role: "super_admin", _user_id: userId }),
-        ]);
-
-        const isAllowed = roles.some(({ data: hasRole, error }) => !error && hasRole === true);
-        setAllowed(isAllowed);
-
-        if (isAllowed) {
-          await loadQueue();
-        }
+        await loadQueue();
+        setAllowed(true);
       } catch (error) {
         toast.error(error instanceof Error ? error.message : "Could not load the review queue.");
       } finally {
@@ -58,22 +52,46 @@ function CreativeTalentHuntReviewPage() {
     })();
   }, []);
 
-  const decide = async (entry: TalentHuntApplication, decision: "APPROVE" | "REJECT") => {
+  const openDetail = async (id: string) => {
+    setDetailId(id);
+    try { setDetail(await getTalentHuntAdminEntryDetail(id)); }
+    catch (error) { toast.error(error instanceof Error ? error.message : "Could not load entry detail."); }
+  };
+
+  const decide = async (entry: TalentHuntApplication, decision: "APPROVE" | "REJECT" | "CORRECTION_REQUESTED" | "UNDER_REVIEW") => {
     const reason =
-      decision === "REJECT"
+      decision === "REJECT" || decision === "CORRECTION_REQUESTED"
         ? window.prompt("Reason for rejecting this entry:", entry.review_reason || "") || ""
         : "";
 
-    if (decision === "REJECT" && !reason.trim()) {
+    if ((decision === "REJECT" || decision === "CORRECTION_REQUESTED") && !reason.trim()) {
       toast.error("Add a reason before rejecting an entry.");
       return;
     }
 
     setWorkingId(entry.id);
     try {
-      await reviewCreativeTalentHuntApplication(entry.id, decision, reason.trim());
+      if (decision === "APPROVE") {
+        await reviewCreativeTalentHuntSubmission(
+          entry.id,
+          "APPROVED",
+          "",
+          publishSubmissionForId === entry.id,
+        );
+      } else if (decision === "REJECT") {
+        await reviewCreativeTalentHuntSubmission(entry.id, "REJECTED", reason.trim());
+      } else if (decision === "CORRECTION_REQUESTED") {
+        await reviewCreativeTalentHuntSubmission(
+          entry.id,
+          "REVISION_REQUESTED",
+          reason.trim(),
+        );
+      } else {
+        await reviewCreativeTalentHuntApplication(entry.id, decision, reason.trim());
+      }
       setEntries((current) => current.filter((item) => item.id !== entry.id));
-      toast.success(decision === "APPROVE" ? "Entry approved." : "Entry rejected.");
+      setPublishSubmissionForId("");
+      toast.success(decision === "APPROVE" ? "Entry approved." : decision === "REJECT" ? "Entry rejected." : decision === "CORRECTION_REQUESTED" ? "Correction requested." : "Entry moved to review.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not update this entry.");
     } finally {
@@ -116,6 +134,14 @@ function CreativeTalentHuntReviewPage() {
               <p className="mt-2 text-muted-foreground">
                 This workspace is available only to ArtistrySynk competition administrators.
               </p>
+            </div>
+          ) : detailId && detail ? (
+            <div className="mb-6 rounded-3xl border bg-muted/20 p-6">
+              <div className="flex items-center justify-between gap-4">
+                <h2 className="text-xl font-bold">Full entry inspection</h2>
+                <Button variant="ghost" onClick={() => { setDetailId(null); setDetail(null); }}>Close</Button>
+              </div>
+              <pre className="mt-4 max-h-[32rem] overflow-auto rounded-2xl bg-background p-4 text-xs">{JSON.stringify(detail, null, 2)}</pre>
             </div>
           ) : entries.length === 0 ? (
             <div className="rounded-3xl border p-8">
@@ -186,6 +212,32 @@ function CreativeTalentHuntReviewPage() {
                     </div>
 
                     <div className="flex shrink-0 flex-wrap gap-3">
+                      <label className="flex max-w-52 items-center gap-2 text-xs text-muted-foreground">
+                        <input
+                          type="checkbox"
+                          checked={publishSubmissionForId === entry.id}
+                          onChange={(event) => setPublishSubmissionForId(event.target.checked ? entry.id : "")}
+                          disabled={workingId === entry.id}
+                        />
+                        Publish approved work publicly
+                      </label>
+                      <Button variant="outline" onClick={() => void openDetail(entry.id)} disabled={workingId === entry.id}>
+                        View full entry
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => void decide(entry, "UNDER_REVIEW")}
+                        disabled={workingId === entry.id}
+                      >
+                        Review
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => void decide(entry, "CORRECTION_REQUESTED")}
+                        disabled={workingId === entry.id}
+                      >
+                        Request correction
+                      </Button>
                       <Button
                         onClick={() => void decide(entry, "APPROVE")}
                         disabled={workingId === entry.id}

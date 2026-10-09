@@ -96,7 +96,7 @@ function ContestantsPage() {
           ) : (
             <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {entries.map((entry) => (
-                <article key={entry.id} className="rounded-3xl border p-6 transition hover:-translate-y-0.5 hover:bg-muted/40">
+                <Link to="/creative-talent-hunt/contestants/$handle" params={{ handle: entry.handle }} className="block rounded-3xl border p-6 transition hover:-translate-y-0.5 hover:bg-muted/40">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-wider text-primary">
@@ -126,7 +126,7 @@ function ContestantsPage() {
                       View work →
                     </a>
                   )}
-                </article>
+                </Link>
               ))}
             </div>
           )}

@@ -14,7 +14,7 @@ import { canEditAssignment, canFinalize, isValidScore, weightedScore, type Crite
 import { finalizeAssignment, getMyJudging, saveScores, type JudgeAssignment, type MyJudging } from "@/features/competitions/judging.service";
 import { sanitizeExternalUrl } from "@/lib/safeLinks";
 
-export const Route = createFileRoute("/creative-talent-hunt_/judge")({
+export const Route = createFileRoute("/creative-talent-hunt_/legacy-judge")({
   head: () => ({
     meta: [
       { title: "Judge Workspace — Creative Talent Hunt" },

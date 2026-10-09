@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { getPublicLeaderboard, type PublicLeaderboardRow } from "@/features/competitions/judging.service";
 
-export const Route = createFileRoute("/creative-talent-hunt_/leaderboard")({
+export const Route = createFileRoute("/creative-talent-hunt_/legacy-leaderboard")({
   head: () => ({
     meta: [
       { title: "Creative Talent Hunt Leaderboard — ArtistrySynk" },
