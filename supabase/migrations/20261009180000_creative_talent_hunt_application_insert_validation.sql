@@ -13,8 +13,8 @@ with check (
     from public.competition_competitions comp
     join public.competition_categories cat
       on cat.competition_id = comp.id
-    where comp.id = competition_id
-      and cat.id = category_id
+    where comp.id = competition_applications.competition_id
+      and cat.id = competition_applications.category_id
       and comp.status = 'REGISTRATION_OPEN'
       and cat.is_active = true
   )
