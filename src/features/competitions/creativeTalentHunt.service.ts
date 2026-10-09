@@ -77,6 +77,19 @@ type CompetitionDatabase = {
           is_public: boolean;
         };
       };
+      update_creative_talent_hunt_application: {
+        Args: {
+          p_application_id: string;
+          p_display_name: string;
+          p_handle: string;
+          p_location: string;
+          p_bio: string;
+          p_experience: string;
+          p_audition_url: string;
+          p_audition_notes: string;
+        };
+        Returns: Json;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
@@ -182,27 +195,23 @@ export async function updateCreativeTalentHuntApplication(
   if (!handle) throw new Error("Choose a valid creator handle.");
   if (!values.display_name.trim()) throw new Error("Display name is required.");
 
-  const { data, error } = await competitionClient
-    .from("competition_applications")
-    .update({
-      display_name: values.display_name.trim(),
-      handle,
-      location: values.location.trim(),
-      bio: values.bio.trim(),
-      experience: values.experience.trim(),
-      audition_url: values.audition_url.trim(),
-      audition_notes: values.audition_notes.trim(),
-      progress_state: values.audition_url.trim() ? "AUDITION" : "PROFILE",
-    })
-    .eq("id", applicationId)
-    .eq("user_id", userId)
-    .select("*")
-    .single();
+  const { data, error } = await competitionClient.rpc(
+    "update_creative_talent_hunt_application",
+    {
+      p_application_id: applicationId,
+      p_display_name: values.display_name.trim(),
+      p_handle: handle,
+      p_location: values.location.trim(),
+      p_bio: values.bio.trim(),
+      p_experience: values.experience.trim(),
+      p_audition_url: values.audition_url.trim(),
+      p_audition_notes: values.audition_notes.trim(),
+    },
+  );
 
   if (error) throw error;
-  return data;
+  return data as TalentHuntApplication;
 }
-
 
 export async function submitCreativeTalentHuntApplication(
   applicationId: string,
