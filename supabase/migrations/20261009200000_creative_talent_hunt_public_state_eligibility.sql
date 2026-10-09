@@ -112,3 +112,36 @@ $$;
 
 revoke all on function public.get_public_creative_talent_hunt_results(uuid) from public;
 grant execute on function public.get_public_creative_talent_hunt_results(uuid) to anon, authenticated;
+
+-- Public contestant profiles use the same participation-state eligibility rule.
+create or replace function public.get_public_creative_talent_hunt_entry(p_handle text)
+returns table(
+  id uuid,
+  handle text,
+  display_name text,
+  location text,
+  bio text,
+  experience text,
+  audition_url text,
+  category_id uuid,
+  category_name text,
+  progress_state text
+)
+language sql
+security definer
+set search_path = public
+as $$
+  select a.id,a.handle,a.display_name,a.location,a.bio,a.experience,a.audition_url,
+         a.category_id,c.name,a.progress_state
+  from public.competition_applications a
+  join public.competition_categories c on c.id=a.category_id
+  join public.competition_competitions comp on comp.id=a.competition_id
+  where comp.slug='creative-talent-hunt'
+    and a.handle=lower(p_handle)
+    and a.is_public=true
+    and a.status='APPROVED'
+    and a.progress_state not in ('WITHDRAWN', 'DISQUALIFIED');
+$$;
+
+revoke all on function public.get_public_creative_talent_hunt_entry(text) from public;
+grant execute on function public.get_public_creative_talent_hunt_entry(text) to anon, authenticated;
