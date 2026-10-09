@@ -88,6 +88,7 @@ begin
     join public.competition_scores s on s.assignment_id = ja.id
     join public.competition_scoring_criteria c on c.id = s.criterion_id
     where ja.round_id = p_round_id
+      and ja.status = 'FINALIZED'
     group by ja.application_id
   ),
   votes as (
@@ -160,7 +161,7 @@ begin
     return;
   end if;
 
-  v_leaderboard_published := coalesce((v_config->>'leaderboard_published')::boolean, false);
+  v_leaderboard_published := coalesce(v_config->'leaderboard_published' = 'true'::jsonb, false);
   if not v_leaderboard_published then
     return;
   end if;
@@ -197,6 +198,7 @@ begin
     join public.competition_scores s on s.assignment_id = ja.id
     join public.competition_scoring_criteria c on c.id = s.criterion_id
     where ja.round_id = p_round_id
+      and ja.status = 'FINALIZED'
     group by ja.application_id
   ),
   votes as (
@@ -237,3 +239,60 @@ revoke all on function public.get_creative_talent_hunt_results(uuid) from public
 revoke all on function public.get_public_creative_talent_hunt_results(uuid) from public;
 grant execute on function public.get_creative_talent_hunt_results(uuid) to authenticated;
 grant execute on function public.get_public_creative_talent_hunt_results(uuid) to anon, authenticated;
+
+
+-- Keep the legacy public leaderboard RPC aligned with the canonical weighted results.
+-- Older clients may still call this function, so it delegates rather than exposing a
+-- separate judge-only ranking path.
+create or replace function public.get_public_creative_talent_hunt_leaderboard()
+returns table (
+  rank bigint,
+  application_id uuid,
+  display_name text,
+  handle text,
+  category_name text,
+  judge_score numeric,
+  combined_score numeric
+)
+language plpgsql
+stable
+security definer
+set search_path = public
+as $$
+declare
+  v_round_id uuid;
+begin
+  select r.id
+    into v_round_id
+  from public.competition_rounds r
+  join public.competition_competitions c on c.id = r.competition_id
+  where c.slug = 'creative-talent-hunt'
+  order by
+    case
+      when r.status in ('IN_PROGRESS', 'VOTING_OPEN', 'JUDGING', 'DECISION_PENDING', 'DECIDED', 'OPEN') then 0
+      when r.status <> 'CLOSED' then 1
+      else 2
+    end,
+    r.sequence asc
+  limit 1;
+
+  if v_round_id is null then
+    return;
+  end if;
+
+  return query
+  select
+    rank() over (order by result.combined_score desc nulls last, result.display_name asc),
+    result.application_id,
+    result.display_name,
+    result.handle,
+    result.category_name,
+    result.judge_score,
+    result.combined_score
+  from public.get_public_creative_talent_hunt_results(v_round_id) result
+  order by result.combined_score desc nulls last, result.display_name asc;
+end;
+$$;
+
+revoke all on function public.get_public_creative_talent_hunt_leaderboard() from public;
+grant execute on function public.get_public_creative_talent_hunt_leaderboard() to anon, authenticated;
