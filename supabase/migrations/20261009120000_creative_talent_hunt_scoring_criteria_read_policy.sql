@@ -1,5 +1,7 @@
 -- Judges can read criteria only for their own active Creative Talent Hunt assignments.
 -- Administrators may inspect Creative Talent Hunt criteria for operations.
+-- Remove the earlier permissive policy; PostgreSQL combines SELECT policies with OR.
+drop policy if exists "Public can view scoring criteria" on public.competition_scoring_criteria;
 drop policy if exists "Creative Talent Hunt assigned judges read criteria"
   on public.competition_scoring_criteria;
 
