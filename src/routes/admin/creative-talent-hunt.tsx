@@ -5,6 +5,7 @@ import {
   listCreativeTalentHuntReviewQueue,
   getTalentHuntAdminEntryDetail,
   reviewCreativeTalentHuntApplication,
+  reviewCreativeTalentHuntSubmission,
   type TalentHuntApplication,
 } from "@/features/competitions/creativeTalentHunt.service";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,6 +27,7 @@ function CreativeTalentHuntReviewPage() {
   const [allowed, setAllowed] = useState(false);
   const [entries, setEntries] = useState<TalentHuntApplication[]>([]);
   const [workingId, setWorkingId] = useState("");
+  const [publishSubmission, setPublishSubmission] = useState(false);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [detail, setDetail] = useState<any>(null);
 
@@ -69,7 +71,24 @@ function CreativeTalentHuntReviewPage() {
 
     setWorkingId(entry.id);
     try {
-      await reviewCreativeTalentHuntApplication(entry.id, decision, reason.trim());
+      if (decision === "APPROVE") {
+        await reviewCreativeTalentHuntSubmission(
+          entry.id,
+          "APPROVED",
+          "",
+          publishSubmission,
+        );
+      } else if (decision === "REJECT") {
+        await reviewCreativeTalentHuntSubmission(entry.id, "REJECTED", reason.trim());
+      } else if (decision === "CORRECTION_REQUESTED") {
+        await reviewCreativeTalentHuntSubmission(
+          entry.id,
+          "REVISION_REQUESTED",
+          reason.trim(),
+        );
+      } else {
+        await reviewCreativeTalentHuntApplication(entry.id, decision, reason.trim());
+      }
       setEntries((current) => current.filter((item) => item.id !== entry.id));
       toast.success(decision === "APPROVE" ? "Entry approved." : decision === "REJECT" ? "Entry rejected." : decision === "CORRECTION_REQUESTED" ? "Correction requested." : "Entry moved to review.");
     } catch (error) {
@@ -192,6 +211,15 @@ function CreativeTalentHuntReviewPage() {
                     </div>
 
                     <div className="flex shrink-0 flex-wrap gap-3">
+                      <label className="flex max-w-52 items-center gap-2 text-xs text-muted-foreground">
+                        <input
+                          type="checkbox"
+                          checked={publishSubmission}
+                          onChange={(event) => setPublishSubmission(event.target.checked)}
+                          disabled={workingId === entry.id}
+                        />
+                        Publish approved work publicly
+                      </label>
                       <Button variant="outline" onClick={() => void openDetail(entry.id)} disabled={workingId === entry.id}>
                         View full entry
                       </Button>
