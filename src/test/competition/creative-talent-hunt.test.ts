@@ -29,7 +29,6 @@ describe("ArtistrySynk Creative Talent Hunt", () => {
   });
 });
 
-
 describe("Creative Talent Hunt competition invariants", () => {
   it("keeps the public-facing route contract explicit", () => {
     expect([
@@ -47,8 +46,13 @@ describe("Creative Talent Hunt competition invariants", () => {
 
   it("uses the intended competition state vocabulary", () => {
     expect([
-      "DRAFT","REGISTRATION_OPEN","REGISTRATION_CLOSED",
-      "IN_PROGRESS","VOTING_OPEN","COMPLETED","ARCHIVED",
+      "DRAFT",
+      "REGISTRATION_OPEN",
+      "REGISTRATION_CLOSED",
+      "IN_PROGRESS",
+      "VOTING_OPEN",
+      "COMPLETED",
+      "ARCHIVED",
     ]).toContain(ARTISTRYSYNK_CREATIVE_TALENT_HUNT.status);
   });
 });
