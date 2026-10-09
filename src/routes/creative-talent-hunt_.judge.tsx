@@ -142,7 +142,7 @@ function AssignmentCard({ assignment, criteria, onChanged }: { assignment: Judge
 
       {editable ? (
         <div className="mt-5 flex flex-wrap gap-3">
-          <Button variant="outline" onClick={() => void save().then((ok) => ok && onChanged())} disabled={busy}>Save draft</Button>
+          <Button variant="outline" onClick={() => void save().then((ok) => { if (ok) void onChanged(); })} disabled={busy}>Save draft</Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button disabled={busy || !canFinalize(assignment.status, criteria, scores) || !!invalid}>Finalize scores</Button>
