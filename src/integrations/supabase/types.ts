@@ -6198,6 +6198,7 @@ export type Database = {
       get_creative_talent_hunt_results: { Args: { p_round_id: string }; Returns: Json }
       get_public_creative_talent_hunt_results: { Args: { p_round_id: string }; Returns: Json }
       submit_creative_talent_hunt_application: { Args: { p_application_id: string; p_publish_publicly?: boolean }; Returns: Json }
+      update_creative_talent_hunt_application: { Args: { p_application_id: string; p_display_name: string; p_handle: string; p_location: string; p_bio: string; p_experience: string; p_audition_url: string; p_audition_notes: string }; Returns: Json }
       review_creative_talent_hunt_application: { Args: { p_application_id: string; p_decision: string; p_reason?: string }; Returns: Json }
       cast_creative_talent_hunt_vote: { Args: { p_application_id: string }; Returns: Json }
       creative_talent_hunt_admin_applications: { Args: { p_status?: string | null }; Returns: Json }
