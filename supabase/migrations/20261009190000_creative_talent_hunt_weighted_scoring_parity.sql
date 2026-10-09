@@ -210,5 +210,7 @@ begin
 end;
 $$;
 
+revoke all on function public.get_creative_talent_hunt_results(uuid) from public, anon;
+revoke all on function public.get_public_creative_talent_hunt_results(uuid) from public;
 grant execute on function public.get_creative_talent_hunt_results(uuid) to authenticated;
 grant execute on function public.get_public_creative_talent_hunt_results(uuid) to anon, authenticated;
