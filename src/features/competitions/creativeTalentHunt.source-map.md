@@ -75,3 +75,12 @@ The migration is committed to the repository branch, not applied to a live datab
 Before launch, verify the chosen weights and criteria, then test zero votes, voided
 votes, missing judge scores, invalid/missing weights, and the unpublished leaderboard
 gate.
+
+## Public leaderboard eligibility hardening
+
+The public weighted-results RPC also excludes applications whose progress state is
+`WITHDRAWN` or `DISQUALIFIED`. Review status and participation state are separate
+fields in the destination schema, so an administrator changing only the progress
+state must not leave an otherwise approved entry visible on the public leaderboard.
+This migration is repository-only until the database migration sequence is deliberately
+applied and verified.
