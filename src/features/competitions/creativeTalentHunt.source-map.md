@@ -62,7 +62,7 @@ destination's existing weight convention. The existing foundation migration seed
 `judge_weight: 1` and `public_vote_weight: 0`, which means judge-only results until
 an administrator intentionally configures a public-voting contribution. The public
 results RPC also respects `leaderboard_published`; unpublished results are not
-returned to public callers.
+returned to public callers. The scoring query includes only `FINALIZED` judge assignments, so in-progress drafts do not affect public or admin weighted results. The legacy `get_public_creative_talent_hunt_leaderboard()` RPC now delegates to the same canonical weighted-results RPC to prevent older clients from seeing a separate judge-only ranking. The public publish flag is parsed defensively so malformed configuration fails closed instead of raising a cast error.
 
 The judging migration seeds five open-entry criteria: Creativity, Skill / Execution,
 Originality, Presentation / Impact, and Overall Potential. Confirm these criteria and
