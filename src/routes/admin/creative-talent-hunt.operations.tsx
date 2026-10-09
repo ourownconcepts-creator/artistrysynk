@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { getTalentHuntAdminSnapshot, setTalentHuntRoundStatus, setTalentHuntStatus, getTalentHuntVotingSummary, getTalentHuntVoteTotals, getTalentHuntSuspiciousVotes, voidTalentHuntVotes, setTalentHuntVotingWindow, closeTalentHuntVoting } from "@/features/competitions/creativeTalentHunt.admin";
 import { listCreativeTalentHuntJudges, setCreativeTalentHuntJudgeActive, appointCreativeTalentHuntJudge, assignCreativeTalentHuntJudge, listCreativeTalentHuntAdminAccounts } from "@/features/competitions/creativeTalentHunt.operations";
-import { getCreativeTalentHuntRoundProgress, listCreativeTalentHuntScoreCorrections, decideCreativeTalentHuntRound } from "@/features/competitions/creativeTalentHunt.results";
+import { getCreativeTalentHuntRoundProgress, listCreativeTalentHuntScoreCorrections, decideCreativeTalentHuntRound, listCreativeTalentHuntScoreDetails, correctCreativeTalentHuntScore } from "@/features/competitions/creativeTalentHunt.results";
 import { listTalentHuntAdminApplications } from "@/features/competitions/creativeTalentHunt.service";
 import { useSession } from "@/hooks/useSession";
 import { toast } from "sonner";
@@ -28,6 +28,9 @@ function OperationsPage() {
   const [decisionApplicationId, setDecisionApplicationId] = useState("");
   const [decisionOutcome, setDecisionOutcome] = useState<"ADVANCED" | "ELIMINATED" | "HELD">("ADVANCED");
   const [decisionReason, setDecisionReason] = useState("");
+  const [correctionScoreId, setCorrectionScoreId] = useState("");
+  const [correctedScore, setCorrectedScore] = useState("");
+  const [correctionReason, setCorrectionReason] = useState("");
   const client = useQueryClient();
   const snapshot = useQuery({ queryKey: ["talent-hunt-admin-snapshot"], queryFn: getTalentHuntAdminSnapshot, enabled: Boolean(user) });
   useEffect(() => {
@@ -48,6 +51,28 @@ function OperationsPage() {
   const adminAccounts = useQuery({ queryKey: ["talent-hunt-admin-accounts"], queryFn: listCreativeTalentHuntAdminAccounts, enabled: Boolean(user) });
   const applications = useQuery({ queryKey: ["talent-hunt-admin-applications"], queryFn: () => listTalentHuntAdminApplications(), enabled: Boolean(user) });
   const scoreCorrections = useQuery({ queryKey: ["talent-hunt-score-corrections"], queryFn: listCreativeTalentHuntScoreCorrections, enabled: Boolean(user) });
+  const scoreDetails = useQuery({
+    queryKey: ["talent-hunt-score-details", activeRound?.id],
+    queryFn: () => listCreativeTalentHuntScoreDetails(activeRound!.id),
+    enabled: Boolean(user && activeRound?.id),
+  });
+  const correctionMutation = useMutation({
+    mutationFn: () => {
+      const item = scoreDetails.data?.find((score) => score.score_id === correctionScoreId);
+      const value = Number(correctedScore);
+      if (!item) throw new Error("Choose a score to correct.");
+      if (!Number.isFinite(value) || value < 0 || value > item.max_score) throw new Error(`Score must be between 0 and ${item.max_score}.`);
+      if (!correctionReason.trim()) throw new Error("A correction reason is required.");
+      return correctCreativeTalentHuntScore(item.score_id, value, correctionReason.trim());
+    },
+    onSuccess: () => {
+      toast.success("Score correction recorded.");
+      setCorrectionReason(""); setCorrectedScore("");
+      void client.invalidateQueries({ queryKey: ["talent-hunt-score-details", activeRound?.id] });
+      void client.invalidateQueries({ queryKey: ["talent-hunt-score-corrections"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not correct score."),
+  });
   useEffect(() => {
     if (!assignRoundId && snapshot.data?.rounds.length) setAssignRoundId(snapshot.data.rounds[0].id);
   }, [assignRoundId, snapshot.data?.rounds]);
@@ -300,6 +325,27 @@ function OperationsPage() {
           </label>
         </div>
         <Button className="mt-4" onClick={() => decisionMutation.mutate()} disabled={decisionMutation.isPending}>{decisionMutation.isPending ? "Saving…" : "Record decision"}</Button>
+      </section>
+
+      <section className="rounded-3xl border p-6">
+        <h2 className="text-xl font-bold">Correct a judge score</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Corrections require a reason and are written to the audit log. Only scores from the active round are listed.</p>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <label className="space-y-1 text-sm">Score
+            <select className="h-10 w-full rounded-md border bg-background px-3" value={correctionScoreId} onChange={(e) => { setCorrectionScoreId(e.target.value); const item = scoreDetails.data?.find((score) => score.score_id === e.target.value); setCorrectedScore(item ? String(item.score) : ""); }}>
+              <option value="">Choose score…</option>
+              {(scoreDetails.data ?? []).map((item) => <option key={item.score_id} value={item.score_id}>{item.display_name} · {item.criterion_name} · {item.judge_name} ({item.score}/{item.max_score})</option>)}
+            </select>
+          </label>
+          <label className="space-y-1 text-sm">Corrected score
+            <input type="number" min={0} max={scoreDetails.data?.find((item) => item.score_id === correctionScoreId)?.max_score ?? 100} step="0.5" className="h-10 w-full rounded-md border bg-background px-3" value={correctedScore} onChange={(e) => setCorrectedScore(e.target.value)} />
+          </label>
+          <label className="space-y-1 text-sm">Reason (required)
+            <input className="h-10 w-full rounded-md border bg-background px-3" value={correctionReason} onChange={(e) => setCorrectionReason(e.target.value)} placeholder="Explain the correction" />
+          </label>
+        </div>
+        <Button className="mt-4" onClick={() => correctionMutation.mutate()} disabled={correctionMutation.isPending || !correctionScoreId || !correctionReason.trim()}>{correctionMutation.isPending ? "Recording…" : "Record score correction"}</Button>
+        {scoreDetails.error ? <p className="mt-2 text-sm text-destructive">Could not load score details for the active round.</p> : null}
       </section>
 
       <section className="rounded-3xl border p-6">
