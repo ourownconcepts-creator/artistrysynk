@@ -74,7 +74,7 @@ begin
     from public.competition_applications a
     join public.competition_categories cat on cat.id = a.category_id
     where a.competition_id = v_comp_id
-      and coalesce(a.current_round_id, p_round_id) = p_round_id
+      and a.current_round_id = p_round_id
       and a.status in ('SUBMITTED', 'APPROVED')
   ),
   judge_totals as (
