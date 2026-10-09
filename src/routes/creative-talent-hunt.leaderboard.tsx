@@ -28,10 +28,13 @@ function LeaderboardPage() {
           .select("id")
           .eq("slug", "creative-talent-hunt")
           .single()).data?.id ?? "")
-        .order("sequence", { ascending: true })
-        .limit(1);
+        .order("sequence", { ascending: true });
       if (error) throw error;
-      return data?.[0] ?? null;
+      const rounds = data ?? [];
+      const visibleRound = rounds.find((item) =>
+        ["IN_PROGRESS", "VOTING_OPEN", "JUDGING", "DECISION_PENDING", "DECIDED", "OPEN"].includes(item.status),
+      );
+      return visibleRound ?? rounds.find((item) => item.status !== "CLOSED") ?? rounds[0] ?? null;
     },
   });
 
