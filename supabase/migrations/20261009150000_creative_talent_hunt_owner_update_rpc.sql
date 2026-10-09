@@ -17,7 +17,11 @@ with check (
   and progress_state = 'PROFILE'
   and is_public = false
   and media_is_public = false
+  and current_round_id is null
+  and reference_code is null
+  and submitted_at is null
   and review_decision is null
+  and review_reason is null
   and reviewed_at is null
   and reviewed_by is null
 );
