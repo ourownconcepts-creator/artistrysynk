@@ -162,3 +162,15 @@ export async function assignCreativeTalentHuntJudge(
   if (error) throw error;
   return data;
 }
+
+export type CreativeTalentHuntAdminAccount = {
+  user_id: string;
+  email: string;
+  display_name: string;
+};
+
+export async function listCreativeTalentHuntAdminAccounts() {
+  const { data, error } = await supabase.rpc("creative_talent_hunt_admin_accounts");
+  if (error) throw error;
+  return (data ?? []) as CreativeTalentHuntAdminAccount[];
+}
