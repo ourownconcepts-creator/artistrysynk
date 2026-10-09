@@ -78,9 +78,9 @@ gate.
 
 ## Public leaderboard eligibility hardening
 
-The public weighted-results RPC also excludes applications whose progress state is
+The public weighted-results RPC and public contestant-profile RPC both exclude applications whose progress state is
 `WITHDRAWN` or `DISQUALIFIED`. Review status and participation state are separate
 fields in the destination schema, so an administrator changing only the progress
-state must not leave an otherwise approved entry visible on the public leaderboard.
-This migration is repository-only until the database migration sequence is deliberately
+state must not leave an otherwise approved entry visible on the public leaderboard or
+profile page. This migration is repository-only until the database migration sequence is deliberately
 applied and verified.
