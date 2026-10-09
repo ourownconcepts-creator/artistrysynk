@@ -3,6 +3,22 @@
 -- When weights are absent/invalid, combined_score is NULL so the UI cannot present
 -- an unconfigured score as an authoritative ranking.
 
+-- Backfill only missing configuration keys from the repository's existing defaults.
+-- Existing administrator-configured values are preserved.
+update public.competition_competitions
+set config = jsonb_build_object(
+  'judge_weight', 1,
+  'public_vote_weight', 0,
+  'leaderboard_published', false
+) || coalesce(config, '{}'::jsonb),
+updated_at = now()
+where slug = 'creative-talent-hunt'
+  and (
+    not (coalesce(config, '{}'::jsonb) ? 'judge_weight')
+    or not (coalesce(config, '{}'::jsonb) ? 'public_vote_weight')
+    or not (coalesce(config, '{}'::jsonb) ? 'leaderboard_published')
+  );
+
 create or replace function public.get_creative_talent_hunt_results(p_round_id uuid)
 returns table(
   application_id uuid,
