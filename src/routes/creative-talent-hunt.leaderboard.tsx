@@ -74,7 +74,6 @@ function LeaderboardPage() {
               </div>
             </div>
           ))}
-          )}
           {!results.isLoading && !(results.data ?? []).length && (
             <div className="p-8 text-muted-foreground">No public results yet.</div>
           )}
