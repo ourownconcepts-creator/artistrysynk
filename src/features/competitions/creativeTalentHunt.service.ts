@@ -263,10 +263,30 @@ export async function castCreativeTalentHuntVote(applicationId: string) {
   return data;
 }
 
-export async function listTalentHuntAdminApplications(status?: string) {
+export type TalentHuntAdminApplicationSummary = {
+  id: string;
+  reference_code: string | null;
+  display_name: string;
+  handle: string;
+  category_name: string;
+  location: string;
+  bio: string;
+  experience: string;
+  audition_url: string;
+  audition_notes: string;
+  status: string;
+  progress_state: string;
+  submission_state: string;
+  review_decision: string | null;
+  review_reason: string | null;
+  submitted_at: string | null;
+  created_at: string;
+};
+
+export async function listTalentHuntAdminApplications(status?: string): Promise<TalentHuntAdminApplicationSummary[]> {
   const { data, error } = await supabase.rpc("creative_talent_hunt_admin_applications", { p_status: status ?? null });
   if (error) throw error;
-  return data ?? [];
+  return (data ?? []) as unknown as TalentHuntAdminApplicationSummary[];
 }
 
 export async function getTalentHuntAdminEntryDetail(applicationId: string) {
