@@ -14,6 +14,7 @@ import {
   saveCreativeTalentHuntScores,
   finalizeCreativeTalentHuntScores,
 } from "@/features/competitions/creativeTalentHunt.operations";
+import { getCreativeTalentHuntJudgeDashboard } from "@/features/competitions/creativeTalentHunt.results";
 
 export const Route = createFileRoute("/creative-talent-hunt/judge")({
   staticData: { sitemap: false },
@@ -35,6 +36,12 @@ function CreativeTalentHuntJudgePage() {
     enabled: Boolean(user),
   });
   const [openId, setOpenId] = useState<string | null>(null);
+  const dashboard = useQuery({
+    queryKey: ["creative-talent-hunt-judge-dashboard", user?.id],
+    queryFn: () => getCreativeTalentHuntJudgeDashboard(),
+    enabled: Boolean(user),
+  });
+
 
   if (!ready) return <p className="text-sm text-muted-foreground">Loading…</p>;
   if (!user) {
@@ -51,6 +58,19 @@ function CreativeTalentHuntJudgePage() {
 
   return (
     <section className="mx-auto w-full max-w-6xl space-y-8 px-4 py-12 sm:px-6">
+      <div className="grid gap-3 sm:grid-cols-3">
+        {[
+          ["Assigned", dashboard.data?.assignments ?? 0],
+          ["Scored", dashboard.data?.scored ?? 0],
+          ["Pending", dashboard.data?.pending ?? 0],
+        ].map(([label, value]) => (
+          <div key={String(label)} className="rounded-2xl border p-4">
+            <p className="text-sm text-muted-foreground">{label}</p>
+            <p className="mt-1 text-2xl font-semibold">{value}</p>
+          </div>
+        ))}
+      </div>
+
       <header>
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
           Creative Talent Hunt
