@@ -64,7 +64,7 @@ function LeaderboardPage() {
         <div className="overflow-hidden rounded-2xl border">
           {results.isLoading ? Array.from({ length: 5 }).map((_, index) => <div key={`skeleton-${index}`} className="flex items-center gap-4 border-b p-5"><Skeleton className="h-6 w-8" /><Skeleton className="h-6 flex-1" /><Skeleton className="h-6 w-20" /></div>) : (results.data ?? []).map((entry, index) => (
             <div key={entry.application_id} className="grid grid-cols-[3rem_1fr_auto] items-center gap-4 border-b p-5 last:border-b-0">
-              <span className="text-lg font-semibold text-muted-foreground">{index + 1}</span>
+              <span className="text-lg font-semibold text-muted-foreground">{entry.combined_score == null ? "—" : index + 1}</span>
               <div>
                 <Link to="/creative-talent-hunt/contestants/$handle" params={{ handle: entry.handle }} className="font-semibold hover:underline">
                   {entry.display_name}
@@ -72,8 +72,9 @@ function LeaderboardPage() {
                 <p className="text-sm text-muted-foreground">{entry.category_name} · @{entry.handle}</p>
               </div>
               <div className="text-right">
-                <p className="font-semibold">{Number(entry.combined_score ?? 0).toFixed(2)}</p>
+                <p className="font-semibold">{entry.combined_score == null ? "—" : Number(entry.combined_score).toFixed(2)}</p>
                 <p className="text-xs text-muted-foreground">{entry.public_votes ?? 0} public votes</p>
+                {entry.combined_score == null && <p className="text-xs text-muted-foreground">Scoring weights not configured</p>}
               </div>
             </div>
           ))}
