@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/admin/creative-talent-hunt")({
+export const Route = createFileRoute("/admin_/creative-talent-hunt")({
   head: () => ({
     meta: [
       { title: "Creative Talent Hunt Review — ArtistrySynk" },
@@ -37,14 +37,9 @@ function CreativeTalentHuntReviewPage() {
         const { data } = await supabase.auth.getSession();
         if (!data.session) return;
 
-        const userId = data.session.user.id;
-        const roles = await Promise.all([
-          supabase.rpc("has_role", { _role: "admin", _user_id: userId }),
-          supabase.rpc("has_role", { _role: "master_admin", _user_id: userId }),
-          supabase.rpc("has_role", { _role: "super_admin", _user_id: userId }),
-        ]);
+        const { data: isAdmin, error: roleError } = await supabase.rpc("cth_is_competition_admin");
+        const isAllowed = !roleError && isAdmin === true;
 
-        const isAllowed = roles.some(({ data: hasRole, error }) => !error && hasRole === true);
         setAllowed(isAllowed);
 
         if (isAllowed) {
