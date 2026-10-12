@@ -6248,6 +6248,14 @@ export type Database = {
           total: number
         }[]
       }
+      assign_creative_talent_hunt_judge: {
+        Args: {
+          p_application_id: string
+          p_judge_id: string
+          p_round_id: string
+        }
+        Returns: string
+      }
       audience_allows: {
         Args: { _choice: string; _owner: string; _viewer: string }
         Returns: boolean
@@ -6278,6 +6286,15 @@ export type Database = {
         Args: { _conversation_id: string }
         Returns: Json
       }
+      create_creative_talent_hunt_judge: {
+        Args: {
+          p_bio?: string
+          p_competition_id: string
+          p_display_name: string
+          p_user_id: string
+        }
+        Returns: string
+      }
       create_studio: {
         Args: {
           _bio?: string
@@ -6298,6 +6315,10 @@ export type Database = {
       create_trusted_introduction: {
         Args: { _message?: string; _recipient: string; _subject: string }
         Returns: string
+      }
+      creative_talent_hunt_is_admin: {
+        Args: { _user_id: string }
+        Returns: boolean
       }
       cth_assignment_score: {
         Args: { p_assignment_id: string }

@@ -29,6 +29,13 @@
       "when": 1791456819981,
       "tag": "0003_creative_talent_hunt_judging",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791785217861,
+      "tag": "0004_creative_talent_hunt_judging_operations",
+      "breakpoints": true
     }
   ]
 }
