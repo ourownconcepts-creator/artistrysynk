@@ -1396,6 +1396,9 @@ export type Database = {
           created_at: string
           id: string
           round_id: string
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
           voter_user_id: string
         }
         Insert: {
@@ -1404,6 +1407,9 @@ export type Database = {
           created_at?: string
           id?: string
           round_id: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
           voter_user_id: string
         }
         Update: {
@@ -1412,6 +1418,9 @@ export type Database = {
           created_at?: string
           id?: string
           round_id?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
           voter_user_id?: string
         }
         Relationships: [
@@ -6157,6 +6166,18 @@ export type Database = {
         Args: { p_application_id: string; p_judge_id: string }
         Returns: string
       }
+      admin_cth_audit_feed: {
+        Args: { p_limit?: number }
+        Returns: {
+          action: string
+          actor_username: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          metadata: Json
+        }[]
+      }
       admin_cth_judging_overview: { Args: never; Returns: Json }
       admin_cth_results: {
         Args: never
@@ -6180,13 +6201,59 @@ export type Database = {
         Args: { p_published: boolean }
         Returns: undefined
       }
+      admin_cth_set_round_voting: {
+        Args: { p_enabled: boolean; p_round_id: string }
+        Returns: Json
+      }
+      admin_cth_set_scoring_weights: {
+        Args: { p_judge_weight: number; p_public_vote_weight: number }
+        Returns: Json
+      }
+      admin_cth_set_voting_window: {
+        Args: { p_ends_at: string; p_reason?: string; p_starts_at: string }
+        Returns: Json
+      }
+      admin_cth_suspicious_votes: {
+        Args: { p_limit?: number }
+        Returns: {
+          account_created_at: string
+          distinct_contestants: number
+          username: string
+          voter_user_id: string
+          votes_last_hour: number
+          votes_today: number
+        }[]
+      }
       admin_cth_unassign_judge: {
         Args: { p_assignment_id: string }
         Returns: undefined
       }
+      admin_cth_update_public_info: { Args: { p_info: Json }; Returns: Json }
       admin_cth_upsert_judge: {
         Args: { p_bio?: string; p_display_name?: string; p_username: string }
         Returns: string
+      }
+      admin_cth_void_votes: {
+        Args: {
+          p_application_id?: string
+          p_reason: string
+          p_voter_user_id?: string
+        }
+        Returns: Json
+      }
+      admin_cth_vote_totals: {
+        Args: never
+        Returns: {
+          application_id: string
+          category_name: string
+          display_name: string
+          distinct_voters: number
+          handle: string
+          last_vote_at: string
+          round_name: string
+          valid_votes: number
+          voided_votes: number
+        }[]
       }
       admin_decide_verification: {
         Args: { _id: string; _level?: string; _notes?: string; _status: string }
@@ -6280,6 +6347,10 @@ export type Database = {
         Args: { _target_id: string; _viewer_id: string }
         Returns: boolean
       }
+      cast_creative_talent_hunt_vote: {
+        Args: { p_application_id: string; p_round_id: string }
+        Returns: Json
+      }
       check_username_available: { Args: { _username: string }; Returns: Json }
       claim_referral: { Args: { _code: string }; Returns: string }
       conversation_intro_context: {
@@ -6344,6 +6415,17 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      cth_scoring_weights: {
+        Args: { p_config: Json }
+        Returns: {
+          judge_weight: number
+          vote_weight: number
+        }[]
+      }
+      decide_creative_talent_hunt_round: {
+        Args: { p_application_id: string; p_outcome: string }
+        Returns: Json
       }
       delete_email: {
         Args: { message_id: number; queue_name: string }
@@ -6449,6 +6531,24 @@ export type Database = {
           id: string
         }[]
       }
+      get_public_creative_talent_hunt_contestant: {
+        Args: { p_handle: string }
+        Returns: {
+          audition_url: string
+          bio: string
+          category_name: string
+          category_slug: string
+          current_round_id: string
+          display_name: string
+          experience: string
+          handle: string
+          id: string
+          location: string
+          progress_state: string
+          round_name: string
+          voting_open: boolean
+        }[]
+      }
       get_public_creative_talent_hunt_entries: {
         Args: never
         Returns: {
@@ -6461,6 +6561,13 @@ export type Database = {
           id: string
           location: string
           status: string
+        }[]
+      }
+      get_public_creative_talent_hunt_judges: {
+        Args: never
+        Returns: {
+          bio: string
+          display_name: string
         }[]
       }
       get_public_creative_talent_hunt_leaderboard: {
