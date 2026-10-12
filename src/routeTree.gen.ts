@@ -35,7 +35,6 @@ import { Route as CollabHubRouteImport } from './routes/collab-hub'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as CreativeDirectorsRouteImport } from './routes/creative-directors'
-import { Route as CreativeTalentHuntRouteImport } from './routes/creative-talent-hunt'
 import { Route as CreatorDashboardRouteImport } from './routes/creator-dashboard'
 import { Route as CreditsRouteImport } from './routes/credits'
 import { Route as DancersRouteImport } from './routes/dancers'
@@ -90,7 +89,7 @@ import { Route as WhoLikedYouRouteImport } from './routes/who-liked-you'
 import { Route as DotwellKnownOauthAuthorizationServerRouteImport } from './routes/[.]well-known/oauth-authorization-server'
 import { Route as DotwellKnownOauthProtectedResourceRouteImport } from './routes/[.]well-known/oauth-protected-resource'
 import { Route as AccountConfirmDeletionRouteImport } from './routes/account/confirm-deletion'
-import { Route as AdminCreativeTalentHuntRouteImport } from './routes/admin/creative-talent-hunt'
+import { Route as AdminCreativeTalentHuntRouteImport } from './routes/admin_.creative-talent-hunt'
 import { Route as AuthIndexRouteImport } from './routes/auth/index'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
@@ -98,7 +97,7 @@ import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as BlogArchiveRouteImport } from './routes/blog/archive'
 import { Route as BlogHowToFindAMusicProducerRouteImport } from './routes/blog/how-to-find-a-music-producer'
 import { Route as CopyrightReportRouteImport } from './routes/copyright/report'
-import { Route as CreativeTalentHuntContestantsRouteImport } from './routes/creative-talent-hunt.contestants'
+import { Route as CreativeTalentHuntIndexRouteImport } from './routes/creative-talent-hunt.index'
 import { Route as CreativeTalentHuntEnterRouteImport } from './routes/creative-talent-hunt.enter'
 import { Route as CreativeTalentHuntJudgeRouteImport } from './routes/creative-talent-hunt_.judge'
 import { Route as CreativeTalentHuntLeaderboardRouteImport } from './routes/creative-talent-hunt_.leaderboard'
@@ -127,6 +126,7 @@ import { Route as StudiosNewRouteImport } from './routes/studios/new'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AdminCreativeTalentHuntJudgingRouteImport } from './routes/admin_.creative-talent-hunt_.judging'
 import { Route as ApiPublicOgImageRouteImport } from './routes/api/public/og-image'
+import { Route as CreativeTalentHuntContestantsIndexRouteImport } from './routes/creative-talent-hunt.contestants.index'
 import { Route as IntegrationV1IndexRouteImport } from './routes/integration/v1/index'
 import { Route as IntegrationV1ClaimRouteImport } from './routes/integration/v1/claim'
 import { Route as IntegrationV1DocsRouteImport } from './routes/integration/v1/docs'
@@ -273,11 +273,6 @@ const CookiesRoute = CookiesRouteImport.update({
 const CreativeDirectorsRoute = CreativeDirectorsRouteImport.update({
   id: '/creative-directors',
   path: '/creative-directors',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CreativeTalentHuntRoute = CreativeTalentHuntRouteImport.update({
-  id: '/creative-talent-hunt',
-  path: '/creative-talent-hunt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreatorDashboardRoute = CreatorDashboardRouteImport.update({
@@ -554,9 +549,9 @@ const AccountConfirmDeletionRoute = AccountConfirmDeletionRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminCreativeTalentHuntRoute = AdminCreativeTalentHuntRouteImport.update({
-  id: '/creative-talent-hunt',
-  path: '/creative-talent-hunt',
-  getParentRoute: () => AdminRoute,
+  id: '/admin_/creative-talent-hunt',
+  path: '/admin/creative-talent-hunt',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/auth/',
@@ -594,16 +589,15 @@ const CopyrightReportRoute = CopyrightReportRouteImport.update({
   path: '/copyright/report',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CreativeTalentHuntContestantsRoute =
-  CreativeTalentHuntContestantsRouteImport.update({
-    id: '/contestants',
-    path: '/contestants',
-    getParentRoute: () => CreativeTalentHuntRoute,
-  } as any)
+const CreativeTalentHuntIndexRoute = CreativeTalentHuntIndexRouteImport.update({
+  id: '/creative-talent-hunt/',
+  path: '/creative-talent-hunt/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CreativeTalentHuntEnterRoute = CreativeTalentHuntEnterRouteImport.update({
-  id: '/enter',
-  path: '/enter',
-  getParentRoute: () => CreativeTalentHuntRoute,
+  id: '/creative-talent-hunt/enter',
+  path: '/creative-talent-hunt/enter',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CreativeTalentHuntJudgeRoute = CreativeTalentHuntJudgeRouteImport.update({
   id: '/creative-talent-hunt_/judge',
@@ -742,6 +736,12 @@ const ApiPublicOgImageRoute = ApiPublicOgImageRouteImport.update({
   path: '/api/public/og-image',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreativeTalentHuntContestantsIndexRoute =
+  CreativeTalentHuntContestantsIndexRouteImport.update({
+    id: '/creative-talent-hunt/contestants/',
+    path: '/creative-talent-hunt/contestants/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const IntegrationV1IndexRoute = IntegrationV1IndexRouteImport.update({
   id: '/integration/v1/',
   path: '/integration/v1/',
@@ -840,7 +840,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/actors': typeof ActorsRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/admin-auth': typeof AdminAuthRoute
   '/admin-blog': typeof AdminBlogRoute
   '/admin-categories': typeof AdminCategoriesRoute
@@ -863,7 +863,6 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
   '/creative-directors': typeof CreativeDirectorsRoute
-  '/creative-talent-hunt': typeof CreativeTalentHuntRouteWithChildren
   '/creator-dashboard': typeof CreatorDashboardRoute
   '/credits': typeof CreditsRoute
   '/dancers': typeof DancersRoute
@@ -924,7 +923,6 @@ export interface FileRoutesByFullPath {
   '/blog/archive': typeof BlogArchiveRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
-  '/creative-talent-hunt/contestants': typeof CreativeTalentHuntContestantsRoute
   '/creative-talent-hunt/enter': typeof CreativeTalentHuntEnterRoute
   '/creative-talent-hunt/judge': typeof CreativeTalentHuntJudgeRoute
   '/creative-talent-hunt/leaderboard': typeof CreativeTalentHuntLeaderboardRoute
@@ -944,6 +942,7 @@ export interface FileRoutesByFullPath {
   '/studios/new': typeof StudiosNewRoute
   '/auth/': typeof AuthIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/creative-talent-hunt/': typeof CreativeTalentHuntIndexRoute
   '/explore/': typeof ExploreIndexRoute
   '/legal/': typeof LegalIndexRoute
   '/locations/': typeof LocationsIndexRoute
@@ -960,6 +959,7 @@ export interface FileRoutesByFullPath {
   '/integration/v1/health': typeof IntegrationV1HealthRoute
   '/integration/v1/revoke': typeof IntegrationV1RevokeRoute
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
+  '/creative-talent-hunt/contestants/': typeof CreativeTalentHuntContestantsIndexRoute
   '/integration/v1/': typeof IntegrationV1IndexRoute
   '/studios/$handle/': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
@@ -977,7 +977,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/actors': typeof ActorsRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/admin-auth': typeof AdminAuthRoute
   '/admin-blog': typeof AdminBlogRoute
   '/admin-categories': typeof AdminCategoriesRoute
@@ -1000,7 +1000,6 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
   '/creative-directors': typeof CreativeDirectorsRoute
-  '/creative-talent-hunt': typeof CreativeTalentHuntRouteWithChildren
   '/creator-dashboard': typeof CreatorDashboardRoute
   '/credits': typeof CreditsRoute
   '/dancers': typeof DancersRoute
@@ -1061,7 +1060,6 @@ export interface FileRoutesByTo {
   '/blog/archive': typeof BlogArchiveRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
-  '/creative-talent-hunt/contestants': typeof CreativeTalentHuntContestantsRoute
   '/creative-talent-hunt/enter': typeof CreativeTalentHuntEnterRoute
   '/creative-talent-hunt/judge': typeof CreativeTalentHuntJudgeRoute
   '/creative-talent-hunt/leaderboard': typeof CreativeTalentHuntLeaderboardRoute
@@ -1081,6 +1079,7 @@ export interface FileRoutesByTo {
   '/studios/new': typeof StudiosNewRoute
   '/auth': typeof AuthIndexRoute
   '/blog': typeof BlogIndexRoute
+  '/creative-talent-hunt': typeof CreativeTalentHuntIndexRoute
   '/explore': typeof ExploreIndexRoute
   '/legal': typeof LegalIndexRoute
   '/locations': typeof LocationsIndexRoute
@@ -1097,6 +1096,7 @@ export interface FileRoutesByTo {
   '/integration/v1/health': typeof IntegrationV1HealthRoute
   '/integration/v1/revoke': typeof IntegrationV1RevokeRoute
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
+  '/creative-talent-hunt/contestants': typeof CreativeTalentHuntContestantsIndexRoute
   '/integration/v1': typeof IntegrationV1IndexRoute
   '/studios/$handle': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
@@ -1115,7 +1115,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/actors': typeof ActorsRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/admin-auth': typeof AdminAuthRoute
   '/admin-blog': typeof AdminBlogRoute
   '/admin-categories': typeof AdminCategoriesRoute
@@ -1138,7 +1138,6 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
   '/creative-directors': typeof CreativeDirectorsRoute
-  '/creative-talent-hunt': typeof CreativeTalentHuntRouteWithChildren
   '/creator-dashboard': typeof CreatorDashboardRoute
   '/credits': typeof CreditsRoute
   '/dancers': typeof DancersRoute
@@ -1193,13 +1192,12 @@ export interface FileRoutesById {
   '/.well-known/oauth-authorization-server': typeof DotwellKnownOauthAuthorizationServerRoute
   '/.well-known/oauth-protected-resource': typeof DotwellKnownOauthProtectedResourceRoute
   '/account/confirm-deletion': typeof AccountConfirmDeletionRoute
-  '/admin/creative-talent-hunt': typeof AdminCreativeTalentHuntRoute
+  '/admin_/creative-talent-hunt': typeof AdminCreativeTalentHuntRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/archive': typeof BlogArchiveRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
-  '/creative-talent-hunt/contestants': typeof CreativeTalentHuntContestantsRoute
   '/creative-talent-hunt/enter': typeof CreativeTalentHuntEnterRoute
   '/creative-talent-hunt_/judge': typeof CreativeTalentHuntJudgeRoute
   '/creative-talent-hunt_/leaderboard': typeof CreativeTalentHuntLeaderboardRoute
@@ -1219,6 +1217,7 @@ export interface FileRoutesById {
   '/studios/new': typeof StudiosNewRoute
   '/auth/': typeof AuthIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/creative-talent-hunt/': typeof CreativeTalentHuntIndexRoute
   '/explore/': typeof ExploreIndexRoute
   '/legal/': typeof LegalIndexRoute
   '/locations/': typeof LocationsIndexRoute
@@ -1235,6 +1234,7 @@ export interface FileRoutesById {
   '/integration/v1/health': typeof IntegrationV1HealthRoute
   '/integration/v1/revoke': typeof IntegrationV1RevokeRoute
   '/studios/$handle/manage': typeof StudiosHandleManageRoute
+  '/creative-talent-hunt/contestants/': typeof CreativeTalentHuntContestantsIndexRoute
   '/integration/v1/': typeof IntegrationV1IndexRoute
   '/studios/$handle/': typeof StudiosHandleIndexRoute
   '/api/public/hooks/retention-sweep': typeof ApiPublicHooksRetentionSweepRoute
@@ -1277,7 +1277,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookies'
     | '/creative-directors'
-    | '/creative-talent-hunt'
     | '/creator-dashboard'
     | '/credits'
     | '/dancers'
@@ -1338,7 +1337,6 @@ export interface FileRouteTypes {
     | '/blog/archive'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
-    | '/creative-talent-hunt/contestants'
     | '/creative-talent-hunt/enter'
     | '/creative-talent-hunt/judge'
     | '/creative-talent-hunt/leaderboard'
@@ -1358,6 +1356,7 @@ export interface FileRouteTypes {
     | '/studios/new'
     | '/auth/'
     | '/blog/'
+    | '/creative-talent-hunt/'
     | '/explore/'
     | '/legal/'
     | '/locations/'
@@ -1374,6 +1373,7 @@ export interface FileRouteTypes {
     | '/integration/v1/health'
     | '/integration/v1/revoke'
     | '/studios/$handle/manage'
+    | '/creative-talent-hunt/contestants/'
     | '/integration/v1/'
     | '/studios/$handle/'
     | '/api/public/hooks/retention-sweep'
@@ -1414,7 +1414,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookies'
     | '/creative-directors'
-    | '/creative-talent-hunt'
     | '/creator-dashboard'
     | '/credits'
     | '/dancers'
@@ -1475,7 +1474,6 @@ export interface FileRouteTypes {
     | '/blog/archive'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
-    | '/creative-talent-hunt/contestants'
     | '/creative-talent-hunt/enter'
     | '/creative-talent-hunt/judge'
     | '/creative-talent-hunt/leaderboard'
@@ -1495,6 +1493,7 @@ export interface FileRouteTypes {
     | '/studios/new'
     | '/auth'
     | '/blog'
+    | '/creative-talent-hunt'
     | '/explore'
     | '/legal'
     | '/locations'
@@ -1511,6 +1510,7 @@ export interface FileRouteTypes {
     | '/integration/v1/health'
     | '/integration/v1/revoke'
     | '/studios/$handle/manage'
+    | '/creative-talent-hunt/contestants'
     | '/integration/v1'
     | '/studios/$handle'
     | '/api/public/hooks/retention-sweep'
@@ -1551,7 +1551,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookies'
     | '/creative-directors'
-    | '/creative-talent-hunt'
     | '/creator-dashboard'
     | '/credits'
     | '/dancers'
@@ -1606,13 +1605,12 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-authorization-server'
     | '/.well-known/oauth-protected-resource'
     | '/account/confirm-deletion'
-    | '/admin/creative-talent-hunt'
+    | '/admin_/creative-talent-hunt'
     | '/auth/callback'
     | '/blog/$slug'
     | '/blog/archive'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
-    | '/creative-talent-hunt/contestants'
     | '/creative-talent-hunt/enter'
     | '/creative-talent-hunt_/judge'
     | '/creative-talent-hunt_/leaderboard'
@@ -1632,6 +1630,7 @@ export interface FileRouteTypes {
     | '/studios/new'
     | '/auth/'
     | '/blog/'
+    | '/creative-talent-hunt/'
     | '/explore/'
     | '/legal/'
     | '/locations/'
@@ -1648,6 +1647,7 @@ export interface FileRouteTypes {
     | '/integration/v1/health'
     | '/integration/v1/revoke'
     | '/studios/$handle/manage'
+    | '/creative-talent-hunt/contestants/'
     | '/integration/v1/'
     | '/studios/$handle/'
     | '/api/public/hooks/retention-sweep'
@@ -1666,7 +1666,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ActorsRoute: typeof ActorsRoute
-  AdminRoute: typeof AdminRouteWithChildren
+  AdminRoute: typeof AdminRoute
   AdminAuthRoute: typeof AdminAuthRoute
   AdminBlogRoute: typeof AdminBlogRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
@@ -1689,7 +1689,6 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   CookiesRoute: typeof CookiesRoute
   CreativeDirectorsRoute: typeof CreativeDirectorsRoute
-  CreativeTalentHuntRoute: typeof CreativeTalentHuntRouteWithChildren
   CreatorDashboardRoute: typeof CreatorDashboardRoute
   CreditsRoute: typeof CreditsRoute
   DancersRoute: typeof DancersRoute
@@ -1744,11 +1743,13 @@ export interface RootRouteChildren {
   DotwellKnownOauthAuthorizationServerRoute: typeof DotwellKnownOauthAuthorizationServerRoute
   DotwellKnownOauthProtectedResourceRoute: typeof DotwellKnownOauthProtectedResourceRoute
   AccountConfirmDeletionRoute: typeof AccountConfirmDeletionRoute
+  AdminCreativeTalentHuntRoute: typeof AdminCreativeTalentHuntRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogArchiveRoute: typeof BlogArchiveRoute
   BlogHowToFindAMusicProducerRoute: typeof BlogHowToFindAMusicProducerRoute
   CopyrightReportRoute: typeof CopyrightReportRoute
+  CreativeTalentHuntEnterRoute: typeof CreativeTalentHuntEnterRoute
   CreativeTalentHuntJudgeRoute: typeof CreativeTalentHuntJudgeRoute
   CreativeTalentHuntLeaderboardRoute: typeof CreativeTalentHuntLeaderboardRoute
   ExploreNearbyRoute: typeof ExploreNearbyRoute
@@ -1767,6 +1768,7 @@ export interface RootRouteChildren {
   StudiosNewRoute: typeof StudiosNewRoute
   AuthIndexRoute: typeof AuthIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  CreativeTalentHuntIndexRoute: typeof CreativeTalentHuntIndexRoute
   ExploreIndexRoute: typeof ExploreIndexRoute
   LegalIndexRoute: typeof LegalIndexRoute
   LocationsIndexRoute: typeof LocationsIndexRoute
@@ -1783,6 +1785,7 @@ export interface RootRouteChildren {
   IntegrationV1HealthRoute: typeof IntegrationV1HealthRoute
   IntegrationV1RevokeRoute: typeof IntegrationV1RevokeRoute
   StudiosHandleManageRoute: typeof StudiosHandleManageRoute
+  CreativeTalentHuntContestantsIndexRoute: typeof CreativeTalentHuntContestantsIndexRoute
   IntegrationV1IndexRoute: typeof IntegrationV1IndexRoute
   StudiosHandleIndexRoute: typeof StudiosHandleIndexRoute
   ApiPublicHooksRetentionSweepRoute: typeof ApiPublicHooksRetentionSweepRoute
@@ -1979,13 +1982,6 @@ declare module '@tanstack/react-router' {
       path: '/creative-directors'
       fullPath: '/creative-directors'
       preLoaderRoute: typeof CreativeDirectorsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/creative-talent-hunt': {
-      id: '/creative-talent-hunt'
-      path: '/creative-talent-hunt'
-      fullPath: '/creative-talent-hunt'
-      preLoaderRoute: typeof CreativeTalentHuntRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/creator-dashboard': {
@@ -2366,12 +2362,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountConfirmDeletionRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/creative-talent-hunt': {
-      id: '/admin/creative-talent-hunt'
-      path: '/creative-talent-hunt'
+    '/admin_/creative-talent-hunt': {
+      id: '/admin_/creative-talent-hunt'
+      path: '/admin/creative-talent-hunt'
       fullPath: '/admin/creative-talent-hunt'
       preLoaderRoute: typeof AdminCreativeTalentHuntRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof rootRouteImport
     }
     '/auth/': {
       id: '/auth/'
@@ -2422,19 +2418,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CopyrightReportRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/creative-talent-hunt/contestants': {
-      id: '/creative-talent-hunt/contestants'
-      path: '/contestants'
-      fullPath: '/creative-talent-hunt/contestants'
-      preLoaderRoute: typeof CreativeTalentHuntContestantsRouteImport
-      parentRoute: typeof CreativeTalentHuntRoute
+    '/creative-talent-hunt/': {
+      id: '/creative-talent-hunt/'
+      path: '/creative-talent-hunt'
+      fullPath: '/creative-talent-hunt/'
+      preLoaderRoute: typeof CreativeTalentHuntIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/creative-talent-hunt/enter': {
       id: '/creative-talent-hunt/enter'
-      path: '/enter'
+      path: '/creative-talent-hunt/enter'
       fullPath: '/creative-talent-hunt/enter'
       preLoaderRoute: typeof CreativeTalentHuntEnterRouteImport
-      parentRoute: typeof CreativeTalentHuntRoute
+      parentRoute: typeof rootRouteImport
     }
     '/creative-talent-hunt_/judge': {
       id: '/creative-talent-hunt_/judge'
@@ -2625,6 +2621,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicOgImageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/creative-talent-hunt/contestants/': {
+      id: '/creative-talent-hunt/contestants/'
+      path: '/creative-talent-hunt/contestants'
+      fullPath: '/creative-talent-hunt/contestants/'
+      preLoaderRoute: typeof CreativeTalentHuntContestantsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/integration/v1/': {
       id: '/integration/v1/'
       path: '/integration/v1'
@@ -2747,34 +2750,11 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminRouteChildren {
-  AdminCreativeTalentHuntRoute: typeof AdminCreativeTalentHuntRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminCreativeTalentHuntRoute: AdminCreativeTalentHuntRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
-interface CreativeTalentHuntRouteChildren {
-  CreativeTalentHuntContestantsRoute: typeof CreativeTalentHuntContestantsRoute
-  CreativeTalentHuntEnterRoute: typeof CreativeTalentHuntEnterRoute
-}
-
-const CreativeTalentHuntRouteChildren: CreativeTalentHuntRouteChildren = {
-  CreativeTalentHuntContestantsRoute: CreativeTalentHuntContestantsRoute,
-  CreativeTalentHuntEnterRoute: CreativeTalentHuntEnterRoute,
-}
-
-const CreativeTalentHuntRouteWithChildren =
-  CreativeTalentHuntRoute._addFileChildren(CreativeTalentHuntRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ActorsRoute: ActorsRoute,
-  AdminRoute: AdminRouteWithChildren,
+  AdminRoute: AdminRoute,
   AdminAuthRoute: AdminAuthRoute,
   AdminBlogRoute: AdminBlogRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
@@ -2797,7 +2777,6 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   CookiesRoute: CookiesRoute,
   CreativeDirectorsRoute: CreativeDirectorsRoute,
-  CreativeTalentHuntRoute: CreativeTalentHuntRouteWithChildren,
   CreatorDashboardRoute: CreatorDashboardRoute,
   CreditsRoute: CreditsRoute,
   DancersRoute: DancersRoute,
@@ -2855,11 +2834,13 @@ const rootRouteChildren: RootRouteChildren = {
   DotwellKnownOauthProtectedResourceRoute:
     DotwellKnownOauthProtectedResourceRoute,
   AccountConfirmDeletionRoute: AccountConfirmDeletionRoute,
+  AdminCreativeTalentHuntRoute: AdminCreativeTalentHuntRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogArchiveRoute: BlogArchiveRoute,
   BlogHowToFindAMusicProducerRoute: BlogHowToFindAMusicProducerRoute,
   CopyrightReportRoute: CopyrightReportRoute,
+  CreativeTalentHuntEnterRoute: CreativeTalentHuntEnterRoute,
   CreativeTalentHuntJudgeRoute: CreativeTalentHuntJudgeRoute,
   CreativeTalentHuntLeaderboardRoute: CreativeTalentHuntLeaderboardRoute,
   ExploreNearbyRoute: ExploreNearbyRoute,
@@ -2878,6 +2859,7 @@ const rootRouteChildren: RootRouteChildren = {
   StudiosNewRoute: StudiosNewRoute,
   AuthIndexRoute: AuthIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
+  CreativeTalentHuntIndexRoute: CreativeTalentHuntIndexRoute,
   ExploreIndexRoute: ExploreIndexRoute,
   LegalIndexRoute: LegalIndexRoute,
   LocationsIndexRoute: LocationsIndexRoute,
@@ -2894,6 +2876,8 @@ const rootRouteChildren: RootRouteChildren = {
   IntegrationV1HealthRoute: IntegrationV1HealthRoute,
   IntegrationV1RevokeRoute: IntegrationV1RevokeRoute,
   StudiosHandleManageRoute: StudiosHandleManageRoute,
+  CreativeTalentHuntContestantsIndexRoute:
+    CreativeTalentHuntContestantsIndexRoute,
   IntegrationV1IndexRoute: IntegrationV1IndexRoute,
   StudiosHandleIndexRoute: StudiosHandleIndexRoute,
   ApiPublicHooksRetentionSweepRoute: ApiPublicHooksRetentionSweepRoute,
