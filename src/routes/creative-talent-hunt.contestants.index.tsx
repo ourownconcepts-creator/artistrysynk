@@ -104,7 +104,7 @@ function ContestantsPage() {
                         @{entry.handle}
                       </p>
                       <h2 className="mt-1 text-xl font-bold">{entry.display_name}</h2>
-                    </div>
+                    </Link>
                     <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
                       {entry.category_name || "Creative"}
                     </span>
