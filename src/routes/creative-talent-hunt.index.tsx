@@ -5,7 +5,7 @@ import {
   CREATIVE_TALENT_HUNT_CATEGORIES,
 } from "@/features/competitions/creativeTalentHunt";
 
-export const Route = createFileRoute("/creative-talent-hunt")({
+export const Route = createFileRoute("/creative-talent-hunt/")({
   head: () => ({
     meta: [
       { title: "ArtistrySynk Creative Talent Hunt" },

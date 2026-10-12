@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTransition } from "@/components/layout/PageTransition";
+import { sanitizeExternalUrl } from "@/lib/safeLinks";
 import { listPublicCreativeTalentHuntEntries } from "@/features/competitions/creativeTalentHunt.service";
 
-export const Route = createFileRoute("/creative-talent-hunt/contestants")({
+export const Route = createFileRoute("/creative-talent-hunt/contestants/")({
   head: () => ({
     meta: [
       { title: "Talent Hunt Creators — ArtistrySynk" },
@@ -98,12 +99,12 @@ function ContestantsPage() {
               {entries.map((entry) => (
                 <article key={entry.id} className="rounded-3xl border p-6 transition hover:-translate-y-0.5 hover:bg-muted/40">
                   <div className="flex items-start justify-between gap-4">
-                    <div>
+                    <Link to="/creative-talent-hunt/contestants/$slug" params={{ slug: entry.handle }} className="hover:underline">
                       <p className="text-xs font-semibold uppercase tracking-wider text-primary">
                         @{entry.handle}
                       </p>
                       <h2 className="mt-1 text-xl font-bold">{entry.display_name}</h2>
-                    </div>
+                    </Link>
                     <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
                       {entry.category_name || "Creative"}
                     </span>
@@ -116,11 +117,11 @@ function ContestantsPage() {
                       {entry.bio}
                     </p>
                   )}
-                  {entry.audition_url && (
+                  {sanitizeExternalUrl(entry.audition_url) && (
                     <a
-                      href={entry.audition_url}
+                      href={sanitizeExternalUrl(entry.audition_url) ?? undefined}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer nofollow"
                       className="mt-5 inline-flex text-sm font-semibold text-primary hover:underline"
                     >
                       View work →
