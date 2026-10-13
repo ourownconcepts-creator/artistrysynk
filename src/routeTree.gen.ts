@@ -98,7 +98,12 @@ import { Route as BlogArchiveRouteImport } from './routes/blog/archive'
 import { Route as BlogHowToFindAMusicProducerRouteImport } from './routes/blog/how-to-find-a-music-producer'
 import { Route as CopyrightReportRouteImport } from './routes/copyright/report'
 import { Route as CreativeTalentHuntIndexRouteImport } from './routes/creative-talent-hunt.index'
+import { Route as CreativeTalentHunt2026RouteImport } from './routes/creative-talent-hunt.2026'
+import { Route as CreativeTalentHuntDashboardRouteImport } from './routes/creative-talent-hunt.dashboard'
 import { Route as CreativeTalentHuntEnterRouteImport } from './routes/creative-talent-hunt.enter'
+import { Route as CreativeTalentHuntJudgesRouteImport } from './routes/creative-talent-hunt.judges'
+import { Route as CreativeTalentHuntPrizesRouteImport } from './routes/creative-talent-hunt.prizes'
+import { Route as CreativeTalentHuntRulesRouteImport } from './routes/creative-talent-hunt.rules'
 import { Route as CreativeTalentHuntJudgeRouteImport } from './routes/creative-talent-hunt_.judge'
 import { Route as CreativeTalentHuntLeaderboardRouteImport } from './routes/creative-talent-hunt_.leaderboard'
 import { Route as ExploreIndexRouteImport } from './routes/explore/index'
@@ -126,7 +131,9 @@ import { Route as StudiosNewRouteImport } from './routes/studios/new'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AdminCreativeTalentHuntJudgingRouteImport } from './routes/admin_.creative-talent-hunt_.judging'
 import { Route as ApiPublicOgImageRouteImport } from './routes/api/public/og-image'
+import { Route as CreativeTalentHuntCategoriesSlugRouteImport } from './routes/creative-talent-hunt.categories.$slug'
 import { Route as CreativeTalentHuntContestantsIndexRouteImport } from './routes/creative-talent-hunt.contestants.index'
+import { Route as CreativeTalentHuntContestantsSlugRouteImport } from './routes/creative-talent-hunt.contestants.$slug'
 import { Route as IntegrationV1IndexRouteImport } from './routes/integration/v1/index'
 import { Route as IntegrationV1ClaimRouteImport } from './routes/integration/v1/claim'
 import { Route as IntegrationV1DocsRouteImport } from './routes/integration/v1/docs'
@@ -594,9 +601,37 @@ const CreativeTalentHuntIndexRoute = CreativeTalentHuntIndexRouteImport.update({
   path: '/creative-talent-hunt/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreativeTalentHunt2026Route = CreativeTalentHunt2026RouteImport.update({
+  id: '/creative-talent-hunt/2026',
+  path: '/creative-talent-hunt/2026',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreativeTalentHuntDashboardRoute =
+  CreativeTalentHuntDashboardRouteImport.update({
+    id: '/creative-talent-hunt/dashboard',
+    path: '/creative-talent-hunt/dashboard',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CreativeTalentHuntEnterRoute = CreativeTalentHuntEnterRouteImport.update({
   id: '/creative-talent-hunt/enter',
   path: '/creative-talent-hunt/enter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreativeTalentHuntJudgesRoute =
+  CreativeTalentHuntJudgesRouteImport.update({
+    id: '/creative-talent-hunt/judges',
+    path: '/creative-talent-hunt/judges',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CreativeTalentHuntPrizesRoute =
+  CreativeTalentHuntPrizesRouteImport.update({
+    id: '/creative-talent-hunt/prizes',
+    path: '/creative-talent-hunt/prizes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CreativeTalentHuntRulesRoute = CreativeTalentHuntRulesRouteImport.update({
+  id: '/creative-talent-hunt/rules',
+  path: '/creative-talent-hunt/rules',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreativeTalentHuntJudgeRoute = CreativeTalentHuntJudgeRouteImport.update({
@@ -736,10 +771,22 @@ const ApiPublicOgImageRoute = ApiPublicOgImageRouteImport.update({
   path: '/api/public/og-image',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreativeTalentHuntCategoriesSlugRoute =
+  CreativeTalentHuntCategoriesSlugRouteImport.update({
+    id: '/creative-talent-hunt/categories/$slug',
+    path: '/creative-talent-hunt/categories/$slug',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CreativeTalentHuntContestantsIndexRoute =
   CreativeTalentHuntContestantsIndexRouteImport.update({
     id: '/creative-talent-hunt/contestants/',
     path: '/creative-talent-hunt/contestants/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CreativeTalentHuntContestantsSlugRoute =
+  CreativeTalentHuntContestantsSlugRouteImport.update({
+    id: '/creative-talent-hunt/contestants/$slug',
+    path: '/creative-talent-hunt/contestants/$slug',
     getParentRoute: () => rootRouteImport,
   } as any)
 const IntegrationV1IndexRoute = IntegrationV1IndexRouteImport.update({
@@ -923,7 +970,12 @@ export interface FileRoutesByFullPath {
   '/blog/archive': typeof BlogArchiveRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
+  '/creative-talent-hunt/2026': typeof CreativeTalentHunt2026Route
+  '/creative-talent-hunt/dashboard': typeof CreativeTalentHuntDashboardRoute
   '/creative-talent-hunt/enter': typeof CreativeTalentHuntEnterRoute
+  '/creative-talent-hunt/judges': typeof CreativeTalentHuntJudgesRoute
+  '/creative-talent-hunt/prizes': typeof CreativeTalentHuntPrizesRoute
+  '/creative-talent-hunt/rules': typeof CreativeTalentHuntRulesRoute
   '/creative-talent-hunt/judge': typeof CreativeTalentHuntJudgeRoute
   '/creative-talent-hunt/leaderboard': typeof CreativeTalentHuntLeaderboardRoute
   '/explore/nearby': typeof ExploreNearbyRoute
@@ -954,6 +1006,8 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/creative-talent-hunt/judging': typeof AdminCreativeTalentHuntJudgingRoute
   '/api/public/og-image': typeof ApiPublicOgImageRoute
+  '/creative-talent-hunt/categories/$slug': typeof CreativeTalentHuntCategoriesSlugRoute
+  '/creative-talent-hunt/contestants/$slug': typeof CreativeTalentHuntContestantsSlugRoute
   '/integration/v1/claim': typeof IntegrationV1ClaimRoute
   '/integration/v1/docs': typeof IntegrationV1DocsRoute
   '/integration/v1/health': typeof IntegrationV1HealthRoute
@@ -1060,7 +1114,12 @@ export interface FileRoutesByTo {
   '/blog/archive': typeof BlogArchiveRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
+  '/creative-talent-hunt/2026': typeof CreativeTalentHunt2026Route
+  '/creative-talent-hunt/dashboard': typeof CreativeTalentHuntDashboardRoute
   '/creative-talent-hunt/enter': typeof CreativeTalentHuntEnterRoute
+  '/creative-talent-hunt/judges': typeof CreativeTalentHuntJudgesRoute
+  '/creative-talent-hunt/prizes': typeof CreativeTalentHuntPrizesRoute
+  '/creative-talent-hunt/rules': typeof CreativeTalentHuntRulesRoute
   '/creative-talent-hunt/judge': typeof CreativeTalentHuntJudgeRoute
   '/creative-talent-hunt/leaderboard': typeof CreativeTalentHuntLeaderboardRoute
   '/explore/nearby': typeof ExploreNearbyRoute
@@ -1091,6 +1150,8 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/creative-talent-hunt/judging': typeof AdminCreativeTalentHuntJudgingRoute
   '/api/public/og-image': typeof ApiPublicOgImageRoute
+  '/creative-talent-hunt/categories/$slug': typeof CreativeTalentHuntCategoriesSlugRoute
+  '/creative-talent-hunt/contestants/$slug': typeof CreativeTalentHuntContestantsSlugRoute
   '/integration/v1/claim': typeof IntegrationV1ClaimRoute
   '/integration/v1/docs': typeof IntegrationV1DocsRoute
   '/integration/v1/health': typeof IntegrationV1HealthRoute
@@ -1198,7 +1259,12 @@ export interface FileRoutesById {
   '/blog/archive': typeof BlogArchiveRoute
   '/blog/how-to-find-a-music-producer': typeof BlogHowToFindAMusicProducerRoute
   '/copyright/report': typeof CopyrightReportRoute
+  '/creative-talent-hunt/2026': typeof CreativeTalentHunt2026Route
+  '/creative-talent-hunt/dashboard': typeof CreativeTalentHuntDashboardRoute
   '/creative-talent-hunt/enter': typeof CreativeTalentHuntEnterRoute
+  '/creative-talent-hunt/judges': typeof CreativeTalentHuntJudgesRoute
+  '/creative-talent-hunt/prizes': typeof CreativeTalentHuntPrizesRoute
+  '/creative-talent-hunt/rules': typeof CreativeTalentHuntRulesRoute
   '/creative-talent-hunt_/judge': typeof CreativeTalentHuntJudgeRoute
   '/creative-talent-hunt_/leaderboard': typeof CreativeTalentHuntLeaderboardRoute
   '/explore/nearby': typeof ExploreNearbyRoute
@@ -1229,6 +1295,8 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin_/creative-talent-hunt_/judging': typeof AdminCreativeTalentHuntJudgingRoute
   '/api/public/og-image': typeof ApiPublicOgImageRoute
+  '/creative-talent-hunt/categories/$slug': typeof CreativeTalentHuntCategoriesSlugRoute
+  '/creative-talent-hunt/contestants/$slug': typeof CreativeTalentHuntContestantsSlugRoute
   '/integration/v1/claim': typeof IntegrationV1ClaimRoute
   '/integration/v1/docs': typeof IntegrationV1DocsRoute
   '/integration/v1/health': typeof IntegrationV1HealthRoute
@@ -1337,7 +1405,12 @@ export interface FileRouteTypes {
     | '/blog/archive'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
+    | '/creative-talent-hunt/2026'
+    | '/creative-talent-hunt/dashboard'
     | '/creative-talent-hunt/enter'
+    | '/creative-talent-hunt/judges'
+    | '/creative-talent-hunt/prizes'
+    | '/creative-talent-hunt/rules'
     | '/creative-talent-hunt/judge'
     | '/creative-talent-hunt/leaderboard'
     | '/explore/nearby'
@@ -1368,6 +1441,8 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/creative-talent-hunt/judging'
     | '/api/public/og-image'
+    | '/creative-talent-hunt/categories/$slug'
+    | '/creative-talent-hunt/contestants/$slug'
     | '/integration/v1/claim'
     | '/integration/v1/docs'
     | '/integration/v1/health'
@@ -1474,7 +1549,12 @@ export interface FileRouteTypes {
     | '/blog/archive'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
+    | '/creative-talent-hunt/2026'
+    | '/creative-talent-hunt/dashboard'
     | '/creative-talent-hunt/enter'
+    | '/creative-talent-hunt/judges'
+    | '/creative-talent-hunt/prizes'
+    | '/creative-talent-hunt/rules'
     | '/creative-talent-hunt/judge'
     | '/creative-talent-hunt/leaderboard'
     | '/explore/nearby'
@@ -1505,6 +1585,8 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/creative-talent-hunt/judging'
     | '/api/public/og-image'
+    | '/creative-talent-hunt/categories/$slug'
+    | '/creative-talent-hunt/contestants/$slug'
     | '/integration/v1/claim'
     | '/integration/v1/docs'
     | '/integration/v1/health'
@@ -1611,7 +1693,12 @@ export interface FileRouteTypes {
     | '/blog/archive'
     | '/blog/how-to-find-a-music-producer'
     | '/copyright/report'
+    | '/creative-talent-hunt/2026'
+    | '/creative-talent-hunt/dashboard'
     | '/creative-talent-hunt/enter'
+    | '/creative-talent-hunt/judges'
+    | '/creative-talent-hunt/prizes'
+    | '/creative-talent-hunt/rules'
     | '/creative-talent-hunt_/judge'
     | '/creative-talent-hunt_/leaderboard'
     | '/explore/nearby'
@@ -1642,6 +1729,8 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin_/creative-talent-hunt_/judging'
     | '/api/public/og-image'
+    | '/creative-talent-hunt/categories/$slug'
+    | '/creative-talent-hunt/contestants/$slug'
     | '/integration/v1/claim'
     | '/integration/v1/docs'
     | '/integration/v1/health'
@@ -1749,7 +1838,12 @@ export interface RootRouteChildren {
   BlogArchiveRoute: typeof BlogArchiveRoute
   BlogHowToFindAMusicProducerRoute: typeof BlogHowToFindAMusicProducerRoute
   CopyrightReportRoute: typeof CopyrightReportRoute
+  CreativeTalentHunt2026Route: typeof CreativeTalentHunt2026Route
+  CreativeTalentHuntDashboardRoute: typeof CreativeTalentHuntDashboardRoute
   CreativeTalentHuntEnterRoute: typeof CreativeTalentHuntEnterRoute
+  CreativeTalentHuntJudgesRoute: typeof CreativeTalentHuntJudgesRoute
+  CreativeTalentHuntPrizesRoute: typeof CreativeTalentHuntPrizesRoute
+  CreativeTalentHuntRulesRoute: typeof CreativeTalentHuntRulesRoute
   CreativeTalentHuntJudgeRoute: typeof CreativeTalentHuntJudgeRoute
   CreativeTalentHuntLeaderboardRoute: typeof CreativeTalentHuntLeaderboardRoute
   ExploreNearbyRoute: typeof ExploreNearbyRoute
@@ -1780,6 +1874,8 @@ export interface RootRouteChildren {
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   AdminCreativeTalentHuntJudgingRoute: typeof AdminCreativeTalentHuntJudgingRoute
   ApiPublicOgImageRoute: typeof ApiPublicOgImageRoute
+  CreativeTalentHuntCategoriesSlugRoute: typeof CreativeTalentHuntCategoriesSlugRoute
+  CreativeTalentHuntContestantsSlugRoute: typeof CreativeTalentHuntContestantsSlugRoute
   IntegrationV1ClaimRoute: typeof IntegrationV1ClaimRoute
   IntegrationV1DocsRoute: typeof IntegrationV1DocsRoute
   IntegrationV1HealthRoute: typeof IntegrationV1HealthRoute
@@ -2425,11 +2521,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreativeTalentHuntIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/creative-talent-hunt/2026': {
+      id: '/creative-talent-hunt/2026'
+      path: '/creative-talent-hunt/2026'
+      fullPath: '/creative-talent-hunt/2026'
+      preLoaderRoute: typeof CreativeTalentHunt2026RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creative-talent-hunt/dashboard': {
+      id: '/creative-talent-hunt/dashboard'
+      path: '/creative-talent-hunt/dashboard'
+      fullPath: '/creative-talent-hunt/dashboard'
+      preLoaderRoute: typeof CreativeTalentHuntDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/creative-talent-hunt/enter': {
       id: '/creative-talent-hunt/enter'
       path: '/creative-talent-hunt/enter'
       fullPath: '/creative-talent-hunt/enter'
       preLoaderRoute: typeof CreativeTalentHuntEnterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creative-talent-hunt/judges': {
+      id: '/creative-talent-hunt/judges'
+      path: '/creative-talent-hunt/judges'
+      fullPath: '/creative-talent-hunt/judges'
+      preLoaderRoute: typeof CreativeTalentHuntJudgesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creative-talent-hunt/prizes': {
+      id: '/creative-talent-hunt/prizes'
+      path: '/creative-talent-hunt/prizes'
+      fullPath: '/creative-talent-hunt/prizes'
+      preLoaderRoute: typeof CreativeTalentHuntPrizesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creative-talent-hunt/rules': {
+      id: '/creative-talent-hunt/rules'
+      path: '/creative-talent-hunt/rules'
+      fullPath: '/creative-talent-hunt/rules'
+      preLoaderRoute: typeof CreativeTalentHuntRulesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/creative-talent-hunt_/judge': {
@@ -2621,11 +2752,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicOgImageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/creative-talent-hunt/categories/$slug': {
+      id: '/creative-talent-hunt/categories/$slug'
+      path: '/creative-talent-hunt/categories/$slug'
+      fullPath: '/creative-talent-hunt/categories/$slug'
+      preLoaderRoute: typeof CreativeTalentHuntCategoriesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/creative-talent-hunt/contestants/': {
       id: '/creative-talent-hunt/contestants/'
       path: '/creative-talent-hunt/contestants'
       fullPath: '/creative-talent-hunt/contestants/'
       preLoaderRoute: typeof CreativeTalentHuntContestantsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creative-talent-hunt/contestants/$slug': {
+      id: '/creative-talent-hunt/contestants/$slug'
+      path: '/creative-talent-hunt/contestants/$slug'
+      fullPath: '/creative-talent-hunt/contestants/$slug'
+      preLoaderRoute: typeof CreativeTalentHuntContestantsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/integration/v1/': {
@@ -2840,7 +2985,12 @@ const rootRouteChildren: RootRouteChildren = {
   BlogArchiveRoute: BlogArchiveRoute,
   BlogHowToFindAMusicProducerRoute: BlogHowToFindAMusicProducerRoute,
   CopyrightReportRoute: CopyrightReportRoute,
+  CreativeTalentHunt2026Route: CreativeTalentHunt2026Route,
+  CreativeTalentHuntDashboardRoute: CreativeTalentHuntDashboardRoute,
   CreativeTalentHuntEnterRoute: CreativeTalentHuntEnterRoute,
+  CreativeTalentHuntJudgesRoute: CreativeTalentHuntJudgesRoute,
+  CreativeTalentHuntPrizesRoute: CreativeTalentHuntPrizesRoute,
+  CreativeTalentHuntRulesRoute: CreativeTalentHuntRulesRoute,
   CreativeTalentHuntJudgeRoute: CreativeTalentHuntJudgeRoute,
   CreativeTalentHuntLeaderboardRoute: CreativeTalentHuntLeaderboardRoute,
   ExploreNearbyRoute: ExploreNearbyRoute,
@@ -2871,6 +3021,9 @@ const rootRouteChildren: RootRouteChildren = {
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   AdminCreativeTalentHuntJudgingRoute: AdminCreativeTalentHuntJudgingRoute,
   ApiPublicOgImageRoute: ApiPublicOgImageRoute,
+  CreativeTalentHuntCategoriesSlugRoute: CreativeTalentHuntCategoriesSlugRoute,
+  CreativeTalentHuntContestantsSlugRoute:
+    CreativeTalentHuntContestantsSlugRoute,
   IntegrationV1ClaimRoute: IntegrationV1ClaimRoute,
   IntegrationV1DocsRoute: IntegrationV1DocsRoute,
   IntegrationV1HealthRoute: IntegrationV1HealthRoute,
