@@ -62,3 +62,22 @@ export function combinedScore(judge: number, vote: number | null, judgeWeight = 
   if (vote === null || voteWeight <= 0) return round2(judge);
   return round2((judge * judgeWeight + vote * voteWeight) / (judgeWeight + voteWeight));
 }
+
+/** Mirrors public.cth_scoring_weights(): weights must be >= 0 and not both zero. */
+export function validateWeights(judgeWeight: number, voteWeight: number): void {
+  if (!Number.isFinite(judgeWeight) || !Number.isFinite(voteWeight) || judgeWeight < 0 || voteWeight < 0 || judgeWeight + voteWeight <= 0) {
+    throw new Error(`invalid scoring configuration: judge_weight=${judgeWeight} public_vote_weight=${voteWeight}`);
+  }
+}
+
+/** Valid (non-voided) votes normalized against the top contestant, out of 100. */
+export function normalizedVoteScore(validVotes: number, maxValidVotes: number): number {
+  return maxValidVotes > 0 ? round2((validVotes / maxValidVotes) * 100) : 0;
+}
+
+/** Mirrors the public leaderboard blend: only valid votes count; voided votes are excluded upstream. */
+export function blendedScore(judge: number, validVotes: number, maxValidVotes: number, judgeWeight: number, voteWeight: number): number {
+  validateWeights(judgeWeight, voteWeight);
+  const v = normalizedVoteScore(validVotes, maxValidVotes);
+  return round2((judge * judgeWeight + v * voteWeight) / (judgeWeight + voteWeight));
+}
