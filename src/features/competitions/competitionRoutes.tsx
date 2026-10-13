@@ -4,6 +4,9 @@ export const COMPETITION_NAV_ITEMS = [
   { label: "Overview", to: "/creative-talent-hunt" as const },
   { label: "Explore Talent", to: "/creative-talent-hunt/contestants" as const },
   { label: "Leaderboard", to: "/creative-talent-hunt/leaderboard" as const },
+  { label: "Judges", to: "/creative-talent-hunt/judges" as const },
+  { label: "Rules", to: "/creative-talent-hunt/rules" as const },
+  { label: "My entry", to: "/creative-talent-hunt/dashboard" as const },
 ];
 
 export function CompetitionNav() {

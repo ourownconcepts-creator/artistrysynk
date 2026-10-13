@@ -130,6 +130,7 @@ import { Route as StudiosIndexRouteImport } from './routes/studios/index'
 import { Route as StudiosNewRouteImport } from './routes/studios/new'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AdminCreativeTalentHuntJudgingRouteImport } from './routes/admin_.creative-talent-hunt_.judging'
+import { Route as AdminCreativeTalentHuntOperationsRouteImport } from './routes/admin_.creative-talent-hunt_.operations'
 import { Route as ApiPublicOgImageRouteImport } from './routes/api/public/og-image'
 import { Route as CreativeTalentHuntCategoriesSlugRouteImport } from './routes/creative-talent-hunt.categories.$slug'
 import { Route as CreativeTalentHuntContestantsIndexRouteImport } from './routes/creative-talent-hunt.contestants.index'
@@ -766,6 +767,12 @@ const AdminCreativeTalentHuntJudgingRoute =
     path: '/admin/creative-talent-hunt/judging',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminCreativeTalentHuntOperationsRoute =
+  AdminCreativeTalentHuntOperationsRouteImport.update({
+    id: '/admin_/creative-talent-hunt_/operations',
+    path: '/admin/creative-talent-hunt/operations',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicOgImageRoute = ApiPublicOgImageRouteImport.update({
   id: '/api/public/og-image',
   path: '/api/public/og-image',
@@ -1005,6 +1012,7 @@ export interface FileRoutesByFullPath {
   '/studios/': typeof StudiosIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/creative-talent-hunt/judging': typeof AdminCreativeTalentHuntJudgingRoute
+  '/admin/creative-talent-hunt/operations': typeof AdminCreativeTalentHuntOperationsRoute
   '/api/public/og-image': typeof ApiPublicOgImageRoute
   '/creative-talent-hunt/categories/$slug': typeof CreativeTalentHuntCategoriesSlugRoute
   '/creative-talent-hunt/contestants/$slug': typeof CreativeTalentHuntContestantsSlugRoute
@@ -1149,6 +1157,7 @@ export interface FileRoutesByTo {
   '/studios': typeof StudiosIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/creative-talent-hunt/judging': typeof AdminCreativeTalentHuntJudgingRoute
+  '/admin/creative-talent-hunt/operations': typeof AdminCreativeTalentHuntOperationsRoute
   '/api/public/og-image': typeof ApiPublicOgImageRoute
   '/creative-talent-hunt/categories/$slug': typeof CreativeTalentHuntCategoriesSlugRoute
   '/creative-talent-hunt/contestants/$slug': typeof CreativeTalentHuntContestantsSlugRoute
@@ -1294,6 +1303,7 @@ export interface FileRoutesById {
   '/studios/': typeof StudiosIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin_/creative-talent-hunt_/judging': typeof AdminCreativeTalentHuntJudgingRoute
+  '/admin_/creative-talent-hunt_/operations': typeof AdminCreativeTalentHuntOperationsRoute
   '/api/public/og-image': typeof ApiPublicOgImageRoute
   '/creative-talent-hunt/categories/$slug': typeof CreativeTalentHuntCategoriesSlugRoute
   '/creative-talent-hunt/contestants/$slug': typeof CreativeTalentHuntContestantsSlugRoute
@@ -1440,6 +1450,7 @@ export interface FileRouteTypes {
     | '/studios/'
     | '/.lovable/oauth/consent'
     | '/admin/creative-talent-hunt/judging'
+    | '/admin/creative-talent-hunt/operations'
     | '/api/public/og-image'
     | '/creative-talent-hunt/categories/$slug'
     | '/creative-talent-hunt/contestants/$slug'
@@ -1584,6 +1595,7 @@ export interface FileRouteTypes {
     | '/studios'
     | '/.lovable/oauth/consent'
     | '/admin/creative-talent-hunt/judging'
+    | '/admin/creative-talent-hunt/operations'
     | '/api/public/og-image'
     | '/creative-talent-hunt/categories/$slug'
     | '/creative-talent-hunt/contestants/$slug'
@@ -1728,6 +1740,7 @@ export interface FileRouteTypes {
     | '/studios/'
     | '/.lovable/oauth/consent'
     | '/admin_/creative-talent-hunt_/judging'
+    | '/admin_/creative-talent-hunt_/operations'
     | '/api/public/og-image'
     | '/creative-talent-hunt/categories/$slug'
     | '/creative-talent-hunt/contestants/$slug'
@@ -1873,6 +1886,7 @@ export interface RootRouteChildren {
   StudiosIndexRoute: typeof StudiosIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   AdminCreativeTalentHuntJudgingRoute: typeof AdminCreativeTalentHuntJudgingRoute
+  AdminCreativeTalentHuntOperationsRoute: typeof AdminCreativeTalentHuntOperationsRoute
   ApiPublicOgImageRoute: typeof ApiPublicOgImageRoute
   CreativeTalentHuntCategoriesSlugRoute: typeof CreativeTalentHuntCategoriesSlugRoute
   CreativeTalentHuntContestantsSlugRoute: typeof CreativeTalentHuntContestantsSlugRoute
@@ -2745,6 +2759,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCreativeTalentHuntJudgingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/creative-talent-hunt_/operations': {
+      id: '/admin_/creative-talent-hunt_/operations'
+      path: '/admin/creative-talent-hunt/operations'
+      fullPath: '/admin/creative-talent-hunt/operations'
+      preLoaderRoute: typeof AdminCreativeTalentHuntOperationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/og-image': {
       id: '/api/public/og-image'
       path: '/api/public/og-image'
@@ -3020,6 +3041,8 @@ const rootRouteChildren: RootRouteChildren = {
   StudiosIndexRoute: StudiosIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   AdminCreativeTalentHuntJudgingRoute: AdminCreativeTalentHuntJudgingRoute,
+  AdminCreativeTalentHuntOperationsRoute:
+    AdminCreativeTalentHuntOperationsRoute,
   ApiPublicOgImageRoute: ApiPublicOgImageRoute,
   CreativeTalentHuntCategoriesSlugRoute: CreativeTalentHuntCategoriesSlugRoute,
   CreativeTalentHuntContestantsSlugRoute:

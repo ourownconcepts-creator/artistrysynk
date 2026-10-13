@@ -80,6 +80,7 @@ function JudgingAdminPage() {
             </div>
             <div className="flex gap-4 text-sm">
               <Link to="/admin/creative-talent-hunt" className="text-muted-foreground hover:text-foreground">Review queue →</Link>
+              <Link to="/admin/creative-talent-hunt/operations" className="text-muted-foreground hover:text-foreground">Operations →</Link>
               <Link to="/creative-talent-hunt/leaderboard" className="text-muted-foreground hover:text-foreground">Public leaderboard →</Link>
             </div>
           </div>
