@@ -19,7 +19,7 @@ describe("Creative Talent Hunt vote blending", () => {
     expect(() => validateWeights(Number.NaN, 1)).toThrow();
   });
   it("ties share a rank after blending", () => {
-    const rows = [{ score: blendedScore(80, 10, 10, 1, 1) }, { score: blendedScore(90, 0, 10, 1, 1) }, { score: 50 }];
+    const rows = [{ score: blendedScore(80, 10, 10, 1, 1) }, { score: blendedScore(100, 8, 10, 1, 1) }, { score: 50 }];
     expect(rankResults(rows).map((r) => r.rank)).toEqual([1, 1, 3]);
   });
 });
