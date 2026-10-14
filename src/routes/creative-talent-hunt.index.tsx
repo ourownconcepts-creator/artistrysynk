@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTransition } from "@/components/layout/PageTransition";
+import logoImg from "@/assets/logo.png";
 import {
   ARTISTRYSYNK_CREATIVE_TALENT_HUNT,
   CREATIVE_TALENT_HUNT_CATEGORIES,
@@ -35,11 +36,8 @@ function CreativeTalentHuntPage() {
       <main className="min-h-screen bg-background text-foreground">
         <section className="border-b">
           <div className="mx-auto max-w-6xl px-6 py-8">
-            <Link
-              to="/"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground"
-            >
-              ArtistrySynk
+            <Link to="/" aria-label="ArtistrySynk home" className="inline-block">
+              <img src={logoImg} alt="ArtistrySynk" className="h-40 w-auto" />
             </Link>
           </div>
         </section>
