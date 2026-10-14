@@ -26,7 +26,11 @@ function walk(dir, out = []) {
 
 const outputRoot = existsSync(join(root, ".output")) ? ".output" : "dist";
 const serverFiles = walk(join(root, outputRoot, "server"));
-const clientFiles = walk(join(root, outputRoot, "public", "assets"));
+// Client assets live in public/assets on some layouts and client/assets on others.
+const clientDir = ["public", "client"]
+  .map((d) => join(root, outputRoot, d, "assets"))
+  .find((d) => walk(d).length > 0);
+const clientFiles = clientDir ? walk(clientDir) : [];
 
 if (serverFiles.length === 0) errors.push(`${outputRoot}/server contains no JS output.`);
 if (clientFiles.length === 0) errors.push(`${outputRoot}/public/assets contains no JS output.`);
