@@ -1,1 +1,2 @@
 - Marketing email goes only through the newsletter worker; its state machine lives in SQL mkt_* functions (lease, SKIP LOCKED claims, rolling-window capacity, unknown-outcome state) with loop logic in core.ts — keeps sends atomic, resumable and duplicate-safe.
+- Creative Talent Hunt privileged writes (votes, scores, judging, operations) go only through security-definer RPCs gated by cth_is_competition_admin(); no direct client write policies on competition tables — keeps every sensitive action server-authorised and audited.
