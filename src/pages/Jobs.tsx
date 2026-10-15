@@ -115,6 +115,7 @@ const Jobs = () => {
 
   const handleApply = (jobId: string) => {
     const job = jobs.find(j => j.id === jobId);
+    if (!currentUser) { navigate("/auth"); return; }
     if (job) {
       setApplyingJob(job);
     }
