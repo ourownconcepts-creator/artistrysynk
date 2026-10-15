@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Navbar } from "@/components/Navbar";
 import { PageTransition } from "@/components/layout/PageTransition";
 import Jobs from "@/pages/Jobs";
@@ -11,14 +10,13 @@ export const Route = createFileRoute("/jobs")({
       path: "/jobs",
       title: "Creative jobs board | ArtistrySynk",
       description: "Browse and post paid creative roles and gigs.",
-      noIndex: true,
     }),
   component: () => (
-    <ProtectedRoute>
+    <>
       <Navbar />
       <PageTransition>
         <Jobs />
       </PageTransition>
-    </ProtectedRoute>
+    </>
   ),
 });
