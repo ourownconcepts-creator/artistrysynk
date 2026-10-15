@@ -64,8 +64,6 @@ Disallow: /edit-profile
 Disallow: /matches
 Disallow: /who-liked-you
 Disallow: /discover
-Disallow: /marketplace
-Disallow: /jobs
 Disallow: /projects
 Disallow: /open-projects
 Disallow: /studio

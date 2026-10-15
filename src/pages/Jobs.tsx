@@ -55,7 +55,8 @@ const Jobs = () => {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) {
-        navigate("/auth");
+        // Visitors can browse; applying or posting sends them to sign in.
+        loadJobs();
       } else {
         setCurrentUser(user.id);
         loadJobs();
@@ -114,6 +115,7 @@ const Jobs = () => {
 
   const handleApply = (jobId: string) => {
     const job = jobs.find(j => j.id === jobId);
+    if (!currentUser) { navigate("/auth"); return; }
     if (job) {
       setApplyingJob(job);
     }

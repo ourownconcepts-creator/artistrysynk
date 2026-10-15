@@ -127,7 +127,8 @@ const Marketplace = () => {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) {
-        navigate("/auth");
+        // Visitors can browse; any action sends them to sign in.
+        loadServices().then(() => setLoading(false));
       } else {
         setCurrentUser(user.id);
         loadData(user.id);
@@ -229,6 +230,7 @@ const Marketplace = () => {
   };
 
   const createService = async () => {
+    if (!currentUser) { navigate("/auth"); return; }
     if (!newService.title || !newService.category || !newService.price) {
       toast.error("Please fill in all required fields");
       return;
@@ -381,7 +383,7 @@ const Marketplace = () => {
             </h1>
             <p className="text-muted-foreground">Buy and sell creative services</p>
           </div>
-          <Dialog open={newServiceOpen} onOpenChange={setNewServiceOpen}>
+          <Dialog open={newServiceOpen} onOpenChange={(o) => (o && !currentUser ? navigate("/auth") : setNewServiceOpen(o))}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="w-4 h-4 mr-2" />
@@ -706,7 +708,7 @@ const Marketplace = () => {
                       </div>
                     </CardContent>
                     <CardFooter>
-                      <Dialog open={orderingService?.id === service.id} onOpenChange={(open) => setOrderingService(open ? service : null)}>
+                      <Dialog open={orderingService?.id === service.id} onOpenChange={(open) => (open && !currentUser ? navigate("/auth") : setOrderingService(open ? service : null))}>
                         <DialogTrigger asChild>
                           <Button className="w-full">
                             <ShoppingCart className="w-4 h-4 mr-2" />
