@@ -37,7 +37,7 @@ const Careers = () => {
       department: "Engineering",
       location: "Lagos, Nigeria (Remote)",
       type: "Full-time",
-      description: "Build beautiful, responsive interfaces for African creatives using React, TypeScript, and modern web technologies."
+      description: "Build beautiful, responsive interfaces for creatives using React, TypeScript, and modern web technologies."
     },
     {
       title: "Product Designer",
@@ -51,7 +51,7 @@ const Careers = () => {
       department: "Marketing",
       location: "Lagos, Nigeria",
       type: "Full-time",
-      description: "Engage with our creative community, organize events, and help grow our presence across Africa."
+      description: "Engage with our creative community, organize events, and help grow our presence around the world."
     },
     {
       title: "Backend Engineer",
